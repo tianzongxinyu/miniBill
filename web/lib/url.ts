@@ -59,6 +59,12 @@ export function contactDetailHref(contactId: number, returnTo?: string): string 
   return `${base}&returnTo=${encodeURIComponent(returnTo)}`;
 }
 
+export function transactionEditHref(txId: number, returnTo?: string): string {
+  const base = `/add/?id=${txId}`;
+  if (!returnTo) return base;
+  return `${base}&returnTo=${encodeURIComponent(returnTo)}`;
+}
+
 export type TransactionsFiltersFromQuery = {
   note: string;
   tagIds: number[];

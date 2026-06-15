@@ -19,10 +19,31 @@ import {
   fetchTransactionFormMeta,
   saveTransaction,
   Tag,
+  Transaction,
+  TransactionTagItem,
   yuanToCents,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { notifyTransactionDates } from '@/lib/ledgerEvents';
+import { safeReturnTo } from '@/lib/url';
+
+function mergeTagsForEdit(allTags: Tag[], tx: Transaction): Tag[] {
+  const byId = new Map(allTags.map((t) => [t.id, t]));
+  for (const item of tx.tag_items ?? []) {
+    if (!byId.has(item.id)) {
+      byId.set(item.id, {
+        id: item.id,
+        name: item.name,
+        color_bg: item.color_bg,
+        color_fg: item.color_fg,
+        is_system: false,
+        enabled: true,
+        selectable: true,
+      });
+    }
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+}
 
 function AddContent() {
   const router = useRouter();
@@ -30,6 +51,7 @@ function AddContent() {
   const { scheme } = useSettings();
   const editId = params.get('id');
   const isEdit = Boolean(editId);
+  const returnTo = isEdit ? safeReturnTo(params.get('returnTo'), '/transactions/') : '/';
 
   const [loading, setLoading] = useState(isEdit);
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -40,6 +62,7 @@ function AddContent() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [selectedTagItems, setSelectedTagItems] = useState<TransactionTagItem[]>([]);
   const [contactId, setContactId] = useState<number | ''>('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
@@ -48,13 +71,15 @@ function AddContent() {
   const [deleting, setDeleting] = useState(false);
 
   const loadMeta = useCallback(async () => {
-    const { tags, contacts, editableRange } = await fetchTransactionFormMeta();
-    setTags(tags);
-    setContacts(contacts);
-    setMinDate(editableRange.min_date);
-    setMaxDate(editableRange.max_date);
-    if (!isEdit) setDate(editableRange.max_date);
-    return editableRange.max_date;
+    const meta = await fetchTransactionFormMeta();
+    setMinDate(meta.editableRange.min_date);
+    setMaxDate(meta.editableRange.max_date);
+    if (!isEdit) {
+      setTags(meta.tags);
+      setContacts(meta.contacts);
+      setDate(meta.editableRange.max_date);
+    }
+    return meta;
   }, [isEdit]);
 
   useEffect(() => {
@@ -67,13 +92,16 @@ function AddContent() {
     if (!editId) return;
     setLoading(true);
     Promise.all([fetchTransaction(editId), loadMeta()])
-      .then(([txData]) => {
+      .then(([txData, meta]) => {
         setType(txData.type);
         setAmount((txData.amount / 100).toFixed(2));
         setDate(txData.transaction_date);
         setOriginalDate(txData.transaction_date);
         setNote(txData.note);
+        setTags(mergeTagsForEdit(meta.tags, txData));
+        setContacts(meta.contacts);
         setSelectedTags(txData.tag_ids ?? []);
+        setSelectedTagItems(txData.tag_items ?? []);
         setContactId(txData.contact_id ?? '');
       })
       .catch((e) => setError(formatApiError(e, '加载失败')))
@@ -99,7 +127,7 @@ function AddContent() {
     try {
       await saveTransaction(body, isEdit ? editId : null);
       notifyTransactionDates(date, originalDate);
-      router.push('/transactions/');
+      router.push(isEdit ? returnTo : '/');
     } catch (err) {
       setError(formatApiError(err, '保存失败'));
     }
@@ -111,7 +139,7 @@ function AddContent() {
     try {
       await deleteTransaction(editId);
       notifyTransactionDates(date, originalDate);
-      router.push('/transactions/');
+      router.push(returnTo);
     } catch (err) {
       setConfirmOpen(false);
       setError(formatApiError(err, '删除失败'));
@@ -120,7 +148,7 @@ function AddContent() {
     }
   };
 
-  const backHref = isEdit ? '/transactions/' : '/';
+  const backHref = returnTo;
   const backLabel = isEdit ? '流水列表' : '首页';
 
   if (loading) {
@@ -184,6 +212,7 @@ function AddContent() {
           <TagCombobox
             tags={tags}
             selectedIds={selectedTags}
+            selectedItems={selectedTagItems}
             onChange={setSelectedTags}
             onTagsChange={setTags}
           />

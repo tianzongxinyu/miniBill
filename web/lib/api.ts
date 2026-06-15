@@ -232,6 +232,7 @@ export type MonthSeriesPoint = {
   month: number;
   total_income: number;
   total_expense: number;
+  start_balance?: number | null;
   registered_balance?: number | null;
   daily_expense?: number | null;
 };
@@ -240,6 +241,7 @@ export type YearSeriesPoint = {
   year: number;
   total_income: number;
   total_expense: number;
+  start_balance?: number | null;
   end_balance?: number | null;
 };
 

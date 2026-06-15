@@ -396,6 +396,11 @@ func (s *StatsService) computeMonthStat(db *sql.DB, ym domain.YearMonth, filter 
 			item.DailyExpense = de
 		}
 	}
+	startBal, err := loadPrevMonthBalance(db, ym)
+	if err != nil {
+		return item, err
+	}
+	item.StartBalance = startBal
 	return item, nil
 }
 
@@ -455,6 +460,7 @@ type YearlyStatItem struct {
 	SocialIncome  int64  `json:"social_income"`
 	SocialExpense int64  `json:"social_expense"`
 	DailyExpense  *int64 `json:"daily_expense"`
+	StartBalance  *int64 `json:"start_balance,omitempty"`
 	EndBalance    *int64 `json:"end_balance"`
 }
 
@@ -533,6 +539,11 @@ func (s *StatsService) YearStat(db *sql.DB, year int, filter StatsFilter) (*Year
 			return nil, err
 		}
 		item.SocialIncome, item.SocialExpense = si, se
+		startBal, err := loadPriorDecemberBalance(db, year)
+		if err != nil {
+			return nil, err
+		}
+		item.StartBalance = startBal
 		var endBal int64
 		err = db.QueryRow(
 			`SELECT balance FROM monthly_balances WHERE year = ? ORDER BY month DESC LIMIT 1`, year,
@@ -579,6 +590,7 @@ type MonthlyStatPoint struct {
 	SocialIncome      int64  `json:"social_income,omitempty"`
 	SocialExpense     int64  `json:"social_expense,omitempty"`
 	DailyExpense      *int64 `json:"daily_expense,omitempty"`
+	StartBalance      *int64 `json:"start_balance,omitempty"`
 	RegisteredBalance *int64 `json:"registered_balance,omitempty"`
 }
 

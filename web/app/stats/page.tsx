@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { RequireAuth } from '@/components/RequireAuth';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { ChartSkeleton } from '@/components/ui/LoadingFallback';
 import { StatsChartFullscreen } from '@/components/stats/StatsChartFullscreen';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
@@ -34,7 +33,13 @@ function StatsContent() {
 
   const scrollRef = fullscreenOpen ? fullscreenScrollRef : inlineScrollRef;
 
-  const { onMouseDown: onChartMouseDown } = useHorizontalDragScroll(inlineScrollRef, {
+  const {
+    onMouseDown: onChartMouseDown,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerCancel,
+  } = useHorizontalDragScroll(inlineScrollRef, {
     enabled: !fullscreenOpen,
   });
 
@@ -108,8 +113,6 @@ function StatsContent() {
 
   return (
     <div>
-      <PageHeader title="统计" />
-
       <StatsToolbar
         note={noteQuery}
         onNoteChange={setNoteQuery}
@@ -150,7 +153,11 @@ function StatsContent() {
           ref={inlineScrollRef}
           onScroll={fullscreenOpen ? undefined : active.onScroll}
           onMouseDown={fullscreenOpen ? undefined : onChartMouseDown}
-          className="stats-chart-scroll overflow-x-auto min-h-[252px]"
+          onPointerDown={fullscreenOpen ? undefined : onPointerDown}
+          onPointerMove={fullscreenOpen ? undefined : onPointerMove}
+          onPointerUp={fullscreenOpen ? undefined : onPointerUp}
+          onPointerCancel={fullscreenOpen ? undefined : onPointerCancel}
+          className="stats-chart-scroll overflow-x-auto min-h-[252px] touch-none"
         >
           <div style={{ minWidth: scrollWidth }} className="px-4 pt-4">
             <StatsScrollChart

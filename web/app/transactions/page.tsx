@@ -3,9 +3,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
-import { PageHeader, scrollToTop } from '@/components/ui/PageHeader';
 import { Notebook } from '@/components/ui/Notebook';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
 import { ListSkeleton, LoadingFallback } from '@/components/ui/LoadingFallback';
 import { TransactionRow } from '@/components/transactions/TransactionRow';
@@ -22,12 +20,7 @@ import {
   parseTransactionsFiltersFromQuery,
   parseYearMonthFromQuery,
 } from '@/lib/url';
-import {
-  fetchEarliestMonth,
-  getCurrentYearMonth,
-  prevMonth,
-  type YearMonth,
-} from '@/lib/api';
+import { fetchEarliestMonth, getCurrentYearMonth, type YearMonth } from '@/lib/api';
 
 function TransactionsContent() {
   const params = useSearchParams();
@@ -69,14 +62,6 @@ function TransactionsContent() {
     fetchEarliestMonth().then(setEarliest).catch(() => setEarliest(null));
   }, []);
 
-  const goPrevMonth = useCallback(() => {
-    const p = prevMonth(year, month);
-    setYear(p.year);
-    setMonth(p.month);
-  }, [year, month]);
-
-  // nav 与 list hook 互相依赖：list 需要 nav 的 markLoadSettling，nav 需要 list 的加载状态。
-  // 用 ref 先挂回调、后赋值 nav，避免违反 hook 调用顺序。
   const navRef = useRef<ReturnType<typeof useTransactionsMonthNav> | null>(null);
   const navCallbacks = useRef({
     markLoadSettling: () => navRef.current?.markLoadSettling(),
@@ -103,7 +88,6 @@ function TransactionsContent() {
     loadingMore: list.loadingMore,
     hasMore: list.hasMore,
     earliest,
-    onGoPrevMonth: goPrevMonth,
     enabled: !searchActive,
   });
 
@@ -118,20 +102,7 @@ function TransactionsContent() {
     [nav]
   );
 
-  const jumpToCurrentMonth = useCallback(() => {
-    const now = getCurrentYearMonth();
-    if (year === now.year && month === now.month) {
-      scrollToTop();
-      return;
-    }
-    nav.resetAll();
-    setYear(now.year);
-    setMonth(now.month);
-    scrollToTop();
-  }, [year, month, nav]);
-
   const maxMonth = getCurrentYearMonth();
-  const prevMonthTarget = prevMonth(year, month);
 
   const animateIds = useLoadMoreAnimateIds(
     list.items,
@@ -154,13 +125,6 @@ function TransactionsContent() {
 
   return (
     <div className="pb-16">
-      <PageHeader
-        title="流水"
-        sticky
-        onTitleDoubleClick={jumpToCurrentMonth}
-        doubleClickHint="双击回到当前月"
-      />
-
       <TransactionsToolbar
         note={noteQuery}
         onNoteChange={setNoteQuery}
@@ -192,14 +156,7 @@ function TransactionsContent() {
       {list.loading ? (
         <ListSkeleton />
       ) : list.items.length === 0 ? (
-        <EmptyNotebook
-          message={searchActive ? '无匹配流水' : '暂无流水'}
-          hint={
-            !searchActive && nav.canPromptPrevMonth && list.isFullyLoaded
-              ? '下滑至底部后可查看更早月份'
-              : undefined
-          }
-        />
+        <EmptyNotebook message={searchActive ? '无匹配流水' : '暂无流水'} />
       ) : (
         <Notebook>
           {list.items.map((tx) => (
@@ -216,29 +173,16 @@ function TransactionsContent() {
       <div ref={list.sentinelRef} className="h-4" aria-hidden />
 
       {!searchActive && (
-        <>
-          <TransactionsFooter
-            loadingMore={list.loadingMore}
-            prevMonthDialogOpen={nav.prevMonthDialogOpen}
-            monthFullyLoaded={list.isFullyLoaded}
-            atBottom={nav.atBottom}
-            canPromptPrevMonth={nav.canPromptPrevMonth}
-          />
-
-          <ConfirmDialog
-            open={nav.prevMonthDialogOpen}
-            title="查看上一个月"
-            message={
-              list.items.length === 0
-                ? `${year} 年 ${month} 月暂无流水，是否查看 ${prevMonthTarget.year} 年 ${prevMonthTarget.month} 月？`
-                : `${year} 年 ${month} 月流水已加载完毕，是否查看 ${prevMonthTarget.year} 年 ${prevMonthTarget.month} 月？`
-            }
-            confirmLabel="查看"
-            cancelLabel="留在此月"
-            onConfirm={nav.confirmGoPrevMonth}
-            onClose={nav.cancelGoPrevMonth}
-          />
-        </>
+        <TransactionsFooter
+          loadingMore={list.loadingMore}
+          monthFullyLoaded={list.isFullyLoaded}
+          atBottom={nav.atBottom}
+          year={year}
+          month={month}
+          earliest={earliest}
+          maxMonth={maxMonth}
+          onMonthChange={handleMonthChange}
+        />
       )}
     </div>
   );

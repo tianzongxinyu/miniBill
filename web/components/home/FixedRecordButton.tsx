@@ -47,7 +47,7 @@ export function FixedRecordButton() {
           <div className="fab-wrap">
             <div className="fab-inner">
               <div className="fab-glow" aria-hidden />
-              <Link href="/add/" className="fab-button">
+              <Link href="/add/?returnTo=/" className="fab-button">
                 <PlusIcon />
                 <span>记一笔</span>
               </Link>

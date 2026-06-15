@@ -2,7 +2,6 @@
 
 import { useCallback } from 'react';
 import { RequireAuth } from '@/components/RequireAuth';
-import { PageHeader, scrollToTop } from '@/components/ui/PageHeader';
 import { MonthBillCard } from '@/components/home/MonthBillCard';
 import { FixedRecordButton } from '@/components/home/FixedRecordButton';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
@@ -66,9 +65,6 @@ function HomeContent() {
           {pulling ? '刷新中' : pullDistance >= 64 ? '松开刷新' : '下拉刷新'}
         </p>
       </div>
-
-      <PageHeader title="概览" sticky onTitleDoubleClick={() => scrollToTop()} />
-
       {error && (
         <div className="notebook p-5 text-sm text-muted mb-6 border-expense/20 bg-expense/[0.03]">
           {error}

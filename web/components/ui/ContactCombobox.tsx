@@ -119,9 +119,11 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
             autoComplete="off"
           />
         </div>
+      </div>
 
-        {showCandidates && (
-          <div className="combobox-candidates" role="listbox">
+      {showCandidates && (
+        <div className="combobox-candidates-floating" role="listbox">
+          <div className="combobox-candidates-row">
             {candidates.map((c, i) => (
               <button
                 key={c.id}
@@ -149,8 +151,8 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
               </button>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

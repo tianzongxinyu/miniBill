@@ -8,7 +8,7 @@ import {
   type TransactionsPage,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
-import { scrollToTop } from '@/lib/scroll';
+import { scrollToTop, pullTransactionsScroll, scrollToY, currentPathWithSearch } from '@/lib/scroll';
 import { useOnLedgerChanged, monthInDetail } from '@/lib/ledgerEvents';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
 
@@ -104,7 +104,13 @@ export function useTransactionsList({
       const data = await fetchOnce(null, ac.signal);
       if (reloadAbortRef.current !== ac) return;
       applyPage(data);
-      scrollToTop(false);
+      const href = currentPathWithSearch();
+      const restored = pullTransactionsScroll(href);
+      if (restored != null) {
+        requestAnimationFrame(() => scrollToY(restored));
+      } else {
+        scrollToTop(false);
+      }
     } catch (e) {
       if (reloadAbortRef.current !== ac) return;
       if (e instanceof ApiError && e.code === 'ABORTED') return;

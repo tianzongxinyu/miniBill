@@ -7,7 +7,8 @@ import { DailyExpenseAmount } from '@/components/ui/DailyExpenseAmount';
 import { Amount } from '@/components/ui/Amount';
 import { TagChip } from '@/components/ui/TagChip';
 import type { Transaction, TransactionTagItem } from '@/lib/api';
-import { contactDetailHref } from '@/lib/url';
+import { contactDetailHref, transactionEditHref } from '@/lib/url';
+import { stashTransactionsScroll } from '@/lib/scroll';
 
 const DAILY_EXPENSE_TAG = '日常支出';
 
@@ -83,15 +84,21 @@ function TransactionRowInner({
     );
   }
 
+  const goEdit = () => {
+    const href = returnTo ?? '';
+    if (href) stashTransactionsScroll(href);
+    router.push(transactionEditHref(tx.id, returnTo));
+  };
+
   return (
     <div
       role="link"
       tabIndex={0}
-      onClick={() => router.push(`/add/?id=${tx.id}`)}
+      onClick={goEdit}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          router.push(`/add/?id=${tx.id}`);
+          goEdit();
         }
       }}
       className={`${className} block cursor-pointer`}

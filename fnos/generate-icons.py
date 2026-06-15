@@ -57,7 +57,7 @@ def main() -> None:
     print(f"Updated {src} (RGBA, transparent corners)")
 
     targets = [
-        (root / "ICON.PNG", 64),
+        (root / "ICON.PNG", 256),
         (root / "ICON_256.PNG", 256),
         (root / "app" / "ui" / "images" / "icon_64.png", 64),
         (root / "app" / "ui" / "images" / "icon_256.png", 256),

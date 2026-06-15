@@ -87,6 +87,14 @@ update_manifest() {
     fi
 }
 
+sync_fnos_icons() {
+    info "Syncing fnOS icons from web/public/icon.png ..."
+    python3 "${FNOS_DIR}/generate-icons.py"
+    if [ -d "$ROOT/web/out" ]; then
+        cp -f "$ROOT/web/public/icon.png" "$ROOT/web/out/icon.png"
+    fi
+}
+
 build_one() {
     local version="$1"
     local platform="$2"
@@ -95,6 +103,7 @@ build_one() {
 
     update_manifest "$version" "$platform"
     ensure_web_out
+    sync_fnos_icons
 
     info "Building linux/${goarch} binary ..."
     mkdir -p "${FNOS_DIR}/app/bin" "${FNOS_DIR}/app/web" "${FNOS_DIR}/app/migrations"
@@ -107,9 +116,6 @@ build_one() {
     cp -a "$ROOT/web/out" "${FNOS_DIR}/app/web/out"
     cp -a "$ROOT/migrations/system" "${FNOS_DIR}/app/migrations/system"
     cp -a "$ROOT/migrations/ledger" "${FNOS_DIR}/app/migrations/ledger"
-
-    info "Syncing fnOS icons from web/public/icon.png ..."
-    python3 "${FNOS_DIR}/generate-icons.py"
 
     chmod +x "${FNOS_DIR}/app/bin/minibill" "${FNOS_DIR}"/cmd/*
     ensure_fnpack
@@ -144,8 +150,7 @@ main() {
     command -v curl >/dev/null 2>&1 || error "curl is required"
     [ -f "$ROOT/web/public/icon.png" ] || error "Missing web/public/icon.png"
 
-    info "Syncing fnOS icons from web/public/icon.png ..."
-    python3 "$FNOS_DIR/generate-icons.py"
+    sync_fnos_icons
 
     case "$PLATFORM_ARG" in
         all)

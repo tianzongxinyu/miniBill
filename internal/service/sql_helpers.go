@@ -43,6 +43,29 @@ func loadMonthlyBalance(db *sql.DB, year, month int) (sql.NullInt64, error) {
 	return bal, err
 }
 
+func loadPrevMonthBalance(db *sql.DB, ym domain.YearMonth) (*int64, error) {
+	prev := domain.PrevMonth(ym)
+	bal, err := loadMonthlyBalance(db, prev.Year, prev.Month)
+	if err != nil {
+		return nil, err
+	}
+	if !bal.Valid {
+		return nil, nil
+	}
+	return &bal.Int64, nil
+}
+
+func loadPriorDecemberBalance(db *sql.DB, year int) (*int64, error) {
+	bal, err := loadMonthlyBalance(db, year-1, 12)
+	if err != nil {
+		return nil, err
+	}
+	if !bal.Valid {
+		return nil, nil
+	}
+	return &bal.Int64, nil
+}
+
 func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64) (string, []interface{}) {
 	parts := make([]string, 0, len(tagIDs)+2)
 	args := make([]interface{}, 0, len(tagIDs)+2)

@@ -22,9 +22,8 @@ import {
 import {
   axisTickValues,
   buildStatsChartRows,
+  chartAxisDomains,
   chartRowToSeries,
-  leftAxisDomain,
-  rightAxisDomain,
   type StatsChartRow,
 } from '@/lib/statsChartData';
 import {
@@ -141,15 +140,11 @@ export function StatsScrollChart({
   const chartData = useMemo(() => rows.map(chartRowToSeries), [rows]);
   const chartWidth = Math.max(chartData.length * pointWidth, 320);
   const halfPoint = pointWidth / 2;
-  const yDomain = useMemo(
-    () => leftAxisDomain(rows, hiddenSeries, searchActive),
+  const { left: yDomain, right: rightDomain } = useMemo(
+    () => chartAxisDomains(rows, hiddenSeries, searchActive),
     [rows, hiddenSeries, searchActive]
   );
   const yTicks = useMemo(() => axisTickValues(yDomain, 4), [yDomain]);
-  const rightDomain = useMemo(
-    () => rightAxisDomain(rows, hiddenSeries, searchActive),
-    [rows, hiddenSeries, searchActive]
-  );
   const rightTicks = useMemo(() => axisTickValues(rightDomain, 4), [rightDomain]);
 
   const renderTooltip = useCallback(

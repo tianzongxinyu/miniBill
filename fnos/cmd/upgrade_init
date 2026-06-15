@@ -1,2 +1,18 @@
 #!/bin/bash
+# Re-extract app.tgz on upgrade so ICON / ui / web assets stay in sync with the fpk.
+
+. "$(dirname "$0")/app-layout"
+
+dest="$(resolve_app_dest)"
+tgz="${dest}/app.tgz"
+
+if [ ! -f "$tgz" ]; then
+    exit 0
+fi
+
+rm -rf "${dest}/app"
+mkdir -p "${dest}/app"
+tar -xzf "$tgz" -C "${dest}/app"
+chmod +x "${dest}/app/bin/minibill" 2>/dev/null || true
+
 exit 0

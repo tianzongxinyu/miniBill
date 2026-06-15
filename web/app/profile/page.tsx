@@ -2,7 +2,6 @@
 
 import { RequireAuth } from '@/components/RequireAuth';
 import { useAuth } from '@/components/AuthProvider';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { Notebook, NotebookRow } from '@/components/ui/Notebook';
 
 function ProfileContent() {
@@ -16,7 +15,17 @@ function ProfileContent() {
 
   return (
     <div>
-      <PageHeader title="我的" subtitle={user?.username} />
+      {user?.username && (
+        <div className="flex items-center gap-3 mb-4 min-w-0">
+          <div
+            className="w-10 h-10 shrink-0 rounded-full bg-accent-soft flex items-center justify-center text-sm font-medium text-accent uppercase"
+            aria-hidden
+          >
+            {user.username.slice(0, 1)}
+          </div>
+          <span className="text-base font-medium text-ink truncate">{user.username}</span>
+        </div>
+      )}
       <Notebook>
         {links.map((l) => (
           <NotebookRow key={l.href} href={l.href}>

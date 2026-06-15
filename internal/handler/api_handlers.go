@@ -351,6 +351,7 @@ func (s *Server) createTransaction(c *gin.Context) {
 		if serviceErr(c, err) {
 			return
 		}
+		s.invalidateLedgerMeta(c)
 		c.JSON(http.StatusCreated, tx)
 	})
 }
@@ -370,6 +371,7 @@ func (s *Server) updateTransaction(c *gin.Context) {
 		if serviceErr(c, err) {
 			return
 		}
+		s.invalidateLedgerMeta(c)
 		c.JSON(http.StatusOK, tx)
 	})
 }
@@ -383,6 +385,7 @@ func (s *Server) deleteTransaction(c *gin.Context) {
 		if serviceErr(c, s.txSvc.Delete(db, id)) {
 			return
 		}
+		s.invalidateLedgerMeta(c)
 		c.Status(http.StatusNoContent)
 	})
 }

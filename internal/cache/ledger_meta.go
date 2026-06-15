@@ -258,29 +258,16 @@ func (m *LedgerMeta) TxTagNames(txID int64) []string {
 	return names
 }
 
-// TxTagsForIDs returns tag entries per transaction, loading missing rows from DB.
+// TxTagsForIDs returns tag entries per transaction from DB (always fresh for list enrichment).
 func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]TxTagEntry, error) {
 	out := make(map[int64][]TxTagEntry, len(txIDs))
 	if len(txIDs) == 0 {
 		return out, nil
 	}
-	missing := make([]int64, 0)
-	m.txTagsMu.RLock()
-	for _, id := range txIDs {
-		if entries, ok := m.txTags[id]; ok {
-			out[id] = append([]TxTagEntry(nil), entries...)
-		} else {
-			missing = append(missing, id)
-		}
-	}
-	m.txTagsMu.RUnlock()
-	if len(missing) == 0 {
-		return out, nil
-	}
 
-	placeholders := make([]string, len(missing))
-	args := make([]any, len(missing))
-	for i, id := range missing {
+	placeholders := make([]string, len(txIDs))
+	args := make([]any, len(txIDs))
+	for i, id := range txIDs {
 		placeholders[i] = "?"
 		args[i] = id
 	}
@@ -295,7 +282,7 @@ func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]TxTagEn
 	}
 	defer rows.Close()
 
-	fetched := make(map[int64][]TxTagEntry, len(missing))
+	fetched := make(map[int64][]TxTagEntry, len(txIDs))
 	for rows.Next() {
 		var txID int64
 		var e TxTagEntry
@@ -308,14 +295,17 @@ func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]TxTagEn
 		return nil, err
 	}
 
-	m.txTagsMu.Lock()
-	for _, id := range missing {
+	for _, id := range txIDs {
 		entries := fetched[id]
 		if entries == nil {
 			entries = []TxTagEntry{}
 		}
-		m.txTags[id] = entries
 		out[id] = entries
+	}
+
+	m.txTagsMu.Lock()
+	for id, entries := range out {
+		m.txTags[id] = append([]TxTagEntry(nil), entries...)
 	}
 	m.txTagsMu.Unlock()
 	return out, nil

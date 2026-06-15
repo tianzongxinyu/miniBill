@@ -65,7 +65,8 @@ export function StatsChartFullscreen({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const restoredScrollRef = useRef(false);
 
-  const { onMouseDown: onChartMouseDown } = useHorizontalDragScroll(scrollRef, { enabled: open });
+  const { onMouseDown: onChartMouseDown, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } =
+    useHorizontalDragScroll(scrollRef, { enabled: open });
 
   useEffect(() => {
     setMounted(true);
@@ -165,7 +166,11 @@ export function StatsChartFullscreen({
           ref={scrollRef as React.RefObject<HTMLDivElement>}
           onScroll={onScroll}
           onMouseDown={onChartMouseDown}
-          className="stats-chart-scroll h-full overflow-x-auto overflow-y-hidden"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerCancel}
+          className="stats-chart-scroll h-full overflow-x-auto overflow-y-hidden touch-none"
         >
           <div style={{ minWidth: scrollWidth }} className="px-4 pt-2 h-full">
             <StatsScrollChart
