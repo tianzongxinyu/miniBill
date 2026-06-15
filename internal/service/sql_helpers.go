@@ -85,7 +85,7 @@ func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64) (str
 	return strings.Join(parts, " AND "), args
 }
 
-func tagFromRow(id int64, name string, sys, en int, colorBg, colorFg string) Tag {
+func tagFromRow(id int64, name string, sys, en int, colorBg, colorFg string, usageCount int64) Tag {
 	return Tag{
 		ID:         id,
 		Name:       name,
@@ -94,5 +94,6 @@ func tagFromRow(id int64, name string, sys, en int, colorBg, colorFg string) Tag
 		Selectable: domain.IsSelectableTag(name),
 		ColorBg:    colorBg,
 		ColorFg:    domain.TagTextColor,
+		UsageCount: usageCount,
 	}
 }

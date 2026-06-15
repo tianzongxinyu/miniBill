@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { useClickOutside } from '@/lib/combobox-utils';
 
 type UseCreatableComboboxOptions = {
   onCreate: (name: string) => Promise<void>;
@@ -16,7 +15,6 @@ export function useCreatableCombobox({ onCreate }: UseCreatableComboboxOptions) 
 
   const trimmed = query.trim();
   const blur = useCallback(() => setFocused(false), []);
-  useClickOutside(rootRef, blur);
 
   const handleCreate = useCallback(async () => {
     const name = trimmed;

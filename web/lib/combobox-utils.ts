@@ -1,13 +1,22 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 
-export function useClickOutside(ref: RefObject<HTMLElement | null>, onClose: () => void) {
+type RefTarget = RefObject<HTMLElement | null>;
+
+export function useClickOutside(
+  refs: RefTarget | RefTarget[],
+  onClose: () => void
+) {
+  const refsRef = useRef(Array.isArray(refs) ? refs : [refs]);
+  refsRef.current = Array.isArray(refs) ? refs : [refs];
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+      const inside = refsRef.current.some((ref) => ref.current?.contains(e.target as Node));
+      if (!inside) onClose();
     };
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
-  }, [ref, onClose]);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
 }
 
 export function useComboboxKeyboard(opts: {

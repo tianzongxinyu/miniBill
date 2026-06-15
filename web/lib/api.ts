@@ -124,6 +124,7 @@ export type Tag = {
   selectable?: boolean;
   color_bg: string;
   color_fg: string;
+  usage_count?: number;
 };
 export type Contact = {
   id: number;
@@ -132,6 +133,7 @@ export type Contact = {
   relation_group: string;
   note: string;
   phone: string;
+  usage_count?: number;
 };
 export type TransactionTagItem = {
   id: number;

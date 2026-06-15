@@ -792,7 +792,7 @@ body {
   }
 
   .combobox-candidates-floating-fixed {
-    @apply fixed mt-0 px-4 py-4 lg:px-8;
+    @apply fixed z-[80] mt-0 px-4 py-4 lg:px-8;
   }
 
   .combobox-candidates-floating .tag-chip {

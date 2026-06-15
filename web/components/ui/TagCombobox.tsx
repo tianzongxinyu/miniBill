@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { ApiError, Tag, createTag } from '@/lib/api';
 import { TagChip } from '@/components/ui/TagChip';
-import { useComboboxKeyboard } from '@/lib/combobox-utils';
+import { ComboboxFloatingCandidates } from '@/components/ui/ComboboxFloatingCandidates';
+import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 import { useCreatableCombobox } from '@/hooks/useCreatableCombobox';
 
 type TagComboboxProps = {
@@ -87,14 +88,25 @@ export function TagCombobox({
     inputRef,
     trimmed,
     handleCreate,
+    blur,
   } = useCreatableCombobox({ onCreate });
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  useClickOutside([rootRef, dropdownRef], blur);
 
   const candidates = useMemo(() => {
     const selectable = tags.filter((t) => t.selectable !== false);
     const unselected = selectable.filter((t) => !selectedIds.includes(t.id));
     const q = query.trim().toLowerCase();
-    if (!q) return unselected;
-    return unselected.filter((t) => t.name.toLowerCase().includes(q));
+    const filtered = !q
+      ? unselected
+      : unselected.filter((t) => t.name.toLowerCase().includes(q));
+    return [...filtered].sort(
+      (a, b) =>
+        (b.usage_count ?? 0) - (a.usage_count ?? 0) ||
+        a.name.localeCompare(b.name, 'zh-CN')
+    );
   }, [tags, selectedIds, query]);
 
   const canCreate =
@@ -117,6 +129,7 @@ export function TagCombobox({
   return (
     <div ref={rootRef} className="combobox">
       <div
+        ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
         onClick={() => inputRef.current?.focus()}
       >
@@ -145,42 +158,44 @@ export function TagCombobox({
         </div>
       </div>
 
-      {showCandidates && (
-        <div className="combobox-candidates-floating" role="listbox">
-          <div className="combobox-candidates-row">
-            {candidates.map((t, i) => (
-              <button
-                key={t.id}
-                type="button"
-                role="option"
-                aria-selected={highlight === i}
-                className="combobox-candidate p-0 border-0 bg-transparent"
-                onMouseEnter={() => setHighlight(i)}
-                onClick={() => {
-                  selectTag(t.id);
-                  setQuery('');
-                  inputRef.current?.focus();
-                }}
-              >
-                <TagChip name={t.name} colorBg={t.color_bg} active={highlight === i} />
-              </button>
-            ))}
-            {canCreate && (
-              <button
-                type="button"
-                role="option"
-                aria-selected={highlight === candidates.length}
-                className={`tag-pill combobox-candidate combobox-candidate-create${highlight === candidates.length ? ' combobox-candidate-active' : ''}`}
-                onMouseEnter={() => setHighlight(candidates.length)}
-                onClick={handleCreate}
-                disabled={creating}
-              >
-                + 创建「{trimmed}」
-              </button>
-            )}
-          </div>
+      <ComboboxFloatingCandidates
+        open={showCandidates}
+        panelRef={panelRef}
+        dropdownRef={dropdownRef}
+      >
+        <div className="combobox-candidates-row">
+          {candidates.map((t, i) => (
+            <button
+              key={t.id}
+              type="button"
+              role="option"
+              aria-selected={highlight === i}
+              className="combobox-candidate p-0 border-0 bg-transparent"
+              onMouseEnter={() => setHighlight(i)}
+              onClick={() => {
+                selectTag(t.id);
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+            >
+              <TagChip name={t.name} colorBg={t.color_bg} active={highlight === i} />
+            </button>
+          ))}
+          {canCreate && (
+            <button
+              type="button"
+              role="option"
+              aria-selected={highlight === candidates.length}
+              className={`tag-pill combobox-candidate combobox-candidate-create${highlight === candidates.length ? ' combobox-candidate-active' : ''}`}
+              onMouseEnter={() => setHighlight(candidates.length)}
+              onClick={handleCreate}
+              disabled={creating}
+            >
+              + 创建「{trimmed}」
+            </button>
+          )}
         </div>
-      )}
+      </ComboboxFloatingCandidates>
     </div>
   );
 }

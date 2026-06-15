@@ -19,16 +19,17 @@ type Tag struct {
 	Selectable bool   `json:"selectable"`
 	ColorBg    string `json:"color_bg"`
 	ColorFg    string `json:"color_fg"`
+	UsageCount int64  `json:"usage_count"`
 }
 
 type TagService struct{}
 
 func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
-	q := `SELECT id, name, is_system, enabled, color_bg, color_fg FROM tags`
+	q := `SELECT id, name, is_system, enabled, color_bg, color_fg, usage_count FROM tags`
 	if enabledOnly {
 		q += ` WHERE enabled = 1`
 	}
-	q += ` ORDER BY is_system DESC, name ASC`
+	q += ` ORDER BY is_system DESC, usage_count DESC, name ASC`
 	rows, err := db.Query(q)
 	if err != nil {
 		return nil, err
@@ -38,10 +39,10 @@ func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
 	for rows.Next() {
 		var t Tag
 		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount); err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg))
+		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount))
 	}
 	return list, nil
 }
@@ -53,7 +54,7 @@ func (s *TagService) Create(db *sql.DB, name string) (*Tag, error) {
 		return nil, err
 	}
 	id, _ := res.LastInsertId()
-	return &Tag{ID: id, Name: name, Enabled: true, Selectable: true, ColorBg: bg, ColorFg: fg}, nil
+	return &Tag{ID: id, Name: name, Enabled: true, Selectable: true, ColorBg: bg, ColorFg: fg, UsageCount: 0}, nil
 }
 
 type TagUpdateInput struct {
@@ -65,8 +66,8 @@ type TagUpdateInput struct {
 func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, error) {
 	var t Tag
 	var sys, en int
-	err := db.QueryRow(`SELECT id, name, is_system, enabled, color_bg, color_fg FROM tags WHERE id=?`, id).
-		Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg)
+	err := db.QueryRow(`SELECT id, name, is_system, enabled, color_bg, color_fg, usage_count FROM tags WHERE id=?`, id).
+		Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount)
 	if err == sql.ErrNoRows {
 		return nil, sql.ErrNoRows
 	}
@@ -102,7 +103,7 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 	if err != nil {
 		return nil, err
 	}
-	result := tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg)
+	result := tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount)
 	return &result, nil
 }
 

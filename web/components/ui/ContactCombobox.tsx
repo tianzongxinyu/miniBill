@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { ApiError, Contact, createContact } from '@/lib/api';
 import { ContactChip } from '@/components/ui/ContactChip';
-import { useComboboxKeyboard } from '@/lib/combobox-utils';
+import { ComboboxFloatingCandidates } from '@/components/ui/ComboboxFloatingCandidates';
+import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 import { useCreatableCombobox } from '@/hooks/useCreatableCombobox';
 
 type ContactComboboxProps = {
@@ -50,7 +51,12 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
     inputRef,
     trimmed,
     handleCreate,
+    blur,
   } = useCreatableCombobox({ onCreate });
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  useClickOutside([rootRef, dropdownRef], blur);
 
   const selectContact = useCallback(
     (id: number) => {
@@ -70,11 +76,17 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   const candidates = useMemo(() => {
     const pool = value ? contacts.filter((c) => c.id !== value) : contacts;
     const q = query.trim().toLowerCase();
-    if (!q) return pool;
-    return pool.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        (c.nickname && c.nickname.toLowerCase().includes(q))
+    const filtered = !q
+      ? pool
+      : pool.filter(
+          (c) =>
+            c.name.toLowerCase().includes(q) ||
+            (c.nickname && c.nickname.toLowerCase().includes(q))
+        );
+    return [...filtered].sort(
+      (a, b) =>
+        (b.usage_count ?? 0) - (a.usage_count ?? 0) ||
+        a.name.localeCompare(b.name, 'zh-CN')
     );
   }, [contacts, query, value]);
 
@@ -95,6 +107,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   return (
     <div ref={rootRef} className="combobox">
       <div
+        ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
         onClick={() => inputRef.current?.focus()}
       >
@@ -121,38 +134,40 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
         </div>
       </div>
 
-      {showCandidates && (
-        <div className="combobox-candidates-floating" role="listbox">
-          <div className="combobox-candidates-row">
-            {candidates.map((c, i) => (
-              <button
-                key={c.id}
-                type="button"
-                role="option"
-                aria-selected={highlight === i}
-                className="combobox-candidate p-0 border-0 bg-transparent"
-                onMouseEnter={() => setHighlight(i)}
-                onClick={() => selectContact(c.id)}
-              >
-                <ContactChip name={c.name} subtitle={c.nickname || undefined} active={highlight === i} />
-              </button>
-            ))}
-            {canCreate && (
-              <button
-                type="button"
-                role="option"
-                aria-selected={highlight === candidates.length}
-                className={`tag-pill combobox-candidate combobox-candidate-create${highlight === candidates.length ? ' combobox-candidate-active' : ''}`}
-                onMouseEnter={() => setHighlight(candidates.length)}
-                onClick={handleCreate}
-                disabled={creating}
-              >
-                + 创建「{trimmed}」
-              </button>
-            )}
-          </div>
+      <ComboboxFloatingCandidates
+        open={showCandidates}
+        panelRef={panelRef}
+        dropdownRef={dropdownRef}
+      >
+        <div className="combobox-candidates-row">
+          {candidates.map((c, i) => (
+            <button
+              key={c.id}
+              type="button"
+              role="option"
+              aria-selected={highlight === i}
+              className="combobox-candidate p-0 border-0 bg-transparent"
+              onMouseEnter={() => setHighlight(i)}
+              onClick={() => selectContact(c.id)}
+            >
+              <ContactChip name={c.name} subtitle={c.nickname || undefined} active={highlight === i} />
+            </button>
+          ))}
+          {canCreate && (
+            <button
+              type="button"
+              role="option"
+              aria-selected={highlight === candidates.length}
+              className={`tag-pill combobox-candidate combobox-candidate-create${highlight === candidates.length ? ' combobox-candidate-active' : ''}`}
+              onMouseEnter={() => setHighlight(candidates.length)}
+              onClick={handleCreate}
+              disabled={creating}
+            >
+              + 创建「{trimmed}」
+            </button>
+          )}
         </div>
-      )}
+      </ComboboxFloatingCandidates>
     </div>
   );
 }

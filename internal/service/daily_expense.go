@@ -42,6 +42,13 @@ func (s *StatsService) deleteSystemDailyTx(db *sql.DB, year, month int) error {
 	if err != nil || !ok {
 		return err
 	}
+	tagID, err := s.dailyExpenseTagID(db)
+	if err != nil {
+		return err
+	}
+	if err := bumpTagUsage(db, tagID, -1); err != nil {
+		return err
+	}
 	_, err = db.Exec(`DELETE FROM transactions WHERE id = ?`, id)
 	return err
 }
@@ -84,7 +91,10 @@ func (s *StatsService) upsertSystemDailyTx(db *sql.DB, year, month int, amount i
 	}
 	newID, _ := res.LastInsertId()
 	_, err = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, newID, tagID)
-	return err
+	if err != nil {
+		return err
+	}
+	return bumpTagUsage(db, tagID, 1)
 }
 
 // syncDailyExpenseForMonth 在余额登记或流水变更后重算 stat_monthly，并维护 is_system=1 的日常支出系统流水（不可编辑/删除）。

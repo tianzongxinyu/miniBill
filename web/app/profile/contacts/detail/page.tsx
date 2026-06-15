@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
 import { BackLink } from '@/components/ui/BackLink';
@@ -77,21 +77,24 @@ function DetailInner() {
   if (!c) return <LoadingFallback />;
 
   const stats = [
-    { label: '送出', value: <Amount cents={c.social_expense} type="expense" className="text-base" /> },
-    { label: '收到', value: <Amount cents={c.social_income} type="income" className="text-base" /> },
-    { label: '净额', value: <SignedAmount cents={c.net_amount} className="text-base" /> },
+    { label: '送出', value: <Amount cents={c.social_expense} type="expense" className="text-sm" /> },
+    { label: '收到', value: <Amount cents={c.social_income} type="income" className="text-sm" /> },
+    { label: '净额', value: <SignedAmount cents={c.net_amount} className="text-sm" /> },
   ];
 
   return (
     <div>
       <BackLink href={backHref}>{backLabel}</BackLink>
       <PageHeader title={c.name} />
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        {stats.map((item) => (
-          <div key={item.label} className="notebook p-3 text-right">
-            <div className="stat-label">{item.label}</div>
-            <div className="stat-value text-base mt-1">{item.value}</div>
-          </div>
+      <div className="notebook mb-4 flex items-center py-3">
+        {stats.map((item, i) => (
+          <Fragment key={item.label}>
+            {i > 0 ? <div className="bill-card-split-divider mx-2" aria-hidden /> : null}
+            <div className="flex-1 min-w-0 px-3 text-right">
+              <div className="stat-label">{item.label}</div>
+              <div className="mt-1">{item.value}</div>
+            </div>
+          </Fragment>
         ))}
       </div>
 

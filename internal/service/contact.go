@@ -14,6 +14,7 @@ type Contact struct {
 	RelationGroup string `json:"relation_group"`
 	Note          string `json:"note"`
 	Phone         string `json:"phone"`
+	UsageCount    int64  `json:"usage_count"`
 }
 
 type ContactSummary struct {
@@ -32,7 +33,7 @@ type ContactSummary struct {
 type ContactService struct{}
 
 func (s *ContactService) List(db *sql.DB) ([]Contact, error) {
-	rows, err := db.Query(`SELECT id, name, nickname, relation_group, note, phone FROM contacts ORDER BY name`)
+	rows, err := db.Query(`SELECT id, name, nickname, relation_group, note, phone, usage_count FROM contacts ORDER BY usage_count DESC, name ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +41,7 @@ func (s *ContactService) List(db *sql.DB) ([]Contact, error) {
 	var list []Contact
 	for rows.Next() {
 		var c Contact
-		if err := rows.Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone, &c.UsageCount); err != nil {
 			return nil, err
 		}
 		list = append(list, c)
@@ -50,8 +51,8 @@ func (s *ContactService) List(db *sql.DB) ([]Contact, error) {
 
 func (s *ContactService) Get(db *sql.DB, id int64) (*ContactSummary, error) {
 	var c Contact
-	err := db.QueryRow(`SELECT id, name, nickname, relation_group, note, phone FROM contacts WHERE id=?`, id).
-		Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone)
+	err := db.QueryRow(`SELECT id, name, nickname, relation_group, note, phone, usage_count FROM contacts WHERE id=?`, id).
+		Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone, &c.UsageCount)
 	if err != nil {
 		return nil, err
 	}

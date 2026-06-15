@@ -328,6 +328,10 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 		recalcMonths[domain.NextMonth(ym)] = true
 	}
 
+	if err := rebuildAllUsageCounts(txSQL); err != nil {
+		return nil, err
+	}
+
 	if err := txSQL.Commit(); err != nil {
 		return nil, err
 	}

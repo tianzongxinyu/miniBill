@@ -1,5 +1,5 @@
 appname               = minibill
-version               = 1.0.1
+version               = 1.0.2
 display_name          = 轻账单
 desc                  = 轻量、自托管、多用户个人记账 Web 应用
 arch                  = x86_64

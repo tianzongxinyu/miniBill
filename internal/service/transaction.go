@@ -395,6 +395,12 @@ func (s *TransactionService) Create(db *sql.DB, in CreateTransactionInput) (*Tra
 	if err := s.setTags(db, id, in.TagIDs); err != nil {
 		return nil, err
 	}
+	if err := adjustContactUsage(db, nil, in.ContactID); err != nil {
+		return nil, err
+	}
+	if err := bumpTagsUsage(db, in.TagIDs, 1); err != nil {
+		return nil, err
+	}
 	if err := s.stats.RecalcAfterTransaction(db, in.TransactionDate); err != nil {
 		return nil, err
 	}
@@ -409,6 +415,9 @@ func (s *TransactionService) Create(db *sql.DB, in CreateTransactionInput) (*Tra
 func (s *TransactionService) Update(db *sql.DB, id int64, in CreateTransactionInput) (*Transaction, error) {
 	old, err := s.Get(db, id)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.enrich(db, old); err != nil {
 		return nil, err
 	}
 	if old.IsSystem {
@@ -431,6 +440,13 @@ func (s *TransactionService) Update(db *sql.DB, id int64, in CreateTransactionIn
 	if err := s.setTags(db, id, in.TagIDs); err != nil {
 		return nil, err
 	}
+	oldTagIDs := append([]int64(nil), old.TagIDs...)
+	if err := adjustContactUsage(db, old.ContactID, in.ContactID); err != nil {
+		return nil, err
+	}
+	if err := adjustTagsUsage(db, oldTagIDs, in.TagIDs); err != nil {
+		return nil, err
+	}
 	dates := []string{old.TransactionDate}
 	if in.TransactionDate != old.TransactionDate {
 		dates = append(dates, in.TransactionDate)
@@ -451,8 +467,17 @@ func (s *TransactionService) Delete(db *sql.DB, id int64) error {
 	if err != nil {
 		return err
 	}
+	if err := s.enrich(db, tx); err != nil {
+		return err
+	}
 	if tx.IsSystem {
 		return ErrSystemTransaction
+	}
+	if err := adjustContactUsage(db, tx.ContactID, nil); err != nil {
+		return err
+	}
+	if err := bumpTagsUsage(db, tx.TagIDs, -1); err != nil {
+		return err
 	}
 	_, err = db.Exec(`DELETE FROM transactions WHERE id=?`, id)
 	if err != nil {
@@ -531,11 +556,11 @@ func nullInt64(p *int64) interface{} {
 
 func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	rows, err := db.Query(`
-		SELECT DISTINCT g.id, g.name, g.is_system, g.enabled, g.color_bg, g.color_fg
+		SELECT DISTINCT g.id, g.name, g.is_system, g.enabled, g.color_bg, g.color_fg, g.usage_count
 		FROM tags g
 		JOIN transaction_tags tt ON tt.tag_id = g.id
 		WHERE g.enabled = 1
-		ORDER BY g.name`)
+		ORDER BY g.usage_count DESC, g.name ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -544,20 +569,20 @@ func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	for rows.Next() {
 		var t Tag
 		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount); err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg))
+		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount))
 	}
 	return list, nil
 }
 
 func (s *TransactionService) ListUsedContacts(db *sql.DB) ([]Contact, error) {
 	rows, err := db.Query(`
-		SELECT DISTINCT c.id, c.name, c.nickname, c.relation_group, c.note, c.phone
+		SELECT DISTINCT c.id, c.name, c.nickname, c.relation_group, c.note, c.phone, c.usage_count
 		FROM contacts c
 		JOIN transactions t ON t.contact_id = c.id
-		ORDER BY c.name`)
+		ORDER BY c.usage_count DESC, c.name ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -565,7 +590,7 @@ func (s *TransactionService) ListUsedContacts(db *sql.DB) ([]Contact, error) {
 	var list []Contact
 	for rows.Next() {
 		var c Contact
-		if err := rows.Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Nickname, &c.RelationGroup, &c.Note, &c.Phone, &c.UsageCount); err != nil {
 			return nil, err
 		}
 		list = append(list, c)
