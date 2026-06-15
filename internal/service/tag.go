@@ -3,6 +3,9 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+
+	"github.com/minibill/minibill/internal/domain"
 )
 
 var ErrSystemTag = errors.New("system tag")
@@ -14,12 +17,14 @@ type Tag struct {
 	IsSystem   bool   `json:"is_system"`
 	Enabled    bool   `json:"enabled"`
 	Selectable bool   `json:"selectable"`
+	ColorBg    string `json:"color_bg"`
+	ColorFg    string `json:"color_fg"`
 }
 
 type TagService struct{}
 
 func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
-	q := `SELECT id, name, is_system, enabled FROM tags`
+	q := `SELECT id, name, is_system, enabled, color_bg, color_fg FROM tags`
 	if enabledOnly {
 		q += ` WHERE enabled = 1`
 	}
@@ -33,45 +38,79 @@ func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
 	for rows.Next() {
 		var t Tag
 		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg); err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromInts(t.ID, t.Name, sys, en))
+		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg))
 	}
 	return list, nil
 }
 
 func (s *TagService) Create(db *sql.DB, name string) (*Tag, error) {
-	res, err := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES (?, 0, 1)`, name)
+	bg, fg := domain.RandomTagColors()
+	res, err := db.Exec(`INSERT INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 0, 1, ?, ?)`, name, bg, fg)
 	if err != nil {
 		return nil, err
 	}
 	id, _ := res.LastInsertId()
-	return &Tag{ID: id, Name: name, Enabled: true, Selectable: true}, nil
+	return &Tag{ID: id, Name: name, Enabled: true, Selectable: true, ColorBg: bg, ColorFg: fg}, nil
 }
 
-func (s *TagService) Update(db *sql.DB, id int64, enabled bool) (*Tag, error) {
+type TagUpdateInput struct {
+	Enabled *bool
+	ColorBg *string
+	ColorFg *string
+}
+
+func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, error) {
 	var t Tag
 	var sys, en int
-	err := db.QueryRow(`SELECT id, name, is_system, enabled FROM tags WHERE id=?`, id).
-		Scan(&t.ID, &t.Name, &sys, &en)
+	err := db.QueryRow(`SELECT id, name, is_system, enabled, color_bg, color_fg FROM tags WHERE id=?`, id).
+		Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg)
 	if err == sql.ErrNoRows {
 		return nil, sql.ErrNoRows
 	}
 	if err != nil {
 		return nil, err
 	}
-	enVal := 0
-	if enabled {
-		enVal = 1
+	if in.Enabled == nil && in.ColorBg == nil && in.ColorFg == nil {
+		return nil, fmt.Errorf("%w: 无更新字段", ErrValidation)
 	}
-	_, err = db.Exec(`UPDATE tags SET enabled=? WHERE id=?`, enVal, id)
+	if in.ColorFg != nil && in.ColorBg == nil {
+		return nil, fmt.Errorf("%w: 仅支持修改 color_bg", ErrValidation)
+	}
+	if in.ColorBg != nil {
+		if !domain.ValidateTagColorHex(*in.ColorBg) {
+			return nil, fmt.Errorf("%w: 标签背景色格式无效", ErrValidation)
+		}
+		t.ColorBg = *in.ColorBg
+		t.ColorFg = domain.TagTextColor
+	}
+	if in.Enabled != nil {
+		en = 0
+		if *in.Enabled {
+			en = 1
+		}
+		t.Enabled = *in.Enabled
+	} else {
+		t.Enabled = en == 1
+	}
+	_, err = db.Exec(
+		`UPDATE tags SET enabled=?, color_bg=?, color_fg=? WHERE id=?`,
+		boolToInt(t.Enabled), t.ColorBg, t.ColorFg, id,
+	)
 	if err != nil {
 		return nil, err
 	}
-	result := tagFromInts(t.ID, t.Name, sys, en)
-	result.Enabled = enabled
+	result := tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg)
 	return &result, nil
+}
+
+func boolToInt(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
 }
 
 func (s *TagService) Delete(db *sql.DB, id int64) error {

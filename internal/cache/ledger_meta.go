@@ -7,8 +7,9 @@ import (
 	"strings"
 	"sync"
 
-	gocache "github.com/patrickmn/go-cache"
 	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/minibill/minibill/internal/domain"
+	gocache "github.com/patrickmn/go-cache"
 )
 
 const (
@@ -52,22 +53,24 @@ func (s *LedgerMetaStore) Invalidate(userID int64) {
 	s.lru.Remove(userID)
 }
 
-type txTagEntry struct {
-	ID   int64
-	Name string
+type TxTagEntry struct {
+	ID      int64
+	Name    string
+	ColorBg string
+	ColorFg string
 }
 
 // LedgerMeta 单用户标签/联系人缓存，基于 go-cache；先查缓存，未命中再查库并回填。
 type LedgerMeta struct {
 	kv       *gocache.Cache
 	txTagsMu sync.RWMutex
-	txTags   map[int64][]txTagEntry
+	txTags   map[int64][]TxTagEntry
 }
 
 func newLedgerMeta() *LedgerMeta {
 	return &LedgerMeta{
 		kv:     gocache.New(gocache.NoExpiration, 0),
-		txTags: map[int64][]txTagEntry{},
+		txTags: map[int64][]TxTagEntry{},
 	}
 }
 
@@ -119,7 +122,7 @@ func (m *LedgerMeta) WarmTagsAndContacts(q SQLExec) error {
 // LoadTxTags 加载流水标签关联（导出用，每次导出前刷新）。
 func (m *LedgerMeta) LoadTxTags(q SQLExec) error {
 	rows, err := q.Query(`
-		SELECT tt.transaction_id, tt.tag_id, g.name
+		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg
 		FROM transaction_tags tt
 		JOIN tags g ON g.id = tt.tag_id
 		ORDER BY tt.transaction_id, g.name`)
@@ -128,14 +131,14 @@ func (m *LedgerMeta) LoadTxTags(q SQLExec) error {
 	}
 	defer rows.Close()
 
-	next := map[int64][]txTagEntry{}
+	next := map[int64][]TxTagEntry{}
 	for rows.Next() {
 		var txID, tagID int64
-		var name string
-		if err := rows.Scan(&txID, &tagID, &name); err != nil {
+		var name, colorBg, colorFg string
+		if err := rows.Scan(&txID, &tagID, &name, &colorBg, &colorFg); err != nil {
 			return err
 		}
-		next[txID] = append(next[txID], txTagEntry{ID: tagID, Name: name})
+		next[txID] = append(next[txID], TxTagEntry{ID: tagID, Name: name, ColorBg: colorBg, ColorFg: colorFg})
 	}
 	if err := rows.Err(); err != nil {
 		return err
@@ -179,7 +182,8 @@ func (m *LedgerMeta) ResolveTagID(q SQLExec, name string, created *int) (int64, 
 	if err != sql.ErrNoRows {
 		return 0, err
 	}
-	res, err := q.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES (?, 0, 1)`, name)
+	placeholderBg, placeholderFg := domain.RandomTagColors()
+	res, err := q.Exec(`INSERT INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 0, 1, ?, ?)`, name, placeholderBg, placeholderFg)
 	if err != nil {
 		return 0, err
 	}
@@ -254,32 +258,24 @@ func (m *LedgerMeta) TxTagNames(txID int64) []string {
 	return names
 }
 
-// TxTagsForIDs returns tag ids and names per transaction, loading missing rows from DB.
-func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]int64, map[int64][]string, error) {
-	idOut := make(map[int64][]int64, len(txIDs))
-	nameOut := make(map[int64][]string, len(txIDs))
+// TxTagsForIDs returns tag entries per transaction, loading missing rows from DB.
+func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]TxTagEntry, error) {
+	out := make(map[int64][]TxTagEntry, len(txIDs))
 	if len(txIDs) == 0 {
-		return idOut, nameOut, nil
+		return out, nil
 	}
 	missing := make([]int64, 0)
 	m.txTagsMu.RLock()
 	for _, id := range txIDs {
 		if entries, ok := m.txTags[id]; ok {
-			ids := make([]int64, len(entries))
-			names := make([]string, len(entries))
-			for i, e := range entries {
-				ids[i] = e.ID
-				names[i] = e.Name
-			}
-			idOut[id] = ids
-			nameOut[id] = names
+			out[id] = append([]TxTagEntry(nil), entries...)
 		} else {
 			missing = append(missing, id)
 		}
 	}
 	m.txTagsMu.RUnlock()
 	if len(missing) == 0 {
-		return idOut, nameOut, nil
+		return out, nil
 	}
 
 	placeholders := make([]string, len(missing))
@@ -289,47 +285,40 @@ func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]int64, 
 		args[i] = id
 	}
 	query := fmt.Sprintf(`
-		SELECT tt.transaction_id, tt.tag_id, g.name FROM transaction_tags tt
+		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
 		JOIN tags g ON g.id = tt.tag_id
 		WHERE tt.transaction_id IN (%s)
 		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
 	rows, err := q.Query(query, args...)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer rows.Close()
 
-	fetched := make(map[int64][]txTagEntry, len(missing))
+	fetched := make(map[int64][]TxTagEntry, len(missing))
 	for rows.Next() {
-		var txID, tagID int64
-		var name string
-		if err := rows.Scan(&txID, &tagID, &name); err != nil {
-			return nil, nil, err
+		var txID int64
+		var e TxTagEntry
+		if err := rows.Scan(&txID, &e.ID, &e.Name, &e.ColorBg, &e.ColorFg); err != nil {
+			return nil, err
 		}
-		fetched[txID] = append(fetched[txID], txTagEntry{ID: tagID, Name: name})
+		fetched[txID] = append(fetched[txID], e)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	m.txTagsMu.Lock()
 	for _, id := range missing {
 		entries := fetched[id]
 		if entries == nil {
-			entries = []txTagEntry{}
+			entries = []TxTagEntry{}
 		}
 		m.txTags[id] = entries
-		ids := make([]int64, len(entries))
-		names := make([]string, len(entries))
-		for i, e := range entries {
-			ids[i] = e.ID
-			names[i] = e.Name
-		}
-		idOut[id] = ids
-		nameOut[id] = names
+		out[id] = entries
 	}
 	m.txTagsMu.Unlock()
-	return idOut, nameOut, nil
+	return out, nil
 }
 
 // ContactNamesBatch resolves contact names using cache, querying misses in one round trip.

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef } from 'react';
 import { ApiError, Tag, createTag } from '@/lib/api';
+import { TagChip } from '@/components/ui/TagChip';
 import { useComboboxKeyboard } from '@/lib/combobox-utils';
 import { useCreatableCombobox } from '@/hooks/useCreatableCombobox';
 
@@ -96,20 +97,14 @@ export function TagCombobox({ tags, selectedIds, onChange, onTagsChange }: TagCo
       >
         <div className="combobox-chip-row">
           {selectedTags.map((t) => (
-            <span key={t.id} className="tag-pill-active combobox-chip">
-              {t.name}
-              <button
-                type="button"
-                className="combobox-chip-remove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTag(t.id);
-                }}
-                aria-label={`移除 ${t.name}`}
-              >
-                ×
-              </button>
-            </span>
+            <TagChip
+              key={t.id}
+              name={t.name}
+              colorBg={t.color_bg}
+              active
+              className="combobox-chip"
+              onRemove={() => removeTag(t.id)}
+            />
           ))}
           <input
             ref={inputRef}
@@ -133,7 +128,7 @@ export function TagCombobox({ tags, selectedIds, onChange, onTagsChange }: TagCo
               type="button"
               role="option"
               aria-selected={highlight === i}
-              className={`tag-pill combobox-candidate${highlight === i ? ' combobox-candidate-active' : ''}`}
+              className="combobox-candidate p-0 border-0 bg-transparent"
               onMouseEnter={() => setHighlight(i)}
               onClick={() => {
                 selectTag(t.id);
@@ -141,7 +136,7 @@ export function TagCombobox({ tags, selectedIds, onChange, onTagsChange }: TagCo
                 inputRef.current?.focus();
               }}
             >
-              {t.name}
+              <TagChip name={t.name} colorBg={t.color_bg} active={highlight === i} />
             </button>
           ))}
           {canCreate && (

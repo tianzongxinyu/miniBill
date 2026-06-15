@@ -1,0 +1,49 @@
+import { TAG_TEXT_COLOR } from '@/lib/tagColors';
+
+type TagChipProps = {
+  name: string;
+  colorBg?: string;
+  /** 选中 / 强调态（筛选、已选标签） */
+  active?: boolean;
+  className?: string;
+  onRemove?: () => void;
+};
+
+const DEFAULT_BG = '#3B6FA8';
+
+export function TagChip({
+  name,
+  colorBg,
+  active = false,
+  className = '',
+  onRemove,
+}: TagChipProps) {
+  const bg = colorBg || DEFAULT_BG;
+
+  return (
+    <span
+      className={`tag-chip ${active ? 'font-medium ring-2 ring-white/40' : ''} ${className}`}
+      style={{
+        backgroundColor: bg,
+        color: TAG_TEXT_COLOR,
+        boxShadow: active ? `0 0 0 1px ${bg}` : undefined,
+      }}
+    >
+      {name}
+      {onRemove && (
+        <button
+          type="button"
+          className="combobox-chip-remove opacity-80 hover:opacity-100"
+          style={{ color: TAG_TEXT_COLOR }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          aria-label={`移除 ${name}`}
+        >
+          ×
+        </button>
+      )}
+    </span>
+  );
+}

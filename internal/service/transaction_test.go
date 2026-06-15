@@ -90,12 +90,7 @@ func TestEnrichContactName(t *testing.T) {
 		t.Fatal(err)
 	}
 	contactID, _ := res.LastInsertId()
-
-	var tagID int64
-	err = db.QueryRow(`SELECT id FROM tags WHERE name = '人情'`).Scan(&tagID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	tagID := testutil.InsertTag(t, db, "婚礼")
 
 	res, err = db.Exec(
 		`INSERT INTO transactions (amount, type, transaction_date, note, contact_id) VALUES (10000, 'expense', '2026-06-01', '礼金', ?)`,
@@ -119,8 +114,11 @@ func TestEnrichContactName(t *testing.T) {
 	if tx.ContactName != "张三" {
 		t.Fatalf("ContactName = %q, want 张三", tx.ContactName)
 	}
-	if len(tx.Tags) != 1 || tx.Tags[0] != "人情" {
-		t.Fatalf("Tags = %v, want [人情]", tx.Tags)
+	if len(tx.Tags) != 1 || tx.Tags[0] != "婚礼" {
+		t.Fatalf("Tags = %v, want [婚礼]", tx.Tags)
+	}
+	if len(tx.TagItems) != 1 || tx.TagItems[0].ColorBg == "" {
+		t.Fatalf("TagItems = %+v", tx.TagItems)
 	}
 }
 
@@ -146,25 +144,18 @@ func TestListByCursorFilteredByTags(t *testing.T) {
 	defer db.Close()
 	txSvc := NewTransactionService(NewStatsService())
 
-	var socialID, weddingID int64
-	_ = db.QueryRow(`SELECT id FROM tags WHERE name='人情'`).Scan(&socialID)
-	if err := db.QueryRow(`SELECT id FROM tags WHERE name='婚礼'`).Scan(&weddingID); err != nil {
-		res, err := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES ('婚礼', 0, 1)`)
-		if err != nil {
-			t.Fatal(err)
-		}
-		weddingID, _ = res.LastInsertId()
-	}
+	tagA := testutil.InsertTag(t, db, "标签A")
+	tagB := testutil.InsertTag(t, db, "婚礼")
 
 	res, _ := db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (100, 'expense', '2026-06-01', 'a')`)
 	id1, _ := res.LastInsertId()
-	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?), (?, ?)`, id1, socialID, id1, weddingID)
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?), (?, ?)`, id1, tagA, id1, tagB)
 
 	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (100, 'expense', '2026-06-02', 'b')`)
 	id2, _ := res.LastInsertId()
-	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, id2, socialID)
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, id2, tagA)
 
-	page, err := txSvc.ListByCursorFiltered(db, ListFilter{TagIDs: []int64{socialID, weddingID}}, 20)
+	page, err := txSvc.ListByCursorFiltered(db, ListFilter{TagIDs: []int64{tagA, tagB}}, 20)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,19 +171,18 @@ func TestListByCursorFilteredCombined(t *testing.T) {
 
 	res, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('张三')`)
 	cid, _ := res.LastInsertId()
-	var socialID int64
-	_ = db.QueryRow(`SELECT id FROM tags WHERE name='人情'`).Scan(&socialID)
+	tagID := testutil.InsertTag(t, db, "婚礼")
 
 	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note, contact_id) VALUES (100, 'expense', '2026-06-01', '礼金', ?)`, cid)
 	matchID, _ := res.LastInsertId()
-	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, matchID, socialID)
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, matchID, tagID)
 
 	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note, contact_id) VALUES (100, 'expense', '2026-06-02', '礼金', ?)`, cid)
 	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (100, 'expense', '2026-05-01', '礼金')`)
 
 	page, err := txSvc.ListByCursorFiltered(db, ListFilter{
 		NoteQuery: "礼金",
-		TagIDs:    []int64{socialID},
+		TagIDs:    []int64{tagID},
 		ContactID: &cid,
 	}, 20)
 	if err != nil {
@@ -224,8 +214,7 @@ func TestListUsedTagsAndContacts(t *testing.T) {
 	defer db.Close()
 	txSvc := NewTransactionService(NewStatsService())
 
-	var tagID int64
-	_ = db.QueryRow(`SELECT id FROM tags WHERE name='人情'`).Scan(&tagID)
+	tagID := testutil.InsertTag(t, db, "餐饮")
 	res, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('李四')`)
 	cid, _ := res.LastInsertId()
 	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note, contact_id) VALUES (100, 'expense', '2026-06-01', 'x', ?)`, cid)
@@ -236,7 +225,7 @@ func TestListUsedTagsAndContacts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(tags) != 1 || tags[0].Name != "人情" {
+	if len(tags) != 1 || tags[0].Name != "餐饮" {
 		t.Fatalf("tags = %+v", tags)
 	}
 
@@ -254,8 +243,7 @@ func TestEnrichBatch(t *testing.T) {
 	defer db.Close()
 	txSvc := NewTransactionService(NewStatsService())
 
-	tagRes, _ := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES ('餐饮', 0, 1)`)
-	tagID, _ := tagRes.LastInsertId()
+	tagID := testutil.InsertTag(t, db, "餐饮")
 	cRes, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('张三')`)
 	cid, _ := cRes.LastInsertId()
 
@@ -275,6 +263,9 @@ func TestEnrichBatch(t *testing.T) {
 	}
 	if len(items[0].Tags) != 1 || items[0].Tags[0] != "餐饮" || items[0].ContactName != "张三" {
 		t.Fatalf("tx1 = %+v", items[0])
+	}
+	if len(items[0].TagItems) != 1 {
+		t.Fatalf("tx1 tag_items = %+v", items[0].TagItems)
 	}
 	if len(items[1].Tags) != 0 {
 		t.Fatalf("tx2 = %+v", items[1])

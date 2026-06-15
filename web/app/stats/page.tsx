@@ -11,6 +11,7 @@ import { statsChartWidth } from '@/components/stats/StatsScrollChart';
 import { StatsSeriesTable } from '@/components/stats/StatsSeriesTable';
 import { StatsToolbar } from '@/components/stats/StatsToolbar';
 import { useStatsPage } from '@/hooks/useStatsPage';
+import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import { buildStatsChartRows } from '@/lib/statsChartData';
 import {
   enterChartFullscreen,
@@ -32,6 +33,10 @@ function StatsContent() {
   const pendingScrollLeftRef = useRef(0);
 
   const scrollRef = fullscreenOpen ? fullscreenScrollRef : inlineScrollRef;
+
+  const { onMouseDown: onChartMouseDown } = useHorizontalDragScroll(inlineScrollRef, {
+    enabled: !fullscreenOpen,
+  });
 
   const {
     mode,
@@ -144,7 +149,8 @@ function StatsContent() {
         <div
           ref={inlineScrollRef}
           onScroll={fullscreenOpen ? undefined : active.onScroll}
-          className="overflow-x-auto min-h-[252px]"
+          onMouseDown={fullscreenOpen ? undefined : onChartMouseDown}
+          className="stats-chart-scroll overflow-x-auto min-h-[252px]"
         >
           <div style={{ minWidth: scrollWidth }} className="px-4 pt-4">
             <StatsScrollChart
@@ -197,7 +203,7 @@ function StatsContent() {
         <p className="text-xs text-muted mb-2">加载更多…</p>
       )}
 
-      <p className="text-xs text-muted">左右滑动图表查看更早或更新的数据</p>
+      <p className="text-xs text-muted">左右滑动或拖动图表查看更早或更新的数据</p>
     </div>
   );
 }

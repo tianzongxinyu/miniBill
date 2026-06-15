@@ -9,6 +9,7 @@
 /server
 /tmp
 .DS_Store
+*.xlsx
 .idea
 .vscode
 .cursor

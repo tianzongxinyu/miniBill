@@ -20,7 +20,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   if (loading || !user || !getToken()) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-canvas gap-4">
-        <AppLogo size="md" className="animate-scale-in" />
+        <AppLogo size="md" className="animate-scale-in" priority />
         <div className="h-1 w-24 loading-shimmer" />
       </div>
     );

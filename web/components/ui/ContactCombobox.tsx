@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { ApiError, Contact, createContact } from '@/lib/api';
+import { ContactChip } from '@/components/ui/ContactChip';
 import { useComboboxKeyboard } from '@/lib/combobox-utils';
 import { useCreatableCombobox } from '@/hooks/useCreatableCombobox';
 
@@ -99,20 +100,12 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
       >
         <div className="combobox-chip-row">
           {selected && (
-            <span className="tag-pill-active combobox-chip">
-              {selected.name}
-              <button
-                type="button"
-                className="combobox-chip-remove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clear();
-                }}
-                aria-label="清除联系人"
-              >
-                ×
-              </button>
-            </span>
+            <ContactChip
+              name={selected.name}
+              active
+              className="combobox-chip"
+              onRemove={clear}
+            />
           )}
           <input
             ref={inputRef}
@@ -135,12 +128,11 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
                 type="button"
                 role="option"
                 aria-selected={highlight === i}
-                className={`tag-pill combobox-candidate${highlight === i ? ' combobox-candidate-active' : ''}`}
+                className="combobox-candidate p-0 border-0 bg-transparent"
                 onMouseEnter={() => setHighlight(i)}
                 onClick={() => selectContact(c.id)}
               >
-                {c.name}
-                {c.nickname ? <span className="combobox-candidate-muted"> · {c.nickname}</span> : null}
+                <ContactChip name={c.name} subtitle={c.nickname || undefined} active={highlight === i} />
               </button>
             ))}
             {canCreate && (

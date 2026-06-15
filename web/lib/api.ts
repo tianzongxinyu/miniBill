@@ -72,6 +72,14 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
+    // Next.js dev proxy returns 500 with empty body when Go backend is down/restarting
+    if (res.status >= 500 && !data.error) {
+      throw new ApiError(
+        'NETWORK_ERROR',
+        '无法连接后端，请确认 go run ./cmd/server 已启动',
+        res.status
+      );
+    }
     throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
   }
   return data as T;
@@ -114,6 +122,8 @@ export type Tag = {
   is_system: boolean;
   enabled: boolean;
   selectable?: boolean;
+  color_bg: string;
+  color_fg: string;
 };
 export type Contact = {
   id: number;
@@ -123,6 +133,13 @@ export type Contact = {
   note: string;
   phone: string;
 };
+export type TransactionTagItem = {
+  id: number;
+  name: string;
+  color_bg: string;
+  color_fg: string;
+};
+
 export type Transaction = {
   id: number;
   amount: number;
@@ -133,6 +150,7 @@ export type Transaction = {
   contact_name?: string | null;
   tag_ids?: number[];
   tags?: string[];
+  tag_items?: TransactionTagItem[];
   is_system?: boolean;
 };
 export type Balance = {
@@ -415,10 +433,16 @@ export async function createTag(name: string): Promise<Tag> {
   return api<Tag>('/tags', { method: 'POST', body: JSON.stringify({ name }) });
 }
 
-export async function updateTag(id: number, enabled: boolean): Promise<Tag> {
+export type TagUpdate = {
+  enabled?: boolean;
+  color_bg?: string;
+  color_fg?: string;
+};
+
+export async function updateTag(id: number, patch: TagUpdate): Promise<Tag> {
   return api<Tag>(`/tags/${id}`, {
     method: 'PUT',
-    body: JSON.stringify({ enabled }),
+    body: JSON.stringify(patch),
   });
 }
 

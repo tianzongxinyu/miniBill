@@ -97,8 +97,10 @@ body {
     @apply transition-all duration-200 ease-out hover:border-accent/30;
   }
 
-  .tag-pill-active {
-    @apply tag-pill bg-accent-soft border-accent/30 text-accent font-medium;
+  /* 彩色标签：不设 bg/text，由 TagChip inline style 控制 */
+  .tag-chip {
+    @apply px-3 py-1 rounded-full text-xs shrink-0 inline-flex items-center gap-1;
+    @apply transition-all duration-200 ease-out;
   }
 
   .amount-num {
@@ -242,8 +244,14 @@ body {
   }
 
   .fab-wrap {
-    @apply fixed z-[60] inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:inset-x-auto lg:right-8 lg:bottom-6 lg:w-96;
-    @apply flex items-stretch gap-2;
+    @apply fixed z-[60] inset-x-0 px-4 flex justify-center;
+    @apply bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
+    @apply lg:inset-x-auto lg:right-0 lg:left-[var(--sidebar-width,16rem)];
+    @apply lg:transition-[left] lg:duration-300 lg:ease-out;
+  }
+
+  .fab-inner {
+    @apply relative flex w-full max-w-md items-stretch justify-center gap-2;
   }
 
   .fab-glow {
@@ -260,9 +268,9 @@ body {
   }
 
   .fab-button-secondary {
-    @apply bg-surface text-ink border border-line;
+    @apply bg-accent-soft text-accent border border-accent/20;
     @apply shadow-panel ring-0;
-    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply hover:bg-accent-soft/80 hover:border-accent/30;
     @apply active:scale-[0.98];
   }
 
@@ -393,6 +401,18 @@ body {
   }
 
   /* —— 统计图全屏（竖屏时模拟横屏） —— */
+  .stats-chart-scroll {
+    @apply cursor-grab touch-pan-x select-none;
+  }
+
+  .stats-chart-scroll.is-dragging {
+    @apply cursor-grabbing;
+  }
+
+  .stats-chart-scroll.is-dragging .recharts-wrapper {
+    pointer-events: none;
+  }
+
   .stats-chart-fullscreen-landscape {
     position: absolute;
     top: 0;
@@ -717,10 +737,22 @@ body {
 
   .combobox-candidates-floating {
     @apply absolute left-0 right-0 top-full mt-2 z-50;
-    @apply flex flex-wrap gap-2 p-3 rounded-2xl;
+    @apply flex flex-col gap-3 p-4 rounded-2xl;
     @apply border border-line/80 bg-surface shadow-panel;
-    @apply max-h-[min(16rem,50vh)] overflow-y-auto;
+    @apply max-h-[min(24rem,65vh)] overflow-y-auto;
     @apply animate-fade-in;
+  }
+
+  .combobox-candidates-row {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .combobox-candidates-floating-fixed {
+    @apply fixed mt-0 px-4 py-4 lg:px-8;
+  }
+
+  .combobox-candidates-floating .tag-chip {
+    @apply text-sm px-3.5 py-1.5;
   }
 
   .combobox-candidate {
@@ -733,10 +765,6 @@ body {
 
   .combobox-candidate-create {
     @apply text-muted border-dashed;
-  }
-
-  .combobox-candidate-muted {
-    @apply text-muted font-normal;
   }
 }
 

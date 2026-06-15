@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     icon: '/icon.png',
     apple: '/icon.png',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 };
 
 export const viewport: Viewport = {

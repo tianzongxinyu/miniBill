@@ -16,26 +16,6 @@ export function ListSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
-export function SummarySkeleton() {
-  return (
-    <section
-      className="mb-3 pb-3 border-b border-line/50 min-h-[88px]"
-      aria-label="月度汇总加载中"
-      aria-busy
-    >
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-3">
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className={`loading-shimmer h-4 rounded ${i === 1 ? 'row-span-2 w-px justify-self-center' : ''}`}
-            style={{ animationDelay: `${i * 50}ms` }}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export function ChartSkeleton({ height = 252 }: { height?: number }) {
   return (
     <div

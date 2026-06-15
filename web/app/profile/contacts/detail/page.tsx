@@ -16,10 +16,15 @@ import { useCursorPagination } from '@/hooks/useCursorPagination';
 import { useLoadMoreAnimateIds } from '@/hooks/useLoadMoreAnimateIds';
 import { deleteContact, fetchContactDetail, fetchTransactions, type ContactDetail } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
+import { safeReturnTo } from '@/lib/url';
 
 function DetailInner() {
   const router = useRouter();
-  const id = useSearchParams().get('id');
+  const params = useSearchParams();
+  const id = params.get('id');
+  const returnTo = params.get('returnTo');
+  const backHref = safeReturnTo(returnTo, '/profile/contacts/');
+  const backLabel = backHref.startsWith('/transactions') ? '流水' : '联系人';
   const contactId = id ? Number(id) : null;
   const [c, setC] = useState<ContactDetail | null>(null);
   const [error, setError] = useState('');
@@ -79,7 +84,7 @@ function DetailInner() {
 
   return (
     <div>
-      <BackLink href="/profile/contacts/">联系人</BackLink>
+      <BackLink href={backHref}>{backLabel}</BackLink>
       <PageHeader title={c.name} />
       <div className="grid grid-cols-3 gap-3 mb-4">
         {stats.map((item) => (

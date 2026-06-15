@@ -80,18 +80,12 @@ function AddContent() {
       .finally(() => setLoading(false));
   }, [editId, isEdit, loadMeta]);
 
-  const hasSocial = selectedTags.some((id) => tags.find((t) => t.id === id)?.name === '人情');
-
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     const cents = yuanToCents(amount);
     if (cents <= 0) {
       setError('请输入有效金额');
-      return;
-    }
-    if (hasSocial && !contactId) {
-      setError('含人情标签时必须选择联系人');
       return;
     }
     const body = {
@@ -195,17 +189,15 @@ function AddContent() {
           />
         </div>
 
-        {hasSocial && (
-          <div className="form-row animate-fade-in">
-            <div className="form-label">联系人</div>
-            <ContactCombobox
-              contacts={contacts}
-              value={contactId}
-              onChange={setContactId}
-              onContactsChange={setContacts}
-            />
-          </div>
-        )}
+        <div className="form-row">
+          <div className="form-label">联系人</div>
+          <ContactCombobox
+            contacts={contacts}
+            value={contactId}
+            onChange={setContactId}
+            onContactsChange={setContacts}
+          />
+        </div>
 
         <div className="form-row">
           <div className="form-label">备注</div>

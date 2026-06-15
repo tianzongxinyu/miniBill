@@ -266,11 +266,7 @@ func TestMonthlyStatsTagFilter(t *testing.T) {
 
 	var foodID int64
 	if err := db.QueryRow(`SELECT id FROM tags WHERE name='餐饮'`).Scan(&foodID); err != nil {
-		res, err := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES ('餐饮', 0, 1)`)
-		if err != nil {
-			t.Fatal(err)
-		}
-		foodID, _ = res.LastInsertId()
+		foodID = testutil.InsertTag(t, db, "餐饮")
 	}
 
 	res, err := db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (5000,'expense','2026-06-10')`)

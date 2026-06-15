@@ -17,15 +17,15 @@ import (
 )
 
 const (
-	ledgerCSVHeader0   = "日期"
-	ledgerCSVHeader1   = "流向"
-	ledgerCSVHeader2   = "金额"
-	ledgerCSVHeader3   = "标签"
-	ledgerCSVHeader4   = "联系人"
-	ledgerCSVHeader5   = "备注"
-	balanceNoteMarker  = "月度余额"
-	utf8BOM            = "\ufeff"
-	exportFlushEvery   = 200
+	ledgerCSVHeader0  = "日期"
+	ledgerCSVHeader1  = "流向"
+	ledgerCSVHeader2  = "金额"
+	ledgerCSVHeader3  = "标签"
+	ledgerCSVHeader4  = "联系人"
+	ledgerCSVHeader5  = "备注"
+	balanceNoteMarker = "月度余额"
+	utf8BOM           = "\ufeff"
+	exportFlushEvery  = 200
 )
 
 var ledgerCSVHeader = []string{ledgerCSVHeader0, ledgerCSVHeader1, ledgerCSVHeader2, ledgerCSVHeader3, ledgerCSVHeader4, ledgerCSVHeader5}
@@ -477,9 +477,6 @@ func validateImportTx(date, typ string, amount int64, tagNames []string, contact
 	}
 	if !domain.IsDateNotAfterToday(date, now) {
 		return fmt.Errorf("%w: 日期不能晚于今天", ErrValidation)
-	}
-	if domain.HasSocialTag(tagNames) && contactID == nil {
-		return fmt.Errorf("%w: 含人情标签时必须选择联系人", ErrValidation)
 	}
 	if domain.HasDailyExpenseTag(tagNames) {
 		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)

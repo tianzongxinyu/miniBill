@@ -108,6 +108,9 @@ build_one() {
     cp -a "$ROOT/migrations/system" "${FNOS_DIR}/app/migrations/system"
     cp -a "$ROOT/migrations/ledger" "${FNOS_DIR}/app/migrations/ledger"
 
+    info "Syncing fnOS icons from web/public/icon.png ..."
+    python3 "${FNOS_DIR}/generate-icons.py"
+
     chmod +x "${FNOS_DIR}/app/bin/minibill" "${FNOS_DIR}"/cmd/*
     ensure_fnpack
 
@@ -139,10 +142,10 @@ main() {
     [ -f "$FNOS_DIR/config/resource" ] || error "Missing fnos/config/resource"
     command -v go >/dev/null 2>&1 || error "go is required"
     command -v curl >/dev/null 2>&1 || error "curl is required"
+    [ -f "$ROOT/web/public/icon.png" ] || error "Missing web/public/icon.png"
 
-    if [ ! -f "$FNOS_DIR/ICON.PNG" ] || [ ! -f "$FNOS_DIR/ICON_256.PNG" ]; then
-        python3 "$FNOS_DIR/generate-icons.py"
-    fi
+    info "Syncing fnOS icons from web/public/icon.png ..."
+    python3 "$FNOS_DIR/generate-icons.py"
 
     case "$PLATFORM_ARG" in
         all)

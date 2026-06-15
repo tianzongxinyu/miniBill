@@ -30,28 +30,32 @@ export function FixedRecordButton() {
   return (
     <>
       <div className="fab-wrap pointer-events-none invisible" aria-hidden>
-        <div className="fab-glow" />
-        <span className="fab-button">
-          <PlusIcon />
-          <span>记一笔</span>
-        </span>
-        <span className="fab-button fab-button-secondary">
-          <BalanceIcon />
-          <span>余额登记</span>
-        </span>
+        <div className="fab-inner">
+          <div className="fab-glow" />
+          <span className="fab-button">
+            <PlusIcon />
+            <span>记一笔</span>
+          </span>
+          <span className="fab-button fab-button-secondary">
+            <BalanceIcon />
+            <span>余额登记</span>
+          </span>
+        </div>
       </div>
       {mounted &&
         createPortal(
           <div className="fab-wrap">
-            <div className="fab-glow" aria-hidden />
-            <Link href="/add/" className="fab-button">
-              <PlusIcon />
-              <span>记一笔</span>
-            </Link>
-            <Link href="/balance/?returnTo=/" className="fab-button fab-button-secondary">
-              <BalanceIcon />
-              <span>余额登记</span>
-            </Link>
+            <div className="fab-inner">
+              <div className="fab-glow" aria-hidden />
+              <Link href="/add/" className="fab-button">
+                <PlusIcon />
+                <span>记一笔</span>
+              </Link>
+              <Link href="/balance/?returnTo=/" className="fab-button fab-button-secondary">
+                <BalanceIcon />
+                <span>余额登记</span>
+              </Link>
+            </div>
           </div>,
           document.body
         )}

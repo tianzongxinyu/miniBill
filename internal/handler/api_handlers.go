@@ -49,7 +49,13 @@ type tagCreateReq struct {
 }
 
 type tagUpdateReq struct {
-	Enabled bool `json:"enabled"`
+	Enabled *bool   `json:"enabled"`
+	ColorBg *string `json:"color_bg"`
+	ColorFg *string `json:"color_fg"`
+}
+
+func (req tagUpdateReq) empty() bool {
+	return req.Enabled == nil && req.ColorBg == nil && req.ColorFg == nil
 }
 
 type balanceReq struct {
@@ -181,12 +187,16 @@ func (s *Server) updateTag(c *gin.Context) {
 		return
 	}
 	var req tagUpdateReq
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil || req.empty() {
 		JSONValidation(c, "invalid body")
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
-		tag, err := s.tagSvc.Update(db, id, req.Enabled)
+		tag, err := s.tagSvc.Update(db, id, service.TagUpdateInput{
+			Enabled: req.Enabled,
+			ColorBg: req.ColorBg,
+			ColorFg: req.ColorFg,
+		})
 		if serviceErr(c, err) {
 			return
 		}

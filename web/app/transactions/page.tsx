@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageHeader, scrollToTop } from '@/components/ui/PageHeader';
@@ -17,7 +17,11 @@ import { useLoadMoreAnimateIds } from '@/hooks/useLoadMoreAnimateIds';
 import { useTransactionsList } from '@/hooks/useTransactionsList';
 import { useTransactionsMonthNav } from '@/hooks/useTransactionsMonthNav';
 import { useTransactionsMonthSummary } from '@/hooks/useTransactionsMonthSummary';
-import { parseYearMonthFromQuery } from '@/lib/url';
+import {
+  buildTransactionsHref,
+  parseTransactionsFiltersFromQuery,
+  parseYearMonthFromQuery,
+} from '@/lib/url';
 import {
   fetchEarliestMonth,
   getCurrentYearMonth,
@@ -29,6 +33,9 @@ function TransactionsContent() {
   const params = useSearchParams();
   const urlYear = params.get('year');
   const urlMonth = params.get('month');
+  const urlNote = params.get('note');
+  const urlTags = params.get('tags');
+  const urlContact = params.get('contact');
   const initial = parseYearMonthFromQuery(params);
   const [year, setYear] = useState(initial.year);
   const [month, setMonth] = useState(initial.month);
@@ -43,6 +50,7 @@ function TransactionsContent() {
     setContactId,
     searchActive,
     clearSearch,
+    hydrateSearchFilters,
   } = useDebouncedSearchFilter();
 
   useEffect(() => {
@@ -51,6 +59,11 @@ function TransactionsContent() {
     setYear(ym.year);
     setMonth(ym.month);
   }, [urlYear, urlMonth, params]);
+
+  useEffect(() => {
+    if (urlNote == null && urlTags == null && urlContact == null) return;
+    hydrateSearchFilters(parseTransactionsFiltersFromQuery(params));
+  }, [urlNote, urlTags, urlContact, params, hydrateSearchFilters]);
 
   useEffect(() => {
     fetchEarliestMonth().then(setEarliest).catch(() => setEarliest(null));
@@ -127,6 +140,18 @@ function TransactionsContent() {
     (tx) => tx.id
   );
 
+  const contactReturnTo = useMemo(
+    () =>
+      buildTransactionsHref({
+        year,
+        month,
+        note: searchActive ? debouncedNote : undefined,
+        tagIds: searchActive ? selectedTagIds : undefined,
+        contactId: searchActive ? contactId : undefined,
+      }),
+    [year, month, searchActive, debouncedNote, selectedTagIds, contactId]
+  );
+
   return (
     <div className="pb-16">
       <PageHeader
@@ -178,7 +203,12 @@ function TransactionsContent() {
       ) : (
         <Notebook>
           {list.items.map((tx) => (
-            <TransactionRow key={tx.id} tx={tx} animate={animateIds.has(tx.id)} />
+            <TransactionRow
+              key={tx.id}
+              tx={tx}
+              animate={animateIds.has(tx.id)}
+              returnTo={contactReturnTo}
+            />
           ))}
         </Notebook>
       )}

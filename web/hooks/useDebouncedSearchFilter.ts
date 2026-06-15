@@ -39,6 +39,18 @@ export function useDebouncedSearchFilter() {
     setContactId(null);
   }, []);
 
+  const hydrateSearchFilters = useCallback(
+    (f: { note?: string; tagIds?: number[]; contactId?: number | null }) => {
+      if (f.note !== undefined) {
+        setNoteQuery(f.note);
+        setDebouncedNote(f.note.trim());
+      }
+      if (f.tagIds !== undefined) setSelectedTagIds(f.tagIds);
+      if (f.contactId !== undefined) setContactId(f.contactId);
+    },
+    []
+  );
+
   return {
     noteQuery,
     setNoteQuery,
@@ -50,5 +62,6 @@ export function useDebouncedSearchFilter() {
     searchActive,
     searchFilter,
     clearSearch,
+    hydrateSearchFilters,
   };
 }

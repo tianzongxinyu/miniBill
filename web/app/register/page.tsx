@@ -10,11 +10,16 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (password !== confirmPassword) {
+      setError('两次输入的密码不一致');
+      return;
+    }
     try {
       await register(username, password);
       window.location.href = '/';
@@ -55,6 +60,15 @@ export default function RegisterPage() {
             placeholder="密码至少 6 位"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
+          <input
+            type="password"
+            className="field"
+            placeholder="确认密码"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
           />
           <button type="submit" className="btn-primary-block">
             注册

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minibill/minibill/internal/domain"
 	"github.com/minibill/minibill/internal/cache"
+	"github.com/minibill/minibill/internal/domain"
 )
 
 var ErrValidation = errors.New("validation")
@@ -24,19 +24,27 @@ func NewTransactionService(stats *StatsService) *TransactionService {
 	return &TransactionService{stats: stats, now: time.Now}
 }
 
+type TransactionTagItem struct {
+	ID      int64  `json:"id"`
+	Name    string `json:"name"`
+	ColorBg string `json:"color_bg"`
+	ColorFg string `json:"color_fg"`
+}
+
 type Transaction struct {
-	ID              int64    `json:"id"`
-	Amount          int64    `json:"amount"`
-	Type            string   `json:"type"`
-	TransactionDate string   `json:"transaction_date"`
-	Note            string   `json:"note"`
-	ContactID       *int64   `json:"contact_id"`
-	ContactName     string   `json:"contact_name,omitempty"`
-	TagIDs          []int64  `json:"tag_ids"`
-	Tags            []string `json:"tags"`
-	IsSystem        bool     `json:"is_system"`
-	CreatedAt       string   `json:"created_at"`
-	UpdatedAt       string   `json:"updated_at"`
+	ID              int64                `json:"id"`
+	Amount          int64                `json:"amount"`
+	Type            string               `json:"type"`
+	TransactionDate string               `json:"transaction_date"`
+	Note            string               `json:"note"`
+	ContactID       *int64               `json:"contact_id"`
+	ContactName     string               `json:"contact_name,omitempty"`
+	TagIDs          []int64              `json:"tag_ids"`
+	Tags            []string             `json:"tags"`
+	TagItems        []TransactionTagItem `json:"tag_items,omitempty"`
+	IsSystem        bool                 `json:"is_system"`
+	CreatedAt       string               `json:"created_at"`
+	UpdatedAt       string               `json:"updated_at"`
 }
 
 type CreateTransactionInput struct {
@@ -203,20 +211,20 @@ func scanTransactionRow(scanner interface {
 
 func (s *TransactionService) enrich(db *sql.DB, tx *Transaction) error {
 	rows, err := db.Query(`
-		SELECT tt.tag_id, g.name FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id WHERE tt.transaction_id = ?`, tx.ID)
+		SELECT tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
+		JOIN tags g ON g.id = tt.tag_id WHERE tt.transaction_id = ? ORDER BY g.name`, tx.ID)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var id int64
-		var name string
-		if err := rows.Scan(&id, &name); err != nil {
+		var item TransactionTagItem
+		if err := rows.Scan(&item.ID, &item.Name, &item.ColorBg, &item.ColorFg); err != nil {
 			return err
 		}
-		tx.TagIDs = append(tx.TagIDs, id)
-		tx.Tags = append(tx.Tags, name)
+		tx.TagIDs = append(tx.TagIDs, item.ID)
+		tx.Tags = append(tx.Tags, item.Name)
+		tx.TagItems = append(tx.TagItems, item)
 	}
 	if tx.ContactID != nil {
 		var name string
@@ -238,6 +246,7 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 		idSet[items[i].ID] = i
 		items[i].TagIDs = nil
 		items[i].Tags = nil
+		items[i].TagItems = nil
 		items[i].ContactName = ""
 	}
 
@@ -248,7 +257,7 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 		args[i] = id
 	}
 	tagQ := fmt.Sprintf(`
-		SELECT tt.transaction_id, tt.tag_id, g.name FROM transaction_tags tt
+		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
 		JOIN tags g ON g.id = tt.tag_id
 		WHERE tt.transaction_id IN (%s)
 		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
@@ -258,14 +267,15 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var txID, tagID int64
-		var name string
-		if err := rows.Scan(&txID, &tagID, &name); err != nil {
+		var txID int64
+		var item TransactionTagItem
+		if err := rows.Scan(&txID, &item.ID, &item.Name, &item.ColorBg, &item.ColorFg); err != nil {
 			return err
 		}
 		if idx, ok := idSet[txID]; ok {
-			items[idx].TagIDs = append(items[idx].TagIDs, tagID)
-			items[idx].Tags = append(items[idx].Tags, name)
+			items[idx].TagIDs = append(items[idx].TagIDs, item.ID)
+			items[idx].Tags = append(items[idx].Tags, item.Name)
+			items[idx].TagItems = append(items[idx].TagItems, item)
 		}
 	}
 	if err := rows.Err(); err != nil {
@@ -327,20 +337,26 @@ func (s *TransactionService) EnrichBatchWithMeta(db *sql.DB, meta *cache.LedgerM
 		ids[i] = items[i].ID
 		items[i].TagIDs = nil
 		items[i].Tags = nil
+		items[i].TagItems = nil
 		items[i].ContactName = ""
 		if items[i].ContactID != nil {
 			contactIDs[*items[i].ContactID] = struct{}{}
 		}
 	}
 
-	tagMap, nameMap, err := meta.TxTagsForIDs(db, ids)
+	tagMap, err := meta.TxTagsForIDs(db, ids)
 	if err != nil {
 		return err
 	}
 	for i := range items {
-		if ids, ok := tagMap[items[i].ID]; ok && len(ids) > 0 {
-			items[i].TagIDs = ids
-			items[i].Tags = nameMap[items[i].ID]
+		if entries, ok := tagMap[items[i].ID]; ok && len(entries) > 0 {
+			for _, e := range entries {
+				items[i].TagIDs = append(items[i].TagIDs, e.ID)
+				items[i].Tags = append(items[i].Tags, e.Name)
+				items[i].TagItems = append(items[i].TagItems, TransactionTagItem{
+					ID: e.ID, Name: e.Name, ColorBg: e.ColorBg, ColorFg: e.ColorFg,
+				})
+			}
 		}
 	}
 
@@ -460,15 +476,6 @@ func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput, old
 	if err != nil {
 		return err
 	}
-	if domain.HasSocialTag(names) {
-		if in.ContactID == nil {
-			return fmt.Errorf("%w: 含人情标签时必须选择联系人", ErrValidation)
-		}
-		var exists int
-		if err := db.QueryRow(`SELECT COUNT(*) FROM contacts WHERE id=?`, *in.ContactID).Scan(&exists); err != nil || exists == 0 {
-			return fmt.Errorf("%w: 联系人不存在", ErrValidation)
-		}
-	}
 	if domain.HasDailyExpenseTag(names) {
 		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)
 	}
@@ -524,7 +531,7 @@ func nullInt64(p *int64) interface{} {
 
 func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	rows, err := db.Query(`
-		SELECT DISTINCT g.id, g.name, g.is_system, g.enabled
+		SELECT DISTINCT g.id, g.name, g.is_system, g.enabled, g.color_bg, g.color_fg
 		FROM tags g
 		JOIN transaction_tags tt ON tt.tag_id = g.id
 		WHERE g.enabled = 1
@@ -537,10 +544,10 @@ func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	for rows.Next() {
 		var t Tag
 		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg); err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromInts(t.ID, t.Name, sys, en))
+		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg))
 	}
 	return list, nil
 }

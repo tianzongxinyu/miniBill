@@ -8,14 +8,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/minibill/minibill/internal/domain"
 	"github.com/minibill/minibill/internal/migrate"
 	"github.com/minibill/minibill/internal/sqliteutil"
 )
 
-var PresetTags = []string{
-	"人情",
-	"日常支出",
-}
+var PresetTags = []string{"日常支出"}
 
 type Factory struct {
 	dataDir          string
@@ -48,14 +46,19 @@ func (f *Factory) LedgerPath(userID int64, dataPath string) (string, error) {
 // Open 返回按 userID 缓存的长驻 *sql.DB，跨请求复用连接。
 func (f *Factory) Open(userID int64, dataPath string) (*sql.DB, error) {
 	f.mu.Lock()
-	defer f.mu.Unlock()
+	cached := f.ledgers[userID]
+	f.mu.Unlock()
 
-	if db := f.ledgers[userID]; db != nil {
-		if err := db.Ping(); err == nil {
-			return db, nil
+	if cached != nil {
+		if err := cached.Ping(); err == nil {
+			return cached, nil
 		}
-		_ = db.Close()
-		delete(f.ledgers, userID)
+		f.mu.Lock()
+		if f.ledgers[userID] == cached {
+			_ = cached.Close()
+			delete(f.ledgers, userID)
+		}
+		f.mu.Unlock()
 	}
 
 	path, err := f.LedgerPath(userID, dataPath)
@@ -69,6 +72,16 @@ func (f *Factory) Open(userID int64, dataPath string) (*sql.DB, error) {
 	if err := f.prepareLedger(db); err != nil {
 		_ = db.Close()
 		return nil, err
+	}
+
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if existing := f.ledgers[userID]; existing != nil {
+		_ = db.Close()
+		if err := existing.Ping(); err == nil {
+			return existing, nil
+		}
+		_ = existing.Close()
 	}
 	f.ledgers[userID] = db
 	return db, nil
@@ -115,9 +128,10 @@ func (f *Factory) prepareLedger(db *sql.DB) error {
 		return err
 	}
 	for _, name := range PresetTags {
+		bg, fg := domain.RandomTagColors()
 		if _, err := db.Exec(
-			`INSERT OR IGNORE INTO tags (name, is_system, enabled) VALUES (?, 1, 1)`,
-			name,
+			`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 1, 1, ?, ?)`,
+			name, bg, fg,
 		); err != nil {
 			return err
 		}

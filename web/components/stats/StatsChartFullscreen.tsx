@@ -11,6 +11,7 @@ import {
   isCoarseMobile,
   shouldUsePortraitFallback,
 } from '@/lib/statsChartFullscreen';
+import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import type { StatsChartRow } from '@/lib/statsChartData';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
 
@@ -63,6 +64,8 @@ export function StatsChartFullscreen({
   const [portraitFallback, setPortraitFallback] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const restoredScrollRef = useRef(false);
+
+  const { onMouseDown: onChartMouseDown } = useHorizontalDragScroll(scrollRef, { enabled: open });
 
   useEffect(() => {
     setMounted(true);
@@ -161,7 +164,8 @@ export function StatsChartFullscreen({
         <div
           ref={scrollRef as React.RefObject<HTMLDivElement>}
           onScroll={onScroll}
-          className="h-full overflow-x-auto overflow-y-hidden"
+          onMouseDown={onChartMouseDown}
+          className="stats-chart-scroll h-full overflow-x-auto overflow-y-hidden"
         >
           <div style={{ minWidth: scrollWidth }} className="px-4 pt-2 h-full">
             <StatsScrollChart

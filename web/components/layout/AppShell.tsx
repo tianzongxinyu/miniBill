@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { AppLogo } from '@/components/ui/AppLogo';
@@ -45,6 +45,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarW = collapsed ? 'lg:w-[4.5rem]' : 'lg:w-64';
   const mainMl = collapsed ? COLLAPSED_W : EXPANDED_W;
 
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--sidebar-width',
+      collapsed ? '4.5rem' : '16rem'
+    );
+  }, [collapsed]);
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       <aside
@@ -53,7 +60,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       >
         <div className={`py-6 ${collapsed ? 'px-3' : 'px-5'}`}>
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
-            <AppLogo size="sm" />
+            <AppLogo size="sm" priority />
             {!collapsed && (
               <div className="min-w-0 animate-fade-in">
                 <div className="text-base font-semibold tracking-tight text-ink">{APP_NAME}</div>

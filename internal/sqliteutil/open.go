@@ -23,8 +23,8 @@ func Open(path string) (*sql.DB, error) {
 	return db, nil
 }
 
-// ConfigurePool 限制同一 DB 文件的并发连接，降低 SQLITE_BUSY 风险。
+// ConfigurePool WAL 模式下允许多读并发；写仍由 SQLite 串行化。
 func ConfigurePool(db *sql.DB) {
-	db.SetMaxOpenConns(1)
-	db.SetMaxIdleConns(1)
+	db.SetMaxOpenConns(4)
+	db.SetMaxIdleConns(4)
 }

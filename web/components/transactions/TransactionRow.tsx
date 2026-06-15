@@ -1,33 +1,51 @@
+'use client';
+
 import { memo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { DailyExpenseAmount } from '@/components/ui/DailyExpenseAmount';
 import { Amount } from '@/components/ui/Amount';
-import type { Transaction } from '@/lib/api';
+import { TagChip } from '@/components/ui/TagChip';
+import type { Transaction, TransactionTagItem } from '@/lib/api';
+import { contactDetailHref } from '@/lib/url';
 
 const DAILY_EXPENSE_TAG = '日常支出';
 
-function formatTagLine(tx: Transaction): string {
-  if (!tx.tags || tx.tags.length === 0) return '—';
-  let line = tx.tags.join(' · ');
-  if (tx.tags.includes('人情') && tx.contact_name) {
-    line += ` (${tx.contact_name})`;
-  }
-  return line;
+function tagItemsFor(tx: Transaction): TransactionTagItem[] {
+  if (tx.tag_items?.length) return tx.tag_items;
+  return (tx.tags ?? []).map((name) => ({ id: 0, name, color_bg: '', color_fg: '' }));
 }
 
-function systemDailyCents(tx: Transaction): number {
-  return tx.type === 'expense' ? tx.amount : -tx.amount;
-}
-
-function RowBody({ tx }: { tx: Transaction }) {
+function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
   const isDailySystem =
     tx.is_system || (tx.tags?.includes(DAILY_EXPENSE_TAG) ?? false);
+  const items = tagItemsFor(tx);
+  const hasMeta = items.length > 0 || Boolean(tx.contact_id && tx.contact_name);
 
   return (
     <div className="flex justify-between gap-4 items-start">
       <div className="min-w-0 flex-1">
         <div className="text-xs text-muted tabular-nums">{tx.transaction_date}</div>
-        <div className="text-sm text-ink truncate mt-1">{formatTagLine(tx)}</div>
+        <div className="mt-1 min-h-[1.25rem]">
+          {hasMeta ? (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {items.map((t) => (
+                <TagChip key={t.id ? t.id : t.name} name={t.name} colorBg={t.color_bg} />
+              ))}
+              {tx.contact_id && tx.contact_name && (
+                <Link
+                  href={contactDetailHref(tx.contact_id, returnTo)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-sm text-accent hover:underline shrink-0"
+                >
+                  @{tx.contact_name}
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-ink truncate">—</div>
+          )}
+        </div>
       </div>
       <div className="shrink-0 text-right min-w-0 max-w-[55%]">
         {isDailySystem ? (
@@ -41,21 +59,45 @@ function RowBody({ tx }: { tx: Transaction }) {
   );
 }
 
-function TransactionRowInner({ tx, animate }: { tx: Transaction; animate?: boolean }) {
+function systemDailyCents(tx: Transaction): number {
+  return tx.type === 'expense' ? tx.amount : -tx.amount;
+}
+
+function TransactionRowInner({
+  tx,
+  animate,
+  returnTo,
+}: {
+  tx: Transaction;
+  animate?: boolean;
+  returnTo?: string;
+}) {
+  const router = useRouter();
   const className = animate ? 'notebook-row animate-fade-in-up' : 'notebook-row';
 
   if (tx.is_system) {
     return (
       <div className={className}>
-        <RowBody tx={tx} />
+        <RowBody tx={tx} returnTo={returnTo} />
       </div>
     );
   }
 
   return (
-    <Link href={`/add/?id=${tx.id}`} className={`${className} block`}>
-      <RowBody tx={tx} />
-    </Link>
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => router.push(`/add/?id=${tx.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          router.push(`/add/?id=${tx.id}`);
+        }
+      }}
+      className={`${className} block cursor-pointer`}
+    >
+      <RowBody tx={tx} returnTo={returnTo} />
+    </div>
   );
 }
 

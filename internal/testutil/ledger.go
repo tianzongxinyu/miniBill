@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/minibill/minibill/internal/domain"
 	"github.com/minibill/minibill/internal/migrate"
 	"github.com/minibill/minibill/internal/userdb"
 
@@ -23,8 +24,23 @@ func OpenLedgerDB(t *testing.T) *sql.DB {
 		t.Fatal(err)
 	}
 	for _, name := range userdb.PresetTags {
-		_, _ = db.Exec(`INSERT OR IGNORE INTO tags (name, is_system, enabled) VALUES (?,1,1)`, name)
+		bg, fg := domain.RandomTagColors()
+		_, _ = db.Exec(`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?,1,1,?,?)`, name, bg, fg)
 	}
 	_, _ = db.Exec(`INSERT OR IGNORE INTO settings (id) VALUES (1)`)
 	return db
+}
+
+func InsertTag(t *testing.T, db *sql.DB, name string) int64 {
+	t.Helper()
+	bg, fg := domain.RandomTagColors()
+	res, err := db.Exec(
+		`INSERT INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 0, 1, ?, ?)`,
+		name, bg, fg,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, _ := res.LastInsertId()
+	return id
 }

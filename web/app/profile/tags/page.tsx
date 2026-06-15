@@ -8,6 +8,8 @@ import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/VisibilityIcon';
+import { TagChip } from '@/components/ui/TagChip';
+import { TagColorPicker } from '@/components/ui/TagColorPicker';
 import {
   apiList,
   createTag,
@@ -25,6 +27,7 @@ function TagsContent() {
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Tag | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [colorEditId, setColorEditId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setError('');
@@ -59,10 +62,20 @@ function TagsContent() {
 
   const toggle = async (t: Tag) => {
     try {
-      await updateTag(t.id, !t.enabled);
+      await updateTag(t.id, { enabled: !t.enabled });
       void load();
     } catch (err) {
       setError(formatApiError(err, '更新失败'));
+    }
+  };
+
+  const saveColor = async (id: number, color_bg: string) => {
+    try {
+      const saved = await updateTag(id, { color_bg });
+      setItems((prev) => prev.map((t) => (t.id === id ? saved : t)));
+    } catch (err) {
+      setError(formatApiError(err, '颜色保存失败'));
+      throw err;
     }
   };
 
@@ -91,30 +104,52 @@ function TagsContent() {
       </form>
       <Notebook>
         {items.map((t) => (
-          <div key={t.id} className="notebook-row flex justify-between items-center gap-3">
-            <span className={`text-sm ${!t.enabled ? 'text-muted line-through' : 'text-ink'}`}>
-              {t.name}{t.is_system && ' *'}
-            </span>
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                type="button"
-                onClick={() => toggle(t)}
-                className="btn-ghost p-1 text-muted hover:text-ink shrink-0"
-                aria-label={t.enabled ? `隐藏标签「${t.name}」` : `显示标签「${t.name}」`}
-              >
-                {t.enabled ? <EyeIcon /> : <EyeOffIcon />}
-              </button>
-              {!t.is_system && !usedIds.has(t.id) && (
+          <div key={t.id} className="notebook-row">
+            <div className="flex justify-between items-start gap-3">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <span className={!t.enabled ? 'opacity-45' : undefined}>
+                  <TagChip name={t.name} colorBg={t.color_bg} />
+                </span>
+                {t.is_system && <span className="text-muted text-xs shrink-0">*</span>}
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setDeleteTarget(t)}
-                  className="btn-ghost p-1 text-expense shrink-0"
-                  aria-label={`删除标签「${t.name}」`}
+                  onClick={() => setColorEditId((id) => (id === t.id ? null : t.id))}
+                  className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                  aria-label={`修改标签「${t.name}」颜色`}
+                  aria-expanded={colorEditId === t.id}
                 >
-                  <TrashIcon />
+                  <PaletteIcon />
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={() => toggle(t)}
+                  className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                  aria-label={t.enabled ? `隐藏标签「${t.name}」` : `显示标签「${t.name}」`}
+                >
+                  {t.enabled ? <EyeIcon /> : <EyeOffIcon />}
+                </button>
+                {!t.is_system && !usedIds.has(t.id) && (
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget(t)}
+                    className="btn-ghost p-1.5 text-expense shrink-0"
+                    aria-label={`删除标签「${t.name}」`}
+                  >
+                    <TrashIcon />
+                  </button>
+                )}
+              </div>
             </div>
+            {colorEditId === t.id && (
+              <TagColorPicker
+                name={t.name}
+                colorBg={t.color_bg}
+                onSave={(bg) => saveColor(t.id, bg)}
+                onClose={() => setColorEditId(null)}
+              />
+            )}
           </div>
         ))}
       </Notebook>
@@ -130,6 +165,21 @@ function TagsContent() {
         }}
       />
     </div>
+  );
+}
+
+function PaletteIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3c-4.97 0-9 3.58-9 8 0 2.76 1.78 5.18 4.37 6.02.55.18.93.68.93 1.26 0 .74-.6 1.34-1.34 1.34h-.16C10.5 20.5 14.5 22 19 19.5 21.5 17.5 22 14.5 22 11c0-4.42-4.03-8-10-8Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle cx="8.5" cy="10.5" r="1.25" fill="currentColor" />
+      <circle cx="12" cy="8" r="1.25" fill="currentColor" />
+      <circle cx="15.5" cy="10.5" r="1.25" fill="currentColor" />
+    </svg>
   );
 }
 

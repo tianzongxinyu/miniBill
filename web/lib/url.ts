@@ -26,3 +26,58 @@ export function parseYearMonthQuery(
 ): YearMonth | null {
   return parseYearMonthNumbers(yearRaw, monthRaw, 'null');
 }
+
+export function safeReturnTo(raw: string | null, fallback: string): string {
+  if (raw && raw.startsWith('/')) return raw;
+  return fallback;
+}
+
+export type TransactionsHrefOptions = {
+  year: number;
+  month: number;
+  note?: string;
+  tagIds?: number[];
+  contactId?: number | null;
+};
+
+export function buildTransactionsHref(opts: TransactionsHrefOptions): string {
+  const params = new URLSearchParams();
+  params.set('year', String(opts.year));
+  params.set('month', String(opts.month));
+  const note = opts.note?.trim();
+  if (note) params.set('note', note);
+  if (opts.tagIds?.length) params.set('tags', opts.tagIds.join(','));
+  if (opts.contactId != null && opts.contactId > 0) {
+    params.set('contact', String(opts.contactId));
+  }
+  return `/transactions/?${params.toString()}`;
+}
+
+export function contactDetailHref(contactId: number, returnTo?: string): string {
+  const base = `/profile/contacts/detail/?id=${contactId}`;
+  if (!returnTo) return base;
+  return `${base}&returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+export type TransactionsFiltersFromQuery = {
+  note: string;
+  tagIds: number[];
+  contactId: number | null;
+};
+
+export function parseTransactionsFiltersFromQuery(
+  params: URLSearchParams
+): TransactionsFiltersFromQuery {
+  const note = params.get('note') ?? '';
+  const tagsRaw = params.get('tags');
+  const tagIds = tagsRaw
+    ? tagsRaw
+        .split(',')
+        .map((s) => Number(s.trim()))
+        .filter((n) => n > 0)
+    : [];
+  const contactRaw = params.get('contact');
+  const contactId =
+    contactRaw != null && Number(contactRaw) > 0 ? Number(contactRaw) : null;
+  return { note, tagIds, contactId };
+}

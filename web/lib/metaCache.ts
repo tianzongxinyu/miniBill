@@ -22,8 +22,3 @@ export function fetchUsedContactsCached(): Promise<Contact[]> {
   }
   return usedContactsPromise;
 }
-
-export function invalidateSearchMetaCache() {
-  enabledTagsPromise = null;
-  usedContactsPromise = null;
-}

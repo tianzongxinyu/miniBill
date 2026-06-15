@@ -19,14 +19,6 @@ func excludeDailyExpenseTagSQL(alias string) string {
 	)`, alias)
 }
 
-func socialTagExistsSQL(alias string) string {
-	return fmt.Sprintf(`EXISTS (
-		SELECT 1 FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id
-		WHERE tt.transaction_id = %s.id AND g.name = ?
-	)`, alias)
-}
-
 func monthRange(year, month int) (start, end string) {
 	start = fmt.Sprintf("%04d-%02d-01", year, month)
 	endMonth := month + 1
@@ -70,12 +62,14 @@ func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64) (str
 	return strings.Join(parts, " AND "), args
 }
 
-func tagFromInts(id int64, name string, sys, en int) Tag {
+func tagFromRow(id int64, name string, sys, en int, colorBg, colorFg string) Tag {
 	return Tag{
 		ID:         id,
 		Name:       name,
 		IsSystem:   sys == 1,
 		Enabled:    en == 1,
 		Selectable: domain.IsSelectableTag(name),
+		ColorBg:    colorBg,
+		ColorFg:    domain.TagTextColor,
 	}
 }

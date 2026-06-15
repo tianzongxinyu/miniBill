@@ -3,8 +3,6 @@ package service
 import (
 	"database/sql"
 	"errors"
-
-	"github.com/minibill/minibill/internal/domain"
 )
 
 var ErrContactInUse = errors.New("contact in use")
@@ -20,9 +18,9 @@ type Contact struct {
 
 type ContactSummary struct {
 	Contact
-	SocialExpense int64       `json:"social_expense"`
-	SocialIncome  int64       `json:"social_income"`
-	NetAmount     int64       `json:"net_amount"`
+	SocialExpense   int64 `json:"social_expense"`
+	SocialIncome    int64 `json:"social_income"`
+	NetAmount       int64 `json:"net_amount"`
 	LastTransaction *struct {
 		ID              int64  `json:"id"`
 		Amount          int64  `json:"amount"`
@@ -62,9 +60,8 @@ func (s *ContactService) Get(db *sql.DB, id int64) (*ContactSummary, error) {
 		SELECT COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0),
 		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
 		FROM transactions t
-		WHERE t.contact_id = ?
-		  AND `+socialTagExistsSQL("t"),
-		id, domain.SocialTagName,
+		WHERE t.contact_id = ?`,
+		id,
 	).Scan(&sum.SocialExpense, &sum.SocialIncome)
 	sum.NetAmount = sum.SocialIncome - sum.SocialExpense
 

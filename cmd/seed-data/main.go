@@ -61,6 +61,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	ensureSeedTags(db, tagIDs)
 	contactIDs, err := ensureContacts(db)
 	if err != nil {
 		log.Fatal(err)
@@ -147,6 +148,25 @@ func loadTagIDs(db *sql.DB) (map[string]int64, error) {
 	return m, rows.Err()
 }
 
+func ensureSeedTags(db *sql.DB, tagIDs map[string]int64) {
+	names := []string{"工资", "奖金", "餐饮", "交通", "居住", "购物", "订阅", "医疗", "教育", "婚礼"}
+	for _, name := range names {
+		if _, ok := tagIDs[name]; ok {
+			continue
+		}
+		bg, fg := domain.RandomTagColors()
+		res, err := db.Exec(
+			`INSERT INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 0, 1, ?, ?)`,
+			name, bg, fg,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		id, _ := res.LastInsertId()
+		tagIDs[name] = id
+	}
+}
+
 func ensureContacts(db *sql.DB) ([]int64, error) {
 	names := []string{"张三", "李四", "王芳", "赵明", "陈静"}
 	var ids []int64
@@ -224,7 +244,7 @@ func genMonthTxs(
 		date := fmt.Sprintf("%04d-%02d-%02d", ym.Year, ym.Month, 10+rng.Intn(15))
 		expense.total += amt
 		expense.count++
-		insertTx(db, amt, "expense", date, "礼金", []string{"人情", "婚礼"}, tagIDs, &cid)
+		insertTx(db, amt, "expense", date, "礼金", []string{"婚礼"}, tagIDs, &cid)
 	}
 	return income, expense
 }

@@ -66,18 +66,8 @@ func NextMonth(ym YearMonth) YearMonth {
 }
 
 const DailyExpenseTagName = "日常支出"
-const SocialTagName = "人情"
 
-// 系统预设标签须与 userdb.PresetTags 及 migrations/ledger/004_system_tags_trim.sql 保持一致。
-
-func HasSocialTag(tagNames []string) bool {
-	for _, n := range tagNames {
-		if n == SocialTagName {
-			return true
-		}
-	}
-	return false
-}
+// 系统预设标签须与 userdb.PresetTags 保持一致。
 
 func HasDailyExpenseTag(tagNames []string) bool {
 	for _, n := range tagNames {

@@ -49,13 +49,13 @@ func (s *StatsService) RecalcAfterBalance(db *sql.DB, year, month int) error {
 }
 
 type MonthBillSummary struct {
-	Year          int    `json:"year"`
-	Month         int    `json:"month"`
-	StartBalance  *int64 `json:"start_balance"`
-	EndBalance    *int64 `json:"end_balance"`
-	TotalIncome   int64  `json:"total_income"`
-	TotalExpense  int64  `json:"total_expense"`
-	NetIncome     int64  `json:"net_income"`
+	Year         int    `json:"year"`
+	Month        int    `json:"month"`
+	StartBalance *int64 `json:"start_balance"`
+	EndBalance   *int64 `json:"end_balance"`
+	TotalIncome  int64  `json:"total_income"`
+	TotalExpense int64  `json:"total_expense"`
+	NetIncome    int64  `json:"net_income"`
 }
 
 type ThisMonthSummary struct {
@@ -315,13 +315,13 @@ func compareYM(a, b domain.YearMonth) int {
 }
 
 type MonthlyStatItem struct {
-	Month              int    `json:"month"`
-	TotalIncome        int64  `json:"total_income"`
-	TotalExpense       int64  `json:"total_expense"`
-	SocialIncome       int64  `json:"social_income"`
-	SocialExpense      int64  `json:"social_expense"`
-	DailyExpense       *int64 `json:"daily_expense"`
-	RegisteredBalance  *int64 `json:"registered_balance"`
+	Month             int    `json:"month"`
+	TotalIncome       int64  `json:"total_income"`
+	TotalExpense      int64  `json:"total_expense"`
+	SocialIncome      int64  `json:"social_income"`
+	SocialExpense     int64  `json:"social_expense"`
+	DailyExpense      *int64 `json:"daily_expense"`
+	RegisteredBalance *int64 `json:"registered_balance"`
 }
 
 type StatsFilter struct {
@@ -363,17 +363,7 @@ func (s *StatsService) sumTransactionsRange(db *sql.DB, start, end string, filte
 }
 
 func (s *StatsService) sumSocialRange(db *sql.DB, start, end string) (socialIncome, socialExpense int64, err error) {
-	excl := excludeDailyExpenseTagSQL("t")
-	err = db.QueryRow(fmt.Sprintf(`
-		SELECT COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0),
-		       COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)
-		FROM transactions t
-		WHERE t.transaction_date >= ? AND t.transaction_date < ?
-		  AND %s
-		  AND %s`, socialTagExistsSQL("t"), excl),
-		start, end, domain.SocialTagName, domain.DailyExpenseTagName,
-	).Scan(&socialIncome, &socialExpense)
-	return socialIncome, socialExpense, err
+	return 0, 0, nil
 }
 
 func (s *StatsService) computeMonthStat(db *sql.DB, ym domain.YearMonth, filter StatsFilter) (MonthlyStatPoint, error) {

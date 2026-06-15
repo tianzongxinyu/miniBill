@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"github.com/minibill/minibill/internal/userdb"
@@ -83,5 +84,39 @@ func TestFactoryOpenMigratesExistingLedger(t *testing.T) {
 	}
 	if scheme != "red_up" {
 		t.Fatalf("amount_color_scheme = %q, want red_up", scheme)
+	}
+}
+
+func TestFactoryOpenConcurrent(t *testing.T) {
+	dir := t.TempDir()
+	f := userdb.NewFactory(dir, filepath.Join("..", "..", "migrations", "ledger"))
+
+	const dataPath = "users/1/ledger.db"
+	if err := f.InitLedger(1, dataPath); err != nil {
+		t.Fatal(err)
+	}
+	defer f.CloseAll()
+
+	var wg sync.WaitGroup
+	errCh := make(chan error, 8)
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			db, err := f.Open(1, dataPath)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			var n int
+			if err := db.QueryRow(`SELECT COUNT(*) FROM tags`).Scan(&n); err != nil {
+				errCh <- err
+			}
+		}()
+	}
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		t.Fatal(err)
 	}
 }

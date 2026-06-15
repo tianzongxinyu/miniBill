@@ -1,12 +1,14 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { TagChip } from '@/components/ui/TagChip';
+import { ContactChip } from '@/components/ui/ContactChip';
 import { type Contact, type Tag } from '@/lib/api';
 import { fetchEnabledTagsCached, fetchUsedContactsCached } from '@/lib/metaCache';
 import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 
 type Candidate =
-  | { kind: 'tag'; id: number; label: string }
+  | { kind: 'tag'; id: number; label: string; colorBg: string }
   | { kind: 'contact'; id: number; label: string; subtitle?: string };
 
 type TransactionsSearchComboboxProps = {
@@ -32,8 +34,47 @@ export function TransactionsSearchCombobox({
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [focused, setFocused] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(
+    null
+  );
+
+  const updateDropdownPos = useCallback(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const panelRect = panel.getBoundingClientRect();
+    const toolbar = panel.closest('.transactions-toolbar, .stats-toolbar');
+    const toolbarRect = toolbar?.getBoundingClientRect();
+    const page = panel.closest('.max-w-3xl');
+    const pageRect = page?.getBoundingClientRect();
+    const pagePadX = window.matchMedia('(min-width: 1024px)').matches ? 32 : 16;
+
+    if (toolbarRect) {
+      setDropdownPos({
+        top: panelRect.bottom + 8,
+        left: toolbarRect.left,
+        width: toolbarRect.width,
+      });
+      return;
+    }
+
+    if (pageRect) {
+      setDropdownPos({
+        top: panelRect.bottom + 8,
+        left: pageRect.left + pagePadX,
+        width: pageRect.width - pagePadX * 2,
+      });
+      return;
+    }
+
+    setDropdownPos({
+      top: panelRect.bottom + 8,
+      left: pagePadX,
+      width: window.innerWidth - pagePadX * 2,
+    });
+  }, []);
 
   useClickOutside(rootRef, () => setFocused(false));
 
@@ -69,7 +110,7 @@ export function TransactionsSearchCombobox({
     for (const t of tags) {
       if (selectedTagIds.includes(t.id)) continue;
       if (q && !t.name.toLowerCase().includes(q)) continue;
-      list.push({ kind: 'tag', id: t.id, label: t.name });
+      list.push({ kind: 'tag', id: t.id, label: t.name, colorBg: t.color_bg });
     }
     if (contactId == null) {
       for (const c of contacts) {
@@ -86,7 +127,32 @@ export function TransactionsSearchCombobox({
     return list;
   }, [tags, contacts, note, selectedTagIds, contactId]);
 
+  const tagCandidates = useMemo(
+    () => candidates.filter((c): c is Extract<Candidate, { kind: 'tag' }> => c.kind === 'tag'),
+    [candidates]
+  );
+
+  const contactCandidates = useMemo(
+    () =>
+      candidates.filter((c): c is Extract<Candidate, { kind: 'contact' }> => c.kind === 'contact'),
+    [candidates]
+  );
+
   const showCandidates = focused && candidates.length > 0;
+
+  useLayoutEffect(() => {
+    if (!showCandidates) {
+      setDropdownPos(null);
+      return;
+    }
+    updateDropdownPos();
+    window.addEventListener('resize', updateDropdownPos);
+    window.addEventListener('scroll', updateDropdownPos, true);
+    return () => {
+      window.removeEventListener('resize', updateDropdownPos);
+      window.removeEventListener('scroll', updateDropdownPos, true);
+    };
+  }, [showCandidates, updateDropdownPos]);
 
   const selectCandidate = useCallback(
     (c: Candidate) => {
@@ -140,6 +206,7 @@ export function TransactionsSearchCombobox({
   return (
     <div ref={rootRef} className="combobox min-w-0 flex-1">
       <div
+        ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
         onClick={() => {
           void ensureCandidates();
@@ -149,36 +216,23 @@ export function TransactionsSearchCombobox({
         <div className="combobox-panel-body">
           <div className="combobox-chip-row">
           {selectedTags.map((t) => (
-            <span key={`tag-${t.id}`} className="tag-pill-active combobox-chip">
-              {t.name}
-              <button
-                type="button"
-                className="combobox-chip-remove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTag(t.id);
-                }}
-                aria-label={`移除标签 ${t.name}`}
-              >
-                ×
-              </button>
-            </span>
+            <TagChip
+              key={`tag-${t.id}`}
+              name={t.name}
+              colorBg={t.color_bg}
+              active
+              className="combobox-chip"
+              onRemove={() => removeTag(t.id)}
+            />
           ))}
           {selectedContact && (
-            <span key={`contact-${selectedContact.id}`} className="tag-pill-active combobox-chip">
-              {selectedContact.name}
-              <button
-                type="button"
-                className="combobox-chip-remove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeContact();
-                }}
-                aria-label={`移除联系人 ${selectedContact.name}`}
-              >
-                ×
-              </button>
-            </span>
+            <ContactChip
+              key={`contact-${selectedContact.id}`}
+              name={selectedContact.name}
+              active
+              className="combobox-chip"
+              onRemove={removeContact}
+            />
           )}
           <input
             ref={inputRef}
@@ -210,27 +264,53 @@ export function TransactionsSearchCombobox({
         </div>
       </div>
 
-      {showCandidates && (
-        <div className="combobox-candidates-floating" role="listbox">
-          {candidates.map((c, i) => (
-            <button
-              key={`${c.kind}-${c.id}`}
-              type="button"
-              role="option"
-              aria-selected={highlight === i}
-              className={`tag-pill combobox-candidate${highlight === i ? ' combobox-candidate-active' : ''}`}
-              onMouseEnter={() => setHighlight(i)}
-              onClick={() => selectCandidate(c)}
-            >
-              {c.kind === 'contact' && (
-                <span className="combobox-candidate-muted">联系人 · </span>
-              )}
-              {c.label}
-              {c.kind === 'contact' && c.subtitle ? (
-                <span className="combobox-candidate-muted"> · {c.subtitle}</span>
-              ) : null}
-            </button>
-          ))}
+      {showCandidates && dropdownPos && (
+        <div
+          className="combobox-candidates-floating combobox-candidates-floating-fixed"
+          style={{
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: dropdownPos.width,
+          }}
+          role="listbox"
+        >
+          {tagCandidates.length > 0 && (
+            <div className="combobox-candidates-row">
+              {tagCandidates.map((c, i) => (
+                <button
+                  key={`${c.kind}-${c.id}`}
+                  type="button"
+                  role="option"
+                  aria-selected={highlight === i}
+                  className="combobox-candidate p-0 border-0 bg-transparent"
+                  onMouseEnter={() => setHighlight(i)}
+                  onClick={() => selectCandidate(c)}
+                >
+                  <TagChip name={c.label} colorBg={c.colorBg} active={highlight === i} />
+                </button>
+              ))}
+            </div>
+          )}
+          {contactCandidates.length > 0 && (
+            <div className="combobox-candidates-row">
+              {contactCandidates.map((c, i) => {
+                const idx = tagCandidates.length + i;
+                return (
+                  <button
+                    key={`${c.kind}-${c.id}`}
+                    type="button"
+                    role="option"
+                    aria-selected={highlight === idx}
+                    className="combobox-candidate p-0 border-0 bg-transparent"
+                    onMouseEnter={() => setHighlight(idx)}
+                    onClick={() => selectCandidate(c)}
+                  >
+                    <ContactChip name={c.label} subtitle={c.subtitle} active={highlight === idx} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

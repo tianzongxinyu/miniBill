@@ -30,8 +30,7 @@ func TestLedgerCSVExportIncludesDailyExpenseAndBalance(t *testing.T) {
 	stats := NewStatsService().WithNow(func() time.Time { return now })
 	bal := NewBalanceService(stats)
 
-	tagRes, _ := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES ('餐饮', 0, 1)`)
-	tagID, _ := tagRes.LastInsertId()
+	tagID := testutil.InsertTag(t, db, "餐饮")
 	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (2850,'expense','2026-03-05','午饭')`)
 	var txID int64
 	_ = db.QueryRow(`SELECT id FROM transactions WHERE note='午饭'`).Scan(&txID)
@@ -147,8 +146,7 @@ func TestLedgerCSVImportReplaceRoundTrip(t *testing.T) {
 	bal := NewBalanceService(stats)
 	svc := newLedgerCSVForTest(now)
 
-	tagRes, _ := db.Exec(`INSERT INTO tags (name, is_system, enabled) VALUES ('餐饮', 0, 1)`)
-	tagID, _ := tagRes.LastInsertId()
+	tagID := testutil.InsertTag(t, db, "餐饮")
 	contactRes, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('张三')`)
 	contactID, _ := contactRes.LastInsertId()
 
@@ -286,7 +284,7 @@ func TestLedgerCSVImportValidationRollback(t *testing.T) {
 
 	csvData := strings.Join([]string{
 		strings.Join(ledgerCSVHeader, ","),
-		"2026-04-01,支出,10.00,人情,,无人",
+		"2026-04-01,无效,10.00,餐饮,,",
 	}, "\n")
 
 	_, err := svc.ImportReplace(db, testLedgerUserID, strings.NewReader(csvData))
@@ -301,7 +299,7 @@ func TestLedgerCSVImportValidationRollback(t *testing.T) {
 	}
 }
 
-func TestLedgerCSVImportSocialRequiresContact(t *testing.T) {
+func TestLedgerCSVImportWithContact(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()
 
@@ -310,7 +308,7 @@ func TestLedgerCSVImportSocialRequiresContact(t *testing.T) {
 
 	csvData := strings.Join([]string{
 		strings.Join(ledgerCSVHeader, ","),
-		"2026-04-01,收入,10.00,人情,李四,红包",
+		"2026-04-01,收入,10.00,婚礼,李四,红包",
 	}, "\n")
 
 	result, err := svc.ImportReplace(db, testLedgerUserID, strings.NewReader(csvData))

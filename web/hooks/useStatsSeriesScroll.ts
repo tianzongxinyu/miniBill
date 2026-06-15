@@ -125,6 +125,21 @@ export function useStatsSeriesScroll<T>({
     }
   }, [enabled, hasMoreNewer, items, defaultLimit, searchFilter, getItemKey]);
 
+  // Wide viewports may fit all loaded points — keep fetching until the chart overflows or data ends.
+  useEffect(() => {
+    if (!enabled || loading || loadingOlderRef.current || loadingNewerRef.current) return;
+    if (!hasMoreOlder && !hasMoreNewer) return;
+
+    const raf = requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el || el.scrollWidth > el.clientWidth + 1) return;
+      if (hasMoreOlder) void loadOlder();
+      else if (hasMoreNewer) void loadNewer();
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [enabled, loading, hasMoreOlder, hasMoreNewer, items, loadOlder, loadNewer, scrollRef]);
+
   const onScroll = useCallback(() => {
     if (scrollRafRef.current != null) return;
     scrollRafRef.current = requestAnimationFrame(() => {

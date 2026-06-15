@@ -1,61 +1,70 @@
 #!/usr/bin/env python3
-"""Generate miniBill fpk icons (64x64 and 256x256 PNG, no dependencies)."""
+"""Generate fnOS fpk icons from web/public/icon.png (with transparent corners)."""
 
 from __future__ import annotations
 
-import struct
-import zlib
+import subprocess
+import sys
 from pathlib import Path
 
 
-def _chunk(tag: bytes, data: bytes) -> bytes:
-    crc = zlib.crc32(tag + data) & 0xFFFFFFFF
-    return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", crc)
+def ensure_pillow() -> None:
+    try:
+        import PIL  # noqa: F401
+    except ImportError:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "pillow", "-q"],
+            check=True,
+        )
 
 
-def write_png(path: Path, size: int, bg: tuple[int, int, int], fg: tuple[int, int, int]) -> None:
-    rows = []
-    cx = cy = size // 2
-    radius = int(size * 0.36)
-    inner = int(size * 0.22)
+def with_transparent_corners(src_path: Path):
+    from PIL import Image, ImageDraw
 
-    for y in range(size):
-        row = bytearray([0])
-        for x in range(size):
-            dx = x - cx
-            dy = y - cy
-            dist = (dx * dx + dy * dy) ** 0.5
-            if dist <= radius:
-                row.extend(fg)
-            elif abs(dx) <= inner and abs(dy) <= inner // 3:
-                row.extend((255, 255, 255))
-            elif abs(dy - cy // 3) <= inner // 5 and abs(dx) <= inner:
-                row.extend((255, 255, 255))
-            else:
-                row.extend(bg)
-        rows.append(bytes(row))
+    img = Image.open(src_path).convert("RGBA")
+    w, h = img.size
+    # 与 iOS 应用图标相近的圆角比例，裁掉四角白底
+    radius = max(1, int(min(w, h) * 0.223))
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    img.putalpha(mask)
+    return img
 
-    raw = b"".join(rows)
-    compressed = zlib.compress(raw, 9)
-    ihdr = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)
-    png = b"\x89PNG\r\n\x1a\n"
-    png += _chunk(b"IHDR", ihdr)
-    png += _chunk(b"IDAT", compressed)
-    png += _chunk(b"IEND", b"")
-    path.write_bytes(png)
+
+def write_icon(src_path: Path, dst: Path, size: int) -> None:
+    ensure_pillow()
+    from PIL import Image
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    img = with_transparent_corners(src_path)
+    if img.size != (size, size):
+        img = img.resize((size, size), Image.Resampling.LANCZOS)
+    img.save(dst, format="PNG")
 
 
 def main() -> None:
     root = Path(__file__).resolve().parent
-    bg = (236, 253, 245)
-    fg = (5, 150, 105)
-    write_png(root / "ICON.PNG", 64, bg, fg)
-    write_png(root / "ICON_256.PNG", 256, bg, fg)
-    images = root / "app" / "ui" / "images"
-    images.mkdir(parents=True, exist_ok=True)
-    write_png(images / "icon_64.png", 64, bg, fg)
-    write_png(images / "icon_256.png", 256, bg, fg)
-    print(f"Wrote icons under {root}")
+    repo = root.parent
+    src = repo / "web" / "public" / "icon.png"
+
+    if not src.is_file():
+        raise SystemExit(f"Missing icon source: {src}")
+
+    # 回写源图，Web / PWA 同样去掉四角白底
+    ensure_pillow()
+    fixed = with_transparent_corners(src)
+    fixed.save(src, format="PNG")
+    print(f"Updated {src} (RGBA, transparent corners)")
+
+    targets = [
+        (root / "ICON.PNG", 64),
+        (root / "ICON_256.PNG", 256),
+        (root / "app" / "ui" / "images" / "icon_64.png", 64),
+        (root / "app" / "ui" / "images" / "icon_256.png", 256),
+    ]
+    for dst, size in targets:
+        write_icon(src, dst, size)
+        print(f"Wrote {dst} ({size}x{size})")
 
 
 if __name__ == "__main__":
