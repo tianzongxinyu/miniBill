@@ -1,0 +1,27 @@
+[
+    {
+        "stepTitle": "卸载 轻账单",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "卸载后账本数据库保存在应用数据目录。若选择清除，所有用户与交易记录将不可恢复。"
+            },
+            {
+                "type": "radio",
+                "field": "wizard_delete_data",
+                "label": "数据处理方式",
+                "initValue": "false",
+                "options": [
+                    {
+                        "label": "保留账本数据",
+                        "value": "false"
+                    },
+                    {
+                        "label": "清除所有数据（不可恢复）",
+                        "value": "true"
+                    }
+                ]
+            }
+        ]
+    }
+]

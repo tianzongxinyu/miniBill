@@ -1,0 +1,14 @@
+services:
+  minibill:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-true}
+      DATA_DIR: /data
+      JWT_EXPIRE_DAYS: "7"
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

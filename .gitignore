@@ -1,0 +1,26 @@
+/web/node_modules
+/web/out
+/web/.next
+/web/tsconfig.tsbuildinfo
+/data
+*.db
+.env
+/minibill
+/server
+/tmp
+.DS_Store
+.idea
+.vscode
+.cursor
+.git
+
+# fnOS fpk build
+dist/
+.fnos-shared/
+*.fpk
+fnos/minibill.fpk
+fnos/app/bin/
+fnos/app/web/
+fnos/app/migrations/
+fnos/app/ui/images/
+

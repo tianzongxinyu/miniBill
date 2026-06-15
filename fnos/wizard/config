@@ -1,0 +1,34 @@
+[
+    {
+        "stepTitle": "轻账单 配置",
+        "items": [
+            {
+                "type": "text",
+                "field": "wizard_port",
+                "label": "服务端口",
+                "initValue": "18080"
+            },
+            {
+                "type": "password",
+                "field": "wizard_jwt_secret",
+                "label": "JWT 密钥"
+            },
+            {
+                "type": "radio",
+                "field": "wizard_allow_registration",
+                "label": "是否开放自助注册",
+                "initValue": "true",
+                "options": [
+                    {
+                        "label": "开放注册",
+                        "value": "true"
+                    },
+                    {
+                        "label": "关闭注册",
+                        "value": "false"
+                    }
+                ]
+            }
+        ]
+    }
+]

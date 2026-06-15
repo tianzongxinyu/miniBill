@@ -1,0 +1,76 @@
+# Locate miniBill app files on fnOS and extract app.tgz when needed.
+
+resolve_app_dest() {
+    local d
+    for d in \
+        "${TRIM_APPDEST:-}" \
+        "/vol1/@appcenter/${TRIM_APPNAME}" \
+        "/usr/local/apps/@appcenter/${TRIM_APPNAME}" \
+        "/var/apps/${TRIM_APPNAME}"
+    do
+        if [ -n "$d" ] && [ -d "$d" ]; then
+            echo "$d"
+            return 0
+        fi
+    done
+    if [ -n "${TRIM_APPDEST:-}" ]; then
+        echo "${TRIM_APPDEST}"
+        return 0
+    fi
+    echo "/var/apps/${TRIM_APPNAME}"
+}
+
+# Sets APP_ROOT and APP_BIN. Returns 0 on success.
+ensure_app_ready() {
+    local dest tgz
+    dest="$(resolve_app_dest)"
+    tgz="${dest}/app.tgz"
+
+    if [ -x "${dest}/app/bin/minibill" ]; then
+        APP_ROOT="${dest}/app"
+        APP_BIN="${APP_ROOT}/bin/minibill"
+        return 0
+    fi
+
+    if [ -x "${dest}/bin/minibill" ]; then
+        APP_ROOT="${dest}"
+        APP_BIN="${dest}/bin/minibill"
+        return 0
+    fi
+
+    if [ ! -f "$tgz" ]; then
+        return 1
+    fi
+
+    mkdir -p "${dest}/app"
+    tar -xzf "$tgz" -C "${dest}/app"
+    chmod +x "${dest}/app/bin/minibill" 2>/dev/null || true
+
+    if [ -x "${dest}/app/bin/minibill" ]; then
+        APP_ROOT="${dest}/app"
+        APP_BIN="${APP_ROOT}/bin/minibill"
+        return 0
+    fi
+
+    tar -xzf "$tgz" -C "${dest}"
+    chmod +x "${dest}/bin/minibill" 2>/dev/null || true
+    if [ -x "${dest}/bin/minibill" ]; then
+        APP_ROOT="${dest}"
+        APP_BIN="${dest}/bin/minibill"
+        return 0
+    fi
+
+    return 1
+}
+
+app_ui_config() {
+    local dest root
+    dest="$(resolve_app_dest)"
+    for root in "${dest}/app/ui/config" "${dest}/ui/config"; do
+        if [ -f "$root" ]; then
+            echo "$root"
+            return 0
+        fi
+    done
+    echo "${dest}/app/ui/config"
+}

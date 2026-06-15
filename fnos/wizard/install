@@ -1,0 +1,38 @@
+[
+    {
+        "stepTitle": "轻账单 设置",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "轻量个人记账 Web 应用。账本数据保存在应用数据目录，安装时请选择数据盘。"
+            },
+            {
+                "type": "text",
+                "field": "wizard_port",
+                "label": "服务端口（默认 18080，避免与 8080 上其他服务冲突）",
+                "initValue": "18080"
+            },
+            {
+                "type": "password",
+                "field": "wizard_jwt_secret",
+                "label": "JWT 密钥（用于登录令牌签名，请使用长随机字符串）"
+            },
+            {
+                "type": "radio",
+                "field": "wizard_allow_registration",
+                "label": "是否开放自助注册",
+                "initValue": "true",
+                "options": [
+                    {
+                        "label": "开放注册",
+                        "value": "true"
+                    },
+                    {
+                        "label": "关闭注册（需命令行创建用户）",
+                        "value": "false"
+                    }
+                ]
+            }
+        ]
+    }
+]

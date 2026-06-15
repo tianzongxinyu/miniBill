@@ -1,0 +1,77 @@
+# Shared path and env helpers for miniBill on fnOS.
+
+resolve_pkgvar() {
+    if [ -n "${TRIM_PKGVAR:-}" ]; then
+        echo "${TRIM_PKGVAR}"
+    elif [ -n "${TRIM_APPNAME:-}" ]; then
+        echo "/vol1/@appdata/${TRIM_APPNAME}"
+    else
+        echo ""
+    fi
+}
+
+resolve_port() {
+    if [ -n "${wizard_port:-}" ]; then
+        echo "${wizard_port}"
+    elif [ -n "${TRIM_SERVICE_PORT:-}" ]; then
+        echo "${TRIM_SERVICE_PORT}"
+    elif [ -f "$(resolve_pkgvar)/.port" ] 2>/dev/null; then
+        cat "$(resolve_pkgvar)/.port"
+    else
+        echo "18080"
+    fi
+}
+
+patch_port_files() {
+    local port="$1"
+    local app_dest ui_config
+    app_dest="$(resolve_app_dest)"
+    ui_config="$(app_ui_config)"
+
+    if [ -f "$ui_config" ]; then
+        sed -i "s/\"port\": \"[0-9]*\"/\"port\": \"${port}\"/" "$ui_config"
+    fi
+
+    local mf
+    for mf in \
+        "${app_dest}/manifest" \
+        "/var/apps/${TRIM_APPNAME}/manifest"
+    do
+        [ -f "$mf" ] || continue
+        sed -i "s/^service_port[[:space:]]*=.*/service_port          = ${port}/" "$mf"
+    done
+
+    local sc
+    for sc in \
+        "${app_dest}/MiniBill.sc" \
+        "/var/apps/${TRIM_APPNAME}/etc/MiniBill.sc" \
+        "/var/apps/${TRIM_APPNAME}/etc/${TRIM_APPNAME}.sc"
+    do
+        [ -f "$sc" ] || continue
+        sed -i "s/src.ports=\"[0-9]*\\/tcp\"/src.ports=\"${port}\\/tcp\"/" "$sc"
+        sed -i "s/dst.ports=\"[0-9]*\\/tcp\"/dst.ports=\"${port}\\/tcp\"/" "$sc"
+    done
+
+    echo "${port}" > "$(resolve_pkgvar)/.port"
+}
+
+write_env_file() {
+    local port pkgvar
+    port="$(resolve_port)"
+    pkgvar="$(resolve_pkgvar)"
+
+    [ -n "$pkgvar" ] || return 1
+    mkdir -p "${pkgvar}/data" 2>/dev/null || true
+
+    cat > "${pkgvar}/minibill.env" <<EOF
+JWT_SECRET=${wizard_jwt_secret}
+ALLOW_REGISTRATION=${wizard_allow_registration:-true}
+PORT=${port}
+TZ=Asia/Shanghai
+EOF
+    chmod 600 "${pkgvar}/minibill.env" 2>/dev/null || true
+    patch_port_files "$port"
+
+    ensure_app_ready
+    chmod +x "$APP_BIN" 2>/dev/null || true
+}

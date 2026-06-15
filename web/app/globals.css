@@ -1,0 +1,774 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --font-sans: "Inter", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --color-accent: #3E8E7E;
+  --color-accent-soft: #E8F4F1;
+  --radius-card: 1.5rem;
+  --radius-control: 1rem;
+}
+
+body {
+  @apply bg-canvas text-ink antialiased;
+}
+
+@layer components {
+  .page-title {
+    @apply text-xl font-semibold tracking-tight text-ink animate-fade-in-up;
+  }
+
+  .page-subtitle {
+    @apply text-sm text-muted animate-fade-in;
+    animation-delay: 60ms;
+  }
+
+  .page-enter {
+    animation: fade-in 0.45s var(--ease-out-expo) both;
+  }
+
+  .page-slide-right {
+    animation: fade-in 0.38s var(--ease-out-expo) both;
+  }
+
+  .page-slide-left {
+    animation: fade-in 0.38s var(--ease-out-expo) both;
+  }
+
+  .notebook {
+    @apply bg-surface border border-line/80 rounded-3xl shadow-panel overflow-hidden;
+    animation: scale-in 0.4s var(--ease-out-expo) both;
+    animation-delay: 80ms;
+  }
+
+  .notebook-row {
+    @apply block px-4 py-3.5 border-b border-line last:border-b-0;
+    @apply transition-colors duration-200 ease-out;
+  }
+
+  .notebook-row:hover {
+    @apply bg-accent-soft/40;
+  }
+
+  .notebook-row:active {
+    transform: scale(0.995);
+  }
+
+  .field {
+    @apply w-full bg-surface border border-line rounded-2xl px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/60;
+    @apply transition-all duration-200 ease-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent/40;
+  }
+
+  .field-sm {
+    @apply field py-1.5 px-2.5;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-4 py-2.5 rounded-2xl;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-accent/90;
+    @apply active:scale-[0.98];
+    @apply disabled:opacity-50;
+  }
+
+  .btn-primary-block {
+    @apply btn-primary w-full py-3;
+  }
+
+  .btn-segment {
+    @apply flex-1 py-2.5 rounded-2xl border border-line text-sm font-medium text-muted;
+    @apply transition-all duration-200 ease-out hover:border-accent/30;
+  }
+
+  .btn-segment-active {
+    @apply btn-segment bg-accent text-white border-accent;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center text-sm text-muted;
+    @apply transition-colors duration-200 hover:text-ink;
+  }
+
+  .tag-pill {
+    @apply px-3 py-1 rounded-full text-xs border border-line text-muted bg-surface;
+    @apply transition-all duration-200 ease-out hover:border-accent/30;
+  }
+
+  .tag-pill-active {
+    @apply tag-pill bg-accent-soft border-accent/30 text-accent font-medium;
+  }
+
+  .amount-num {
+    @apply tabular-nums text-right;
+  }
+
+  .amount-income {
+    @apply tabular-nums text-right text-income font-medium;
+  }
+
+  .amount-expense {
+    @apply tabular-nums text-right text-expense font-medium;
+  }
+
+  .stat-label {
+    @apply text-xs uppercase tracking-wide text-muted;
+  }
+
+  .stat-value {
+    @apply text-xl font-semibold tabular-nums text-ink mt-1 text-right;
+  }
+
+  .field-amount {
+    @apply field tabular-nums text-right;
+    -moz-appearance: textfield;
+  }
+
+  .field-amount::-webkit-outer-spin-button,
+  .field-amount::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .nav-item {
+    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm;
+    @apply text-muted transition-all duration-200 ease-out;
+    @apply hover:text-accent hover:bg-accent-soft/50;
+  }
+
+  .nav-item-active {
+    @apply nav-item text-accent font-medium bg-accent-soft;
+  }
+
+  .nav-item-active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-full;
+    animation: fade-in 0.25s ease-out both;
+  }
+
+  aside[data-collapsed] .nav-item-active::before {
+    @apply hidden;
+  }
+
+  aside[data-collapsed] .nav-item-active {
+    @apply bg-accent-soft;
+  }
+
+  .loading-shimmer {
+    background: linear-gradient(90deg, #e8eeec 25%, #f4f8f7 50%, #e8eeec 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+
+  /* —— 概览 bill cards —— */
+  .bill-card {
+    @apply relative bg-surface border border-line/80 rounded-3xl px-4 py-3.5 shadow-panel overflow-hidden;
+    @apply transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(62,142,126,0.06)];
+    animation: scale-in 0.4s var(--ease-out-expo) both;
+  }
+
+  .bill-card-current {
+    @apply border-accent/30 ring-1 ring-accent/10 shadow-[0_2px_12px_rgba(62,142,126,0.08)];
+  }
+
+  .bill-card-header {
+    @apply flex items-center gap-3 mb-2.5 pb-2 border-b border-line/60;
+  }
+
+  .bill-card-month {
+    @apply text-sm font-medium text-ink tabular-nums tracking-tight text-left;
+  }
+
+  .bill-card-split {
+    @apply grid grid-cols-[1fr_auto_1fr] items-center;
+  }
+
+  .bill-card-columns {
+    @apply grid grid-cols-[1fr_auto_1fr] gap-x-3 sm:gap-x-4;
+  }
+
+  .bill-card-col {
+    @apply flex flex-col gap-2.5 min-w-0;
+  }
+
+  .bill-stat-item {
+    @apply text-right;
+  }
+
+  .bill-stat-row {
+    @apply flex items-baseline justify-between gap-3 min-w-0;
+  }
+
+  .bill-stat-row-label {
+    @apply text-xs text-muted shrink-0 text-left;
+  }
+
+  .bill-stat-row-value {
+    @apply text-sm font-semibold tabular-nums text-right min-w-0;
+  }
+
+  .bill-card-split-divider {
+    @apply w-px h-12 bg-line/80 mx-2.5 sm:mx-3;
+  }
+
+  .bill-card-split-divider-full {
+    @apply h-auto self-stretch mx-0;
+  }
+
+  .bill-stat-label {
+    @apply block w-full text-right text-[11px] font-medium uppercase tracking-wide text-muted;
+  }
+
+  .bill-stat-value {
+    @apply amount-num block w-full text-right text-base font-semibold tracking-tight;
+  }
+
+  .bill-stat-value-lg {
+    @apply amount-num block w-full text-right text-xl font-semibold tracking-tight;
+  }
+
+  .bill-empty {
+    @apply notebook py-14 px-6 text-center;
+  }
+
+  .bill-list-footer {
+    @apply h-12 flex items-center justify-center mt-4;
+  }
+
+  .bill-list-footer-text {
+    @apply text-[11px] uppercase tracking-[0.12em] text-muted/70;
+  }
+
+  .fab-wrap {
+    @apply fixed z-[60] inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:inset-x-auto lg:right-8 lg:bottom-6 lg:w-96;
+    @apply flex items-stretch gap-2;
+  }
+
+  .fab-glow {
+    @apply absolute inset-x-2 -bottom-2 h-8 rounded-full bg-accent/10 blur-xl pointer-events-none;
+  }
+
+  .fab-button {
+    @apply relative flex flex-1 items-center justify-center gap-2 min-w-0 py-3.5 rounded-3xl;
+    @apply bg-accent text-white text-sm font-medium;
+    @apply shadow-[0_4px_16px_rgba(62,142,126,0.25)] ring-1 ring-accent/20;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-accent/90;
+    @apply active:scale-[0.98];
+  }
+
+  .fab-button-secondary {
+    @apply bg-surface text-ink border border-line;
+    @apply shadow-panel ring-0;
+    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply active:scale-[0.98];
+  }
+
+  /* —— 记一笔 form —— */
+  .add-form {
+    @apply space-y-3 pb-20 max-w-lg mx-auto;
+  }
+
+  .add-form .btn-ghost {
+    @apply mb-2;
+  }
+
+  .form-hero {
+    @apply relative bg-surface border border-line/80 rounded-3xl px-4 pt-4 pb-4 shadow-panel overflow-hidden;
+    animation: scale-in 0.4s var(--ease-out-expo) both;
+  }
+
+  .form-hero-type {
+    @apply flex gap-1.5 p-1 rounded-2xl bg-accent-soft/50 border border-line/50 mb-3;
+  }
+
+  .form-hero-type .btn-segment {
+    @apply border-0 shadow-none hover:border-0;
+  }
+
+  .form-hero-type .btn-segment:not(.btn-segment-active) {
+    @apply bg-transparent text-muted hover:bg-surface/80 hover:text-ink;
+  }
+
+  .form-hero-type .btn-segment-active {
+    @apply bg-accent text-white border-0;
+  }
+
+  .form-hero-amount {
+    @apply flex items-baseline justify-between gap-3 w-full;
+  }
+
+  .form-hero-currency {
+    @apply text-2xl font-semibold tabular-nums select-none shrink-0;
+  }
+
+  .form-section {
+    @apply bg-surface border border-line/80 rounded-3xl shadow-panel overflow-visible;
+    animation: fade-in-up 0.4s var(--ease-out-expo) both;
+  }
+
+  .form-details {
+    @apply relative form-section divide-y divide-line/60;
+  }
+
+  .form-row {
+    @apply px-3.5 py-3 first:pt-3 last:pb-3 space-y-2;
+  }
+
+  .form-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-muted;
+  }
+
+  .form-section-delay-1 {
+    animation-delay: 80ms;
+  }
+
+  .form-section-delay-2 {
+    animation-delay: 140ms;
+  }
+
+  .form-section-delay-3 {
+    animation-delay: 200ms;
+  }
+
+  .form-field-group {
+    @apply space-y-2;
+  }
+
+  .form-alert-error {
+    @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-expense bg-red-50/80 border border-red-100;
+    border-left-width: 3px;
+    border-left-color: theme('colors.expense');
+  }
+
+  .form-alert-warn {
+    @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-amber-800 bg-amber-50/80 border border-amber-100;
+    border-left-width: 3px;
+    border-left-color: #d97706;
+  }
+
+  .form-amount-input {
+    @apply flex-1 min-w-0 bg-transparent border-0 text-3xl font-semibold tabular-nums text-right placeholder:text-muted/40;
+    @apply focus:outline-none focus:ring-0 py-0 leading-none;
+    -moz-appearance: textfield;
+  }
+
+  .form-amount-input::-webkit-outer-spin-button,
+  .form-amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .form-note-field {
+    @apply w-full resize-none rounded-2xl border-0 bg-accent-soft/30 px-3 py-2.5 text-sm text-ink;
+    @apply transition-all duration-200 ease-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:bg-surface;
+  }
+
+  .form-submit-wrap {
+    @apply pt-0;
+    animation: fade-in-up 0.4s var(--ease-out-expo) both;
+    animation-delay: 160ms;
+  }
+
+  .form-submit {
+    @apply relative flex items-center justify-center w-full py-3 rounded-3xl;
+    @apply bg-accent text-white text-sm font-medium;
+    @apply shadow-[0_4px_16px_rgba(62,142,126,0.2)] ring-1 ring-accent/20;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-accent/90;
+    @apply active:scale-[0.98];
+  }
+
+  .btn-danger-block {
+    @apply relative flex items-center justify-center w-full py-3 rounded-3xl;
+    @apply bg-expense text-white text-sm font-medium;
+    @apply shadow-[0_4px_16px_rgba(224,82,82,0.2)] ring-1 ring-expense/20;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-expense/90;
+    @apply active:scale-[0.98];
+    @apply disabled:bg-expense/40 disabled:cursor-not-allowed;
+  }
+
+  /* —— 统计图全屏（竖屏时模拟横屏） —— */
+  .stats-chart-fullscreen-landscape {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100vh;
+    height: 100vw;
+    transform: rotate(90deg);
+    transform-origin: top left;
+  }
+
+  /* —— 确认弹窗 —— */
+  .confirm-overlay {
+    @apply fixed inset-0 z-[100] flex items-center justify-center p-4;
+    @apply bg-ink/30 backdrop-blur-sm;
+    animation: fade-in 0.2s ease-out both;
+  }
+
+  .confirm-panel {
+    @apply relative w-full max-w-sm bg-surface border border-line/80 rounded-3xl p-5 shadow-[0_8px_32px_rgba(26,26,26,0.1)];
+    animation: scale-in 0.25s var(--ease-out-expo) both;
+  }
+
+  .confirm-title {
+    @apply text-base font-semibold text-ink tracking-tight;
+  }
+
+  .confirm-message {
+    @apply mt-2 text-sm text-muted leading-relaxed;
+  }
+
+  .confirm-actions {
+    @apply flex justify-end gap-2.5 mt-5;
+  }
+
+  .confirm-cancel {
+    @apply py-2.5 px-4 rounded-2xl border border-line text-sm font-medium text-muted bg-surface;
+    @apply transition-all duration-200 hover:bg-accent-soft/50 hover:text-ink hover:border-accent/20;
+    @apply active:scale-[0.98];
+  }
+
+  .confirm-confirm {
+    @apply py-2.5 px-4 rounded-2xl text-sm font-medium text-white bg-expense;
+    @apply shadow-sm transition-all duration-200;
+    @apply hover:bg-expense/90 active:scale-[0.98];
+    @apply disabled:bg-expense/40 disabled:pointer-events-none;
+  }
+
+  .form-details .date-picker-field {
+    @apply border-0 bg-accent-soft/30 px-3 py-2;
+  }
+
+  .form-details .date-picker-field-open {
+    @apply bg-surface ring-2 ring-accent/25;
+  }
+
+  .form-details .combobox-panel {
+    @apply border-0 bg-accent-soft/30 px-3 py-2;
+  }
+
+  .form-details .combobox-panel-focused {
+    @apply bg-surface ring-2 ring-accent/25;
+  }
+
+  .date-picker {
+    @apply relative;
+  }
+
+  .date-picker-field {
+    @apply relative flex items-center gap-3 w-full rounded-2xl border border-line bg-accent-soft/30 px-3.5 py-2.5;
+    @apply transition-all duration-200 ease-out cursor-pointer text-left;
+    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
+  }
+
+  .date-picker-field-open {
+    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
+  }
+
+  .date-picker-field-icon {
+    @apply flex-shrink-0 text-muted;
+  }
+
+  .date-picker-field-value {
+    @apply flex-1 text-sm font-medium text-ink text-right;
+  }
+
+  .date-picker-field-chevron {
+    @apply flex-shrink-0 text-muted/60 transition-transform duration-200;
+  }
+
+  .date-picker-field-chevron-open {
+    transform: rotate(180deg);
+  }
+
+  .date-picker-panel {
+    @apply mt-2 p-4 w-full;
+    @apply bg-surface border border-line/80 rounded-3xl;
+    @apply shadow-panel;
+    animation: fade-in-up 0.22s var(--ease-out-expo) both;
+  }
+
+  .date-picker-header {
+    @apply flex items-center justify-between gap-2 mb-4;
+  }
+
+  .date-picker-title {
+    @apply text-sm font-semibold text-ink tracking-tight;
+  }
+
+  .date-picker-nav {
+    @apply flex items-center justify-center w-8 h-8 rounded-lg text-muted;
+    @apply transition-all duration-150 hover:bg-accent-soft hover:text-accent;
+    @apply disabled:opacity-30 disabled:pointer-events-none;
+  }
+
+  .date-picker-weekdays {
+    @apply grid grid-cols-7 gap-1 mb-2;
+  }
+
+  .date-picker-weekday {
+    @apply text-center text-[11px] font-medium uppercase tracking-wide text-muted py-1;
+  }
+
+  .date-picker-grid {
+    @apply grid grid-cols-7 gap-1;
+  }
+
+  .date-picker-day {
+    @apply aspect-square flex items-center justify-center rounded-lg text-sm tabular-nums text-ink;
+    @apply transition-all duration-150 hover:bg-accent-soft/50;
+  }
+
+  .date-picker-day-outside {
+    @apply text-muted/40 pointer-events-none;
+  }
+
+  .date-picker-day-today {
+    @apply font-semibold ring-1 ring-accent/30;
+  }
+
+  .date-picker-day-selected {
+    @apply bg-accent text-white font-semibold hover:bg-accent/90;
+  }
+
+  .date-picker-day-disabled {
+    @apply text-muted/40 pointer-events-none hover:bg-transparent;
+  }
+
+  .date-picker-footer {
+    @apply flex justify-center mt-4 pt-3 border-t border-line/60;
+  }
+
+  .date-picker-today {
+    @apply text-xs font-medium text-muted px-3 py-1.5 rounded-lg;
+    @apply transition-colors duration-150 hover:bg-accent-soft hover:text-accent;
+    @apply disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  .month-picker {
+    @apply relative shrink-0;
+  }
+
+  .month-picker-field-width {
+    @apply w-full shrink;
+  }
+
+  .month-picker-field {
+    @apply inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-line bg-surface/80;
+    @apply text-sm text-ink transition-all duration-150;
+    @apply hover:border-accent/30 hover:bg-surface;
+  }
+
+  .month-picker-field-block {
+    @apply flex w-full justify-between py-2.5 px-3.5;
+  }
+
+  .month-picker-field-block .month-picker-field-value {
+    @apply flex-1 text-right;
+  }
+
+  .month-picker-field-open {
+    @apply border-accent/30 bg-surface ring-2 ring-accent/25;
+  }
+
+  .month-picker-disabled .month-picker-field {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .month-picker-field-value {
+    @apply font-medium;
+  }
+
+  .month-picker-field-chevron {
+    @apply text-muted transition-transform duration-200;
+  }
+
+  .month-picker-field-chevron-open {
+    @apply rotate-180;
+  }
+
+  .month-picker-panel {
+    @apply absolute right-0 top-full mt-2 z-50 w-[16rem] p-4 rounded-3xl;
+    @apply border border-line/80 bg-surface shadow-panel;
+    @apply animate-fade-in;
+  }
+
+  .month-picker-header {
+    @apply flex items-center justify-between mb-3;
+  }
+
+  .month-picker-title {
+    @apply text-sm font-semibold text-ink;
+  }
+
+  .month-picker-nav {
+    @apply p-1.5 rounded-lg text-muted transition-colors;
+    @apply hover:bg-accent-soft hover:text-accent disabled:opacity-30 disabled:pointer-events-none;
+  }
+
+  .month-picker-grid {
+    @apply grid grid-cols-3 gap-2;
+  }
+
+  .month-picker-month {
+    @apply py-2 px-1 rounded-2xl text-sm text-ink border border-transparent;
+    @apply transition-colors duration-150 hover:bg-accent-soft/50;
+  }
+
+  .month-picker-month-selected {
+    @apply bg-accent text-white font-medium hover:bg-accent/90;
+  }
+
+  .month-picker-month-current {
+    @apply border-line font-medium;
+  }
+
+  .month-picker-month-disabled {
+    @apply text-muted/40 pointer-events-none hover:bg-transparent;
+  }
+
+  .transactions-sticky-bar {
+    @apply sticky top-0 z-30 -mx-4 px-4 py-3.5 lg:-mx-8 lg:px-8 -mt-6 pt-6 lg:-mt-10 lg:pt-10;
+    @apply bg-canvas/90 backdrop-blur-xl border-b border-line/50;
+  }
+
+  .transactions-sticky-inner {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .transactions-toolbar {
+    @apply flex items-center gap-3;
+  }
+
+  .transactions-toolbar .combobox-panel,
+  .transactions-toolbar .month-picker-field {
+    @apply min-h-[3.25rem] bg-accent-soft/30;
+  }
+
+  .transactions-toolbar .combobox-panel {
+    @apply flex items-center;
+  }
+
+  .transactions-toolbar .month-picker-field {
+    @apply py-2.5 transition-all duration-200 ease-out;
+    @apply hover:border-accent/30 hover:bg-accent-soft/50;
+  }
+
+  .transactions-toolbar .month-picker-field-open {
+    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
+  }
+
+  .stats-toolbar {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .stats-toolbar-right {
+    @apply shrink-0 flex gap-2;
+  }
+
+  .combobox {
+    @apply relative;
+  }
+
+  .combobox-panel {
+    @apply rounded-2xl border border-line bg-accent-soft/30 px-3 py-2.5;
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .combobox-panel-focused {
+    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
+  }
+
+  .combobox-panel-body {
+    @apply flex items-start gap-1.5;
+  }
+
+  .combobox-clear {
+    @apply shrink-0 mt-0.5 p-1 rounded-lg text-muted transition-colors duration-150;
+    @apply hover:text-accent hover:bg-accent-soft;
+  }
+
+  .combobox-chip-row {
+    @apply flex flex-1 min-w-0 flex-wrap items-center gap-2 min-h-[2rem];
+  }
+
+  .combobox-chip {
+    @apply inline-flex items-center gap-1 shrink-0 scale-100;
+  }
+
+  .combobox-chip-remove {
+    @apply ml-0.5 text-muted hover:text-ink leading-none text-sm;
+  }
+
+  .combobox-input-inline {
+    @apply flex-1 min-w-[6rem] bg-transparent border-0 text-sm text-ink placeholder:text-muted/60 py-1 px-0.5;
+    @apply focus:outline-none focus:ring-0;
+  }
+
+  .combobox-candidates {
+    @apply flex flex-wrap gap-2 mt-2.5 pt-2.5 border-t border-line/60;
+  }
+
+  .combobox-candidates-floating {
+    @apply absolute left-0 right-0 top-full mt-2 z-50;
+    @apply flex flex-wrap gap-2 p-3 rounded-2xl;
+    @apply border border-line/80 bg-surface shadow-panel;
+    @apply max-h-[min(16rem,50vh)] overflow-y-auto;
+    @apply animate-fade-in;
+  }
+
+  .combobox-candidate {
+    @apply cursor-pointer transition-all duration-150 hover:border-accent/30 hover:bg-accent-soft/50;
+  }
+
+  .combobox-candidate-active {
+    @apply bg-accent-soft border-accent/30 text-accent font-medium;
+  }
+
+  .combobox-candidate-create {
+    @apply text-muted border-dashed;
+  }
+
+  .combobox-candidate-muted {
+    @apply text-muted font-normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .page-slide-left,
+  .page-slide-right,
+  .page-title,
+  .page-subtitle,
+  .notebook,
+  .notebook-row,
+  .btn-primary,
+  .bill-hero,
+  .bill-card,
+  .fab-button,
+  .form-hero,
+  .form-section,
+  .form-submit-wrap,
+  .date-picker-panel,
+  .confirm-overlay,
+  .confirm-panel,
+  .nav-item-active::before {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  aside,
+  main {
+    transition: none !important;
+  }
+
+  .notebook-row:hover {
+    transform: none;
+  }
+}

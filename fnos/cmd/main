@@ -1,0 +1,110 @@
+#!/bin/bash
+
+. "$(dirname "$0")/app-layout"
+
+ENV_FILE=""
+PID_FILE=""
+LOG_FILE=""
+DATA_DIR=""
+
+resolve_pkgvar() {
+    if [ -n "${TRIM_PKGVAR:-}" ]; then
+        echo "${TRIM_PKGVAR}"
+        return 0
+    fi
+    local d
+    for d in \
+        "/vol1/@appdata/${TRIM_APPNAME}" \
+        "/usr/local/apps/@appdata/${TRIM_APPNAME}"
+    do
+        if [ -d "$d" ]; then
+            echo "$d"
+            return 0
+        fi
+    done
+    echo "/vol1/@appdata/${TRIM_APPNAME}"
+}
+
+resolve_runtime_paths() {
+    local pkgvar
+    pkgvar="$(resolve_pkgvar)"
+    ENV_FILE="${pkgvar}/minibill.env"
+    PID_FILE="${pkgvar}/minibill.pid"
+    LOG_FILE="${pkgvar}/minibill.log"
+    DATA_DIR="${pkgvar}/data"
+}
+
+case $1 in
+start)
+    resolve_runtime_paths
+    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        exit 0
+    fi
+
+    mkdir -p "$(dirname "$LOG_FILE")" "$DATA_DIR" 2>/dev/null || true
+
+    if ! ensure_app_ready; then
+        echo "$(date '+%F %T') binary not found under $(resolve_app_dest)" >> "$LOG_FILE"
+        ls -la "$(resolve_app_dest)" >> "$LOG_FILE" 2>&1 || true
+        [ -n "${TRIM_TEMP_LOGFILE:-}" ] && echo "未找到程序，请升级 fpk 或查看日志：${LOG_FILE}" > "${TRIM_TEMP_LOGFILE}"
+        exit 1
+    fi
+
+    port="${TRIM_SERVICE_PORT:-18080}"
+    if [ -f "$ENV_FILE" ]; then
+        # shellcheck disable=SC1090
+        set -a
+        . "$ENV_FILE"
+        set +a
+    fi
+    port="${PORT:-$port}"
+
+    echo "$(date '+%F %T') starting port=$port bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"
+
+    (
+        export DATA_DIR
+        export STATIC_DIR="${APP_ROOT}/web/out"
+        export MIGRATIONS_SYSTEM="${APP_ROOT}/migrations/system"
+        export MIGRATIONS_LEDGER="${APP_ROOT}/migrations/ledger"
+        export PORT="$port"
+        export TZ="${TZ:-Asia/Shanghai}"
+        cd "$DATA_DIR" || exit 1
+        exec "$APP_BIN"
+    ) >> "$LOG_FILE" 2>&1 &
+
+    echo $! > "$PID_FILE"
+    sleep 1
+    if ! kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        [ -n "${TRIM_TEMP_LOGFILE:-}" ] && echo "进程已退出，请查看日志：${LOG_FILE}" > "${TRIM_TEMP_LOGFILE}"
+        exit 1
+    fi
+    exit 0
+    ;;
+stop)
+    resolve_runtime_paths
+    if [ -f "$PID_FILE" ]; then
+        kill "$(cat "$PID_FILE")" 2>/dev/null || true
+        rm -f "$PID_FILE"
+    fi
+    exit 0
+    ;;
+status)
+    resolve_runtime_paths
+    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        exit 0
+    fi
+    exit 3
+    ;;
+log)
+    resolve_runtime_paths
+    if [ -f "$LOG_FILE" ]; then
+        tail -n "${2:-100}" "$LOG_FILE"
+    else
+        echo "log not found: $LOG_FILE" >&2
+        exit 1
+    fi
+    ;;
+*)
+    exit 1
+    ;;
+esac

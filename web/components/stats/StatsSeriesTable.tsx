@@ -1,0 +1,102 @@
+'use client';
+
+import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { Amount } from '@/components/ui/Amount';
+import { BalanceAmount } from '@/components/ui/BalanceAmount';
+import { SignedAmount } from '@/components/ui/SignedAmount';
+import { Notebook } from '@/components/ui/Notebook';
+import { getCurrentYearMonth } from '@/lib/api';
+import { isSeriesVisible, type StatsChartRow } from '@/lib/statsChartData';
+
+function transactionsMonthForYear(year: number): number {
+  const now = getCurrentYearMonth();
+  if (year === now.year) return now.month;
+  return 12;
+}
+
+type StatsSeriesTableProps = {
+  mode: 'month' | 'year';
+  rows: StatsChartRow[];
+  searchActive: boolean;
+  hiddenSeries: Set<string>;
+};
+
+export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: StatsSeriesTableProps) {
+  const router = useRouter();
+
+  const tableRows = useMemo(() => [...rows].reverse(), [rows]);
+  const showIncome = isSeriesVisible(hiddenSeries, 'income');
+  const showExpense = isSeriesVisible(hiddenSeries, 'expense');
+  const showNet = !searchActive && isSeriesVisible(hiddenSeries, 'net');
+  const showBalance = !searchActive && isSeriesVisible(hiddenSeries, 'balance');
+
+  const goToRow = (row: StatsChartRow) => {
+    if (mode === 'month' && row.month != null) {
+      router.push(`/transactions/?year=${row.year}&month=${row.month}`);
+      return;
+    }
+    router.push(`/transactions/?year=${row.year}&month=${transactionsMonthForYear(row.year)}`);
+  };
+
+  if (tableRows.length === 0) return null;
+
+  return (
+    <Notebook className="overflow-x-auto mb-3">
+      <table className="table-auto w-max min-w-full text-sm">
+        <thead>
+          <tr className="border-b border-line text-muted">
+            <th className="px-3 py-3 text-left font-medium whitespace-nowrap">日期</th>
+            {showIncome && (
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">收入</th>
+            )}
+            {showExpense && (
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">支出</th>
+            )}
+            {showNet && (
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">净收入</th>
+            )}
+            {showBalance && (
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">余额</th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {tableRows.map((row) => (
+            <tr
+              key={row.key}
+              className="border-b border-line last:border-b-0 cursor-pointer hover:bg-accent-soft/40"
+              onClick={() => goToRow(row)}
+            >
+              <td className="px-3 py-3 text-ink whitespace-nowrap">{row.shortLabel}</td>
+              {showIncome && (
+                <td className="px-3 py-3 text-right whitespace-nowrap">
+                  <Amount cents={row.incomeCents} type="income" className="text-sm" />
+                </td>
+              )}
+              {showExpense && (
+                <td className="px-3 py-3 text-right whitespace-nowrap">
+                  <Amount cents={row.expenseCents} type="expense" className="text-sm" />
+                </td>
+              )}
+              {showNet && (
+                <td className="px-3 py-3 text-right whitespace-nowrap">
+                  <SignedAmount cents={row.netCents} className="text-sm" />
+                </td>
+              )}
+              {showBalance && (
+                <td className="px-3 py-3 text-right whitespace-nowrap">
+                  {row.balanceCents != null ? (
+                    <BalanceAmount cents={row.balanceCents} className="text-sm" />
+                  ) : (
+                    '—'
+                  )}
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Notebook>
+  );
+}

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+. "$(dirname "$0")/app-layout"
+. "$(dirname "$0")/apply-settings"
+
+ensure_app_ready
+write_env_file || true
+exit 0
