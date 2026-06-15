@@ -37,12 +37,20 @@ export function useTransactionsMonthNav({
   loadingMoreRef.current = loadingMore;
   hasMoreRef.current = hasMore;
 
+  const atBottomRef = useRef(false);
+
   const resetAll = useCallback(() => {
-    setAtBottom(false);
+    if (atBottomRef.current) {
+      atBottomRef.current = false;
+      setAtBottom(false);
+    }
   }, []);
 
   const markLoadSettling = useCallback(() => {
-    setAtBottom(false);
+    if (atBottomRef.current) {
+      atBottomRef.current = false;
+      setAtBottom(false);
+    }
   }, []);
 
   const canGoPrevMonth = useCallback(() => {
@@ -54,26 +62,25 @@ export function useTransactionsMonthNav({
     if (!enabled) return;
 
     const syncAtBottom = () => {
+      let next = false;
       if (
-        !monthFullyLoadedRef.current ||
-        loadingRef.current ||
-        loadingMoreRef.current ||
-        hasMoreRef.current
+        monthFullyLoadedRef.current &&
+        !loadingRef.current &&
+        !loadingMoreRef.current &&
+        !hasMoreRef.current
       ) {
-        setAtBottom(false);
-        return;
+        next = isNearPageBottom();
       }
-      setAtBottom(isNearPageBottom());
+      if (next === atBottomRef.current) return;
+      atBottomRef.current = next;
+      setAtBottom(next);
     };
 
     window.addEventListener('scroll', syncAtBottom, { passive: true });
-    const main = document.querySelector('main');
-    main?.addEventListener('scroll', syncAtBottom, { passive: true });
     syncAtBottom();
 
     return () => {
       window.removeEventListener('scroll', syncAtBottom);
-      main?.removeEventListener('scroll', syncAtBottom);
     };
   }, [enabled, year, month, monthFullyLoaded, loading, loadingMore, hasMore]);
 

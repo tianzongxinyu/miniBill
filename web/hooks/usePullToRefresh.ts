@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getScrollY } from '@/lib/scroll';
 
 const THRESHOLD = 64;
+const TOP_EPSILON = 2;
 
 export function usePullToRefresh(onRefresh: () => Promise<void>) {
   const [pulling, setPulling] = useState(false);
@@ -11,6 +12,22 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
   const startY = useRef(0);
   const pullRef = useRef(0);
   const refreshing = useRef(false);
+  const rafRef = useRef(0);
+
+  const publishDistance = useCallback((d: number) => {
+    pullRef.current = d;
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = 0;
+      setPullDistance(pullRef.current);
+    });
+  }, []);
+
+  const resetPull = useCallback(() => {
+    if (pullRef.current === 0) return;
+    pullRef.current = 0;
+    publishDistance(0);
+  }, [publishDistance]);
 
   const handleRefresh = useCallback(async () => {
     if (refreshing.current) return;
@@ -21,24 +38,27 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
     } finally {
       refreshing.current = false;
       setPulling(false);
-      setPullDistance(0);
-      pullRef.current = 0;
+      resetPull();
     }
-  }, [onRefresh]);
+  }, [onRefresh, resetPull]);
 
   useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
-      if (getScrollY() > 0 || refreshing.current) return;
+      if (getScrollY() > TOP_EPSILON || refreshing.current) return;
       startY.current = e.touches[0].clientY;
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (getScrollY() > 0 || refreshing.current) return;
+      if (refreshing.current) return;
+      if (getScrollY() > TOP_EPSILON) {
+        resetPull();
+        return;
+      }
       const dy = e.touches[0].clientY - startY.current;
       if (dy > 0) {
-        const d = Math.min(dy, THRESHOLD * 1.5);
-        pullRef.current = d;
-        setPullDistance(d);
+        publishDistance(Math.min(dy, THRESHOLD * 1.5));
+      } else {
+        resetPull();
       }
     };
 
@@ -46,8 +66,7 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
       if (pullRef.current >= THRESHOLD && !refreshing.current) {
         void handleRefresh();
       } else {
-        pullRef.current = 0;
-        setPullDistance(0);
+        resetPull();
       }
     };
 
@@ -58,8 +77,9 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleRefresh]);
+  }, [handleRefresh, publishDistance, resetPull]);
 
   return { pulling, pullDistance, refresh: handleRefresh };
 }

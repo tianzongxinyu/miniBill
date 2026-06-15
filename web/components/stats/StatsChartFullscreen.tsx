@@ -65,8 +65,14 @@ export function StatsChartFullscreen({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const restoredScrollRef = useRef(false);
 
+  const rotatedScroll = portraitFallbackProp || portraitFallback;
+
   const { onMouseDown: onChartMouseDown, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } =
-    useHorizontalDragScroll(scrollRef, { enabled: open });
+    useHorizontalDragScroll(scrollRef, {
+      enabled: open,
+      scrollAxis: rotatedScroll ? 'y' : 'x',
+      captureTouch: rotatedScroll,
+    });
 
   useEffect(() => {
     setMounted(true);
@@ -170,9 +176,9 @@ export function StatsChartFullscreen({
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerCancel}
-          className="stats-chart-scroll h-full overflow-x-auto overflow-y-hidden touch-none"
+          className={`stats-chart-scroll stats-chart-scroll-fullscreen h-full overflow-x-auto overflow-y-hidden${rotatedScroll ? ' stats-chart-scroll-rotated' : ''}`}
         >
-          <div style={{ minWidth: scrollWidth }} className="px-4 pt-2 h-full">
+          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner px-4 pt-2 h-full">
             <StatsScrollChart
               mode={mode}
               monthItems={monthItems}

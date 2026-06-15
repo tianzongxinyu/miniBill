@@ -2,30 +2,47 @@
 
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 4;
 
 type Options = {
   enabled?: boolean;
+  /** clientY drives scrollLeft when the scroll container is rotated (portrait fallback). */
+  scrollAxis?: 'x' | 'y';
+  /** When false, touch uses native overflow scroll; mouse still drags. */
+  captureTouch?: boolean;
 };
 
 export function useHorizontalDragScroll<T extends HTMLElement>(
   scrollRef: RefObject<T | null>,
-  { enabled = true }: Options = {}
+  { enabled = true, scrollAxis = 'x', captureTouch = false }: Options = {}
 ) {
   const dragState = useRef<{
     pointerId: number;
-    startX: number;
+    startCoord: number;
     startScrollLeft: number;
     dragging: boolean;
+    raf: number;
+    pendingScrollLeft: number | null;
   } | null>(null);
 
+  const flushScroll = useCallback(
+    (el: T) => {
+      const state = dragState.current;
+      if (!state || state.pendingScrollLeft == null) return;
+      el.scrollLeft = state.pendingScrollLeft;
+      state.pendingScrollLeft = null;
+      state.raf = 0;
+    },
+    []
+  );
+
   const applyDrag = useCallback(
-    (clientX: number, preventDefault?: () => void) => {
+    (coord: number, preventDefault?: () => void) => {
       const state = dragState.current;
       const el = scrollRef.current;
       if (!state || !el) return;
 
-      const dx = clientX - state.startX;
+      const dx = coord - state.startCoord;
       if (!state.dragging && Math.abs(dx) < DRAG_THRESHOLD) return;
 
       if (!state.dragging) {
@@ -34,9 +51,12 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
       }
 
       preventDefault?.();
-      el.scrollLeft = state.startScrollLeft - dx;
+      state.pendingScrollLeft = state.startScrollLeft - dx;
+      if (!state.raf) {
+        state.raf = requestAnimationFrame(() => flushScroll(el));
+      }
     },
-    [scrollRef]
+    [flushScroll, scrollRef]
   );
 
   const endDrag = useCallback(
@@ -46,6 +66,14 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
       if (pointerId != null && state.pointerId !== pointerId) return;
 
       const el = scrollRef.current;
+      if (state.raf) {
+        cancelAnimationFrame(state.raf);
+        state.raf = 0;
+      }
+      if (el && state.pendingScrollLeft != null) {
+        el.scrollLeft = state.pendingScrollLeft;
+        state.pendingScrollLeft = null;
+      }
       if (state.dragging) {
         el?.classList.remove('is-dragging');
         el?.releasePointerCapture?.(state.pointerId);
@@ -55,21 +83,34 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
     [scrollRef]
   );
 
+  const shouldCapturePointer = useCallback(
+    (pointerType: string) => captureTouch || pointerType === 'mouse',
+    [captureTouch]
+  );
+
+  const pointerCoord = useCallback(
+    (clientX: number, clientY: number) => (scrollAxis === 'y' ? clientY : clientX),
+    [scrollAxis]
+  );
+
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (!enabled || e.button !== 0) return;
+      if (!shouldCapturePointer(e.pointerType)) return;
       const el = scrollRef.current;
       if (!el) return;
 
       dragState.current = {
         pointerId: e.pointerId,
-        startX: e.clientX,
+        startCoord: pointerCoord(e.clientX, e.clientY),
         startScrollLeft: el.scrollLeft,
         dragging: false,
+        raf: 0,
+        pendingScrollLeft: null,
       };
       el.setPointerCapture(e.pointerId);
     },
-    [enabled, scrollRef]
+    [enabled, pointerCoord, scrollRef, shouldCapturePointer]
   );
 
   const onMouseDown = useCallback(
@@ -80,21 +121,23 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
 
       dragState.current = {
         pointerId: -1,
-        startX: e.clientX,
+        startCoord: pointerCoord(e.clientX, e.clientY),
         startScrollLeft: el.scrollLeft,
         dragging: false,
+        raf: 0,
+        pendingScrollLeft: null,
       };
     },
-    [enabled, scrollRef]
+    [enabled, pointerCoord, scrollRef]
   );
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
       const state = dragState.current;
       if (!state || e.pointerId !== state.pointerId) return;
-      applyDrag(e.clientX, () => e.preventDefault());
+      applyDrag(pointerCoord(e.clientX, e.clientY), () => e.preventDefault());
     },
-    [applyDrag]
+    [applyDrag, pointerCoord]
   );
 
   const onPointerUp = useCallback(
@@ -111,14 +154,13 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
     [endDrag]
   );
 
-  // Legacy mouse path for environments without pointer capture.
   useEffect(() => {
     if (!enabled) return;
 
     const onMouseMove = (e: MouseEvent) => {
       const state = dragState.current;
       if (!state || state.pointerId >= 0) return;
-      applyDrag(e.clientX, () => e.preventDefault());
+      applyDrag(pointerCoord(e.clientX, e.clientY), () => e.preventDefault());
     };
 
     const onMouseUp = () => {
@@ -131,7 +173,7 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
-  }, [enabled, applyDrag, endDrag]);
+  }, [enabled, applyDrag, endDrag, pointerCoord]);
 
   useEffect(() => {
     if (!enabled) return;

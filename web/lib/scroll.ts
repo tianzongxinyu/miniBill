@@ -1,29 +1,16 @@
 export function getScrollY() {
-  const main = document.querySelector('main');
-  return Math.max(
-    window.scrollY,
-    document.documentElement.scrollTop,
-    document.body.scrollTop,
-    main?.scrollTop ?? 0
-  );
+  return window.scrollY || document.documentElement.scrollTop || 0;
 }
 
 export function isNearPageBottom(threshold = 32) {
   const scrollY = getScrollY();
   const viewport = window.innerHeight;
-  const scrollHeight = Math.max(
-    document.documentElement.scrollHeight,
-    document.body.scrollHeight
-  );
+  const scrollHeight = document.documentElement.scrollHeight;
   return scrollY + viewport >= scrollHeight - threshold;
 }
 
 export function scrollToTop(smooth = true) {
-  const opts: ScrollToOptions = { top: 0, left: 0, behavior: smooth ? 'smooth' : 'auto' };
-  window.scrollTo(opts);
-  document.documentElement.scrollTo(opts);
-  document.body.scrollTo(opts);
-  document.querySelector('main')?.scrollTo(opts);
+  window.scrollTo({ top: 0, left: 0, behavior: smooth ? 'smooth' : 'auto' });
 }
 
 const TX_SCROLL_RESTORE = 'minibill:tx-scroll';
@@ -54,11 +41,7 @@ export function pullTransactionsScroll(returnTo: string): number | null {
 }
 
 export function scrollToY(y: number) {
-  const opts: ScrollToOptions = { top: y, left: 0, behavior: 'auto' };
-  window.scrollTo(opts);
-  document.documentElement.scrollTo(opts);
-  document.body.scrollTo(opts);
-  document.querySelector('main')?.scrollTo(opts);
+  window.scrollTo({ top: y, left: 0, behavior: 'auto' });
 }
 
 export function currentPathWithSearch(): string {

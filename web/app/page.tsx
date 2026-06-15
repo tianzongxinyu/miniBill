@@ -55,16 +55,19 @@ function HomeContent() {
 
   return (
     <div className="pb-28 lg:pb-24">
-      <div
-        className="overflow-hidden transition-[height] duration-200"
-        style={{
-          height: pulling || pullDistance > 0 ? Math.max(pullDistance, pulling ? 28 : 0) : 0,
-        }}
-      >
-        <p className="text-center text-[11px] uppercase tracking-widest text-muted pt-1">
-          {pulling ? '刷新中' : pullDistance >= 64 ? '松开刷新' : '下拉刷新'}
-        </p>
-      </div>
+      {(pulling || pullDistance > 0) && (
+        <div
+          className="fixed inset-x-0 top-0 z-30 flex justify-center pointer-events-none pt-[max(0.25rem,env(safe-area-inset-top))]"
+          style={{
+            transform: `translateY(${pulling ? 28 : pullDistance}px)`,
+            transition: pulling ? 'transform 0.2s ease-out' : 'none',
+          }}
+        >
+          <p className="text-center text-[11px] uppercase tracking-widest text-muted">
+            {pulling ? '刷新中' : pullDistance >= 64 ? '松开刷新' : '下拉刷新'}
+          </p>
+        </div>
+      )}
       {error && (
         <div className="notebook p-5 text-sm text-muted mb-6 border-expense/20 bg-expense/[0.03]">
           {error}

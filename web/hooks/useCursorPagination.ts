@@ -195,17 +195,10 @@ export function useCursorPagination<T>({
     window.addEventListener('wheel', unlock, { passive: true });
     window.addEventListener('touchmove', unlock, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
-    const main = document.querySelector('main');
-    main?.addEventListener('wheel', unlock, { passive: true });
-    main?.addEventListener('touchmove', unlock, { passive: true });
-    main?.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       window.removeEventListener('wheel', unlock);
       window.removeEventListener('touchmove', unlock);
       window.removeEventListener('scroll', onScroll);
-      main?.removeEventListener('wheel', unlock);
-      main?.removeEventListener('touchmove', unlock);
-      main?.removeEventListener('scroll', onScroll);
     };
   }, [gateUntilUserScrolls]);
 

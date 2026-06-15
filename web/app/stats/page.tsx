@@ -157,9 +157,9 @@ function StatsContent() {
           onPointerMove={fullscreenOpen ? undefined : onPointerMove}
           onPointerUp={fullscreenOpen ? undefined : onPointerUp}
           onPointerCancel={fullscreenOpen ? undefined : onPointerCancel}
-          className="stats-chart-scroll overflow-x-auto min-h-[252px] touch-none"
+          className="stats-chart-scroll overflow-x-auto min-h-[252px]"
         >
-          <div style={{ minWidth: scrollWidth }} className="px-4 pt-4">
+          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner px-4 pt-4">
             <StatsScrollChart
               mode={mode}
               monthItems={monthSeries.items}

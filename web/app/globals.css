@@ -17,14 +17,34 @@ body {
 
 @media (max-width: 1023px) {
   html {
-    font-size: 12px;
+    font-size: 14px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* 底部 Tab 文案/图标用固定 px（text-[10px]、18px icon），不随 rem 缩小 */
+  html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  /* 底部 Tab 文案/图标用固定 px（text-[10px]、18px icon），不随 rem 放大 */
   .mobile-tab-nav a {
     font-size: 10px;
     padding-top: 6px;
     padding-bottom: 6px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
   }
 }
 
@@ -148,7 +168,7 @@ body {
   }
 
   .nav-item {
-    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm;
+    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-2xl text-[14px];
     @apply text-muted transition-all duration-200 ease-out;
     @apply hover:text-accent hover:bg-accent-soft/50;
   }
@@ -413,9 +433,11 @@ body {
     @apply disabled:bg-expense/40 disabled:cursor-not-allowed;
   }
 
-  /* —— 统计图全屏（竖屏时模拟横屏） —— */
+  /* —— 统计图横向滚动 —— */
   .stats-chart-scroll {
     @apply cursor-grab touch-pan-x select-none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
   }
 
   .stats-chart-scroll.is-dragging {
@@ -424,6 +446,15 @@ body {
 
   .stats-chart-scroll.is-dragging .recharts-wrapper {
     pointer-events: none;
+  }
+
+  /* 全屏：图表不抢 touch，交给容器原生惯性滚动 */
+  .stats-chart-scroll-fullscreen .recharts-wrapper {
+    pointer-events: none;
+  }
+
+  .stats-chart-scroll-inner {
+    contain: layout style;
   }
 
   .stats-chart-fullscreen-landscape {

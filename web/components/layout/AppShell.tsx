@@ -53,17 +53,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [collapsed]);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-[100dvh] lg:min-h-screen flex flex-col lg:flex-row">
       <aside
         data-collapsed={collapsed || undefined}
-        className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 bg-sidebar border-r border-sidebar-border shadow-sidebar z-40 transition-[width] duration-300 ease-out ${sidebarW}`}
+        className={`app-sidebar hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 bg-sidebar border-r border-sidebar-border shadow-sidebar z-40 transition-[width] duration-300 ease-out ${sidebarW}`}
       >
         <div className={`py-6 ${collapsed ? 'px-3' : 'px-5'}`}>
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
             <AppLogo size="sm" priority />
             {!collapsed && (
               <div className="min-w-0 animate-fade-in">
-                <div className="text-base font-semibold tracking-tight text-ink">{APP_NAME}</div>
+                <div className="text-[16px] font-semibold tracking-tight text-ink">{APP_NAME}</div>
                 <div className="text-[11px] text-muted mt-0.5">个人记账本</div>
               </div>
             )}
@@ -92,14 +92,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {!collapsed ? (
             <div className="p-4 rounded-2xl bg-sidebar-surface border border-sidebar-border animate-fade-in">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 shrink-0 rounded-full bg-accent-soft flex items-center justify-center text-xs font-medium text-accent uppercase">
+                <div className="w-8 h-8 shrink-0 rounded-full bg-accent-soft flex items-center justify-center text-[12px] font-medium text-accent uppercase">
                   {user?.username?.slice(0, 1) ?? '?'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium text-ink truncate">{user?.username}</div>
+                  <div className="text-[14px] font-medium text-ink truncate">{user?.username}</div>
                   <button
                     onClick={logout}
-                    className="text-xs text-muted hover:text-accent transition-colors duration-200 mt-0.5"
+                    className="text-[12px] text-muted hover:text-accent transition-colors duration-200 mt-0.5"
                   >
                     退出登录
                   </button>
@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               title={`${user?.username} · 退出`}
               className="w-full flex justify-center py-2 rounded-2xl hover:bg-accent-soft/50 transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-accent-soft flex items-center justify-center text-xs font-medium text-accent uppercase">
+              <div className="w-8 h-8 rounded-full bg-accent-soft flex items-center justify-center text-[12px] font-medium text-accent uppercase">
                 {user?.username?.slice(0, 1) ?? '?'}
               </div>
             </button>
@@ -126,12 +126,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className={`mt-2 w-full flex items-center gap-2 py-2 rounded-2xl text-muted hover:text-accent hover:bg-accent-soft/50 transition-all duration-200 ${collapsed ? 'justify-center' : 'px-3'}`}
           >
             <CollapseIcon collapsed={collapsed} />
-            {!collapsed && <span className="text-xs">收起侧栏</span>}
+            {!collapsed && <span className="text-[12px]">收起侧栏</span>}
           </button>
         </div>
       </aside>
 
-      <main className={`flex-1 pb-24 lg:pb-8 min-h-screen transition-[margin] duration-300 ease-out ${mainMl}`}>
+      <main className={`flex-1 pb-24 lg:pb-8 min-h-[100dvh] lg:min-h-screen transition-[margin] duration-300 ease-out ${mainMl}`}>
         <PageTransition>{children}</PageTransition>
       </main>
 
