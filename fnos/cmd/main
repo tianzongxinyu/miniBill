@@ -34,7 +34,7 @@ start)
     refresh_backup_dir >/dev/null 2>&1 || true
     port="${PORT:-$port}"
 
-    echo "$(date '+%F %T') starting port=$port bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"
+    echo "$(date '+%F %T') starting port=$port backup_dir=${BACKUP_DIR:-<empty>} bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"
 
     (
         export DATA_DIR

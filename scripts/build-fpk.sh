@@ -125,6 +125,17 @@ config_path.write_text(
                 ],
             },
             {
+                "stepTitle": "备份目录",
+                "items": [
+                    {
+                        "type": "text",
+                        "field": "wizard_backup_dir",
+                        "label": "备份目录（绝对路径，留空表示不启用备份）",
+                        "initValue": "",
+                    }
+                ],
+            },
+            {
                 "stepTitle": "自助注册",
                 "items": [
                     {

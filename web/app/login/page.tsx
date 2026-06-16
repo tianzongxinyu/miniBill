@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { formatApiError } from '@/lib/errors';
 import { AppLogo } from '@/components/ui/AppLogo';
@@ -11,25 +10,13 @@ import { redirectToHome } from '@/lib/api';
 
 export default function LoginPage() {
   const { user, ready, login } = useAuth();
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [showHomeLink, setShowHomeLink] = useState(false);
 
   useLayoutEffect(() => {
     if (!ready || !user) return;
-    router.replace('/');
     redirectToHome();
-  }, [ready, user, router]);
-
-  useEffect(() => {
-    if (!ready || !user) {
-      setShowHomeLink(false);
-      return;
-    }
-    const timer = window.setTimeout(() => setShowHomeLink(true), 1500);
-    return () => window.clearTimeout(timer);
   }, [ready, user]);
 
   const submit = async (e: React.FormEvent) => {
@@ -37,7 +24,6 @@ export default function LoginPage() {
     setError('');
     try {
       await login(username, password);
-      router.replace('/');
       redirectToHome();
     } catch (err) {
       setError(formatApiError(err, '登录失败'));
@@ -57,11 +43,6 @@ export default function LoginPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-canvas gap-4 px-6">
         <AppLogo size="md" priority />
         <p className="text-sm text-muted">正在进入…</p>
-        {showHomeLink && (
-          <Link href="/" className="btn-primary px-6 py-2.5 text-sm">
-            进入首页
-          </Link>
-        )}
       </div>
     );
   }

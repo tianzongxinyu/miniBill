@@ -113,7 +113,7 @@ function BackupContent() {
             </p>
           ) : (
             <p className="text-xs text-muted">
-              备份目录未配置，可先保存下方定时设置；实际备份需在飞牛 OS 应用中心 → 轻账单 → 应用设置中授权备份文件夹（读写），或本地 / Docker 设置环境变量
+              备份目录未配置，可先保存下方定时设置；实际备份需在飞牛 OS 应用中心 → 轻账单 → 应用设置 → 运行设置中填写备份路径，或本地 / Docker 设置环境变量
               BACKUP_DIR。
             </p>
           )}

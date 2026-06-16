@@ -56,11 +56,9 @@ func main() {
 				c.JSON(http.StatusNotFound, gin.H{"error": "NOT_FOUND"})
 				return
 			}
-			if path, ok := safeStaticFile(absStaticRoot, c.Request.URL.Path); ok {
-				if info, err := os.Stat(path); err == nil && !info.IsDir() {
-					c.File(path)
-					return
-				}
+			if file, ok := staticFileToServe(absStaticRoot, c.Request.URL.Path); ok {
+				c.File(file)
+				return
 			}
 			c.File(indexHTML)
 		})
@@ -85,6 +83,26 @@ func main() {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 	_ = httpSrv.Shutdown(shutdownCtx)
+}
+
+func staticFileToServe(absRoot, urlPath string) (string, bool) {
+	path, ok := safeStaticFile(absRoot, urlPath)
+	if !ok {
+		return "", false
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", false
+	}
+	if !info.IsDir() {
+		return path, true
+	}
+	index := filepath.Join(path, "index.html")
+	st, err := os.Stat(index)
+	if err != nil || st.IsDir() {
+		return "", false
+	}
+	return index, true
 }
 
 func safeStaticFile(absRoot, urlPath string) (string, bool) {

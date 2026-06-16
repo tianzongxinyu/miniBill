@@ -2,6 +2,16 @@
 
 . "$(dirname "$0")/app-layout"
 . "$(dirname "$0")/apply-settings"
-write_env_file
-refresh_backup_dir >/dev/null 2>&1 || true
+
+resolve_runtime_paths
+write_env_file || exit 1
+backup_dir="$(refresh_backup_dir 2>/dev/null || true)"
+if [ -n "$LOG_FILE" ]; then
+    echo "$(date '+%F %T') config_callback backup_dir=${backup_dir:-<empty>} wizard_backup_dir=${wizard_backup_dir:-<unset>}" >> "$LOG_FILE"
+fi
+
+main_script="$(dirname "$0")/main"
+"$main_script" stop 2>/dev/null || true
+sleep 1
+"$main_script" start
 exit 0

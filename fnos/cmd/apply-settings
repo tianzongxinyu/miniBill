@@ -1,8 +1,5 @@
 # Shared path and env helpers for miniBill on fnOS.
 
-BACKUP_SHARE_NAME="backups"
-LEGACY_BACKUP_SHARE_NAMES="minibill/backups minibill-backups"
-
 shell_quote() {
     printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
 }
@@ -36,23 +33,6 @@ read_existing_allow_registration() {
     read_env_value "ALLOW_REGISTRATION"
 }
 
-read_wizard_backup_dir() {
-    if [ -n "${wizard_backup_dir:-}" ]; then
-        normalize_dir_path "$wizard_backup_dir"
-        return 0
-    fi
-    read_existing_backup_dir
-}
-
-backup_share_matches() {
-    local name="$1"
-    [ "$name" = "$BACKUP_SHARE_NAME" ] && return 0
-    for legacy in $LEGACY_BACKUP_SHARE_NAMES; do
-        [ "$name" = "$legacy" ] && return 0
-    done
-    return 1
-}
-
 normalize_dir_path() {
     local path="$1"
     path="${path//[$'\r\n']/}"
@@ -65,132 +45,22 @@ normalize_dir_path() {
     printf '%s' "${path%/}"
 }
 
-parse_trim_data_share_paths() {
-    local raw="$1"
-    local entry name path
-    raw="$(normalize_dir_path "$raw")"
-    [ -n "$raw" ] || return 1
-
-    raw="${raw//,/$';'}"
-    IFS=';' read -ra entries <<< "$raw"
-    for entry in "${entries[@]}"; do
-        entry="$(normalize_dir_path "$entry")"
-        [ -n "$entry" ] || continue
-        if [[ "$entry" == *:* ]]; then
-            name="${entry%%:*}"
-            path="${entry#*:}"
-            name="$(normalize_dir_path "$name")"
-            path="$(normalize_dir_path "$path")"
-            if backup_share_matches "$name" && [ -n "$path" ]; then
-                echo "$path"
-                return 0
-            fi
-            continue
-        fi
-        if [ -d "$entry" ]; then
-            echo "$entry"
-            return 0
-        fi
-    done
-
-    if [[ "$raw" != *":"* ]] && [[ "$raw" != *";"* ]] && [ -d "$raw" ]; then
-        echo "$raw"
-        return 0
-    fi
-    return 1
-}
-
-resolve_backup_share_symlink() {
-    local link target app_dest legacy
-    app_dest="$(resolve_app_dest)"
-    for link in \
-        "${app_dest}/shares/${BACKUP_SHARE_NAME}" \
-        "/var/apps/${TRIM_APPNAME}/shares/${BACKUP_SHARE_NAME}" \
-        "/var/apps/${TRIM_APPNAME}/shares/backups"
-    do
-        [ -e "$link" ] || continue
-        if target="$(readlink -f "$link" 2>/dev/null)" && [ -n "$target" ]; then
-            echo "${target%/}"
-            return 0
-        fi
-        if [ -d "$link" ]; then
-            echo "${link%/}"
-            return 0
-        fi
-    done
-    for legacy in $LEGACY_BACKUP_SHARE_NAMES; do
-        for link in \
-            "${app_dest}/shares/${legacy}" \
-            "/var/apps/${TRIM_APPNAME}/shares/${legacy}"
-        do
-            [ -e "$link" ] || continue
-            if target="$(readlink -f "$link" 2>/dev/null)" && [ -n "$target" ]; then
-                echo "${target%/}"
-                return 0
-            fi
-            if [ -d "$link" ]; then
-                echo "${link%/}"
-                return 0
-            fi
-        done
-    done
-    return 1
-}
-
-read_backup_dir_from_share_files() {
-    local line path name share_file
-    for share_file in \
-        "$(resolve_pkgvar)/share_paths" \
-        "/vol1/@appconf/${TRIM_APPNAME}/share_paths" \
-        "/vol1/@apphome/${TRIM_APPNAME}/.share_paths" \
-        "/var/apps/${TRIM_APPNAME}/share_paths"
-    do
-        [ -f "$share_file" ] || continue
-        while IFS= read -r line || [ -n "$line" ]; do
-            line="$(normalize_dir_path "$line")"
-            [ -n "$line" ] || continue
-            if [[ "$line" == *:* ]]; then
-                name="${line%%:*}"
-                path="${line#*:}"
-                name="$(normalize_dir_path "$name")"
-                path="$(normalize_dir_path "$path")"
-                if backup_share_matches "$name" && [ -n "$path" ]; then
-                    echo "$path"
-                    return 0
-                fi
-                continue
-            fi
-            if [ -d "$line" ]; then
-                echo "$line"
-                return 0
-            fi
-        done < "$share_file"
-    done
-    return 1
-}
-
 resolve_backup_dir() {
     local dir=""
 
-    if [ -n "${TRIM_DATA_SHARE_PATHS:-}" ]; then
-        dir="$(parse_trim_data_share_paths "$TRIM_DATA_SHARE_PATHS" 2>/dev/null || true)"
-    fi
-    if [ -z "$dir" ] && [ -n "${TRIM_DATA_ACCESSIBLE_PATHS:-}" ]; then
-        dir="$(parse_trim_data_share_paths "$TRIM_DATA_ACCESSIBLE_PATHS" 2>/dev/null || true)"
-    fi
-    if [ -z "$dir" ]; then
-        dir="$(resolve_backup_share_symlink 2>/dev/null || true)"
-    fi
-    if [ -z "$dir" ]; then
-        dir="$(read_backup_dir_from_share_files 2>/dev/null || true)"
-    fi
-    if [ -z "$dir" ] && [ -n "${wizard_backup_dir:-}" ]; then
-        dir="$(normalize_dir_path "$wizard_backup_dir")"
-    fi
-    if [ -z "$dir" ]; then
-        dir="$(read_existing_backup_dir 2>/dev/null || true)"
+    # Explicit path from install/config wizard.
+    if [ -n "${wizard_backup_dir:-}" ]; then
+        normalize_dir_path "$wizard_backup_dir"
+        return
     fi
 
+    # User cleared the field in running settings.
+    if [ "${wizard_backup_dir+set}" = "set" ] && [ -z "$wizard_backup_dir" ]; then
+        printf '%s' ""
+        return
+    fi
+
+    dir="$(read_existing_backup_dir 2>/dev/null || true)"
     printf '%s' "$dir"
 }
 
@@ -223,10 +93,8 @@ patch_env_backup_dir() {
 refresh_backup_dir() {
     local dir
     dir="$(resolve_backup_dir)"
-    if [ -n "$dir" ]; then
-        export BACKUP_DIR="$dir"
-        patch_env_backup_dir "$dir"
-    fi
+    export BACKUP_DIR="${dir:-}"
+    patch_env_backup_dir "$dir"
     printf '%s' "$dir"
 }
 

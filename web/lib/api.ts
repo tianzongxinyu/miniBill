@@ -69,12 +69,12 @@ export function notifyAuthLogout() {
   window.dispatchEvent(new Event('auth:logout'));
 }
 
-/** 整页跳转；部分 WebView 对 replace 不生效，assign 作兜底 */
+/** 整页跳转；优先 replace，WebView 下更可靠 */
 export function hardNavigate(path: string) {
   if (typeof window === 'undefined') return;
   const url = new URL(path, window.location.origin).href;
   try {
-    window.location.assign(url);
+    window.location.replace(url);
   } catch {
     window.location.href = url;
   }
@@ -82,7 +82,27 @@ export function hardNavigate(path: string) {
 
 export function redirectToLogin() {
   if (typeof window === 'undefined') return;
-  if (window.location.pathname.startsWith('/login')) return;
+  const path = window.location.pathname;
+  if (path.startsWith('/login') || path.startsWith('/register')) return;
+  hardNavigate('/login/');
+}
+
+export function redirectToHome() {
+  if (typeof window === 'undefined') return;
+  const path = window.location.pathname;
+  if (path === '/' || path === '') return;
+  hardNavigate('/');
+}
+
+/** 清除登录态；不在登录页时整页跳转，避免先 notify 导致 RequireAuth 白屏 */
+export function clearAuthAndGoLogin() {
+  clearAuthStorage();
+  if (typeof window === 'undefined') return;
+  const path = window.location.pathname;
+  if (path.startsWith('/login') || path.startsWith('/register')) {
+    notifyAuthLogout();
+    return;
+  }
   hardNavigate('/login/');
 }
 
@@ -107,14 +127,7 @@ export function clearAuthToken() {
 
 /** 清除登录态并跳转登录页（整页刷新，避免 SPA 状态卡住） */
 export function logoutAndRedirect() {
-  clearAuthStorage();
-  notifyAuthLogout();
-  hardNavigate('/login/');
-}
-
-export function redirectToHome() {
-  if (typeof window === 'undefined') return;
-  hardNavigate('/');
+  clearAuthAndGoLogin();
 }
 
 function isAuthFormRequest(path: string, method?: string) {
@@ -127,10 +140,7 @@ export type ApiOptions = RequestInit & {
 };
 
 function logoutOnUnauthorized() {
-  if (typeof window === 'undefined') return;
-  clearAuthStorage();
-  notifyAuthLogout();
-  redirectToLogin();
+  clearAuthAndGoLogin();
 }
 
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {

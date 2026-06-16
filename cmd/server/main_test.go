@@ -7,6 +7,50 @@ import (
 	"testing"
 )
 
+func TestStaticFileToServe(t *testing.T) {
+	root := t.TempDir()
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.WriteFile(filepath.Join(absRoot, "app.js"), []byte("ok"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	loginDir := filepath.Join(absRoot, "login")
+	if err := os.MkdirAll(loginDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	loginIndex := filepath.Join(loginDir, "index.html")
+	if err := os.WriteFile(loginIndex, []byte("<html>login</html>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	emptyDir := filepath.Join(absRoot, "empty")
+	if err := os.MkdirAll(emptyDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	file, ok := staticFileToServe(absRoot, "/app.js")
+	if !ok || file != filepath.Join(absRoot, "app.js") {
+		t.Fatalf("expected app.js, got %q ok=%v", file, ok)
+	}
+
+	file, ok = staticFileToServe(absRoot, "/login/")
+	if !ok || file != loginIndex {
+		t.Fatalf("expected login index, got %q ok=%v", file, ok)
+	}
+
+	file, ok = staticFileToServe(absRoot, "/login")
+	if !ok || file != loginIndex {
+		t.Fatalf("expected login index for /login, got %q ok=%v", file, ok)
+	}
+
+	_, ok = staticFileToServe(absRoot, "/empty/")
+	if ok {
+		t.Fatal("directory without index.html should not resolve")
+	}
+}
+
 func TestSafeStaticFile(t *testing.T) {
 	root := t.TempDir()
 	absRoot, err := filepath.Abs(root)

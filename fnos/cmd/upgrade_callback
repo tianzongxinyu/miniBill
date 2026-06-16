@@ -2,5 +2,6 @@
 
 . "$(dirname "$0")/app-layout"
 . "$(dirname "$0")/apply-settings"
+rm -f "$(resolve_pkgvar)/.backup_dir_manual" 2>/dev/null || true
 refresh_backup_dir >/dev/null 2>&1 || true
 exit 0
