@@ -31,6 +31,7 @@ start)
         . "$ENV_FILE"
         set +a
     fi
+    refresh_backup_dir >/dev/null 2>&1 || true
     port="${PORT:-$port}"
 
     echo "$(date '+%F %T') starting port=$port bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"

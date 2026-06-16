@@ -8,8 +8,10 @@ Base URL: `/api`
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | POST | `/auth/register` | 注册 |
-| POST | `/auth/login` | 登录 |
+| POST | `/auth/login` | 登录（可选 `remember`，见下） |
 | PUT | `/auth/password` | 修改密码（需登录） |
+
+`POST /auth/login` 请求体：`{ "username", "password", "remember"?: boolean }`。`remember` 省略或为 `true` 时签发 `JWT_EXPIRE_DAYS`（默认 30 天）令牌并存入 `localStorage`；`remember: false` 时签发 24 小时令牌并存入 `sessionStorage`。
 
 ## 业务
 

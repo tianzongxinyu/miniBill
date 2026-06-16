@@ -24,7 +24,6 @@ func setupTestServer(t *testing.T) (*httptest.Server, config.Config) {
 	gin.SetMode(gin.TestMode)
 	dir := t.TempDir()
 	cfg := config.Config{
-		JWTSecret:         "test-integration-jwt-secret-min-32-chars",
 		DataDir:           dir,
 		AllowRegistration: true,
 		JWTExpireDays:     7,
@@ -36,9 +35,9 @@ func setupTestServer(t *testing.T) (*httptest.Server, config.Config) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { sys.Close() })
-	authSvc := auth.NewService(cfg.JWTSecret, cfg.JWTExpireDuration())
-	srv := handler.NewServer(cfg, sys.Store, sys.Factory, authSvc)
-	return httptest.NewServer(srv.Router()), cfg
+	authSvc := auth.NewService(sys.Cfg.JWTSecret, sys.Cfg.JWTExpireDuration())
+	srv := handler.NewServer(sys.Cfg, sys.Store, sys.Factory, authSvc)
+	return httptest.NewServer(srv.Router()), sys.Cfg
 }
 
 func TestRegisterAndLogin(t *testing.T) {

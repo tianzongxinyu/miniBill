@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { formatApiError } from '@/lib/errors';
+import { redirectToHome } from '@/lib/api';
 import { AppLogo } from '@/components/ui/AppLogo';
 
 export default function RegisterPage() {
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     }
     try {
       await register(username, password);
-      window.location.href = '/';
+      redirectToHome();
     } catch (err) {
       setError(formatApiError(err, '注册失败'));
     }

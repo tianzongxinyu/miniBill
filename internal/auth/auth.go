@@ -33,11 +33,18 @@ func CheckPassword(hash, password string) bool {
 }
 
 func (s *Service) Sign(userID int64, username string) (string, error) {
+	return s.SignWithExpire(userID, username, s.expire)
+}
+
+func (s *Service) SignWithExpire(userID int64, username string, expire time.Duration) (string, error) {
+	if expire <= 0 {
+		expire = s.expire
+	}
 	claims := Claims{
 		UserID:   userID,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.expire)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expire)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}

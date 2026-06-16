@@ -1,16 +1,13 @@
 package config
 
 import (
-	"errors"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
 const (
-	defaultJWTSecret = "dev-secret-change-me"
-	minJWTSecretLen  = 32
+	minJWTSecretLen = 32
 )
 
 type Config struct {
@@ -26,13 +23,12 @@ type Config struct {
 }
 
 func Load() Config {
-	expireDays, _ := strconv.Atoi(getEnv("JWT_EXPIRE_DAYS", "7"))
+	expireDays, _ := strconv.Atoi(getEnv("JWT_EXPIRE_DAYS", "30"))
 	if expireDays <= 0 {
-		expireDays = 7
+		expireDays = 30
 	}
 	allowReg := getEnv("ALLOW_REGISTRATION", "true") == "true"
 	return Config{
-		JWTSecret:         getEnv("JWT_SECRET", defaultJWTSecret),
 		DataDir:           getEnv("DATA_DIR", "./data"),
 		BackupDir:         getEnv("BACKUP_DIR", ""),
 		Port:              getEnv("PORT", "8080"),
@@ -49,29 +45,6 @@ func (c Config) JWTExpireDuration() time.Duration {
 }
 
 func (c Config) Validate() error {
-	secret := strings.TrimSpace(c.JWTSecret)
-	if secret == "" {
-		return errors.New("JWT_SECRET must be set to a secure random value")
-	}
-	if len(secret) < minJWTSecretLen {
-		return errors.New("JWT_SECRET must be at least 32 characters")
-	}
-	lower := strings.ToLower(secret)
-	if lower == defaultJWTSecret {
-		return errors.New("JWT_SECRET must not use the default dev secret")
-	}
-	for _, blocked := range []string{
-		"dev",
-		"change-me-in-production",
-		"change-me-to-a-long-random-string",
-	} {
-		if lower == blocked {
-			return errors.New("JWT_SECRET must not use a placeholder value")
-		}
-	}
-	if strings.HasPrefix(lower, "change-me") {
-		return errors.New("JWT_SECRET must not use a placeholder value")
-	}
 	return nil
 }
 

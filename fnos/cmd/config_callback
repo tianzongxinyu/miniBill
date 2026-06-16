@@ -3,4 +3,5 @@
 . "$(dirname "$0")/app-layout"
 . "$(dirname "$0")/apply-settings"
 write_env_file
+refresh_backup_dir >/dev/null 2>&1 || true
 exit 0

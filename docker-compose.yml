@@ -4,11 +4,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-true}
       DATA_DIR: /data
       BACKUP_DIR: ${BACKUP_DIR:-/data/backups}
-      JWT_EXPIRE_DAYS: "7"
+      JWT_EXPIRE_DAYS: "30"
       TZ: Asia/Shanghai
     volumes:
       - ./data:/data

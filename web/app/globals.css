@@ -469,6 +469,14 @@ body {
     contain: layout style;
   }
 
+  .stats-chart-scroll-fullscreen {
+    @apply pb-1;
+  }
+
+  .stats-chart-scroll-inner-fullscreen {
+    box-sizing: border-box;
+  }
+
   .stats-chart-fullscreen-landscape {
     position: absolute;
     top: 0;

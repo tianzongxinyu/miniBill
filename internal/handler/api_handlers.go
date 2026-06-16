@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minibill/minibill/internal/auth"
@@ -17,6 +18,12 @@ import (
 type credReq struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type loginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Remember *bool  `json:"remember"`
 }
 
 type transactionReq struct {
@@ -109,7 +116,7 @@ func (s *Server) register(c *gin.Context) {
 }
 
 func (s *Server) login(c *gin.Context) {
-	var req credReq
+	var req loginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		JSONValidation(c, "invalid body")
 		return
@@ -119,7 +126,12 @@ func (s *Server) login(c *gin.Context) {
 		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", "用户名或密码错误")
 		return
 	}
-	token, err := s.authSvc.Sign(user.ID, user.Username)
+	remember := req.Remember == nil || *req.Remember
+	expire := s.cfg.JWTExpireDuration()
+	if !remember {
+		expire = 24 * time.Hour
+	}
+	token, err := s.authSvc.SignWithExpire(user.ID, user.Username, expire)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
 		return

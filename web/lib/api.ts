@@ -10,6 +10,7 @@ const AUTH_FORM_PATHS = ['/auth/login', '/auth/register'];
 
 export const TOKEN_KEY = 'token';
 export const USER_KEY = 'user';
+export const REMEMBER_KEY = 'remember_login';
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -17,21 +18,103 @@ export class ApiError extends Error {
   }
 }
 
-/** 从 localStorage 读取 JWT，无服务端 session */
+function authStore(persistent: boolean): Storage {
+  return persistent ? localStorage : sessionStorage;
+}
+
+export function getRememberLogin(): boolean {
+  if (typeof window === 'undefined') return true;
+  const v = localStorage.getItem(REMEMBER_KEY);
+  return v === null || v === '1';
+}
+
+export function setRememberLogin(remember: boolean) {
+  localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0');
+}
+
+/** 从 localStorage / sessionStorage 读取 JWT，无服务端 session */
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
 }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+export function getStoredUser(): User | null {
+  if (typeof window === 'undefined') return null;
+  const token = getToken();
+  const raw =
+    localStorage.getItem(USER_KEY) ?? sessionStorage.getItem(USER_KEY);
+  if (!token || !raw) return null;
+  try {
+    return JSON.parse(raw) as User;
+  } catch {
+    return null;
+  }
 }
 
-export function clearAuthToken() {
+function clearAuthStorage() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+}
+
+export function notifyAuthSession() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event('auth:session'));
+}
+
+export function notifyAuthLogout() {
+  if (typeof window === 'undefined') return;
   window.dispatchEvent(new Event('auth:logout'));
+}
+
+/** 整页跳转；部分 WebView 对 replace 不生效，assign 作兜底 */
+export function hardNavigate(path: string) {
+  if (typeof window === 'undefined') return;
+  const url = new URL(path, window.location.origin).href;
+  try {
+    window.location.assign(url);
+  } catch {
+    window.location.href = url;
+  }
+}
+
+export function redirectToLogin() {
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname.startsWith('/login')) return;
+  hardNavigate('/login/');
+}
+
+export function setAuthSession(token: string, user: User, remember: boolean) {
+  clearAuthStorage();
+  setRememberLogin(remember);
+  const store = authStore(remember);
+  store.setItem(TOKEN_KEY, token);
+  store.setItem(USER_KEY, JSON.stringify(user));
+  notifyAuthSession();
+}
+
+/** @deprecated use setAuthSession */
+export function setToken(token: string) {
+  setAuthSession(token, getStoredUser() ?? { id: 0, username: '' }, getRememberLogin());
+}
+
+export function clearAuthToken() {
+  clearAuthStorage();
+  notifyAuthLogout();
+}
+
+/** 清除登录态并跳转登录页（整页刷新，避免 SPA 状态卡住） */
+export function logoutAndRedirect() {
+  clearAuthStorage();
+  notifyAuthLogout();
+  hardNavigate('/login/');
+}
+
+export function redirectToHome() {
+  if (typeof window === 'undefined') return;
+  hardNavigate('/');
 }
 
 function isAuthFormRequest(path: string, method?: string) {
@@ -45,10 +128,9 @@ export type ApiOptions = RequestInit & {
 
 function logoutOnUnauthorized() {
   if (typeof window === 'undefined') return;
-  clearAuthToken();
-  if (!window.location.pathname.startsWith('/login')) {
-    window.location.href = '/login/';
-  }
+  clearAuthStorage();
+  notifyAuthLogout();
+  redirectToLogin();
 }
 
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {

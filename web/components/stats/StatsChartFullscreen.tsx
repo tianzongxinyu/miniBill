@@ -171,7 +171,7 @@ export function StatsChartFullscreen({
           onPointerCancel={onPointerCancel}
           className={`stats-chart-scroll stats-chart-scroll-fullscreen h-full overflow-x-auto overflow-y-hidden${rotatedScroll ? ' stats-chart-scroll-rotated' : ''}`}
         >
-          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner px-4 pt-2 h-full">
+          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner stats-chart-scroll-inner-fullscreen px-4 pt-2 pb-3">
             <StatsScrollChart
               mode={mode}
               monthItems={monthItems}

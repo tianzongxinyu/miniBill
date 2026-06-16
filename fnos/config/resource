@@ -5,7 +5,8 @@
     "data-share": {
         "shares": [
             {
-                "name": "minibill/backups",
+                "name": "backups",
+                "title": "备份目录",
                 "permission": {
                     "rw": [
                         "minibill"

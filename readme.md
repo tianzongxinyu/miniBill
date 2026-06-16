@@ -18,23 +18,23 @@
 
 ### 首页 · 月度账单
 
-
+<img src="docs/screenshots/home.png" alt="首页月度账单" width="30%" />
 
 ### 流水 · 按月浏览与搜索
 
-
+<img src="docs/screenshots/transactions.png" alt="流水列表" width="30%" />
 
 ### 统计 · 图表与明细
 
-
+<img src="docs/screenshots/stats.png" alt="统计分析" width="30%" />
 
 ### 统计 · 全屏横屏查看
 
-
+<img src="docs/screenshots/stats-fullscreen.png" alt="统计全屏"  />
 
 ### 我的 · 标签 / 数据 / 备份
 
-
+<img src="docs/screenshots/profile.png" alt="我的" width="30%" />
 
 ## 项目目录
 
@@ -103,6 +103,7 @@ MiniBill/
 
 ```
 data/
+├── .jwt_secret                   # 首次启动自动生成的 JWT 签名密钥（勿删）
 ├── system.db                     # 系统库
 └── users/{id}/ledger.db          # 各用户账本
 ```
@@ -111,7 +112,6 @@ data/
 
 ```bash
 cp .env.example .env
-# 编辑 .env，填入至少 32 字符的随机 JWT_SECRET
 docker compose up -d --build
 ```
 
@@ -122,10 +122,7 @@ docker compose up -d --build
 **后端：**
 
 ```bash
-export JWT_SECRET=local-dev-jwt-secret-not-for-production-use
 export DATA_DIR=./data
-
-# 生产环境须使用至少 32 字符的随机密钥，不可用 dev / change-me 等占位符。
 export GOPROXY=https://goproxy.cn,direct
 go mod download    # 先拉齐依赖（只需成功一次）
 go run ./cmd/server
@@ -181,11 +178,13 @@ cd web && npm install && npm run dev
 
 1. 登录 fnOS → **应用中心** → **手动安装**
 2. 上传与 NAS 架构匹配的 `.fpk` 文件
-3. 安装向导中设置 **JWT 密钥**、**服务端口**（默认 `18080`）及是否开放注册
+3. 安装向导中设置 **服务端口**（默认 `18080`）及是否开放注册
 4. 数据目录选择数据盘（勿选系统盘）
-5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问
+5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问（首次启动自动生成 JWT 密钥）
 
-修改端口：应用中心 → 轻账单 → **配置** → 修改服务端口 → 保存后重启应用。
+修改端口 / 注册开关：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存并重启。
+
+**备份目录：** 应用中心 → 轻账单 → **应用设置** → 顶部文件夹授权「备份目录」（读写）→ 确定并**重启应用**。随后在 Web **我的 → 备份管理** 配置定时备份。
 
 卸载时可选保留账本数据（应用数据目录下的 `system.db` 与各用户 `ledger.db`）。
 

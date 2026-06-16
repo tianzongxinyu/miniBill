@@ -136,11 +136,14 @@ function XAxisTick({
   payload,
   tapToInspect,
 }: {
-  x: number;
-  y: number;
-  payload: { value: string };
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
   tapToInspect?: boolean;
 }) {
+  const label = payload?.value;
+  if (label == null || x == null || y == null) return null;
+
   return (
     <text
       x={x}
@@ -151,12 +154,13 @@ function XAxisTick({
       fontSize={12}
       style={{ cursor: tapToInspect ? 'pointer' : undefined, pointerEvents: tapToInspect ? 'none' : undefined }}
     >
-      {payload.value}
+      {label}
     </text>
   );
 }
 
-const CHART_MARGIN = { top: 8, right: 8, left: 16, bottom: 8 };
+const CHART_MARGIN = { top: 8, right: 8, left: 16, bottom: 16 };
+const CHART_MARGIN_FULLSCREEN = { top: 8, right: 8, left: 16, bottom: 28 };
 const Y_AXIS_WIDTH = 8;
 
 /** Map screen pointer to nearest category index (matches Recharts scale="point" layout). */
@@ -310,12 +314,13 @@ export function StatsScrollChart({
   );
 
   const renderXAxisTick = useCallback(
-    (props: { x: number; y: number; payload: { value: string } }) => (
+    (props: { x?: number; y?: number; payload?: { value?: string } }) => (
       <XAxisTick {...props} tapToInspect={tapToInspect} />
     ),
     [tapToInspect]
   );
 
+  const chartMargin = tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN;
   const axisTickLine = { stroke: '#e8eeec' };
 
   if (loading && chartData.length === 0) {
@@ -341,7 +346,7 @@ export function StatsScrollChart({
         width={chartWidth}
         height={height}
         data={chartData}
-        margin={{ top: CHART_MARGIN.top, right: CHART_MARGIN.right, left: CHART_MARGIN.left, bottom: CHART_MARGIN.bottom }}
+        margin={{ top: chartMargin.top, right: chartMargin.right, left: chartMargin.left, bottom: chartMargin.bottom }}
       >
       <defs>
         <linearGradient id={netGradientId} x1="0" y1="0" x2="0" y2="1">
@@ -358,7 +363,8 @@ export function StatsScrollChart({
         dataKey="name"
         type="category"
         scale="point"
-        interval="preserveStartEnd"
+        interval={tapToInspect ? 'equidistantPreserveStart' : 'preserveStartEnd'}
+        minTickGap={tapToInspect ? 44 : 32}
         tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
         axisLine={false}
         tickLine={false}

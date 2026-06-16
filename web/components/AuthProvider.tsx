@@ -1,62 +1,63 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { api, ApiError, AuthResponse, clearAuthToken, getToken, setToken, TOKEN_KEY, USER_KEY, User } from '@/lib/api';
+import React, { createContext, useCallback, useContext, useLayoutEffect, useState } from 'react';
+import {
+  api,
+  ApiError,
+  AuthResponse,
+  getStoredUser,
+  logoutAndRedirect,
+  setAuthSession,
+  User,
+} from '@/lib/api';
 
 type AuthCtx = {
   user: User | null;
-  loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  ready: boolean;
+  login: (username: string, password: string, remember?: boolean) => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthCtx | null>(null);
 
-function readStoredUser(): User | null {
-  const token = getToken();
-  const raw = localStorage.getItem(USER_KEY);
-  if (!token || !raw) return null;
-  try {
-    return JSON.parse(raw) as User;
-  } catch {
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    const stored = readStoredUser();
-    if (stored) {
-      setUser(stored);
-    } else {
-      clearAuthToken();
-    }
-    setLoading(false);
-
-    const onLogout = () => setUser(null);
-    window.addEventListener('auth:logout', onLogout);
-    return () => window.removeEventListener('auth:logout', onLogout);
+  const syncUser = useCallback(() => {
+    setUser(getStoredUser());
   }, []);
 
-  const persist = (data: AuthResponse) => {
+  useLayoutEffect(() => {
+    syncUser();
+    setReady(true);
+
+    const onAuthChange = () => syncUser();
+    window.addEventListener('auth:logout', onAuthChange);
+    window.addEventListener('auth:session', onAuthChange);
+    window.addEventListener('storage', onAuthChange);
+    return () => {
+      window.removeEventListener('auth:logout', onAuthChange);
+      window.removeEventListener('auth:session', onAuthChange);
+      window.removeEventListener('storage', onAuthChange);
+    };
+  }, [syncUser]);
+
+  const persist = (data: AuthResponse, remember: boolean) => {
     if (!data?.token || !data?.user?.username) {
       throw new ApiError('INVALID_AUTH', '登录响应无效', 0);
     }
-    setToken(data.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    setAuthSession(data.token, data.user, remember);
     setUser(data.user);
   };
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string, remember = true) => {
     const data = await api<AuthResponse>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, remember }),
     });
-    persist(data);
+    persist(data, remember);
   };
 
   const register = async (username: string, password: string) => {
@@ -64,17 +65,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     });
-    persist(data);
+    persist(data, true);
   };
 
   const logout = () => {
-    clearAuthToken();
-    setUser(null);
-    window.location.href = '/login/';
+    logoutAndRedirect();
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, ready, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

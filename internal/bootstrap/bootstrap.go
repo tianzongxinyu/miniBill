@@ -17,6 +17,12 @@ type System struct {
 }
 
 func OpenSystem(cfg config.Config) (*System, error) {
+	secret, err := config.EnsureJWTSecret(cfg.DataDir)
+	if err != nil {
+		return nil, err
+	}
+	cfg.JWTSecret = secret
+
 	store, err := systemdb.Open(cfg.DataDir)
 	if err != nil {
 		return nil, err

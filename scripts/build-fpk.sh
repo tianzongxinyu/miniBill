@@ -102,32 +102,50 @@ restore_manifest() {
 }
 
 sync_wizard_config() {
+    # 每项独立 step，飞牛应用设置编辑弹窗会竖向排布（同 step 内多字段会并排）
     FNOS_DIR="$FNOS_DIR" python3 - <<'PY'
 import json
 import os
 from pathlib import Path
 
 root = Path(os.environ["FNOS_DIR"])
-install_path = root / "wizard" / "install"
 config_path = root / "wizard" / "config"
-data = json.loads(install_path.read_text(encoding="utf-8"))
-data[0]["stepTitle"] = "轻账单 配置"
-for item in data[0]["items"]:
-    if item.get("type") == "tips":
-        item["helpText"] = (
-            "轻账单：本地 SQLite 多用户账本、收支统计图表、CSV 导入导出。"
-            "除下方端口与 JWT 外，定期备份需在应用设置 → 备份目录授权读写文件夹，"
-            "再在 Web「我的 → 备份管理」配置周期。"
-        )
-    elif item.get("field") == "wizard_port":
-        item["label"] = "服务端口"
-    elif item.get("field") == "wizard_jwt_secret":
-        item["label"] = "JWT 密钥"
-    elif item.get("field") == "wizard_allow_registration":
-        for opt in item.get("options", []):
-            if opt.get("value") == "false":
-                opt["label"] = "关闭注册"
-config_path.write_text(json.dumps(data, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
+config_path.write_text(
+    json.dumps(
+        [
+            {
+                "stepTitle": "服务端口",
+                "items": [
+                    {
+                        "type": "text",
+                        "field": "wizard_port",
+                        "label": "服务端口",
+                        "initValue": "18080",
+                    }
+                ],
+            },
+            {
+                "stepTitle": "自助注册",
+                "items": [
+                    {
+                        "type": "radio",
+                        "field": "wizard_allow_registration",
+                        "label": "是否开放自助注册",
+                        "initValue": "true",
+                        "options": [
+                            {"label": "开放注册", "value": "true"},
+                            {"label": "关闭注册", "value": "false"},
+                        ],
+                    }
+                ],
+            },
+        ],
+        ensure_ascii=False,
+        indent=4,
+    )
+    + "\n",
+    encoding="utf-8",
+)
 PY
 }
 

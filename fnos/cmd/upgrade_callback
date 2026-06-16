@@ -1,2 +1,6 @@
 #!/bin/bash
+
+. "$(dirname "$0")/app-layout"
+. "$(dirname "$0")/apply-settings"
+refresh_backup_dir >/dev/null 2>&1 || true
 exit 0

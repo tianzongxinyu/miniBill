@@ -1,22 +1,18 @@
 [
     {
-        "stepTitle": "轻账单 配置",
+        "stepTitle": "服务端口",
         "items": [
-            {
-                "type": "tips",
-                "helpText": "轻账单：本地 SQLite 多用户账本、收支统计图表、CSV 导入导出。除下方端口与 JWT 外，定期备份需在应用设置 → 备份目录授权读写文件夹，再在 Web「我的 → 备份管理」配置周期。"
-            },
             {
                 "type": "text",
                 "field": "wizard_port",
                 "label": "服务端口",
                 "initValue": "18080"
-            },
-            {
-                "type": "password",
-                "field": "wizard_jwt_secret",
-                "label": "JWT 密钥"
-            },
+            }
+        ]
+    },
+    {
+        "stepTitle": "自助注册",
+        "items": [
             {
                 "type": "radio",
                 "field": "wizard_allow_registration",

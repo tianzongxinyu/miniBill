@@ -36,8 +36,8 @@ func main() {
 	}
 	defer sys.Close()
 
-	authSvc := auth.NewService(cfg.JWTSecret, cfg.JWTExpireDuration())
-	srv := handler.NewServer(cfg, sys.Store, sys.Factory, authSvc)
+	authSvc := auth.NewService(sys.Cfg.JWTSecret, sys.Cfg.JWTExpireDuration())
+	srv := handler.NewServer(sys.Cfg, sys.Store, sys.Factory, authSvc)
 	r := srv.Router()
 
 	ctx, cancel := context.WithCancel(context.Background())
