@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TagChip } from '@/components/ui/TagChip';
 import { ContactChip } from '@/components/ui/ContactChip';
 import { type Contact, type Tag } from '@/lib/api';
 import { fetchEnabledTagsCached, fetchUsedContactsCached } from '@/lib/metaCache';
-import { ComboboxFloatingClose } from '@/components/ui/ComboboxFloatingCandidates';
+import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 
 type Candidate =
@@ -37,52 +37,21 @@ export function TransactionsSearchCombobox({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef(false);
   const suppressOpenOnFocusRef = useRef(false);
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(
-    null
-  );
 
-  const updateDropdownPos = useCallback(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-    const panelRect = panel.getBoundingClientRect();
-    const toolbar = panel.closest('.transactions-toolbar, .stats-toolbar');
-    const toolbarRect = toolbar?.getBoundingClientRect();
-    const page = panel.closest('.max-w-3xl');
-    const pageRect = page?.getBoundingClientRect();
-    const pagePadX = window.matchMedia('(min-width: 1024px)').matches ? 32 : 16;
-
-    if (toolbarRect) {
-      setDropdownPos({
-        top: panelRect.bottom + 8,
-        left: toolbarRect.left,
-        width: toolbarRect.width,
-      });
-      return;
-    }
-
-    if (pageRect) {
-      setDropdownPos({
-        top: panelRect.bottom + 8,
-        left: pageRect.left + pagePadX,
-        width: pageRect.width - pagePadX * 2,
-      });
-      return;
-    }
-
-    setDropdownPos({
-      top: panelRect.bottom + 8,
-      left: pagePadX,
-      width: window.innerWidth - pagePadX * 2,
-    });
+  const closeDropdown = useCallback(() => {
+    setDropdownOpen(false);
   }, []);
 
-  useClickOutside(rootRef, () => {
+  const blur = useCallback(() => {
     setFocused(false);
     setDropdownOpen(false);
-  });
+  }, []);
+
+  useClickOutside([rootRef, dropdownRef], blur);
 
   const ensureCandidates = useCallback(async () => {
     if (loadedRef.current) return;
@@ -146,20 +115,6 @@ export function TransactionsSearchCombobox({
 
   const showCandidates = focused && dropdownOpen && candidates.length > 0;
 
-  useLayoutEffect(() => {
-    if (!showCandidates) {
-      setDropdownPos(null);
-      return;
-    }
-    updateDropdownPos();
-    window.addEventListener('resize', updateDropdownPos);
-    window.addEventListener('scroll', updateDropdownPos, true);
-    return () => {
-      window.removeEventListener('resize', updateDropdownPos);
-      window.removeEventListener('scroll', updateDropdownPos, true);
-    };
-  }, [showCandidates, updateDropdownPos]);
-
   const selectCandidate = useCallback(
     (c: Candidate) => {
       if (c.kind === 'tag') {
@@ -208,8 +163,6 @@ export function TransactionsSearchCombobox({
     setDropdownOpen(true);
     inputRef.current?.focus();
   }, [ensureCandidates]);
-
-  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
 
   const clearAll = useCallback(
     (e: React.MouseEvent) => {
@@ -286,58 +239,52 @@ export function TransactionsSearchCombobox({
         </div>
       </div>
 
-      {showCandidates && dropdownPos && (
-        <div
-          className="combobox-candidates-floating combobox-candidates-floating-fixed"
-          style={{
-            top: dropdownPos.top,
-            left: dropdownPos.left,
-            width: dropdownPos.width,
-          }}
-          role="listbox"
-        >
-          <div className="combobox-candidates-floating-body">
-            <ComboboxFloatingClose onClose={closeDropdown} />
-            {tagCandidates.length > 0 && (
-            <div className="combobox-candidates-row">
-              {tagCandidates.map((c, i) => (
+      <FloatingPickerPortal
+        open={showCandidates}
+        anchorRef={panelRef}
+        panelRef={dropdownRef}
+        onClose={closeDropdown}
+        role="listbox"
+        bodyClassName="combobox-candidates-floating-body"
+      >
+        {tagCandidates.length > 0 && (
+          <div className="combobox-candidates-row">
+            {tagCandidates.map((c, i) => (
+              <button
+                key={`${c.kind}-${c.id}`}
+                type="button"
+                role="option"
+                aria-selected={highlight === i}
+                className="combobox-candidate p-0 border-0 bg-transparent"
+                onMouseEnter={() => setHighlight(i)}
+                onClick={() => selectCandidate(c)}
+              >
+                <TagChip name={c.label} colorBg={c.colorBg} active={highlight === i} />
+              </button>
+            ))}
+          </div>
+        )}
+        {contactCandidates.length > 0 && (
+          <div className="combobox-candidates-row">
+            {contactCandidates.map((c, i) => {
+              const idx = tagCandidates.length + i;
+              return (
                 <button
                   key={`${c.kind}-${c.id}`}
                   type="button"
                   role="option"
-                  aria-selected={highlight === i}
+                  aria-selected={highlight === idx}
                   className="combobox-candidate p-0 border-0 bg-transparent"
-                  onMouseEnter={() => setHighlight(i)}
+                  onMouseEnter={() => setHighlight(idx)}
                   onClick={() => selectCandidate(c)}
                 >
-                  <TagChip name={c.label} colorBg={c.colorBg} active={highlight === i} />
+                  <ContactChip name={c.label} subtitle={c.subtitle} active={highlight === idx} />
                 </button>
-              ))}
-            </div>
-          )}
-          {contactCandidates.length > 0 && (
-            <div className="combobox-candidates-row">
-              {contactCandidates.map((c, i) => {
-                const idx = tagCandidates.length + i;
-                return (
-                  <button
-                    key={`${c.kind}-${c.id}`}
-                    type="button"
-                    role="option"
-                    aria-selected={highlight === idx}
-                    className="combobox-candidate p-0 border-0 bg-transparent"
-                    onMouseEnter={() => setHighlight(idx)}
-                    onClick={() => selectCandidate(c)}
-                  >
-                    <ContactChip name={c.label} subtitle={c.subtitle} active={highlight === idx} />
-                  </button>
-                );
-              })}
-            </div>
-          )}
+              );
+            })}
           </div>
-        </div>
-      )}
+        )}
+      </FloatingPickerPortal>
     </div>
   );
 }

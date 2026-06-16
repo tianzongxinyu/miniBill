@@ -381,8 +381,24 @@ body {
 
   .form-details .form-row > .date-picker,
   .form-details .form-row > .combobox,
+  .form-details .form-row > .month-picker,
   .form-details .form-row > .form-note-field {
     @apply w-full;
+  }
+
+  .form-details .month-picker-field {
+    @apply flex w-full items-center gap-3 rounded-2xl border border-line bg-accent-soft/30 px-3.5 py-2.5;
+    @apply transition-all duration-200 ease-out cursor-pointer text-left;
+    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
+  }
+
+  .form-details .month-picker-field-value {
+    @apply flex-1 text-sm font-medium text-ink text-right;
+  }
+
+  .form-details .month-picker-field-open {
+    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
   }
 
   .form-details .combobox-chip-row {
@@ -578,6 +594,23 @@ body {
     animation: fade-in-up 0.22s var(--ease-out-expo) both;
   }
 
+  .picker-floating-panel {
+    @apply fixed z-[90] mt-0 overflow-hidden;
+    @apply border border-line/80 bg-surface shadow-panel rounded-3xl;
+    @apply animate-fade-in;
+    max-width: calc(100vw - 2rem);
+  }
+
+  @media (min-width: 1024px) {
+    .picker-floating-panel {
+      max-width: 48rem;
+    }
+  }
+
+  .picker-floating-panel-body {
+    @apply relative overflow-y-auto max-h-[inherit] p-4 lg:p-8;
+  }
+
   .date-picker-header {
     @apply flex items-center justify-between gap-2 mb-4;
   }
@@ -678,9 +711,7 @@ body {
   }
 
   .month-picker-panel {
-    @apply absolute right-0 top-full mt-2 z-50 w-[16rem] p-4 rounded-3xl;
-    @apply border border-line/80 bg-surface shadow-panel;
-    @apply animate-fade-in;
+    @apply p-4;
   }
 
   .month-picker-header {
@@ -791,7 +822,6 @@ body {
   }
 
   .combobox-candidates-floating {
-    @apply absolute left-0 right-0 top-full mt-2 z-50;
     @apply flex flex-col gap-3 p-4 rounded-2xl;
     @apply border border-line/80 bg-surface shadow-panel;
     @apply max-h-[min(24rem,65vh)] overflow-y-auto;
@@ -802,12 +832,8 @@ body {
     @apply flex flex-wrap gap-2;
   }
 
-  .combobox-candidates-floating-fixed {
-    @apply fixed z-[80] mt-0 p-0 overflow-hidden;
-  }
-
   .combobox-candidates-floating-body {
-    @apply relative h-full min-h-0 overflow-y-auto px-4 py-4 lg:px-8 flex flex-col gap-2;
+    @apply h-full min-h-0 flex flex-col gap-2;
   }
 
   .combobox-floating-close {
@@ -853,6 +879,7 @@ body {
   .form-section,
   .form-submit-wrap,
   .date-picker-panel,
+  .picker-floating-panel,
   .confirm-overlay,
   .confirm-panel,
   .nav-item-active::before {

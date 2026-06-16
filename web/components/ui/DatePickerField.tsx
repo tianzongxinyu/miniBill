@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
 import { useClickOutside } from '@/lib/combobox-utils';
+import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -101,6 +102,8 @@ type DatePickerFieldProps = {
 
 export function DatePickerField({ value, onChange, min, max, required }: DatePickerFieldProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLButtonElement>(null);
+  const floatingPanelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<'day' | 'month' | 'year'>('day');
 
@@ -120,7 +123,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
     setPanelMode('day');
   }, []);
 
-  useClickOutside(rootRef, close);
+  useClickOutside([rootRef, floatingPanelRef], close);
 
   useEffect(() => {
     if (open && parsed) {
@@ -217,6 +220,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
   return (
     <div ref={rootRef} className="date-picker">
       <button
+        ref={fieldRef}
         type="button"
         className={`date-picker-field${open ? ' date-picker-field-open' : ''}`}
         onClick={() => setOpen((o) => !o)}
@@ -237,207 +241,212 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
         </span>
       </button>
 
-      {open && (
-        <div className="date-picker-panel" role="dialog" aria-label="选择日期">
-          {panelMode === 'year' ? (
-            <>
-              <div className="month-picker-header">
-                <button
-                  type="button"
-                  className="month-picker-nav"
-                  onClick={() => setViewYearPageStart((s) => s - YEARS_PER_PAGE)}
-                  disabled={prevYearPageDisabled}
-                  aria-label="上一组年份"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 18l-6-6 6-6" />
-                  </svg>
-                </button>
-                <span className="month-picker-title tabular-nums">
-                  {viewYearPageStart} – {viewYearPageStart + YEARS_PER_PAGE - 1}
+      <FloatingPickerPortal
+        open={open}
+        anchorRef={fieldRef}
+        panelRef={floatingPanelRef}
+        onClose={close}
+        role="dialog"
+        aria-label="选择日期"
+      >
+        {panelMode === 'year' ? (
+          <>
+            <div className="month-picker-header">
+              <button
+                type="button"
+                className="month-picker-nav"
+                onClick={() => setViewYearPageStart((s) => s - YEARS_PER_PAGE)}
+                disabled={prevYearPageDisabled}
+                aria-label="上一组年份"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <span className="month-picker-title tabular-nums">
+                {viewYearPageStart} – {viewYearPageStart + YEARS_PER_PAGE - 1}
+              </span>
+              <button
+                type="button"
+                className="month-picker-nav"
+                onClick={() => setViewYearPageStart((s) => s + YEARS_PER_PAGE)}
+                disabled={nextYearPageDisabled}
+                aria-label="下一组年份"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <div className="month-picker-grid">
+              {yearPageYears.map((y) => {
+                const disabled = isYearDisabled(y);
+                const selected = parsed?.y === y;
+                const isCurrent = y === new Date().getFullYear();
+                return (
+                  <button
+                    key={y}
+                    type="button"
+                    className={[
+                      'month-picker-month',
+                      selected && 'month-picker-month-selected',
+                      isCurrent && !selected && 'month-picker-month-current',
+                      disabled && 'month-picker-month-disabled',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => selectYear(y)}
+                    disabled={disabled}
+                  >
+                    {y}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : panelMode === 'month' ? (
+          <>
+            <div className="month-picker-header">
+              <button
+                type="button"
+                className="month-picker-nav"
+                onClick={() => setViewYear((y) => y - 1)}
+                disabled={prevYearDisabled}
+                aria-label="上一年"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="month-picker-title tabular-nums hover:text-accent transition-colors border-0 bg-transparent cursor-pointer p-0"
+                onClick={openYearView}
+              >
+                {viewYear} 年
+              </button>
+              <button
+                type="button"
+                className="month-picker-nav"
+                onClick={() => setViewYear((y) => y + 1)}
+                disabled={nextYearDisabled}
+                aria-label="下一年"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <div className="month-picker-grid">
+              {MONTHS.map((m) => {
+                const disabled = isMonthDisabled(viewYear, m);
+                const selected = parsed?.y === viewYear && parsed?.m === m;
+                const isCurrent =
+                  viewYear === new Date().getFullYear() && m === new Date().getMonth() + 1;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    className={[
+                      'month-picker-month',
+                      selected && 'month-picker-month-selected',
+                      isCurrent && !selected && 'month-picker-month-current',
+                      disabled && 'month-picker-month-disabled',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => selectMonth(m)}
+                    disabled={disabled}
+                  >
+                    {m} 月
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="date-picker-header">
+              <button
+                type="button"
+                className="date-picker-nav"
+                onClick={prevMonth}
+                disabled={prevDisabled}
+                aria-label="上个月"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="date-picker-title tabular-nums hover:text-accent transition-colors"
+                onClick={() => setPanelMode('month')}
+              >
+                {viewYear} 年 {viewMonth} 月
+              </button>
+              <button
+                type="button"
+                className="date-picker-nav"
+                onClick={nextMonthNav}
+                disabled={nextDisabled}
+                aria-label="下个月"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="date-picker-weekdays">
+              {WEEKDAYS.map((w) => (
+                <span key={w} className="date-picker-weekday">
+                  {w}
                 </span>
-                <button
-                  type="button"
-                  className="month-picker-nav"
-                  onClick={() => setViewYearPageStart((s) => s + YEARS_PER_PAGE)}
-                  disabled={nextYearPageDisabled}
-                  aria-label="下一组年份"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </button>
-              </div>
-              <div className="month-picker-grid">
-                {yearPageYears.map((y) => {
-                  const disabled = isYearDisabled(y);
-                  const selected = parsed?.y === y;
-                  const isCurrent = y === new Date().getFullYear();
-                  return (
-                    <button
-                      key={y}
-                      type="button"
-                      className={[
-                        'month-picker-month',
-                        selected && 'month-picker-month-selected',
-                        isCurrent && !selected && 'month-picker-month-current',
-                        disabled && 'month-picker-month-disabled',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => selectYear(y)}
-                      disabled={disabled}
-                    >
-                      {y}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          ) : panelMode === 'month' ? (
-            <>
-              <div className="month-picker-header">
-                <button
-                  type="button"
-                  className="month-picker-nav"
-                  onClick={() => setViewYear((y) => y - 1)}
-                  disabled={prevYearDisabled}
-                  aria-label="上一年"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 18l-6-6 6-6" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="month-picker-title tabular-nums hover:text-accent transition-colors border-0 bg-transparent cursor-pointer p-0"
-                  onClick={openYearView}
-                >
-                  {viewYear} 年
-                </button>
-                <button
-                  type="button"
-                  className="month-picker-nav"
-                  onClick={() => setViewYear((y) => y + 1)}
-                  disabled={nextYearDisabled}
-                  aria-label="下一年"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </button>
-              </div>
-              <div className="month-picker-grid">
-                {MONTHS.map((m) => {
-                  const disabled = isMonthDisabled(viewYear, m);
-                  const selected = parsed?.y === viewYear && parsed?.m === m;
-                  const isCurrent =
-                    viewYear === new Date().getFullYear() && m === new Date().getMonth() + 1;
-                  return (
-                    <button
-                      key={m}
-                      type="button"
-                      className={[
-                        'month-picker-month',
-                        selected && 'month-picker-month-selected',
-                        isCurrent && !selected && 'month-picker-month-current',
-                        disabled && 'month-picker-month-disabled',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => selectMonth(m)}
-                      disabled={disabled}
-                    >
-                      {m} 月
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="date-picker-header">
-                <button
-                  type="button"
-                  className="date-picker-nav"
-                  onClick={prevMonth}
-                  disabled={prevDisabled}
-                  aria-label="上个月"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 18l-6-6 6-6" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="date-picker-title tabular-nums hover:text-accent transition-colors"
-                  onClick={() => setPanelMode('month')}
-                >
-                  {viewYear} 年 {viewMonth} 月
-                </button>
-                <button
-                  type="button"
-                  className="date-picker-nav"
-                  onClick={nextMonthNav}
-                  disabled={nextDisabled}
-                  aria-label="下个月"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </button>
-              </div>
+              ))}
+            </div>
 
-              <div className="date-picker-weekdays">
-                {WEEKDAYS.map((w) => (
-                  <span key={w} className="date-picker-weekday">
-                    {w}
-                  </span>
-                ))}
-              </div>
+            <div className="date-picker-grid">
+              {days.map(({ iso, day, inMonth }) => {
+                const disabled = !inMonth || isDisabled(iso, min, max);
+                const selected = iso === value;
+                const isToday = iso === today;
+                return (
+                  <button
+                    key={`${iso}-${inMonth ? 'in' : 'out'}`}
+                    type="button"
+                    className={[
+                      'date-picker-day',
+                      !inMonth && 'date-picker-day-outside',
+                      selected && 'date-picker-day-selected',
+                      isToday && !selected && 'date-picker-day-today',
+                      disabled && 'date-picker-day-disabled',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => selectDay(iso)}
+                    disabled={disabled}
+                    tabIndex={disabled ? -1 : 0}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
 
-              <div className="date-picker-grid">
-                {days.map(({ iso, day, inMonth }) => {
-                  const disabled = !inMonth || isDisabled(iso, min, max);
-                  const selected = iso === value;
-                  const isToday = iso === today;
-                  return (
-                    <button
-                      key={`${iso}-${inMonth ? 'in' : 'out'}`}
-                      type="button"
-                      className={[
-                        'date-picker-day',
-                        !inMonth && 'date-picker-day-outside',
-                        selected && 'date-picker-day-selected',
-                        isToday && !selected && 'date-picker-day-today',
-                        disabled && 'date-picker-day-disabled',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => selectDay(iso)}
-                      disabled={disabled}
-                      tabIndex={disabled ? -1 : 0}
-                    >
-                      {day}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="date-picker-footer">
-                <button
-                  type="button"
-                  className="date-picker-today"
-                  onClick={selectToday}
-                  disabled={isDisabled(today, min, max)}
-                >
-                  今天
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+            <div className="date-picker-footer">
+              <button
+                type="button"
+                className="date-picker-today"
+                onClick={selectToday}
+                disabled={isDisabled(today, min, max)}
+              >
+                今天
+              </button>
+            </div>
+          </>
+        )}
+      </FloatingPickerPortal>
 
       <input type="hidden" value={value} required={required} tabIndex={-1} readOnly aria-hidden />
     </div>

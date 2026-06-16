@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BackLink } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { MonthPickerField } from '@/components/ui/MonthPickerField';
+import { PageHeader } from '@/components/ui/PageHeader';
 import {
   ApiError,
-  centsToYuan,
+  centsToYuanInput,
   fetchMonthlyBalance,
   upsertMonthlyBalance,
   type YearMonth,
@@ -21,6 +23,8 @@ function sameMonth(a: YearMonth, b: YearMonth) {
 }
 
 type BalanceRegisterFormProps = {
+  backHref: string;
+  pageTitle: string;
   initialTarget: YearMonth;
   minMonth: YearMonth | null;
   maxMonth: YearMonth;
@@ -29,6 +33,8 @@ type BalanceRegisterFormProps = {
 };
 
 export function BalanceRegisterForm({
+  backHref,
+  pageTitle,
   initialTarget,
   minMonth,
   maxMonth,
@@ -60,7 +66,7 @@ export function BalanceRegisterForm({
       try {
         const record = await fetchMonthlyBalance(ym.year, ym.month);
         if (record) {
-          setBalance(centsToYuan(record.balance));
+          setBalance(centsToYuanInput(record.balance));
           setNote(record.note ?? '');
           setHasExisting(true);
           setExistingBalanceCents(record.balance);
@@ -125,7 +131,13 @@ export function BalanceRegisterForm({
   };
 
   if (!initialLoaded) {
-    return <div className="notebook p-8 text-center text-sm text-muted">加载中…</div>;
+    return (
+      <div className="add-form">
+        <BackLink href={backHref}>返回</BackLink>
+        <PageHeader title={pageTitle} />
+        <p className="text-muted text-sm">加载中…</p>
+      </div>
+    );
   }
 
   const overwriteMessage =
@@ -135,64 +147,67 @@ export function BalanceRegisterForm({
 
   return (
     <>
-      <form onSubmit={save} className="notebook p-4 space-y-4">
-        <div>
-          <label className="block text-xs text-muted mb-1.5">登记月份</label>
-          <MonthPickerField
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            min={minMonth}
-            max={maxMonth}
-            disabled={loadingMonth || saving || isEdit}
-            variant="field"
-          />
-          {loadingMonth && <p className="text-xs text-muted mt-1.5">加载中…</p>}
-          {needsOverwriteHint && !loadingMonth && (
-            <p className="text-xs text-muted mt-1.5">该月已有登记，保存将覆盖现有余额</p>
-          )}
+      <form onSubmit={save} className="add-form">
+        <BackLink href={backHref}>返回</BackLink>
+        <PageHeader title={pageTitle} />
+
+        {error && <p className="form-alert-error">{error}</p>}
+
+        <div className="form-hero">
+          <div className="form-hero-amount">
+            <span className="form-hero-currency text-ink/80">¥</span>
+            <input
+              id="balance-amount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              className="form-amount-input text-ink"
+              value={balance}
+              onChange={(e) => setBalance(e.target.value)}
+              required
+              disabled={loadingMonth || saving}
+            />
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="balance-amount" className="block text-xs text-muted mb-1.5">
-            余额（元）
-          </label>
-          <input
-            id="balance-amount"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="0.00"
-            className="field-amount"
-            value={balance}
-            onChange={(e) => setBalance(e.target.value)}
-            required
-            disabled={loadingMonth || saving}
-          />
+        <div className="form-details form-section-delay-1">
+          <div className="form-row">
+            <div className="form-label">月份</div>
+            <MonthPickerField
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              min={minMonth}
+              max={maxMonth}
+              disabled={loadingMonth || saving || isEdit}
+              variant="field"
+            />
+          </div>
+
+          <div className="form-row form-row-start">
+            <div className="form-label">备注</div>
+            <textarea
+              id="balance-note"
+              className="form-note-field"
+              rows={2}
+              placeholder="可选"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              disabled={loadingMonth || saving}
+            />
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="balance-note" className="block text-xs text-muted mb-1.5">
-            备注
-          </label>
-          <input
-            id="balance-note"
-            placeholder="可选"
-            className="field"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            disabled={loadingMonth || saving}
-          />
+        {loadingMonth && <p className="text-xs text-muted px-1">加载中…</p>}
+        {needsOverwriteHint && !loadingMonth && (
+          <p className="text-xs text-muted px-1">该月已有登记，保存将覆盖现有余额</p>
+        )}
+
+        <div className="form-submit-wrap">
+          <button type="submit" className="form-submit" disabled={saving || loadingMonth}>
+            {saving ? '保存中…' : isEdit ? '保存修改' : '保存登记'}
+          </button>
         </div>
-
-        {error && <p className="text-expense text-sm">{error}</p>}
-
-        <button
-          type="submit"
-          className="btn-primary-block"
-          disabled={saving || loadingMonth}
-        >
-          {saving ? '保存中…' : isEdit ? '保存修改' : '保存登记'}
-        </button>
       </form>
 
       <ConfirmDialog

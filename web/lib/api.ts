@@ -209,8 +209,13 @@ export function centsToYuan(cents: number): string {
   return formatYuan(cents / 100);
 }
 
+/** 表单输入用：纯数字字符串，不含千分位（兼容 type="number"） */
+export function centsToYuanInput(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
+
 export function yuanToCents(yuan: string | number): number {
-  return Math.round(parseFloat(String(yuan)) * 100);
+  return Math.round(parseFloat(String(yuan).replace(/,/g, '')) * 100);
 }
 
 export type User = { id: number; username: string };

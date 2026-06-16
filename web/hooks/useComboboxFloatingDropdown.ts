@@ -14,6 +14,8 @@ type Options = {
   open: boolean;
   panelRef: RefObject<HTMLElement | null>;
   bottomSelectors?: string[];
+  /** 为 true 时把 add-form 内保存按钮当作底部遮挡 */
+  clipToAddForm?: boolean;
 };
 
 const GLOBAL_BOTTOM_SELECTORS = ['.mobile-tab-nav'];
@@ -37,6 +39,7 @@ export function useComboboxFloatingDropdown({
   open,
   panelRef,
   bottomSelectors = GLOBAL_BOTTOM_SELECTORS,
+  clipToAddForm = false,
 }: Options) {
   const [pos, setPos] = useState<ComboboxDropdownPos | null>(null);
 
@@ -45,17 +48,17 @@ export function useComboboxFloatingDropdown({
     if (!panel) return;
 
     const panelRect = panel.getBoundingClientRect();
-    const page = panel.closest('.max-w-3xl');
-    const pageRect = page?.getBoundingClientRect();
     const pagePadX = window.matchMedia('(min-width: 1024px)').matches ? 32 : 16;
-    const addForm = panel.closest('.add-form');
 
     let bottomLimit = collectBottomLimit(panelRect, bottomSelectors, null);
-    if (addForm) {
-      bottomLimit = Math.min(
-        bottomLimit,
-        collectBottomLimit(panelRect, ['.form-submit-wrap', '.btn-danger-block'], addForm)
-      );
+    if (clipToAddForm) {
+      const addForm = panel.closest('.add-form');
+      if (addForm) {
+        bottomLimit = Math.min(
+          bottomLimit,
+          collectBottomLimit(panelRect, ['.form-submit-wrap', '.btn-danger-block'], addForm)
+        );
+      }
     }
 
     const gap = 8;
@@ -73,15 +76,27 @@ export function useComboboxFloatingDropdown({
       maxHeight = Math.max(120, Math.min(spaceAbove, preferMax));
     }
 
-    const layout = {
+    const isLg = window.matchMedia('(min-width: 1024px)').matches;
+    let left = pagePadX;
+    let width = window.innerWidth - pagePadX * 2;
+
+    if (isLg) {
+      const pageContainer = panel.closest('.max-w-3xl');
+      if (pageContainer) {
+        const pageRect = pageContainer.getBoundingClientRect();
+        left = pageRect.left;
+        width = pageRect.width;
+      }
+    }
+
+    setPos({
       top,
       maxHeight,
       flipUp,
-      left: pageRect ? pageRect.left + pagePadX : pagePadX,
-      width: pageRect ? pageRect.width - pagePadX * 2 : window.innerWidth - pagePadX * 2,
-    };
-    setPos(layout);
-  }, [panelRef, bottomSelectors]);
+      left,
+      width,
+    });
+  }, [panelRef, bottomSelectors, clipToAddForm]);
 
   useLayoutEffect(() => {
     if (!open) {
@@ -99,3 +114,5 @@ export function useComboboxFloatingDropdown({
 
   return pos;
 }
+
+export { useComboboxFloatingDropdown as useFloatingPickerPos };

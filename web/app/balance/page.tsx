@@ -3,8 +3,6 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingFallback } from '@/components/ui/LoadingFallback';
 import { BalanceRegisterForm } from '@/components/balance/BalanceRegisterForm';
 import {
@@ -39,18 +37,16 @@ function BalanceContent() {
   const backHref = returnTo.startsWith('/') ? returnTo : '/';
 
   return (
-    <div>
-      <BackLink href={backHref}>返回</BackLink>
-      <PageHeader title={pageTitle} />
-      <BalanceRegisterForm
-        key={`${initialTarget.year}-${initialTarget.month}`}
-        initialTarget={initialTarget}
-        minMonth={minMonth}
-        maxMonth={maxMonth}
-        returnTo={backHref}
-        onInitialLoaded={handleInitialLoaded}
-      />
-    </div>
+    <BalanceRegisterForm
+      key={`${initialTarget.year}-${initialTarget.month}`}
+      backHref={backHref}
+      pageTitle={pageTitle}
+      initialTarget={initialTarget}
+      minMonth={minMonth}
+      maxMonth={maxMonth}
+      returnTo={backHref}
+      onInitialLoaded={handleInitialLoaded}
+    />
   );
 }
 
