@@ -1,12 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { RequireAuth } from '@/components/RequireAuth';
-import { ChartSkeleton } from '@/components/ui/LoadingFallback';
 import { StatsChartFullscreen } from '@/components/stats/StatsChartFullscreen';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
-import { statsChartWidth } from '@/components/stats/StatsScrollChart';
+import { StatsScrollChart, statsChartWidth } from '@/lib/dynamicStatsChart';
 import { StatsSeriesTable } from '@/components/stats/StatsSeriesTable';
 import { StatsToolbar } from '@/components/stats/StatsToolbar';
 import { useStatsPage } from '@/hooks/useStatsPage';
@@ -18,11 +16,6 @@ import {
   isCoarseMobile,
   shouldUsePortraitFallback,
 } from '@/lib/statsChartFullscreen';
-
-const StatsScrollChart = dynamic(
-  () => import('@/components/stats/StatsScrollChart').then((m) => m.StatsScrollChart),
-  { ssr: false, loading: () => <ChartSkeleton /> }
-);
 
 function StatsContent() {
   const inlineScrollRef = useRef<HTMLDivElement>(null);

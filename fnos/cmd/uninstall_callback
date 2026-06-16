@@ -1,2 +1,12 @@
 #!/bin/bash
+
+. "$(dirname "$0")/app-layout"
+
+resolve_runtime_paths
+
+if [ "${wizard_delete_data:-false}" = "true" ] && [ -n "${DATA_DIR:-}" ]; then
+    rm -rf "${DATA_DIR:?}/"* 2>/dev/null || true
+    rm -f "${ENV_FILE:-}" "${PID_FILE:-}" 2>/dev/null || true
+fi
+
 exit 0

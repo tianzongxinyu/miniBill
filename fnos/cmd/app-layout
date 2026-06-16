@@ -1,5 +1,36 @@
 # Locate miniBill app files on fnOS and extract app.tgz when needed.
 
+resolve_pkgvar() {
+    if [ -n "${TRIM_PKGVAR:-}" ]; then
+        echo "${TRIM_PKGVAR}"
+        return 0
+    fi
+    local d
+    for d in \
+        "/vol1/@appdata/${TRIM_APPNAME}" \
+        "/usr/local/apps/@appdata/${TRIM_APPNAME}"
+    do
+        if [ -n "${TRIM_APPNAME:-}" ] && [ -d "$d" ]; then
+            echo "$d"
+            return 0
+        fi
+    done
+    if [ -n "${TRIM_APPNAME:-}" ]; then
+        echo "/vol1/@appdata/${TRIM_APPNAME}"
+    else
+        echo ""
+    fi
+}
+
+resolve_runtime_paths() {
+    local pkgvar
+    pkgvar="$(resolve_pkgvar)"
+    ENV_FILE="${pkgvar}/minibill.env"
+    PID_FILE="${pkgvar}/minibill.pid"
+    LOG_FILE="${pkgvar}/minibill.log"
+    DATA_DIR="${pkgvar}/data"
+}
+
 resolve_app_dest() {
     local d
     for d in \

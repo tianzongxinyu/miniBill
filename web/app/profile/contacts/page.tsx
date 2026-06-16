@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RequireAuth } from '@/components/RequireAuth';
 import { BackLink } from '@/components/ui/BackLink';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -73,7 +72,6 @@ function ContactsContent() {
   return (
     <div>
       <BackLink href="/profile/">我的</BackLink>
-      <PageHeader title="联系人" />
       {error && <p className="text-expense text-sm mb-4">{error}</p>}
       <form onSubmit={create} className="flex gap-2 mb-4">
         <input

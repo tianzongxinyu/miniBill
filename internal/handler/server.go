@@ -22,19 +22,20 @@ import (
 )
 
 type Server struct {
-	cfg         config.Config
-	system      *systemdb.Store
-	userFactory *userdb.Factory
-	authSvc     *auth.Service
-	statsSvc    *service.StatsService
-	txSvc       *service.TransactionService
-	tagSvc      *service.TagService
-	contactSvc  *service.ContactService
-	balanceSvc  *service.BalanceService
-	settingsSvc *service.SettingsService
-	ledgerCSVSvc *service.LedgerCSVService
-	metaStore    *cache.LedgerMetaStore
-	dataPathMu   sync.RWMutex
+	cfg           config.Config
+	system        *systemdb.Store
+	userFactory   *userdb.Factory
+	authSvc       *auth.Service
+	statsSvc      *service.StatsService
+	txSvc         *service.TransactionService
+	tagSvc        *service.TagService
+	contactSvc    *service.ContactService
+	balanceSvc    *service.BalanceService
+	settingsSvc   *service.SettingsService
+	ledgerCSVSvc  *service.LedgerCSVService
+	backupSvc     *service.BackupService
+	metaStore     *cache.LedgerMetaStore
+	dataPathMu    sync.RWMutex
 	dataPathCache map[int64]string
 }
 
@@ -42,26 +43,35 @@ func NewServer(cfg config.Config, system *systemdb.Store, factory *userdb.Factor
 	statsSvc := service.NewStatsService()
 	txSvc := service.NewTransactionService(statsSvc)
 	metaStore := cache.NewLedgerMetaStore(0)
+	ledgerCSVSvc := service.NewLedgerCSVService(txSvc, statsSvc, metaStore)
 	return &Server{
-		cfg:         cfg,
-		system:      system,
-		userFactory: factory,
-		authSvc:     authSvc,
-		statsSvc:    statsSvc,
-		txSvc:       txSvc,
-		tagSvc:      &service.TagService{},
-		contactSvc:  &service.ContactService{},
-		balanceSvc:  service.NewBalanceService(statsSvc),
-		settingsSvc: &service.SettingsService{},
-		ledgerCSVSvc: service.NewLedgerCSVService(txSvc, statsSvc, metaStore),
-		metaStore:    metaStore,
+		cfg:           cfg,
+		system:        system,
+		userFactory:   factory,
+		authSvc:       authSvc,
+		statsSvc:      statsSvc,
+		txSvc:         txSvc,
+		tagSvc:        &service.TagService{},
+		contactSvc:    &service.ContactService{},
+		balanceSvc:    service.NewBalanceService(statsSvc),
+		settingsSvc:   &service.SettingsService{},
+		ledgerCSVSvc:  ledgerCSVSvc,
+		backupSvc:     service.NewBackupService(cfg.BackupDir, ledgerCSVSvc),
+		metaStore:     metaStore,
 		dataPathCache: make(map[int64]string),
 	}
 }
 
+func (s *Server) BackupService() *service.BackupService {
+	return s.backupSvc
+}
+
 func (s *Server) Router() *gin.Engine {
 	r := gin.New()
-	r.Use(gin.Recovery(), gin.Logger())
+	r.Use(gin.Recovery())
+	if gin.Mode() != gin.ReleaseMode {
+		r.Use(gin.Logger())
+	}
 
 	api := r.Group("/api")
 	api.GET("/health", func(c *gin.Context) {
@@ -109,6 +119,11 @@ func (s *Server) Router() *gin.Engine {
 	protected.PUT("/settings", s.updateSettings)
 	protected.GET("/ledger/export", s.exportLedgerCSV)
 	protected.POST("/ledger/import", s.importLedgerCSV)
+	protected.GET("/backup", s.getBackup)
+	protected.PUT("/backup", s.updateBackup)
+	protected.POST("/backup/run", s.runBackup)
+	protected.GET("/backup/files", s.listBackupFiles)
+	protected.POST("/backup/restore", s.restoreBackup)
 
 	return r
 }

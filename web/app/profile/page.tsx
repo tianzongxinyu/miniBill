@@ -10,6 +10,7 @@ function ProfileContent() {
     { href: '/profile/contacts/', label: '联系人' },
     { href: '/profile/tags/', label: '标签管理' },
     { href: '/profile/data/', label: '数据管理' },
+    { href: '/profile/backup/', label: '备份管理' },
     { href: '/profile/settings/', label: '设置' },
   ];
 

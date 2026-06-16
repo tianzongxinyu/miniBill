@@ -48,6 +48,13 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
       if (!state.dragging) {
         state.dragging = true;
         el.classList.add('is-dragging');
+        if (state.pointerId >= 0) {
+          try {
+            el.setPointerCapture(state.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
       }
 
       preventDefault?.();
@@ -76,7 +83,13 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
       }
       if (state.dragging) {
         el?.classList.remove('is-dragging');
-        el?.releasePointerCapture?.(state.pointerId);
+        if (state.pointerId >= 0) {
+          try {
+            el?.releasePointerCapture(state.pointerId);
+          } catch {
+            /* capture may already be released */
+          }
+        }
       }
       dragState.current = null;
     },
@@ -108,7 +121,6 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
         raf: 0,
         pendingScrollLeft: null,
       };
-      el.setPointerCapture(e.pointerId);
     },
     [enabled, pointerCoord, scrollRef, shouldCapturePointer]
   );
@@ -116,6 +128,8 @@ export function useHorizontalDragScroll<T extends HTMLElement>(
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!enabled || e.button !== 0) return;
+      // Pointer events handle mouse on modern browsers; avoid clobbering pointerId.
+      if (dragState.current) return;
       const el = scrollRef.current;
       if (!el) return;
 

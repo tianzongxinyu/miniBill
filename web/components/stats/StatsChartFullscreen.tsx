@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import dynamic from 'next/dynamic';
-import { ChartSkeleton } from '@/components/ui/LoadingFallback';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
-import { statsChartWidth } from '@/components/stats/StatsScrollChart';
+import { StatsScrollChart } from '@/lib/dynamicStatsChart';
 import {
   exitChartFullscreen,
   isCoarseMobile,
@@ -14,11 +12,6 @@ import {
 import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import type { StatsChartRow } from '@/lib/statsChartData';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
-
-const StatsScrollChart = dynamic(
-  () => import('@/components/stats/StatsScrollChart').then((m) => m.StatsScrollChart),
-  { ssr: false, loading: () => <ChartSkeleton height={252} /> }
-);
 
 type StatsChartFullscreenProps = {
   open: boolean;
@@ -189,6 +182,7 @@ export function StatsChartFullscreen({
               rows={rows}
               hiddenSeries={hiddenSeries}
               height={chartHeight}
+              tapToInspect
             />
           </div>
         </div>
@@ -207,5 +201,3 @@ export function StatsChartFullscreen({
     document.body
   );
 }
-
-export { statsChartWidth };

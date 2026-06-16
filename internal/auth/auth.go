@@ -47,6 +47,9 @@ func (s *Service) Sign(userID int64, username string) (string, error) {
 
 func (s *Service) Parse(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		if t.Method != jwt.SigningMethodHS256 {
+			return nil, errors.New("unexpected signing method")
+		}
 		return s.secret, nil
 	})
 	if err != nil {

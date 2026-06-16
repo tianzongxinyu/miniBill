@@ -1,38 +1,12 @@
 #!/bin/bash
 
 . "$(dirname "$0")/app-layout"
+. "$(dirname "$0")/apply-settings"
 
 ENV_FILE=""
 PID_FILE=""
 LOG_FILE=""
 DATA_DIR=""
-
-resolve_pkgvar() {
-    if [ -n "${TRIM_PKGVAR:-}" ]; then
-        echo "${TRIM_PKGVAR}"
-        return 0
-    fi
-    local d
-    for d in \
-        "/vol1/@appdata/${TRIM_APPNAME}" \
-        "/usr/local/apps/@appdata/${TRIM_APPNAME}"
-    do
-        if [ -d "$d" ]; then
-            echo "$d"
-            return 0
-        fi
-    done
-    echo "/vol1/@appdata/${TRIM_APPNAME}"
-}
-
-resolve_runtime_paths() {
-    local pkgvar
-    pkgvar="$(resolve_pkgvar)"
-    ENV_FILE="${pkgvar}/minibill.env"
-    PID_FILE="${pkgvar}/minibill.pid"
-    LOG_FILE="${pkgvar}/minibill.log"
-    DATA_DIR="${pkgvar}/data"
-}
 
 case $1 in
 start)
@@ -63,6 +37,7 @@ start)
 
     (
         export DATA_DIR
+        export BACKUP_DIR="${BACKUP_DIR:-}"
         export STATIC_DIR="${APP_ROOT}/web/out"
         export MIGRATIONS_SYSTEM="${APP_ROOT}/migrations/system"
         export MIGRATIONS_LEDGER="${APP_ROOT}/migrations/ledger"

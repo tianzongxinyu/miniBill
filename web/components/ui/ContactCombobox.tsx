@@ -43,9 +43,15 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
 
   const {
     query,
-    setQuery,
+    updateQuery,
+    resetQuery,
     focused,
-    setFocused,
+    dropdownOpen,
+    setDropdownOpen,
+    handleFocus,
+    handlePanelClick,
+    closeDropdown,
+    closeAndRefocusInput,
     creating,
     rootRef,
     inputRef,
@@ -61,17 +67,17 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   const selectContact = useCallback(
     (id: number) => {
       onChange(id);
-      setQuery('');
-      setFocused(false);
+      resetQuery();
+      closeAndRefocusInput();
     },
-    [onChange, setQuery, setFocused]
+    [onChange, resetQuery, closeAndRefocusInput]
   );
 
   const clear = useCallback(() => {
     onChange('');
-    setQuery('');
+    resetQuery();
     inputRef.current?.focus();
-  }, [onChange, setQuery, inputRef]);
+  }, [onChange, resetQuery, inputRef]);
 
   const candidates = useMemo(() => {
     const pool = value ? contacts.filter((c) => c.id !== value) : contacts;
@@ -93,11 +99,11 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   const canCreate =
     trimmed.length > 0 && !contacts.some((c) => c.name.toLowerCase() === trimmed.toLowerCase());
 
-  const showCandidates = focused && (candidates.length > 0 || canCreate);
+  const showCandidates = focused && dropdownOpen && (candidates.length > 0 || canCreate);
 
   const { highlight, setHighlight, onKeyDown } = useComboboxKeyboard({
     open: showCandidates,
-    setOpen: setFocused,
+    setOpen: setDropdownOpen,
     optionCount: candidates.length,
     hasCreate: canCreate,
     onSelect: (i) => selectContact(candidates[i].id),
@@ -109,7 +115,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
       <div
         ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
-        onClick={() => inputRef.current?.focus()}
+        onClick={handlePanelClick}
       >
         <div className="combobox-chip-row">
           {selected && (
@@ -126,8 +132,8 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
             className="combobox-input-inline"
             placeholder={selected ? '搜索或更换' : '输入联系人姓名'}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
+            onChange={(e) => updateQuery(e.target.value)}
+            onFocus={handleFocus}
             onKeyDown={onKeyDown}
             autoComplete="off"
           />
@@ -138,6 +144,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
         open={showCandidates}
         panelRef={panelRef}
         dropdownRef={dropdownRef}
+        onClose={closeDropdown}
       >
         <div className="combobox-candidates-row">
           {candidates.map((c, i) => (

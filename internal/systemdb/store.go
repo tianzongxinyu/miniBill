@@ -37,8 +37,6 @@ func (s *Store) DB() *sql.DB { return s.db }
 
 func (s *Store) Close() error { return s.db.Close() }
 
-func (s *Store) DataDir() string { return s.dataDir }
-
 func (s *Store) CreateUser(username, passwordHash string) (*User, error) {
 	res, err := s.db.Exec(
 		`INSERT INTO users (username, password_hash, data_path) VALUES (?, ?, '')`,
@@ -91,4 +89,21 @@ func (s *Store) GetByID(id int64) (*User, error) {
 func (s *Store) UpdatePassword(id int64, hash string) error {
 	_, err := s.db.Exec(`UPDATE users SET password_hash = ? WHERE id = ?`, hash, id)
 	return err
+}
+
+func (s *Store) ListUsers() ([]*User, error) {
+	rows, err := s.db.Query(`SELECT id, username, password_hash, data_path FROM users ORDER BY id`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var list []*User
+	for rows.Next() {
+		u := &User{}
+		if err := rows.Scan(&u.ID, &u.Username, &u.PasswordHash, &u.DataPath); err != nil {
+			return nil, err
+		}
+		list = append(list, u)
+	}
+	return list, rows.Err()
 }

@@ -1,0 +1,10 @@
+ALTER TABLE settings ADD COLUMN backup_enabled INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE settings ADD COLUMN backup_interval TEXT NOT NULL DEFAULT 'daily';
+ALTER TABLE settings ADD COLUMN backup_hour INTEGER NOT NULL DEFAULT 3;
+ALTER TABLE settings ADD COLUMN backup_weekday INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE settings ADD COLUMN backup_month_day INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE settings ADD COLUMN backup_keep_count INTEGER NOT NULL DEFAULT 30;
+ALTER TABLE settings ADD COLUMN backup_last_run_at TEXT;
+ALTER TABLE settings ADD COLUMN backup_last_status TEXT;
+ALTER TABLE settings ADD COLUMN backup_last_file TEXT;
+ALTER TABLE settings ADD COLUMN backup_last_error TEXT;

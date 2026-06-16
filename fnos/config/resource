@@ -1,5 +1,17 @@
 {
     "port-config": {
         "protocol-file": "MiniBill.sc"
+    },
+    "data-share": {
+        "shares": [
+            {
+                "name": "minibill/backups",
+                "permission": {
+                    "rw": [
+                        "minibill"
+                    ]
+                }
+            }
+        ]
     }
 }

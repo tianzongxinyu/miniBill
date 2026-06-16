@@ -4,7 +4,7 @@
 
 ```bash
 cp .env.example .env
-# 编辑 .env，设置 JWT_SECRET
+# 编辑 .env：JWT_SECRET 须为至少 32 字符的随机串（不可用占位符）
 docker compose up -d --build
 ```
 
@@ -14,10 +14,16 @@ docker compose up -d --build
 
 | 变量 | 说明 | 默认 |
 |------|------|------|
-| JWT_SECRET | JWT 密钥 | 必填 |
+| JWT_SECRET | JWT 密钥（至少 32 字符，不可用占位符） | 必填 |
 | ALLOW_REGISTRATION | 是否开放注册 | true |
 | DATA_DIR | 数据目录 | /data |
 | PORT | 端口 | 8080 |
+| JWT_EXPIRE_DAYS | JWT 有效期（天） | 7 |
+| BACKUP_DIR | 定期备份输出目录（空则禁用） | 空 |
+| STATIC_DIR | 前端静态资源目录 | ./web/out（Docker 内 /app/web/out） |
+| MIGRATIONS_SYSTEM | 系统库迁移目录 | ./migrations/system |
+| MIGRATIONS_LEDGER | 账本库迁移目录 | ./migrations/ledger |
+| GIN_MODE | Gin 模式（`release` 关闭访问日志） | release |
 | TZ | 时区 | Asia/Shanghai |
 
 ## 数据目录
@@ -30,7 +36,13 @@ docker compose up -d --build
         └── ledger.db
 ```
 
-手动备份：复制整个 `data/` 目录。
+手动备份：复制整个 `data/` 目录，或在 Web **我的 → 备份管理** 中配置定期导出（需设置 `BACKUP_DIR`）。
+
+### 定期 CSV 备份
+
+设置 `BACKUP_DIR` 为可写目录后，在 Web **我的 → 备份管理** 中启用定时任务。备份文件命名：`{用户名}_轻账单_备份_{yyyyMMddHHmmss}.zip`，内含同名 CSV。
+
+Docker 示例：在 `.env` 中设置 `BACKUP_DIR=/data/backups` 并挂载该路径。
 
 ## 关闭自助注册
 
@@ -40,7 +52,7 @@ docker compose up -d --build
 go run ./cmd/create-user -username admin -password yourpass
 ```
 
-或 `scripts/create-user.sh`（需临时开放注册或直接用 CLI）。
+（需设置与 server 相同的 `JWT_SECRET` 等环境变量。）
 
 ## HTTPS
 
@@ -69,5 +81,7 @@ go run ./cmd/create-user -username admin -password yourpass
 5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问
 
 修改端口：应用中心 → 轻账单 → **配置** → 修改服务端口 → 保存后重启应用。
+
+**定期备份：** 应用中心 → 轻账单 → **设置** → 为「备份目录」选择文件夹并授予 **读写** 权限 → 保存并重启。随后在 Web **我的 → 备份管理** 配置周期与保留份数。
 
 卸载时可选保留账本数据（`system.db` 与用户 `ledger.db` 在应用数据目录）。

@@ -318,8 +318,6 @@ type MonthlyStatItem struct {
 	Month             int    `json:"month"`
 	TotalIncome       int64  `json:"total_income"`
 	TotalExpense      int64  `json:"total_expense"`
-	SocialIncome      int64  `json:"social_income"`
-	SocialExpense     int64  `json:"social_expense"`
 	DailyExpense      *int64 `json:"daily_expense"`
 	RegisteredBalance *int64 `json:"registered_balance"`
 }
@@ -362,10 +360,6 @@ func (s *StatsService) sumTransactionsRange(db *sql.DB, start, end string, filte
 	return income, expense, err
 }
 
-func (s *StatsService) sumSocialRange(db *sql.DB, start, end string) (socialIncome, socialExpense int64, err error) {
-	return 0, 0, nil
-}
-
 func (s *StatsService) computeMonthStat(db *sql.DB, ym domain.YearMonth, filter StatsFilter) (MonthlyStatPoint, error) {
 	item := MonthlyStatPoint{Year: ym.Year, Month: ym.Month}
 	start, end := monthRange(ym.Year, ym.Month)
@@ -377,11 +371,6 @@ func (s *StatsService) computeMonthStat(db *sql.DB, ym domain.YearMonth, filter 
 	if filter.HasFilter() {
 		return item, nil
 	}
-	si, se, err := s.sumSocialRange(db, start, end)
-	if err != nil {
-		return item, err
-	}
-	item.SocialIncome, item.SocialExpense = si, se
 	registeredBalance, err := loadMonthlyBalance(db, ym.Year, ym.Month)
 	if err != nil {
 		return item, err
@@ -422,7 +411,7 @@ func (s *StatsService) MonthlyStats(db *sql.DB, year int, filter StatsFilter) ([
 	}
 
 	rows, err := db.Query(`
-		SELECT month, total_income, total_expense, social_income, social_expense, registered_balance, daily_expense
+		SELECT month, total_income, total_expense, registered_balance, daily_expense
 		FROM stat_monthly WHERE year = ? ORDER BY month`, year)
 	if err != nil {
 		return nil, err
@@ -430,15 +419,15 @@ func (s *StatsService) MonthlyStats(db *sql.DB, year int, filter StatsFilter) ([
 	defer rows.Close()
 	for rows.Next() {
 		var m int
-		var ti, te, si, se int64
+		var ti, te int64
 		var reg, daily sql.NullInt64
-		if err := rows.Scan(&m, &ti, &te, &si, &se, &reg, &daily); err != nil {
+		if err := rows.Scan(&m, &ti, &te, &reg, &daily); err != nil {
 			return nil, err
 		}
 		if m < 1 || m > 12 {
 			continue
 		}
-		item := MonthlyStatItem{Month: m, TotalIncome: ti, TotalExpense: te, SocialIncome: si, SocialExpense: se}
+		item := MonthlyStatItem{Month: m, TotalIncome: ti, TotalExpense: te}
 		if reg.Valid {
 			item.RegisteredBalance = &reg.Int64
 		}
@@ -454,14 +443,12 @@ func (s *StatsService) MonthlyStats(db *sql.DB, year int, filter StatsFilter) ([
 }
 
 type YearlyStatItem struct {
-	Year          int    `json:"year"`
-	TotalIncome   int64  `json:"total_income"`
-	TotalExpense  int64  `json:"total_expense"`
-	SocialIncome  int64  `json:"social_income"`
-	SocialExpense int64  `json:"social_expense"`
-	DailyExpense  *int64 `json:"daily_expense"`
-	StartBalance  *int64 `json:"start_balance,omitempty"`
-	EndBalance    *int64 `json:"end_balance"`
+	Year         int    `json:"year"`
+	TotalIncome  int64  `json:"total_income"`
+	TotalExpense int64  `json:"total_expense"`
+	DailyExpense *int64 `json:"daily_expense"`
+	StartBalance *int64 `json:"start_balance,omitempty"`
+	EndBalance   *int64 `json:"end_balance"`
 }
 
 func (s *StatsService) YearlyStats(db *sql.DB, filter StatsFilter) ([]YearlyStatItem, error) {
@@ -534,11 +521,6 @@ func (s *StatsService) YearStat(db *sql.DB, year int, filter StatsFilter) (*Year
 			return nil, err
 		}
 		item.TotalIncome, item.TotalExpense = ti, te
-		si, se, err := s.sumSocialRange(db, start, end)
-		if err != nil {
-			return nil, err
-		}
-		item.SocialIncome, item.SocialExpense = si, se
 		startBal, err := loadPriorDecemberBalance(db, year)
 		if err != nil {
 			return nil, err
@@ -560,10 +542,9 @@ func (s *StatsService) YearStat(db *sql.DB, year int, filter StatsFilter) (*Year
 	var dailySum sql.NullInt64
 	err := db.QueryRow(`
 		SELECT COALESCE(SUM(total_income),0), COALESCE(SUM(total_expense),0),
-		       COALESCE(SUM(social_income),0), COALESCE(SUM(social_expense),0),
 		       SUM(daily_expense)
 		FROM stat_monthly WHERE year = ?`, year,
-	).Scan(&item.TotalIncome, &item.TotalExpense, &item.SocialIncome, &item.SocialExpense, &dailySum)
+	).Scan(&item.TotalIncome, &item.TotalExpense, &dailySum)
 	if err != nil {
 		return nil, err
 	}
@@ -587,8 +568,6 @@ type MonthlyStatPoint struct {
 	Month             int    `json:"month"`
 	TotalIncome       int64  `json:"total_income"`
 	TotalExpense      int64  `json:"total_expense"`
-	SocialIncome      int64  `json:"social_income,omitempty"`
-	SocialExpense     int64  `json:"social_expense,omitempty"`
 	DailyExpense      *int64 `json:"daily_expense,omitempty"`
 	StartBalance      *int64 `json:"start_balance,omitempty"`
 	RegisteredBalance *int64 `json:"registered_balance,omitempty"`
@@ -641,16 +620,15 @@ func (s *StatsService) statForMonth(db *sql.DB, ym domain.YearMonth, filter Stat
 	}
 	item := MonthlyStatPoint{Year: ym.Year, Month: ym.Month}
 	var daily, reg sql.NullInt64
-	var ti, te, si, se int64
+	var ti, te int64
 	err := db.QueryRow(`
-		SELECT total_income, total_expense, social_income, social_expense, registered_balance, daily_expense
+		SELECT total_income, total_expense, registered_balance, daily_expense
 		FROM stat_monthly WHERE year = ? AND month = ?`, ym.Year, ym.Month,
-	).Scan(&ti, &te, &si, &se, &reg, &daily)
+	).Scan(&ti, &te, &reg, &daily)
 	if err != nil && err != sql.ErrNoRows {
 		return item, err
 	}
 	item.TotalIncome, item.TotalExpense = ti, te
-	item.SocialIncome, item.SocialExpense = si, se
 	if reg.Valid {
 		item.RegisteredBalance = &reg.Int64
 	}
@@ -880,24 +858,4 @@ func (s *StatsService) YearSeries(
 	page.Items = items
 	s.finishYearSeriesPage(page, earliestYear, currentYear)
 	return page, nil
-}
-
-func loadTagNames(db *sql.DB, txID int64) ([]string, error) {
-	rows, err := db.Query(`
-		SELECT g.name FROM tags g
-		JOIN transaction_tags tt ON tt.tag_id = g.id
-		WHERE tt.transaction_id = ?`, txID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var names []string
-	for rows.Next() {
-		var n string
-		if err := rows.Scan(&n); err != nil {
-			return nil, err
-		}
-		names = append(names, n)
-	}
-	return names, nil
 }

@@ -1,10 +1,9 @@
 'use client';
 
-import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
 import { BackLink } from '@/components/ui/BackLink';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { Amount } from '@/components/ui/Amount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -79,23 +78,33 @@ function DetailInner() {
   const stats = [
     { label: '送出', value: <Amount cents={c.social_expense} type="expense" className="text-sm" /> },
     { label: '收到', value: <Amount cents={c.social_income} type="income" className="text-sm" /> },
-    { label: '净额', value: <SignedAmount cents={c.net_amount} className="text-sm" /> },
   ];
+
+  const statGrid = 'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center';
+  const amountSlot = 'min-w-[6.5rem] text-right shrink-0';
 
   return (
     <div>
       <BackLink href={backHref}>{backLabel}</BackLink>
-      <PageHeader title={c.name} />
-      <div className="notebook mb-4 flex items-center py-3">
-        {stats.map((item, i) => (
-          <Fragment key={item.label}>
-            {i > 0 ? <div className="bill-card-split-divider mx-2" aria-hidden /> : null}
-            <div className="flex-1 min-w-0 px-3 text-right">
-              <div className="stat-label">{item.label}</div>
-              <div className="mt-1">{item.value}</div>
-            </div>
-          </Fragment>
-        ))}
+      <div className={`${statGrid} mb-4 items-baseline`}>
+        <h1 className="page-title min-w-0 px-4">{c.name}</h1>
+        <div className="w-px mx-2 sm:mx-2.5 shrink-0" aria-hidden />
+        <div className="flex items-baseline justify-end min-w-0 pl-3 pr-4 text-sm">
+          <span className={amountSlot}>
+            <SignedAmount cents={c.net_amount} className="text-sm" />
+          </span>
+        </div>
+      </div>
+      <div className={`notebook mb-4 ${statGrid} py-2`}>
+        <div className="flex items-baseline justify-between gap-2 min-w-0 pl-4 pr-3">
+          <span className="stat-label shrink-0">{stats[0].label}</span>
+          <span className={amountSlot}>{stats[0].value}</span>
+        </div>
+        <div className="w-px h-8 bg-line/80 mx-2 self-center shrink-0" aria-hidden />
+        <div className="flex items-baseline justify-between gap-2 min-w-0 pl-3 pr-4">
+          <span className="stat-label shrink-0">{stats[1].label}</span>
+          <span className={amountSlot}>{stats[1].value}</span>
+        </div>
       </div>
 
       {list.loading ? (

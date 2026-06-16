@@ -1,5 +1,13 @@
+import {
+  downloadBlob,
+  downloadSuccessMessage,
+  parseExportFilename,
+  type DownloadMethod,
+} from '@/lib/downloadFile';
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
 const AUTH_FORM_PATHS = ['/auth/login', '/auth/register'];
+
 export const TOKEN_KEY = 'token';
 export const USER_KEY = 'user';
 
@@ -160,27 +168,6 @@ export type Balance = {
   month: number;
   balance: number;
   note: string;
-};
-export type MonthBillSummary = {
-  year: number;
-  month: number;
-  start_balance?: number | null;
-  end_balance?: number | null;
-  total_income: number;
-  total_expense: number;
-  net_income: number;
-};
-
-export type ThisMonthSummary = {
-  year: number;
-  month: number;
-  total_income: number;
-  total_expense: number;
-};
-
-export type Dashboard = {
-  last_month: MonthBillSummary;
-  this_month: ThisMonthSummary;
 };
 
 export type MonthBillItem = {
@@ -349,10 +336,11 @@ export async function fetchTransactions(opts: {
   });
 
   if (searchActive) {
-    const note = opts.note?.trim();
-    if (note) params.set('note', note);
-    opts.tagIds?.forEach((id) => params.append('tag_ids', String(id)));
-    if (opts.contactId != null) params.set('contact_id', String(opts.contactId));
+    appendStatsSearchFilter(params, {
+      note: opts.note,
+      tagIds: opts.tagIds,
+      contactId: opts.contactId,
+    });
   } else if (opts.year != null && opts.month != null) {
     params.set('year', String(opts.year));
     params.set('month', String(opts.month));
@@ -391,11 +379,6 @@ export function prevMonth(y: number, m: number): YearMonth {
 export function nextMonth(y: number, m: number): YearMonth {
   if (m >= 12) return { year: y + 1, month: 1 };
   return { year: y, month: m + 1 };
-}
-
-export function isSameMonthAsNow(y: number, m: number): boolean {
-  const now = getCurrentYearMonth();
-  return now.year === y && now.month === m;
 }
 
 export function compareYearMonth(a: YearMonth, b: YearMonth): number {
@@ -563,6 +546,75 @@ export async function updateSettings(settings: Settings): Promise<Settings> {
   });
 }
 
+export type BackupInterval = 'daily' | 'weekly' | 'monthly';
+
+export type BackupConfig = {
+  enabled: boolean;
+  interval: BackupInterval;
+  hour: number;
+  weekday: number;
+  month_day: number;
+  keep_count: number;
+  last_run_at?: string;
+  last_status?: string;
+  last_file?: string;
+  last_error?: string;
+  dir_configured: boolean;
+  dir_path?: string;
+};
+
+export async function fetchBackup(): Promise<BackupConfig> {
+  return api<BackupConfig>('/backup');
+}
+
+export async function updateBackup(patch: {
+  enabled: boolean;
+  interval: BackupInterval;
+  hour: number;
+  weekday: number;
+  month_day: number;
+  keep_count: number;
+}): Promise<BackupConfig> {
+  return api<BackupConfig>('/backup', {
+    method: 'PUT',
+    body: JSON.stringify(patch),
+  });
+}
+
+export async function runBackupNow(): Promise<{ filename: string }> {
+  return api<{ filename: string }>('/backup/run', { method: 'POST' });
+}
+
+export type BackupFileInfo = {
+  filename: string;
+  size: number;
+  modified_at: string;
+};
+
+export type BackupFilesPage = {
+  dir_configured: boolean;
+  dir_path?: string;
+  user_dir?: string;
+  items: BackupFileInfo[];
+};
+
+export async function fetchBackupFiles(): Promise<BackupFilesPage> {
+  const data = await api<BackupFilesPage>('/backup/files');
+  return {
+    dir_configured: Boolean(data?.dir_configured),
+    dir_path: data?.dir_path,
+    user_dir: data?.user_dir,
+    items: Array.isArray(data?.items) ? data.items : [],
+  };
+}
+
+export async function restoreFromBackup(filename: string): Promise<LedgerImportResult> {
+  return api<LedgerImportResult>('/backup/restore', {
+    method: 'POST',
+    body: JSON.stringify({ filename }),
+  });
+}
+
 export type LedgerImportResult = {
   imported_transactions: number;
   imported_balances: number;
@@ -571,7 +623,12 @@ export type LedgerImportResult = {
   created_contacts: number;
 };
 
-export async function exportLedgerCSV(): Promise<void> {
+export type LedgerExportResult = {
+  method: DownloadMethod;
+  message: string;
+};
+
+export async function exportLedgerCSV(): Promise<LedgerExportResult> {
   const token = getToken();
   const headers: Record<string, string> = {};
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -587,16 +644,15 @@ export async function exportLedgerCSV(): Promise<void> {
   }
 
   const blob = await res.blob();
-  const disposition = res.headers.get('Content-Disposition') ?? '';
-  const match = disposition.match(/filename="?([^"]+)"?/);
-  const filename = match?.[1] ?? `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
+  const disposition = res.headers.get('Content-Disposition');
+  const filename =
+    parseExportFilename(
+      disposition,
+      `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`
+    );
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  const method = await downloadBlob(blob, filename);
+  return { method, message: downloadSuccessMessage(method) };
 }
 
 export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {

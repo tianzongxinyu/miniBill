@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Notebook } from '@/components/ui/Notebook';
@@ -13,9 +13,9 @@ import { TransactionsToolbar } from '@/components/transactions/TransactionsToolb
 import { useDebouncedSearchFilter } from '@/hooks/useDebouncedSearchFilter';
 import { useLoadMoreAnimateIds } from '@/hooks/useLoadMoreAnimateIds';
 import { useTransactionsList } from '@/hooks/useTransactionsList';
-import { useTransactionsMonthNav } from '@/hooks/useTransactionsMonthNav';
 import { useTransactionsMonthSummary } from '@/hooks/useTransactionsMonthSummary';
 import {
+  buildAddHref,
   buildTransactionsHref,
   parseTransactionsFiltersFromQuery,
   parseYearMonthFromQuery,
@@ -62,12 +62,6 @@ function TransactionsContent() {
     fetchEarliestMonth().then(setEarliest).catch(() => setEarliest(null));
   }, []);
 
-  const navRef = useRef<ReturnType<typeof useTransactionsMonthNav> | null>(null);
-  const navCallbacks = useRef({
-    markLoadSettling: () => navRef.current?.markLoadSettling(),
-    resetAll: () => navRef.current?.resetAll(),
-  });
-
   const list = useTransactionsList({
     year,
     month,
@@ -75,32 +69,14 @@ function TransactionsContent() {
     tagIds: selectedTagIds,
     contactId,
     searchActive,
-    navCallbacks: navCallbacks.current,
   });
 
   const monthSummary = useTransactionsMonthSummary({ year, month, enabled: !searchActive });
 
-  const nav = useTransactionsMonthNav({
-    year,
-    month,
-    monthFullyLoaded: list.isFullyLoaded,
-    loading: list.loading,
-    loadingMore: list.loadingMore,
-    hasMore: list.hasMore,
-    earliest,
-    enabled: !searchActive,
-  });
-
-  navRef.current = nav;
-
-  const handleMonthChange = useCallback(
-    (ym: YearMonth) => {
-      nav.resetAll();
-      setYear(ym.year);
-      setMonth(ym.month);
-    },
-    [nav]
-  );
+  const handleMonthChange = useCallback((ym: YearMonth) => {
+    setYear(ym.year);
+    setMonth(ym.month);
+  }, []);
 
   const maxMonth = getCurrentYearMonth();
 
@@ -111,7 +87,7 @@ function TransactionsContent() {
     (tx) => tx.id
   );
 
-  const contactReturnTo = useMemo(
+  const transactionsHref = useMemo(
     () =>
       buildTransactionsHref({
         year,
@@ -121,6 +97,11 @@ function TransactionsContent() {
         contactId: searchActive ? contactId : undefined,
       }),
     [year, month, searchActive, debouncedNote, selectedTagIds, contactId]
+  );
+
+  const addHref = useMemo(
+    () => buildAddHref({ year, month, returnTo: transactionsHref }),
+    [year, month, transactionsHref]
   );
 
   return (
@@ -164,23 +145,23 @@ function TransactionsContent() {
               key={tx.id}
               tx={tx}
               animate={animateIds.has(tx.id)}
-              returnTo={contactReturnTo}
+              returnTo={transactionsHref}
             />
           ))}
         </Notebook>
       )}
 
-      <div ref={list.sentinelRef} className="h-4" aria-hidden />
+      {list.hasMore && <div ref={list.sentinelRef} className="h-4" aria-hidden />}
 
       {!searchActive && (
         <TransactionsFooter
           loadingMore={list.loadingMore}
           monthFullyLoaded={list.isFullyLoaded}
-          atBottom={nav.atBottom}
           year={year}
           month={month}
           earliest={earliest}
           maxMonth={maxMonth}
+          addHref={addHref}
           onMonthChange={handleMonthChange}
         />
       )}

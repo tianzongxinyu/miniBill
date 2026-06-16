@@ -5,6 +5,7 @@ import { TagChip } from '@/components/ui/TagChip';
 import { ContactChip } from '@/components/ui/ContactChip';
 import { type Contact, type Tag } from '@/lib/api';
 import { fetchEnabledTagsCached, fetchUsedContactsCached } from '@/lib/metaCache';
+import { ComboboxFloatingClose } from '@/components/ui/ComboboxFloatingCandidates';
 import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 
 type Candidate =
@@ -33,10 +34,12 @@ export function TransactionsSearchCombobox({
   const [tags, setTags] = useState<Tag[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [focused, setFocused] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef(false);
+  const suppressOpenOnFocusRef = useRef(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(
     null
   );
@@ -76,7 +79,10 @@ export function TransactionsSearchCombobox({
     });
   }, []);
 
-  useClickOutside(rootRef, () => setFocused(false));
+  useClickOutside(rootRef, () => {
+    setFocused(false);
+    setDropdownOpen(false);
+  });
 
   const ensureCandidates = useCallback(async () => {
     if (loadedRef.current) return;
@@ -138,7 +144,7 @@ export function TransactionsSearchCombobox({
     [candidates]
   );
 
-  const showCandidates = focused && candidates.length > 0;
+  const showCandidates = focused && dropdownOpen && candidates.length > 0;
 
   useLayoutEffect(() => {
     if (!showCandidates) {
@@ -162,6 +168,8 @@ export function TransactionsSearchCombobox({
         onContactIdChange(c.id);
       }
       onNoteChange('');
+      setDropdownOpen(false);
+      suppressOpenOnFocusRef.current = true;
       inputRef.current?.focus();
     },
     [selectedTagIds, onTagIdsChange, onContactIdChange, onNoteChange]
@@ -176,7 +184,7 @@ export function TransactionsSearchCombobox({
 
   const { highlight, setHighlight, onKeyDown } = useComboboxKeyboard({
     open: showCandidates,
-    setOpen: setFocused,
+    setOpen: setDropdownOpen,
     optionCount: candidates.length,
     hasCreate: false,
     onSelect: (i) => selectCandidate(candidates[i]),
@@ -194,11 +202,21 @@ export function TransactionsSearchCombobox({
   const hasChips = selectedTags.length > 0 || selectedContact != null;
   const hasValue = Boolean(note.trim()) || selectedTagIds.length > 0 || contactId != null;
 
+  const handlePanelClick = useCallback(() => {
+    void ensureCandidates();
+    setFocused(true);
+    setDropdownOpen(true);
+    inputRef.current?.focus();
+  }, [ensureCandidates]);
+
+  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
+
   const clearAll = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       onClear();
       setFocused(false);
+      setDropdownOpen(false);
     },
     [onClear]
   );
@@ -208,10 +226,7 @@ export function TransactionsSearchCombobox({
       <div
         ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
-        onClick={() => {
-          void ensureCandidates();
-          inputRef.current?.focus();
-        }}
+        onClick={handlePanelClick}
       >
         <div className="combobox-panel-body">
           <div className="combobox-chip-row">
@@ -240,10 +255,17 @@ export function TransactionsSearchCombobox({
             className="combobox-input-inline"
             placeholder={hasChips ? '备注关键词' : '备注 · 标签 · 联系人'}
             value={note}
-            onChange={(e) => onNoteChange(e.target.value)}
+            onChange={(e) => {
+              onNoteChange(e.target.value);
+              setDropdownOpen(true);
+            }}
             onFocus={() => {
               void ensureCandidates();
               setFocused(true);
+              if (!suppressOpenOnFocusRef.current) {
+                setDropdownOpen(true);
+              }
+              suppressOpenOnFocusRef.current = false;
             }}
             onKeyDown={onKeyDown}
             autoComplete="off"
@@ -274,7 +296,9 @@ export function TransactionsSearchCombobox({
           }}
           role="listbox"
         >
-          {tagCandidates.length > 0 && (
+          <div className="combobox-candidates-floating-body">
+            <ComboboxFloatingClose onClose={closeDropdown} />
+            {tagCandidates.length > 0 && (
             <div className="combobox-candidates-row">
               {tagCandidates.map((c, i) => (
                 <button
@@ -311,6 +335,7 @@ export function TransactionsSearchCombobox({
               })}
             </div>
           )}
+          </div>
         </div>
       )}
     </div>

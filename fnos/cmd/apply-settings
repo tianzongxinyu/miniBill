@@ -1,13 +1,27 @@
 # Shared path and env helpers for miniBill on fnOS.
 
-resolve_pkgvar() {
-    if [ -n "${TRIM_PKGVAR:-}" ]; then
-        echo "${TRIM_PKGVAR}"
-    elif [ -n "${TRIM_APPNAME:-}" ]; then
-        echo "/vol1/@appdata/${TRIM_APPNAME}"
-    else
-        echo ""
-    fi
+shell_quote() {
+    printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
+}
+
+read_existing_jwt() {
+    local env_file pkgvar line val
+    pkgvar="$(resolve_pkgvar)"
+    env_file="${pkgvar}/minibill.env"
+    [ -f "$env_file" ] || return 0
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            JWT_SECRET=*)
+                val="${line#JWT_SECRET=}"
+                val="${val#\'}"
+                val="${val%\'}"
+                val="${val#\"}"
+                val="${val%\"}"
+                printf '%s' "$val"
+                return 0
+                ;;
+        esac
+    done < "$env_file"
 }
 
 resolve_port() {
@@ -55,19 +69,58 @@ patch_port_files() {
     echo "${port}" > "$(resolve_pkgvar)/.port"
 }
 
+resolve_backup_dir() {
+    local pkgvar share_root line
+    pkgvar="$(resolve_pkgvar)"
+
+    if [ -n "${TRIM_DATA_SHARE_PATHS:-}" ]; then
+        share_root="${TRIM_DATA_SHARE_PATHS%%:*}"
+        share_root="${share_root%%;*}"
+        share_root="${share_root%,*}"
+        share_root="${share_root//[$'\r\n']/}"
+        if [ -n "$share_root" ]; then
+            echo "${share_root%/}/backups"
+            return 0
+        fi
+    fi
+
+    for line in \
+        "${pkgvar}/share_paths" \
+        "/vol1/@appconf/${TRIM_APPNAME}/share_paths" \
+        "/vol1/@apphome/${TRIM_APPNAME}/.share_paths"
+    do
+        [ -f "$line" ] || continue
+        share_root="$(head -n 1 "$line" | tr -d '"')"
+        share_root="${share_root//[$'\r\n']/}"
+        if [ -n "$share_root" ]; then
+            echo "${share_root%/}"
+            return 0
+        fi
+    done
+    echo ""
+}
+
 write_env_file() {
-    local port pkgvar
+    local port pkgvar backup_dir jwt jwt_line
     port="$(resolve_port)"
     pkgvar="$(resolve_pkgvar)"
+    backup_dir="$(resolve_backup_dir)"
 
     [ -n "$pkgvar" ] || return 1
     mkdir -p "${pkgvar}/data" 2>/dev/null || true
 
+    jwt="${wizard_jwt_secret:-}"
+    if [ -z "$jwt" ]; then
+        jwt="$(read_existing_jwt)"
+    fi
+    jwt_line="JWT_SECRET=$(shell_quote "$jwt")"
+
     cat > "${pkgvar}/minibill.env" <<EOF
-JWT_SECRET=${wizard_jwt_secret}
+${jwt_line}
 ALLOW_REGISTRATION=${wizard_allow_registration:-true}
 PORT=${port}
 TZ=Asia/Shanghai
+BACKUP_DIR=${backup_dir}
 EOF
     chmod 600 "${pkgvar}/minibill.env" 2>/dev/null || true
     patch_port_files "$port"

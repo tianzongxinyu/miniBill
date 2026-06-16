@@ -14,6 +14,28 @@
 - **个性化**：收支配色（红涨绿跌 / 绿涨红跌）可切换
 - **移动友好**：响应式布局、底部导航、下拉刷新，可安装为 PWA
 
+## 系统截图
+
+### 首页 · 月度账单
+
+
+
+### 流水 · 按月浏览与搜索
+
+
+
+### 统计 · 图表与明细
+
+
+
+### 统计 · 全屏横屏查看
+
+
+
+### 我的 · 标签 / 数据 / 备份
+
+
+
 ## 项目目录
 
 ```
@@ -69,7 +91,6 @@ MiniBill/
 │   └── deploy.md                 # 部署指南
 ├── scripts/                      # 辅助脚本
 │   ├── dev-backend.sh            # 本地启动后端
-│   ├── create-user.sh            # 创建用户
 │   └── build-fpk.sh              # 构建 fnOS 安装包
 ├── docker-compose.yml            # Docker Compose 编排
 ├── Dockerfile                    # 容器镜像构建
@@ -90,20 +111,21 @@ data/
 
 ```bash
 cp .env.example .env
+# 编辑 .env，填入至少 32 字符的随机 JWT_SECRET
 docker compose up -d --build
 ```
 
-打开 http://localhost:8080 ，注册账号即可使用。
+打开 [http://localhost:8080](http://localhost:8080) ，注册账号即可使用。
 
 ## 本地开发
 
 **后端：**
 
 ```bash
-export JWT_SECRET=dev
+export JWT_SECRET=local-dev-jwt-secret-not-for-production-use
 export DATA_DIR=./data
 
-# 若 go run 长时间停在 downloading…，多为访问 proxy.golang.org 慢，改用国内镜像：
+# 生产环境须使用至少 32 字符的随机密钥，不可用 dev / change-me 等占位符。
 export GOPROXY=https://goproxy.cn,direct
 go mod download    # 先拉齐依赖（只需成功一次）
 go run ./cmd/server

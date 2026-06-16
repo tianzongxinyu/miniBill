@@ -2,7 +2,7 @@
     ".url": {
         "minibill.Application": {
             "title": "轻账单",
-            "desc": "个人记账",
+            "desc": "自托管记账 · 统计 · 定时备份",
             "icon": "images/icon_{0}.png",
             "type": "url",
             "port": "18080",

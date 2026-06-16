@@ -253,18 +253,6 @@ export function chartAxisDomains(
   };
 }
 
-export function leftAxisDomain(rows: StatsChartRow[], hiddenSeries: Set<string>, searchActive: boolean) {
-  return chartAxisDomains(rows, hiddenSeries, searchActive).left;
-}
-
-export function rightAxisDomain(
-  rows: StatsChartRow[],
-  hiddenSeries: Set<string>,
-  searchActive: boolean
-): [number, number] {
-  return chartAxisDomains(rows, hiddenSeries, searchActive).right;
-}
-
 export function axisTickValues(domain: [number, number], count = 4): number[] {
   const [min, max] = domain;
   if (count <= 1) return [min];

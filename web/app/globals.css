@@ -62,10 +62,7 @@ body {
     animation: fade-in 0.45s var(--ease-out-expo) both;
   }
 
-  .page-slide-right {
-    animation: fade-in 0.38s var(--ease-out-expo) both;
-  }
-
+  .page-slide-right,
   .page-slide-left {
     animation: fade-in 0.38s var(--ease-out-expo) both;
   }
@@ -140,20 +137,8 @@ body {
     @apply tabular-nums text-right;
   }
 
-  .amount-income {
-    @apply tabular-nums text-right text-income font-medium;
-  }
-
-  .amount-expense {
-    @apply tabular-nums text-right text-expense font-medium;
-  }
-
   .stat-label {
     @apply text-xs uppercase tracking-wide text-muted;
-  }
-
-  .stat-value {
-    @apply text-xl font-semibold tabular-nums text-ink mt-1 text-right;
   }
 
   .field-amount {
@@ -307,6 +292,26 @@ body {
     @apply active:scale-[0.98];
   }
 
+  .fab-button-compact {
+    @apply inline-flex flex-none items-center justify-center gap-1.5 px-4 py-2 rounded-2xl text-xs;
+  }
+
+  .transactions-footer {
+    @apply relative flex items-center justify-center min-h-12 mt-4 py-2;
+  }
+
+  .transactions-footer-nav {
+    @apply absolute top-1/2 -translate-y-1/2 btn-ghost px-2 py-2 text-sm;
+  }
+
+  .transactions-footer-nav-prev {
+    @apply left-0;
+  }
+
+  .transactions-footer-nav-next {
+    @apply right-0;
+  }
+
   /* —— 记一笔 form —— */
   .add-form {
     @apply space-y-3 pb-20 max-w-lg mx-auto;
@@ -355,23 +360,41 @@ body {
   }
 
   .form-row {
-    @apply px-3.5 py-3 first:pt-3 last:pb-3 space-y-2 overflow-visible;
+    @apply px-3.5 py-3 first:pt-3 last:pb-3 grid grid-cols-[4.5rem_1fr] items-center gap-x-3 overflow-visible;
+  }
+
+  .form-row-start {
+    @apply items-start;
+  }
+
+  .form-row-start .form-label {
+    @apply pt-2.5;
   }
 
   .form-label {
     @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-muted;
   }
 
+  .form-details .form-row > :not(.form-label) {
+    @apply min-w-0 w-full;
+  }
+
+  .form-details .form-row > .date-picker,
+  .form-details .form-row > .combobox,
+  .form-details .form-row > .form-note-field {
+    @apply w-full;
+  }
+
+  .form-details .combobox-chip-row {
+    @apply justify-end;
+  }
+
+  .form-details .combobox-input-inline {
+    @apply text-right;
+  }
+
   .form-section-delay-1 {
     animation-delay: 80ms;
-  }
-
-  .form-section-delay-2 {
-    animation-delay: 140ms;
-  }
-
-  .form-section-delay-3 {
-    animation-delay: 200ms;
   }
 
   .form-field-group {
@@ -382,12 +405,6 @@ body {
     @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-expense bg-red-50/80 border border-red-100;
     border-left-width: 3px;
     border-left-color: theme('colors.expense');
-  }
-
-  .form-alert-warn {
-    @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-amber-800 bg-amber-50/80 border border-amber-100;
-    border-left-width: 3px;
-    border-left-color: #d97706;
   }
 
   .form-amount-input {
@@ -445,11 +462,6 @@ body {
   }
 
   .stats-chart-scroll.is-dragging .recharts-wrapper {
-    pointer-events: none;
-  }
-
-  /* 全屏：图表不抢 touch，交给容器原生惯性滚动 */
-  .stats-chart-scroll-fullscreen .recharts-wrapper {
     pointer-events: none;
   }
 
@@ -697,15 +709,6 @@ body {
     @apply text-muted/40 pointer-events-none hover:bg-transparent;
   }
 
-  .transactions-sticky-bar {
-    @apply sticky top-0 z-30 -mx-4 px-4 py-3.5 lg:-mx-8 lg:px-8 -mt-6 pt-6 lg:-mt-10 lg:pt-10;
-    @apply bg-canvas/90 backdrop-blur-xl border-b border-line/50;
-  }
-
-  .transactions-sticky-inner {
-    @apply flex items-center justify-between gap-4;
-  }
-
   .transactions-toolbar {
     @apply flex items-center gap-3;
   }
@@ -788,15 +791,30 @@ body {
   }
 
   .combobox-candidates-row {
-    @apply flex flex-wrap gap-3;
+    @apply flex flex-wrap gap-2;
   }
 
   .combobox-candidates-floating-fixed {
-    @apply fixed z-[80] mt-0 px-4 py-4 lg:px-8;
+    @apply fixed z-[80] mt-0 p-0 overflow-hidden;
   }
 
-  .combobox-candidates-floating .tag-chip {
-    @apply text-sm px-3.5 py-1.5;
+  .combobox-candidates-floating-body {
+    @apply relative h-full min-h-0 overflow-y-auto px-4 py-4 lg:px-8 flex flex-col gap-2;
+  }
+
+  .combobox-floating-close {
+    @apply absolute top-2.5 right-2.5 lg:right-8 z-10 p-1.5 rounded-lg text-muted transition-colors;
+    @apply bg-surface/90 backdrop-blur-sm;
+    @apply hover:text-ink hover:bg-accent-soft/50;
+  }
+
+  .combobox-candidates-floating .tag-chip,
+  .combobox-candidates-row .tag-chip {
+    @apply text-sm px-2.5 py-1.5;
+  }
+
+  .combobox-candidates-row .tag-pill.combobox-candidate-create {
+    @apply text-sm px-3 py-1.5;
   }
 
   .combobox-candidate {
@@ -821,7 +839,6 @@ body {
   .notebook,
   .notebook-row,
   .btn-primary,
-  .bill-hero,
   .bill-card,
   .fab-button,
   .form-hero,

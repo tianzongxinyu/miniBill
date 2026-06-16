@@ -80,9 +80,15 @@ export function TagCombobox({
 
   const {
     query,
-    setQuery,
+    updateQuery,
+    resetQuery,
     focused,
-    setFocused,
+    dropdownOpen,
+    setDropdownOpen,
+    handleFocus,
+    handlePanelClick,
+    closeDropdown,
+    closeAndRefocusInput,
     creating,
     rootRef,
     inputRef,
@@ -94,6 +100,15 @@ export function TagCombobox({
   const panelRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   useClickOutside([rootRef, dropdownRef], blur);
+
+  const pickTag = useCallback(
+    (id: number) => {
+      selectTag(id);
+      resetQuery();
+      closeAndRefocusInput();
+    },
+    [selectTag, resetQuery, closeAndRefocusInput]
+  );
 
   const candidates = useMemo(() => {
     const selectable = tags.filter((t) => t.selectable !== false);
@@ -112,14 +127,14 @@ export function TagCombobox({
   const canCreate =
     trimmed.length > 0 && !tags.some((t) => t.name.toLowerCase() === trimmed.toLowerCase());
 
-  const showCandidates = focused && (candidates.length > 0 || canCreate);
+  const showCandidates = focused && dropdownOpen && (candidates.length > 0 || canCreate);
 
   const { highlight, setHighlight, onKeyDown } = useComboboxKeyboard({
     open: showCandidates,
-    setOpen: setFocused,
+    setOpen: setDropdownOpen,
     optionCount: candidates.length,
     hasCreate: canCreate,
-    onSelect: (i) => selectTag(candidates[i].id),
+    onSelect: (i) => pickTag(candidates[i].id),
     onCreate: handleCreate,
     onRemoveLast: () => {
       if (selectedIds.length > 0) removeTag(selectedIds[selectedIds.length - 1]);
@@ -131,7 +146,7 @@ export function TagCombobox({
       <div
         ref={panelRef}
         className={`combobox-panel${focused ? ' combobox-panel-focused' : ''}`}
-        onClick={() => inputRef.current?.focus()}
+        onClick={handlePanelClick}
       >
         <div className="combobox-chip-row">
           {selectedTags.map((t) => (
@@ -150,8 +165,8 @@ export function TagCombobox({
             className="combobox-input-inline"
             placeholder={selectedTags.length === 0 ? '输入标签名' : ''}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
+            onChange={(e) => updateQuery(e.target.value)}
+            onFocus={handleFocus}
             onKeyDown={onKeyDown}
             autoComplete="off"
           />
@@ -162,6 +177,7 @@ export function TagCombobox({
         open={showCandidates}
         panelRef={panelRef}
         dropdownRef={dropdownRef}
+        onClose={closeDropdown}
       >
         <div className="combobox-candidates-row">
           {candidates.map((t, i) => (
@@ -172,11 +188,7 @@ export function TagCombobox({
               aria-selected={highlight === i}
               className="combobox-candidate p-0 border-0 bg-transparent"
               onMouseEnter={() => setHighlight(i)}
-              onClick={() => {
-                selectTag(t.id);
-                setQuery('');
-                inputRef.current?.focus();
-              }}
+              onClick={() => pickTag(t.id)}
             >
               <TagChip name={t.name} colorBg={t.color_bg} active={highlight === i} />
             </button>

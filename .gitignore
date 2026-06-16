@@ -10,6 +10,8 @@
 /tmp
 .DS_Store
 *.xlsx
+/demo.csv
+/ledger-import.csv
 .idea
 .vscode
 .cursor

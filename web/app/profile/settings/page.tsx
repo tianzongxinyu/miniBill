@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { RequireAuth } from '@/components/RequireAuth';
 import { BackLink } from '@/components/ui/BackLink';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { useSettings } from '@/components/SettingsProvider';
 import { api, type AmountColorScheme } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
@@ -47,7 +46,6 @@ function SettingsContent() {
   return (
     <div className="space-y-6">
       <BackLink href="/profile/">我的</BackLink>
-      <PageHeader title="设置" />
       {msg && <p className="text-income text-sm">{msg}</p>}
 
       <div className="notebook p-4 space-y-3">

@@ -2,13 +2,6 @@ export function getScrollY() {
   return window.scrollY || document.documentElement.scrollTop || 0;
 }
 
-export function isNearPageBottom(threshold = 32) {
-  const scrollY = getScrollY();
-  const viewport = window.innerHeight;
-  const scrollHeight = document.documentElement.scrollHeight;
-  return scrollY + viewport >= scrollHeight - threshold;
-}
-
 export function scrollToTop(smooth = true) {
   window.scrollTo({ top: 0, left: 0, behavior: smooth ? 'smooth' : 'auto' });
 }

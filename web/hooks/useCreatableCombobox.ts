@@ -7,14 +7,49 @@ type UseCreatableComboboxOptions = {
 };
 
 export function useCreatableCombobox({ onCreate }: UseCreatableComboboxOptions) {
-  const [query, setQuery] = useState('');
+  const [query, setQueryState] = useState('');
   const [focused, setFocused] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const suppressOpenOnFocusRef = useRef(false);
 
   const trimmed = query.trim();
-  const blur = useCallback(() => setFocused(false), []);
+
+  const blur = useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
+  }, []);
+
+  const handleFocus = useCallback(() => {
+    setFocused(true);
+    if (!suppressOpenOnFocusRef.current) {
+      setDropdownOpen(true);
+    }
+    suppressOpenOnFocusRef.current = false;
+  }, []);
+
+  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
+
+  const closeAndRefocusInput = useCallback(() => {
+    setDropdownOpen(false);
+    suppressOpenOnFocusRef.current = true;
+    inputRef.current?.focus();
+  }, []);
+
+  const updateQuery = useCallback((value: string) => {
+    setQueryState(value);
+    setDropdownOpen(true);
+  }, []);
+
+  const resetQuery = useCallback(() => setQueryState(''), []);
+
+  const handlePanelClick = useCallback(() => {
+    setFocused(true);
+    setDropdownOpen(true);
+    inputRef.current?.focus();
+  }, []);
 
   const handleCreate = useCallback(async () => {
     const name = trimmed;
@@ -22,17 +57,25 @@ export function useCreatableCombobox({ onCreate }: UseCreatableComboboxOptions) 
     setCreating(true);
     try {
       await onCreate(name);
-      setQuery('');
+      resetQuery();
+      suppressOpenOnFocusRef.current = true;
+      setDropdownOpen(false);
     } finally {
       setCreating(false);
     }
-  }, [trimmed, creating, onCreate]);
+  }, [trimmed, creating, onCreate, resetQuery]);
 
   return {
     query,
-    setQuery,
+    updateQuery,
+    resetQuery,
     focused,
-    setFocused,
+    dropdownOpen,
+    setDropdownOpen,
+    handleFocus,
+    handlePanelClick,
+    closeDropdown,
+    closeAndRefocusInput,
     creating,
     rootRef,
     inputRef,

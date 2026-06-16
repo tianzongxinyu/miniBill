@@ -10,10 +10,6 @@ func (s *StatsService) sumRecordedRange(db *sql.DB, start, end string) (income, 
 	return s.sumTransactionsRange(db, start, end, StatsFilter{})
 }
 
-func (s *StatsService) sumRecordedSocialRange(db *sql.DB, start, end string) (socialIncome, socialExpense int64, err error) {
-	return s.sumSocialRange(db, start, end)
-}
-
 func (s *StatsService) dailyExpenseTagID(db *sql.DB) (int64, error) {
 	var id int64
 	err := db.QueryRow(`SELECT id FROM tags WHERE name = ?`, domain.DailyExpenseTagName).Scan(&id)
@@ -105,10 +101,6 @@ func (s *StatsService) syncDailyExpenseForMonth(db *sql.DB, year, month int) err
 	if err != nil {
 		return err
 	}
-	socialIncome, socialExpense, err := s.sumRecordedSocialRange(db, start, end)
-	if err != nil {
-		return err
-	}
 
 	registeredBalance, err := loadMonthlyBalance(db, year, month)
 	if err != nil {
@@ -140,16 +132,14 @@ func (s *StatsService) syncDailyExpenseForMonth(db *sql.DB, year, month int) err
 	}
 
 	_, err = db.Exec(`
-		INSERT INTO stat_monthly (year, month, total_income, total_expense, social_income, social_expense, registered_balance, daily_expense)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO stat_monthly (year, month, total_income, total_expense, registered_balance, daily_expense)
+		VALUES (?, ?, ?, ?, ?, ?)
 		ON CONFLICT(year, month) DO UPDATE SET
 			total_income=excluded.total_income,
 			total_expense=excluded.total_expense,
-			social_income=excluded.social_income,
-			social_expense=excluded.social_expense,
 			registered_balance=excluded.registered_balance,
 			daily_expense=excluded.daily_expense`,
-		year, month, totalIncome, totalExpense, socialIncome, socialExpense, regVal, dailyExpense,
+		year, month, totalIncome, totalExpense, regVal, dailyExpense,
 	)
 	return err
 }

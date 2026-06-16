@@ -72,12 +72,18 @@ ensure_web_out() {
     (cd "$ROOT/web" && npm install && npm run build)
 }
 
+MANIFEST_BACKUP=""
+
 update_manifest() {
     local version="$1"
     local platform="$2"
     local arch_label
     arch_label="$(manifest_arch "$platform")"
     local manifest="${FNOS_DIR}/manifest"
+    if [ -z "$MANIFEST_BACKUP" ]; then
+        MANIFEST_BACKUP="$(mktemp)"
+        cp "$manifest" "$MANIFEST_BACKUP"
+    fi
     if [[ "$OSTYPE" == darwin* ]]; then
         sed -i '' "s/^version[[:space:]]*=.*/version               = ${version}/" "$manifest"
         sed -i '' "s/^arch[[:space:]]*=.*/arch                  = ${arch_label}/" "$manifest"
@@ -85,6 +91,44 @@ update_manifest() {
         sed -i "s/^version[[:space:]]*=.*/version               = ${version}/" "$manifest"
         sed -i "s/^arch[[:space:]]*=.*/arch                  = ${arch_label}/" "$manifest"
     fi
+}
+
+restore_manifest() {
+    if [ -n "$MANIFEST_BACKUP" ] && [ -f "$MANIFEST_BACKUP" ]; then
+        cp "$MANIFEST_BACKUP" "${FNOS_DIR}/manifest"
+        rm -f "$MANIFEST_BACKUP"
+        MANIFEST_BACKUP=""
+    fi
+}
+
+sync_wizard_config() {
+    FNOS_DIR="$FNOS_DIR" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+root = Path(os.environ["FNOS_DIR"])
+install_path = root / "wizard" / "install"
+config_path = root / "wizard" / "config"
+data = json.loads(install_path.read_text(encoding="utf-8"))
+data[0]["stepTitle"] = "轻账单 配置"
+for item in data[0]["items"]:
+    if item.get("type") == "tips":
+        item["helpText"] = (
+            "轻账单：本地 SQLite 多用户账本、收支统计图表、CSV 导入导出。"
+            "除下方端口与 JWT 外，定期备份需在应用设置 → 备份目录授权读写文件夹，"
+            "再在 Web「我的 → 备份管理」配置周期。"
+        )
+    elif item.get("field") == "wizard_port":
+        item["label"] = "服务端口"
+    elif item.get("field") == "wizard_jwt_secret":
+        item["label"] = "JWT 密钥"
+    elif item.get("field") == "wizard_allow_registration":
+        for opt in item.get("options", []):
+            if opt.get("value") == "false":
+                opt["label"] = "关闭注册"
+config_path.write_text(json.dumps(data, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
+PY
 }
 
 sync_fnos_icons() {
@@ -102,6 +146,7 @@ build_one() {
     goarch="$(platform_to_goarch "$platform")"
 
     update_manifest "$version" "$platform"
+    sync_wizard_config
     ensure_web_out
     sync_fnos_icons
 
@@ -141,6 +186,7 @@ build_one() {
     fi
 
     info "Built: $fpk_dst ($(du -h "$fpk_dst" | awk '{print $1}'))"
+    restore_manifest
 }
 
 main() {
@@ -149,8 +195,6 @@ main() {
     command -v go >/dev/null 2>&1 || error "go is required"
     command -v curl >/dev/null 2>&1 || error "curl is required"
     [ -f "$ROOT/web/public/icon.png" ] || error "Missing web/public/icon.png"
-
-    sync_fnos_icons
 
     case "$PLATFORM_ARG" in
         all)
@@ -162,6 +206,7 @@ main() {
             ;;
     esac
 
+    restore_manifest
     info "Done. Upload dist/*.fpk to fnOS 应用中心 → 手动安装"
 }
 

@@ -23,10 +23,6 @@ func Validation(c *gin.Context, message string) {
 	JSON(c, http.StatusBadRequest, "VALIDATION_ERROR", message)
 }
 
-func Archived(c *gin.Context) {
-	JSON(c, http.StatusConflict, "ARCHIVED_MONTH", "该月份已归档，仅可查看")
-}
-
 func NotFound(c *gin.Context, message string) {
 	JSON(c, http.StatusNotFound, "NOT_FOUND", message)
 }

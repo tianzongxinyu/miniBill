@@ -16,11 +16,6 @@ function monthKey(y: number, m: number) {
   return `${y}-${m}`;
 }
 
-type MonthNavCallbacks = {
-  markLoadSettling: () => void;
-  resetAll: () => void;
-};
-
 type UseTransactionsListOptions = {
   year: number;
   month: number;
@@ -28,7 +23,6 @@ type UseTransactionsListOptions = {
   tagIds: number[];
   contactId: number | null;
   searchActive: boolean;
-  navCallbacks: MonthNavCallbacks;
 };
 
 export function useTransactionsList({
@@ -38,14 +32,11 @@ export function useTransactionsList({
   tagIds,
   contactId,
   searchActive,
-  navCallbacks,
 }: UseTransactionsListOptions) {
   const monthInflightRef = useRef<Map<string, Promise<TransactionsPage>>>(new Map());
   const reloadAbortRef = useRef<AbortController | null>(null);
   const filtersRef = useRef({ year, month, note, tagIds, contactId, searchActive });
-  const navRef = useRef(navCallbacks);
   filtersRef.current = { year, month, note, tagIds, contactId, searchActive };
-  navRef.current = navCallbacks;
 
   const fetchOnce = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
     const f = filtersRef.current;
@@ -84,8 +75,6 @@ export function useTransactionsList({
     gateUntilUserScrolls: true,
     getItemKey: (tx) => tx.id,
     onError: (e) => formatApiError(e, '加载失败'),
-    onBeforeLoadMore: () => navRef.current.markLoadSettling(),
-    onAfterLoadMore: () => navRef.current.markLoadSettling(),
   });
 
   const { reset, applyPage, setLoading, setError } = pagination;
@@ -95,11 +84,9 @@ export function useTransactionsList({
     const ac = new AbortController();
     reloadAbortRef.current = ac;
 
-    navRef.current.resetAll();
     reset();
     setLoading(true);
     setError('');
-    navRef.current.markLoadSettling();
     try {
       const data = await fetchOnce(null, ac.signal);
       if (reloadAbortRef.current !== ac) return;
@@ -118,22 +105,9 @@ export function useTransactionsList({
     } finally {
       if (reloadAbortRef.current === ac) {
         setLoading(false);
-        navRef.current.markLoadSettling();
       }
     }
-  }, [
-    reset,
-    applyPage,
-    setLoading,
-    setError,
-    fetchOnce,
-    year,
-    month,
-    note,
-    tagIds,
-    contactId,
-    searchActive,
-  ]);
+  }, [reset, applyPage, setLoading, setError, fetchOnce, year, month, note, tagIds, contactId, searchActive]);
 
   useEffect(() => {
     void reload();

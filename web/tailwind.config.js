@@ -44,14 +44,6 @@ module.exports = {
           '0%': { opacity: '0', transform: 'scale(0.97)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        'slide-in-right': {
-          '0%': { opacity: '0', transform: 'translateX(20px)' },
-          '100%': { opacity: '1', transform: 'translateX(0)' },
-        },
-        'slide-in-left': {
-          '0%': { opacity: '0', transform: 'translateX(-20px)' },
-          '100%': { opacity: '1', transform: 'translateX(0)' },
-        },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
@@ -66,5 +58,5 @@ module.exports = {
     },
   },
   plugins: [],
-  safelist: ['text-income', 'text-expense', 'amount-income', 'amount-expense'],
+  safelist: ['text-income', 'text-expense'],
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useId, useMemo } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useSettings } from '@/components/SettingsProvider';
 import {
   amountClassForSign,
@@ -48,6 +48,8 @@ type StatsScrollChartProps = {
   rows: StatsChartRow[];
   hiddenSeries: Set<string>;
   height?: number;
+  /** 全屏模式：点击时间轴或图表区域固定显示数据 */
+  tapToInspect?: boolean;
 };
 
 const SERIES_LABELS: Record<string, string> = {
@@ -112,6 +114,89 @@ function StatsChartTooltip({
   );
 }
 
+type SeriesRow = ReturnType<typeof chartRowToSeries>;
+
+function buildTooltipPayload(
+  row: SeriesRow,
+  searchActive: boolean,
+  hiddenSeries: Set<string>
+): TooltipPayload {
+  const keys = searchActive
+    ? (['expense', 'income'] as const)
+    : (['expense', 'income', 'net', 'balance'] as const);
+  return keys
+    .filter((key) => !hiddenSeries.has(key))
+    .filter((key) => row[key] != null)
+    .map((key) => ({ dataKey: key, value: row[key] as number }));
+}
+
+function XAxisTick({
+  x,
+  y,
+  payload,
+  tapToInspect,
+}: {
+  x: number;
+  y: number;
+  payload: { value: string };
+  tapToInspect?: boolean;
+}) {
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={16}
+      textAnchor="middle"
+      fill="#8a9390"
+      fontSize={12}
+      style={{ cursor: tapToInspect ? 'pointer' : undefined, pointerEvents: tapToInspect ? 'none' : undefined }}
+    >
+      {payload.value}
+    </text>
+  );
+}
+
+const CHART_MARGIN = { top: 8, right: 8, left: 16, bottom: 8 };
+const Y_AXIS_WIDTH = 8;
+
+/** Map screen pointer to nearest category index (matches Recharts scale="point" layout). */
+function pickIndexFromChartPointer(
+  clientX: number,
+  clientY: number,
+  shellEl: HTMLElement,
+  chartWidth: number,
+  dataLength: number,
+  pointWidth: number,
+  searchActive: boolean
+): number | null {
+  if (dataLength === 0) return null;
+  const surface = shellEl.querySelector('.recharts-surface') as SVGSVGElement | null;
+  if (!surface) return null;
+
+  const pt = surface.createSVGPoint();
+  pt.x = clientX;
+  pt.y = clientY;
+  const inv = surface.getScreenCTM()?.inverse();
+  if (!inv) return null;
+  const { x: svgX } = pt.matrixTransform(inv);
+
+  const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
+  const innerW =
+    chartWidth - CHART_MARGIN.left - CHART_MARGIN.right - Y_AXIS_WIDTH - yAxisRight;
+  const halfPoint = pointWidth / 2;
+  const plotStart = CHART_MARGIN.left + Y_AXIS_WIDTH + halfPoint;
+
+  let idx: number;
+  if (dataLength <= 1) {
+    idx = 0;
+  } else {
+    const step = (innerW - 2 * halfPoint) / (dataLength - 1);
+    idx = Math.round((svgX - plotStart) / step);
+  }
+  if (idx < 0 || idx >= dataLength) return null;
+  return idx;
+}
+
 export function StatsScrollChart({
   mode,
   monthItems,
@@ -122,8 +207,12 @@ export function StatsScrollChart({
   rows: rowsProp,
   hiddenSeries,
   height = 252,
+  tapToInspect = false,
 }: StatsScrollChartProps) {
   const { scheme } = useSettings();
+  const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const tapStartRef = useRef<{ x: number; y: number } | null>(null);
   const balanceGradientId = useId().replace(/:/g, '');
   const netGradientId = useId().replace(/:/g, '');
   const incomeStroke = chartStrokeForType('income', scheme);
@@ -138,6 +227,11 @@ export function StatsScrollChart({
   );
 
   const chartData = useMemo(() => rows.map(chartRowToSeries), [rows]);
+
+  useEffect(() => {
+    setPinnedIndex(null);
+  }, [tapToInspect, mode, searchActive, chartData.length]);
+
   const chartWidth = Math.max(chartData.length * pointWidth, 320);
   const halfPoint = pointWidth / 2;
   const { left: yDomain, right: rightDomain } = useMemo(
@@ -148,15 +242,78 @@ export function StatsScrollChart({
   const rightTicks = useMemo(() => axisTickValues(rightDomain, 4), [rightDomain]);
 
   const renderTooltip = useCallback(
-    (props: { active?: boolean; payload?: TooltipPayload; label?: string | number }) => (
-      <StatsChartTooltip
-        active={props.active}
-        payload={props.payload}
-        label={props.label}
-        scheme={scheme}
-      />
+    (props: { active?: boolean; payload?: TooltipPayload; label?: string | number }) => {
+      if (tapToInspect && pinnedIndex != null) {
+        const row = chartData[pinnedIndex];
+        if (!row) return null;
+        return (
+          <StatsChartTooltip
+            active
+            payload={buildTooltipPayload(row, searchActive, hiddenSeries)}
+            label={row.name}
+            scheme={scheme}
+          />
+        );
+      }
+      return (
+        <StatsChartTooltip
+          active={props.active}
+          payload={props.payload}
+          label={props.label}
+          scheme={scheme}
+        />
+      );
+    },
+    [scheme, tapToInspect, pinnedIndex, chartData, searchActive, hiddenSeries]
+  );
+
+  const pickAtPointer = useCallback(
+    (clientX: number, clientY: number) => {
+      const shell = shellRef.current;
+      if (!shell) return;
+      const idx = pickIndexFromChartPointer(
+        clientX,
+        clientY,
+        shell,
+        chartWidth,
+        chartData.length,
+        pointWidth,
+        searchActive
+      );
+      if (idx == null) return;
+      setPinnedIndex((prev) => (prev === idx ? null : idx));
+    },
+    [chartData.length, chartWidth, pointWidth, searchActive]
+  );
+
+  const handleShellPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!tapToInspect || e.button !== 0) return;
+      tapStartRef.current = { x: e.clientX, y: e.clientY };
+    },
+    [tapToInspect]
+  );
+
+  const handleShellPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!tapToInspect || e.button !== 0 || !tapStartRef.current) return;
+      const start = tapStartRef.current;
+      tapStartRef.current = null;
+      const scrollEl = shellRef.current?.closest('.stats-chart-scroll');
+      if (scrollEl?.classList.contains('is-dragging')) return;
+      const dx = Math.abs(e.clientX - start.x);
+      const dy = Math.abs(e.clientY - start.y);
+      if (dx > 4 || dy > 4) return;
+      pickAtPointer(e.clientX, e.clientY);
+    },
+    [tapToInspect, pickAtPointer]
+  );
+
+  const renderXAxisTick = useCallback(
+    (props: { x: number; y: number; payload: { value: string } }) => (
+      <XAxisTick {...props} tapToInspect={tapToInspect} />
     ),
-    [scheme]
+    [tapToInspect]
   );
 
   const axisTickLine = { stroke: '#e8eeec' };
@@ -173,12 +330,19 @@ export function StatsScrollChart({
   }
 
   return (
-    <ComposedChart
-      width={chartWidth}
-      height={height}
-      data={chartData}
-      margin={{ top: 8, right: 8, left: 16, bottom: 8 }}
+    <div
+      ref={shellRef}
+      style={{ width: chartWidth, height }}
+      className={tapToInspect ? 'cursor-pointer select-none' : undefined}
+      onPointerDown={tapToInspect ? handleShellPointerDown : undefined}
+      onPointerUp={tapToInspect ? handleShellPointerUp : undefined}
     >
+      <ComposedChart
+        width={chartWidth}
+        height={height}
+        data={chartData}
+        margin={{ top: CHART_MARGIN.top, right: CHART_MARGIN.right, left: CHART_MARGIN.left, bottom: CHART_MARGIN.bottom }}
+      >
       <defs>
         <linearGradient id={netGradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={NET_INCOME_CHART_FILL_TOP} />
@@ -195,7 +359,7 @@ export function StatsScrollChart({
         type="category"
         scale="point"
         interval="preserveStartEnd"
-        tick={{ fill: '#8a9390', fontSize: 12 }}
+        tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
         axisLine={false}
         tickLine={false}
         padding={{ left: halfPoint, right: halfPoint }}
@@ -230,7 +394,14 @@ export function StatsScrollChart({
         strokeDasharray="4 4"
         ifOverflow="extendDomain"
       />
-      <Tooltip content={renderTooltip} />
+      <Tooltip
+        content={renderTooltip}
+        trigger={tapToInspect ? 'click' : 'hover'}
+        active={tapToInspect && pinnedIndex != null ? true : undefined}
+        defaultIndex={tapToInspect && pinnedIndex != null ? pinnedIndex : undefined}
+        cursor={{ stroke: '#8a9390', strokeWidth: 1, strokeDasharray: '4 4' }}
+        wrapperStyle={{ pointerEvents: 'none', zIndex: 20 }}
+      />
       {!searchActive && (
         <Area
           yAxisId="left"
@@ -286,7 +457,8 @@ export function StatsScrollChart({
           isAnimationActive={false}
         />
       )}
-    </ComposedChart>
+      </ComposedChart>
+    </div>
   );
 }
 

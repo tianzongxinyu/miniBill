@@ -24,7 +24,7 @@ func setupTestServer(t *testing.T) (*httptest.Server, config.Config) {
 	gin.SetMode(gin.TestMode)
 	dir := t.TempDir()
 	cfg := config.Config{
-		JWTSecret:         "test-secret",
+		JWTSecret:         "test-integration-jwt-secret-min-32-chars",
 		DataDir:           dir,
 		AllowRegistration: true,
 		JWTExpireDays:     7,

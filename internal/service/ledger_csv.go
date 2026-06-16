@@ -26,6 +26,9 @@ const (
 	balanceNoteMarker = "月度余额"
 	utf8BOM           = "\ufeff"
 	exportFlushEvery  = 200
+
+	MaxLedgerCSVImportBytes = 50 << 20 // 50 MiB
+	MaxLedgerCSVImportRows  = 100_000
 )
 
 var ledgerCSVHeader = []string{ledgerCSVHeader0, ledgerCSVHeader1, ledgerCSVHeader2, ledgerCSVHeader3, ledgerCSVHeader4, ledgerCSVHeader5}
@@ -227,6 +230,7 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 	txBuckets := map[string][]csvRawRow{}
 	balanceByMonth := map[string]pendingBalance{}
 	result := &ImportResult{}
+	rowCount := 0
 
 	for {
 		record, err := cr.Read()
@@ -235,6 +239,10 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 		}
 		if err != nil {
 			return nil, fmt.Errorf("%w: %v", ErrValidation, err)
+		}
+		rowCount++
+		if rowCount > MaxLedgerCSVImportRows {
+			return nil, fmt.Errorf("%w: CSV 行数超过上限", ErrValidation)
 		}
 		if len(record) < 6 {
 			return nil, fmt.Errorf("%w: row has fewer than 6 columns", ErrValidation)
@@ -473,19 +481,8 @@ func insertMonthTxs(tx *sql.Tx, txs []parsedTx) error {
 }
 
 func validateImportTx(date, typ string, amount int64, tagNames []string, contactID *int64, now time.Time) error {
-	if amount <= 0 {
-		return fmt.Errorf("%w: amount must be positive", ErrValidation)
-	}
-	if typ != "income" && typ != "expense" {
-		return fmt.Errorf("%w: invalid type", ErrValidation)
-	}
-	if !domain.IsDateNotAfterToday(date, now) {
-		return fmt.Errorf("%w: 日期不能晚于今天", ErrValidation)
-	}
-	if domain.HasDailyExpenseTag(tagNames) {
-		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)
-	}
-	return nil
+	_ = contactID
+	return validateTransactionCore(amount, typ, date, tagNames, now)
 }
 
 func validateCSVHeader(header []string) error {
@@ -615,4 +612,15 @@ func sortedMapKeys[V any](m map[string]V) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+func joinTags(tags []string) string {
+	if len(tags) == 0 {
+		return ""
+	}
+	s := tags[0]
+	for i := 1; i < len(tags); i++ {
+		s += "|" + tags[i]
+	}
+	return s
 }

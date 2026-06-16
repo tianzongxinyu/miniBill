@@ -25,7 +25,7 @@ import {
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { notifyTransactionDates } from '@/lib/ledgerEvents';
-import { safeReturnTo } from '@/lib/url';
+import { parseDateParam, safeReturnTo } from '@/lib/url';
 
 function mergeTagsForEdit(allTags: Tag[], tx: Transaction): Tag[] {
   const byId = new Map(allTags.map((t) => [t.id, t]));
@@ -51,7 +51,8 @@ function AddContent() {
   const { scheme } = useSettings();
   const editId = params.get('id');
   const isEdit = Boolean(editId);
-  const returnTo = isEdit ? safeReturnTo(params.get('returnTo'), '/transactions/') : '/';
+  const returnTo = safeReturnTo(params.get('returnTo'), isEdit ? '/transactions/' : '/');
+  const dateParam = params.get('date');
 
   const [loading, setLoading] = useState(isEdit);
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -77,10 +78,14 @@ function AddContent() {
     if (!isEdit) {
       setTags(meta.tags);
       setContacts(meta.contacts);
-      setDate(meta.editableRange.max_date);
+      const parsed = parseDateParam(dateParam);
+      const { min_date, max_date } = meta.editableRange;
+      const initialDate =
+        parsed && parsed >= min_date && parsed <= max_date ? parsed : max_date;
+      setDate(initialDate);
     }
     return meta;
-  }, [isEdit]);
+  }, [isEdit, dateParam]);
 
   useEffect(() => {
     if (!isEdit) {
@@ -127,7 +132,7 @@ function AddContent() {
     try {
       await saveTransaction(body, isEdit ? editId : null);
       notifyTransactionDates(date, originalDate);
-      router.push(isEdit ? returnTo : '/');
+      router.push(returnTo);
     } catch (err) {
       setError(formatApiError(err, '保存失败'));
     }
@@ -228,7 +233,7 @@ function AddContent() {
           />
         </div>
 
-        <div className="form-row">
+        <div className="form-row form-row-start">
           <div className="form-label">备注</div>
           <textarea
             className="form-note-field"

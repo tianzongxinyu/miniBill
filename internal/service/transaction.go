@@ -157,10 +157,9 @@ func (s *TransactionService) listByCursorPage(db *sql.DB, f ListFilter, limit in
 		return nil, err
 	}
 	defer rows.Close()
-	now := s.now()
 	var list []Transaction
 	for rows.Next() {
-		tx, err := scanTransactionRow(rows, now)
+		tx, err := scanTransactionRow(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -185,15 +184,14 @@ func (s *TransactionService) ListByCursorFiltered(db *sql.DB, f ListFilter, limi
 }
 
 func (s *TransactionService) Get(db *sql.DB, id int64) (*Transaction, error) {
-	now := s.now()
 	row := db.QueryRow(fmt.Sprintf(`
 		SELECT %s FROM transactions WHERE id = ?`, txSelectColumnsBare), id)
-	return scanTransactionRow(row, now)
+	return scanTransactionRow(row)
 }
 
 func scanTransactionRow(scanner interface {
 	Scan(dest ...interface{}) error
-}, now time.Time) (*Transaction, error) {
+}) (*Transaction, error) {
 	var tx Transaction
 	var cid sql.NullInt64
 	var isSystem int
@@ -205,32 +203,101 @@ func scanTransactionRow(scanner interface {
 		tx.ContactID = &cid.Int64
 	}
 	tx.IsSystem = isSystem == 1
-	_ = now
 	return &tx, nil
 }
 
-func (s *TransactionService) enrich(db *sql.DB, tx *Transaction) error {
-	rows, err := db.Query(`
-		SELECT tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id WHERE tt.transaction_id = ? ORDER BY g.name`, tx.ID)
+func validateTransactionCore(amount int64, typ, date string, tagNames []string, now time.Time) error {
+	if amount <= 0 {
+		return fmt.Errorf("%w: amount must be positive", ErrValidation)
+	}
+	if typ != "income" && typ != "expense" {
+		return fmt.Errorf("%w: invalid type", ErrValidation)
+	}
+	if !domain.IsDateNotAfterToday(date, now) {
+		return fmt.Errorf("%w: 日期不能晚于今天", ErrValidation)
+	}
+	if domain.HasDailyExpenseTag(tagNames) {
+		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)
+	}
+	return nil
+}
+
+func loadTagsForTxIDs(db *sql.DB, ids []int64) (map[int64][]TransactionTagItem, error) {
+	out := map[int64][]TransactionTagItem{}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	q := fmt.Sprintf(`
+		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
+		JOIN tags g ON g.id = tt.tag_id
+		WHERE tt.transaction_id IN (%s)
+		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
+	rows, err := db.Query(q, args...)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
+		var txID int64
 		var item TransactionTagItem
-		if err := rows.Scan(&item.ID, &item.Name, &item.ColorBg, &item.ColorFg); err != nil {
-			return err
+		if err := rows.Scan(&txID, &item.ID, &item.Name, &item.ColorBg, &item.ColorFg); err != nil {
+			return nil, err
 		}
+		out[txID] = append(out[txID], item)
+	}
+	return out, rows.Err()
+}
+
+func loadContactNamesForIDs(db *sql.DB, ids []int64) (map[int64]string, error) {
+	out := map[int64]string{}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	q := fmt.Sprintf(`SELECT id, name FROM contacts WHERE id IN (%s)`, strings.Join(placeholders, ","))
+	rows, err := db.Query(q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int64
+		var name string
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, err
+		}
+		out[id] = name
+	}
+	return out, rows.Err()
+}
+
+func (s *TransactionService) enrich(db *sql.DB, tx *Transaction) error {
+	tagMap, err := loadTagsForTxIDs(db, []int64{tx.ID})
+	if err != nil {
+		return err
+	}
+	for _, item := range tagMap[tx.ID] {
 		tx.TagIDs = append(tx.TagIDs, item.ID)
 		tx.Tags = append(tx.Tags, item.Name)
 		tx.TagItems = append(tx.TagItems, item)
 	}
 	if tx.ContactID != nil {
-		var name string
-		if err := db.QueryRow(`SELECT name FROM contacts WHERE id = ?`, *tx.ContactID).Scan(&name); err == nil {
-			tx.ContactName = name
+		names, err := loadContactNamesForIDs(db, []int64{*tx.ContactID})
+		if err != nil {
+			return err
 		}
+		tx.ContactName = names[*tx.ContactID]
 	}
 	return nil
 }
@@ -240,83 +307,39 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 		return nil
 	}
 	ids := make([]int64, len(items))
-	idSet := map[int64]int{}
+	contactIDSet := map[int64]struct{}{}
 	for i := range items {
 		ids[i] = items[i].ID
-		idSet[items[i].ID] = i
 		items[i].TagIDs = nil
 		items[i].Tags = nil
 		items[i].TagItems = nil
 		items[i].ContactName = ""
+		if items[i].ContactID != nil {
+			contactIDSet[*items[i].ContactID] = struct{}{}
+		}
 	}
 
-	placeholders := make([]string, len(ids))
-	args := make([]interface{}, len(ids))
-	for i, id := range ids {
-		placeholders[i] = "?"
-		args[i] = id
-	}
-	tagQ := fmt.Sprintf(`
-		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id
-		WHERE tt.transaction_id IN (%s)
-		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
-	rows, err := db.Query(tagQ, args...)
+	tagMap, err := loadTagsForTxIDs(db, ids)
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var txID int64
-		var item TransactionTagItem
-		if err := rows.Scan(&txID, &item.ID, &item.Name, &item.ColorBg, &item.ColorFg); err != nil {
-			return err
+	for i := range items {
+		for _, item := range tagMap[items[i].ID] {
+			items[i].TagIDs = append(items[i].TagIDs, item.ID)
+			items[i].Tags = append(items[i].Tags, item.Name)
+			items[i].TagItems = append(items[i].TagItems, item)
 		}
-		if idx, ok := idSet[txID]; ok {
-			items[idx].TagIDs = append(items[idx].TagIDs, item.ID)
-			items[idx].Tags = append(items[idx].Tags, item.Name)
-			items[idx].TagItems = append(items[idx].TagItems, item)
-		}
-	}
-	if err := rows.Err(); err != nil {
-		return err
 	}
 
-	contactIDs := map[int64]struct{}{}
-	for i := range items {
-		if items[i].ContactID != nil {
-			contactIDs[*items[i].ContactID] = struct{}{}
-		}
-	}
-	if len(contactIDs) == 0 {
+	if len(contactIDSet) == 0 {
 		return nil
 	}
-	cids := make([]int64, 0, len(contactIDs))
-	for id := range contactIDs {
+	cids := make([]int64, 0, len(contactIDSet))
+	for id := range contactIDSet {
 		cids = append(cids, id)
 	}
-	cPlaceholders := make([]string, len(cids))
-	cArgs := make([]interface{}, len(cids))
-	for i, id := range cids {
-		cPlaceholders[i] = "?"
-		cArgs[i] = id
-	}
-	cQ := fmt.Sprintf(`SELECT id, name FROM contacts WHERE id IN (%s)`, strings.Join(cPlaceholders, ","))
-	cRows, err := db.Query(cQ, cArgs...)
+	names, err := loadContactNamesForIDs(db, cids)
 	if err != nil {
-		return err
-	}
-	defer cRows.Close()
-	names := map[int64]string{}
-	for cRows.Next() {
-		var id int64
-		var name string
-		if err := cRows.Scan(&id, &name); err != nil {
-			return err
-		}
-		names[id] = name
-	}
-	if err := cRows.Err(); err != nil {
 		return err
 	}
 	for i := range items {
@@ -380,7 +403,7 @@ func (s *TransactionService) EnrichBatchWithMeta(db *sql.DB, meta *cache.LedgerM
 }
 
 func (s *TransactionService) Create(db *sql.DB, in CreateTransactionInput) (*Transaction, error) {
-	if err := s.validate(db, in, ""); err != nil {
+	if err := s.validate(db, in); err != nil {
 		return nil, err
 	}
 	res, err := db.Exec(`
@@ -423,7 +446,7 @@ func (s *TransactionService) Update(db *sql.DB, id int64, in CreateTransactionIn
 	if old.IsSystem {
 		return nil, ErrSystemTransaction
 	}
-	if err := s.validate(db, in, old.TransactionDate); err != nil {
+	if err := s.validate(db, in); err != nil {
 		return nil, err
 	}
 	_, err = db.Exec(`
@@ -486,25 +509,12 @@ func (s *TransactionService) Delete(db *sql.DB, id int64) error {
 	return s.stats.RecalcAfterTransaction(db, tx.TransactionDate)
 }
 
-func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput, oldDate string) error {
-	now := s.now()
-	if in.Amount <= 0 {
-		return fmt.Errorf("%w: amount must be positive", ErrValidation)
-	}
-	if in.Type != "income" && in.Type != "expense" {
-		return fmt.Errorf("%w: invalid type", ErrValidation)
-	}
-	if !domain.IsDateNotAfterToday(in.TransactionDate, now) {
-		return fmt.Errorf("%w: 日期不能晚于今天", ErrValidation)
-	}
+func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput) error {
 	names, err := s.tagNames(db, in.TagIDs)
 	if err != nil {
 		return err
 	}
-	if domain.HasDailyExpenseTag(names) {
-		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)
-	}
-	return nil
+	return validateTransactionCore(in.Amount, in.Type, in.TransactionDate, names, s.now())
 }
 
 func (s *TransactionService) tagNames(db *sql.DB, ids []int64) ([]string, error) {
