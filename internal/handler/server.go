@@ -81,9 +81,11 @@ func (s *Server) Router() *gin.Engine {
 	authGroup := api.Group("/auth")
 	authGroup.POST("/register", s.register)
 	authGroup.POST("/login", s.login)
+	authGroup.POST("/logout", s.logout)
 
 	protected := api.Group("")
 	protected.Use(middleware.Auth(s.authSvc))
+	protected.GET("/auth/session", s.session)
 	protected.PUT("/auth/password", s.changePassword)
 	protected.GET("/meta/editable-range", s.editableRange)
 	protected.GET("/meta/earliest-month", s.earliestMonth)

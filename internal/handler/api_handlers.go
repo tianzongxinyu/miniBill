@@ -109,6 +109,7 @@ func (s *Server) register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
 		return
 	}
+	setAuthCookie(c, token, true, s.cfg)
 	c.JSON(http.StatusCreated, gin.H{
 		"token": token,
 		"user":  gin.H{"id": user.ID, "username": user.Username},
@@ -136,10 +137,31 @@ func (s *Server) login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
 		return
 	}
+	setAuthCookie(c, token, remember, s.cfg)
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 		"user":  gin.H{"id": user.ID, "username": user.Username},
 	})
+}
+
+func (s *Server) session(c *gin.Context) {
+	token := middleware.GetAuthToken(c)
+	if token == "" {
+		JSONUnauthorized(c)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":       middleware.GetUserID(c),
+			"username": middleware.GetUsername(c),
+		},
+	})
+}
+
+func (s *Server) logout(c *gin.Context) {
+	clearAuthCookie(c)
+	c.Status(http.StatusNoContent)
 }
 
 func (s *Server) changePassword(c *gin.Context) {

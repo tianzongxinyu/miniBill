@@ -18,15 +18,15 @@
 
 ### 首页 · 月度账单
 
-<img src="docs/screenshots/home.png" alt="首页月度账单" width="30%" />
+<img src="docs/screenshots/home.png" alt="首页月度账单" width="50%" />
 
 ### 流水 · 按月浏览与搜索
 
-<img src="docs/screenshots/transactions.png" alt="流水列表" width="30%" />
+<img src="docs/screenshots/transactions.png" alt="流水列表" width="50%" />
 
 ### 统计 · 图表与明细
 
-<img src="docs/screenshots/stats.png" alt="统计分析" width="30%" />
+<img src="docs/screenshots/stats.png" alt="统计分析" width="50%" />
 
 ### 统计 · 全屏横屏查看
 
@@ -34,7 +34,7 @@
 
 ### 我的 · 标签 / 数据 / 备份
 
-<img src="docs/screenshots/profile.png" alt="我的" width="30%" />
+<img src="docs/screenshots/profile.png" alt="我的" width="50%" />
 
 ## 项目目录
 

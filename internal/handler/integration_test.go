@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -84,6 +85,79 @@ func TestHealth(t *testing.T) {
 	if res.StatusCode != http.StatusOK {
 		t.Fatalf("health status %d", res.StatusCode)
 	}
+}
+
+func TestLoginCookieAuth(t *testing.T) {
+	ts, _ := setupTestServer(t)
+	defer ts.Close()
+
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := &http.Client{Jar: jar}
+
+	body, _ := json.Marshal(map[string]string{"username": "carol", "password": "secret1"})
+	res, err := client.Post(ts.URL+"/api/auth/register", "application/json", bytes.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != http.StatusCreated {
+		t.Fatalf("register status %d", res.StatusCode)
+	}
+	res.Body.Close()
+
+	reqTags, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	resTags, err := client.Do(reqTags)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resTags.StatusCode != http.StatusOK {
+		t.Fatalf("tags with cookie status %d", resTags.StatusCode)
+	}
+	resTags.Body.Close()
+
+	reqSession, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/auth/session", nil)
+	resSession, err := client.Do(reqSession)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resSession.StatusCode != http.StatusOK {
+		t.Fatalf("session status %d", resSession.StatusCode)
+	}
+	var session struct {
+		Token string `json:"token"`
+		User  struct {
+			Username string `json:"username"`
+		} `json:"user"`
+	}
+	if err := json.NewDecoder(resSession.Body).Decode(&session); err != nil {
+		t.Fatal(err)
+	}
+	resSession.Body.Close()
+	if session.Token == "" || session.User.Username != "carol" {
+		t.Fatalf("unexpected session %+v", session)
+	}
+
+	reqLogout, _ := http.NewRequest(http.MethodPost, ts.URL+"/api/auth/logout", nil)
+	resLogout, err := client.Do(reqLogout)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resLogout.StatusCode != http.StatusNoContent {
+		t.Fatalf("logout status %d", resLogout.StatusCode)
+	}
+	resLogout.Body.Close()
+
+	reqAfter, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	resAfter, err := client.Do(reqAfter)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resAfter.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("tags after logout status %d, want 401", resAfter.StatusCode)
+	}
+	resAfter.Body.Close()
 }
 
 func TestTransactionUpdateRefreshesListTags(t *testing.T) {

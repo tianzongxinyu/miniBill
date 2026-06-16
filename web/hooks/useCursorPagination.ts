@@ -116,6 +116,10 @@ export function useCursorPagination<T>({
       setError(onErrorRef.current(e));
     } finally {
       setLoadingSync(false);
+      sentinelWasIntersectingRef.current = false;
+      requestAnimationFrame(() => {
+        tryLoadMoreAtSentinelRef.current();
+      });
     }
   }, [resetGate, applyPage, setLoadingSync]);
 
@@ -213,10 +217,17 @@ export function useCursorPagination<T>({
           sentinelWasIntersectingRef.current = false;
           return;
         }
-        const entered = !sentinelWasIntersectingRef.current;
+        if (sentinelWasIntersectingRef.current) return;
+        if (
+          blockAutoPaginationRef.current ||
+          loadingRef.current ||
+          loadingMoreRef.current ||
+          loadMoreInFlightRef.current
+        ) {
+          return;
+        }
         sentinelWasIntersectingRef.current = true;
-        if (!entered) return;
-        tryLoadMoreAtSentinelRef.current();
+        void loadMoreRef.current();
       },
       { rootMargin }
     );

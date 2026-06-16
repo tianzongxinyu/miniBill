@@ -30,14 +30,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useLayoutEffect(() => {
-    syncUser();
-    setReady(true);
+    let cancelled = false;
+
+    async function init() {
+      let current = getStoredUser();
+      if (!current) {
+        try {
+          const data = await api<AuthResponse>('/auth/session', { authRedirect: false });
+          if (data?.token && data?.user?.username) {
+            setAuthSession(data.token, data.user, true);
+            current = data.user;
+          }
+        } catch {
+          /* not logged in */
+        }
+      }
+      if (!cancelled) {
+        setUser(current);
+        setReady(true);
+      }
+    }
+
+    void init();
 
     const onAuthChange = () => syncUser();
     window.addEventListener('auth:logout', onAuthChange);
     window.addEventListener('auth:session', onAuthChange);
     window.addEventListener('storage', onAuthChange);
     return () => {
+      cancelled = true;
       window.removeEventListener('auth:logout', onAuthChange);
       window.removeEventListener('auth:session', onAuthChange);
       window.removeEventListener('storage', onAuthChange);
@@ -69,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    logoutAndRedirect();
+    void logoutAndRedirect();
   };
 
   return (

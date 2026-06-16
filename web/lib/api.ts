@@ -32,7 +32,7 @@ export function setRememberLogin(remember: boolean) {
   localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0');
 }
 
-/** 从 localStorage / sessionStorage 读取 JWT，无服务端 session */
+/** 从 localStorage / sessionStorage 读取 JWT；Cookie 由浏览器自动携带 */
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
@@ -57,6 +57,17 @@ function clearAuthStorage() {
   localStorage.removeItem(USER_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
+}
+
+async function revokeAuthCookie(): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, {
+      method: 'POST',
+      credentials: 'same-origin',
+    });
+  } catch {
+    /* ignore network errors during logout */
+  }
 }
 
 export function notifyAuthSession() {
@@ -95,7 +106,8 @@ export function redirectToHome() {
 }
 
 /** 清除登录态；不在登录页时整页跳转，避免先 notify 导致 RequireAuth 白屏 */
-export function clearAuthAndGoLogin() {
+export async function clearAuthAndGoLogin() {
+  await revokeAuthCookie();
   clearAuthStorage();
   if (typeof window === 'undefined') return;
   const path = window.location.pathname;
@@ -126,8 +138,8 @@ export function clearAuthToken() {
 }
 
 /** 清除登录态并跳转登录页（整页刷新，避免 SPA 状态卡住） */
-export function logoutAndRedirect() {
-  clearAuthAndGoLogin();
+export async function logoutAndRedirect() {
+  await clearAuthAndGoLogin();
 }
 
 function isAuthFormRequest(path: string, method?: string) {
@@ -140,7 +152,7 @@ export type ApiOptions = RequestInit & {
 };
 
 function logoutOnUnauthorized() {
-  clearAuthAndGoLogin();
+  void clearAuthAndGoLogin();
 }
 
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
@@ -157,7 +169,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     res = await fetch(`${API_BASE}${path}`, {
       ...fetchOptions,
       headers,
-      credentials: 'omit', // 不使用 cookie / session
+      credentials: 'same-origin',
     });
   } catch {
     if (fetchOptions.signal?.aborted) {
@@ -730,7 +742,7 @@ export async function exportLedgerCSV(): Promise<LedgerExportResult> {
   const headers: Record<string, string> = {};
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}/ledger/export`, { headers, credentials: 'omit' });
+  const res = await fetch(`${API_BASE}/ledger/export`, { headers, credentials: 'same-origin' });
   if (res.status === 401) {
     logoutOnUnauthorized();
     throw new ApiError('UNAUTHORIZED', '未授权', 401);
@@ -764,7 +776,7 @@ export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {
     method: 'POST',
     headers,
     body: form,
-    credentials: 'omit',
+    credentials: 'same-origin',
   });
   if (res.status === 401) {
     logoutOnUnauthorized();

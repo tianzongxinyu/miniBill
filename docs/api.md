@@ -1,17 +1,21 @@
 # 轻账单 API（MVP）
 
 Base URL: `/api`  
-鉴权: `Authorization: Bearer <token>`
+鉴权: `Authorization: Bearer <token>` 或 HttpOnly Cookie `minibill_token`（登录/注册时自动设置）
 
 ## 认证
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/auth/register` | 注册 |
+| POST | `/auth/register` | 注册（同时 Set-Cookie） |
 | POST | `/auth/login` | 登录（可选 `remember`，见下） |
+| GET | `/auth/session` | 当前会话（需登录，返回 `{ token, user }`） |
+| POST | `/auth/logout` | 清除 Cookie（204） |
 | PUT | `/auth/password` | 修改密码（需登录） |
 
-`POST /auth/login` 请求体：`{ "username", "password", "remember"?: boolean }`。`remember` 省略或为 `true` 时签发 `JWT_EXPIRE_DAYS`（默认 30 天）令牌并存入 `localStorage`；`remember: false` 时签发 24 小时令牌并存入 `sessionStorage`。
+`POST /auth/login` 请求体：`{ "username", "password", "remember"?: boolean }`。`remember` 省略或为 `true` 时签发 `JWT_EXPIRE_DAYS`（默认 30 天）令牌，写入 HttpOnly Cookie 与 `localStorage`；`remember: false` 时签发 24 小时令牌，Cookie 与 `sessionStorage` 有效期均为 24 小时。
+
+前端请求需 `credentials: same-origin` 以携带 Cookie。WebView（如飞牛 App）在 localStorage 被清空时，可通过 Cookie 调用 `GET /auth/session` 恢复登录态。
 
 ## 业务
 

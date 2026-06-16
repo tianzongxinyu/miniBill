@@ -8,18 +8,38 @@ import (
 	"github.com/minibill/minibill/internal/auth"
 )
 
-const UserIDKey = "user_id"
-const UsernameKey = "username"
+const (
+	UserIDKey       = "user_id"
+	UsernameKey     = "username"
+	AuthTokenKey    = "auth_token"
+	TokenCookieName = "minibill_token"
+)
 
-// Auth 校验 JWT（Authorization: Bearer <token>），无服务端 session / cookie。
+func bearerToken(header string) string {
+	if header == "" || !strings.HasPrefix(header, "Bearer ") {
+		return ""
+	}
+	return strings.TrimPrefix(header, "Bearer ")
+}
+
+func tokenFromRequest(c *gin.Context) string {
+	if t := bearerToken(c.GetHeader("Authorization")); t != "" {
+		return t
+	}
+	if t, err := c.Cookie(TokenCookieName); err == nil && t != "" {
+		return t
+	}
+	return ""
+}
+
+// Auth 校验 JWT（Authorization: Bearer 或 HttpOnly Cookie）。
 func Auth(authSvc *auth.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		header := c.GetHeader("Authorization")
-		if header == "" || !strings.HasPrefix(header, "Bearer ") {
+		tokenStr := tokenFromRequest(c)
+		if tokenStr == "" {
 			apierr.Unauthorized(c)
 			return
 		}
-		tokenStr := strings.TrimPrefix(header, "Bearer ")
 		claims, err := authSvc.Parse(tokenStr)
 		if err != nil {
 			apierr.Unauthorized(c)
@@ -27,6 +47,7 @@ func Auth(authSvc *auth.Service) gin.HandlerFunc {
 		}
 		c.Set(UserIDKey, claims.UserID)
 		c.Set(UsernameKey, claims.Username)
+		c.Set(AuthTokenKey, tokenStr)
 		c.Next()
 	}
 }
@@ -35,4 +56,16 @@ func GetUserID(c *gin.Context) int64 {
 	v, _ := c.Get(UserIDKey)
 	id, _ := v.(int64)
 	return id
+}
+
+func GetUsername(c *gin.Context) string {
+	v, _ := c.Get(UsernameKey)
+	name, _ := v.(string)
+	return name
+}
+
+func GetAuthToken(c *gin.Context) string {
+	v, _ := c.Get(AuthTokenKey)
+	token, _ := v.(string)
+	return token
 }
