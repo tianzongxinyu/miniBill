@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import {
   fetchBackup,
   runBackupNow,
@@ -13,6 +13,7 @@ import {
 import { formatApiError } from '@/lib/errors';
 
 const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const BACKUP_MINUTES = [0, 10, 20, 30, 40, 50] as const;
 
 function formatLastRun(iso?: string): string {
   if (!iso) return '尚未备份';
@@ -56,6 +57,7 @@ function BackupContent() {
         enabled: cfg.enabled,
         interval: cfg.interval,
         hour: cfg.hour,
+        minute: cfg.minute ?? 0,
         weekday: cfg.weekday,
         month_day: cfg.month_day,
         keep_count: cfg.keep_count,
@@ -87,8 +89,8 @@ function BackupContent() {
   if (loading || !cfg) {
     return (
       <div className="space-y-6">
-        <BackLink href="/profile/">我的</BackLink>
         <p className="text-sm text-muted">{loading ? '加载中…' : error || '无法加载'}</p>
+        <PageBackLink href="/profile/" />
       </div>
     );
   }
@@ -99,8 +101,6 @@ function BackupContent() {
 
   return (
     <div className="space-y-6">
-      <BackLink href="/profile/">我的</BackLink>
-
       {msg && <p className="text-income text-sm">{msg}</p>}
       {error && <p className="text-expense text-sm">{error}</p>}
 
@@ -158,19 +158,33 @@ function BackupContent() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs text-muted">执行时间（时）</label>
-              <select
-                className="field w-full"
-                disabled={scheduleDisabled}
-                value={cfg.hour}
-                onChange={(e) => setCfg({ ...cfg, hour: Number(e.target.value) })}
-              >
-                {Array.from({ length: 24 }, (_, i) => (
-                  <option key={i} value={i}>
-                    {String(i).padStart(2, '0')}:00
-                  </option>
-                ))}
-              </select>
+              <label className="text-xs text-muted">执行时间</label>
+              <div className="flex gap-2">
+                <select
+                  className="field flex-1"
+                  disabled={scheduleDisabled}
+                  value={cfg.hour}
+                  onChange={(e) => setCfg({ ...cfg, hour: Number(e.target.value) })}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {String(i).padStart(2, '0')} 时
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="field flex-1"
+                  disabled={scheduleDisabled}
+                  value={cfg.minute ?? 0}
+                  onChange={(e) => setCfg({ ...cfg, minute: Number(e.target.value) })}
+                >
+                  {BACKUP_MINUTES.map((m) => (
+                    <option key={m} value={m}>
+                      {String(m).padStart(2, '0')} 分
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs text-muted">保留份数</label>
@@ -259,6 +273,7 @@ function BackupContent() {
           )}
         </div>
       </div>
+      <PageBackLink href="/profile/" />
     </div>
   );
 }

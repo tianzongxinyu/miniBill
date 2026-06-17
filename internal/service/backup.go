@@ -33,6 +33,7 @@ var (
 	ErrBackupDirNotConfigured = fmt.Errorf("%w: backup directory not configured", ErrValidation)
 	ErrInvalidBackupInterval  = fmt.Errorf("%w: invalid backup interval", ErrValidation)
 	ErrInvalidBackupHour      = fmt.Errorf("%w: backup hour must be 0-23", ErrValidation)
+	ErrInvalidBackupMinute    = fmt.Errorf("%w: backup minute must be 0, 10, 20, 30, 40, or 50", ErrValidation)
 	ErrInvalidBackupWeekday   = fmt.Errorf("%w: backup weekday must be 0-6", ErrValidation)
 	ErrInvalidBackupMonthDay  = fmt.Errorf("%w: backup month day must be 1-28", ErrValidation)
 	ErrInvalidKeepCount       = fmt.Errorf("%w: keep count must be at least 1", ErrValidation)
@@ -44,6 +45,7 @@ type BackupConfig struct {
 	Enabled    bool   `json:"enabled"`
 	Interval   string `json:"interval"`
 	Hour       int    `json:"hour"`
+	Minute     int    `json:"minute"`
 	Weekday    int    `json:"weekday"`
 	MonthDay   int    `json:"month_day"`
 	KeepCount  int    `json:"keep_count"`
@@ -137,11 +139,11 @@ func (s *BackupService) GetConfig(db *sql.DB) (*BackupConfig, error) {
 	var enabled int
 	var lastRunAt, lastStatus, lastFile, lastError sql.NullString
 	err := db.QueryRow(`
-		SELECT backup_enabled, backup_interval, backup_hour, backup_weekday, backup_month_day,
+		SELECT backup_enabled, backup_interval, backup_hour, backup_minute, backup_weekday, backup_month_day,
 		       backup_keep_count, backup_last_run_at, backup_last_status, backup_last_file, backup_last_error
 		FROM settings WHERE id=1`,
 	).Scan(
-		&enabled, &cfg.Interval, &cfg.Hour, &cfg.Weekday, &cfg.MonthDay, &cfg.KeepCount,
+		&enabled, &cfg.Interval, &cfg.Hour, &cfg.Minute, &cfg.Weekday, &cfg.MonthDay, &cfg.KeepCount,
 		&lastRunAt, &lastStatus, &lastFile, &lastError,
 	)
 	if err == sql.ErrNoRows {
@@ -178,6 +180,9 @@ func validateBackupConfig(cfg BackupConfig) error {
 	if cfg.Hour < 0 || cfg.Hour > 23 {
 		return ErrInvalidBackupHour
 	}
+	if !validBackupMinute(cfg.Minute) {
+		return ErrInvalidBackupMinute
+	}
 	if cfg.Interval == BackupIntervalWeekly && (cfg.Weekday < 0 || cfg.Weekday > 6) {
 		return ErrInvalidBackupWeekday
 	}
@@ -200,16 +205,17 @@ func (s *BackupService) UpdateConfig(db *sql.DB, cfg BackupConfig) (*BackupConfi
 	}
 	_, err := db.Exec(`
 		INSERT INTO settings (
-			id, backup_enabled, backup_interval, backup_hour, backup_weekday, backup_month_day, backup_keep_count
-		) VALUES (1, ?, ?, ?, ?, ?, ?)
+			id, backup_enabled, backup_interval, backup_hour, backup_minute, backup_weekday, backup_month_day, backup_keep_count
+		) VALUES (1, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			backup_enabled=excluded.backup_enabled,
 			backup_interval=excluded.backup_interval,
 			backup_hour=excluded.backup_hour,
+			backup_minute=excluded.backup_minute,
 			backup_weekday=excluded.backup_weekday,
 			backup_month_day=excluded.backup_month_day,
 			backup_keep_count=excluded.backup_keep_count`,
-		enabled, cfg.Interval, cfg.Hour, cfg.Weekday, cfg.MonthDay, cfg.KeepCount,
+		enabled, cfg.Interval, cfg.Hour, cfg.Minute, cfg.Weekday, cfg.MonthDay, cfg.KeepCount,
 	)
 	if err != nil {
 		return nil, err
@@ -550,35 +556,53 @@ func (s *BackupService) RestoreFromZip(db *sql.DB, userID int64, username, filen
 	return s.csvSvc.ImportReplace(db, userID, rc)
 }
 
+// scheduleSlotStart 返回当前周期内计划执行时刻（本地时区）；若今天/本周/本月不是计划日则 ok=false。
+func (s *BackupService) scheduleSlotStart(cfg BackupConfig, now time.Time) (time.Time, bool) {
+	y, m, d := now.Date()
+	switch cfg.Interval {
+	case BackupIntervalDaily:
+	case BackupIntervalWeekly:
+		if int(now.Weekday()) != cfg.Weekday {
+			return time.Time{}, false
+		}
+	case BackupIntervalMonthly:
+		if now.Day() != cfg.MonthDay {
+			return time.Time{}, false
+		}
+	default:
+		return time.Time{}, false
+	}
+	return time.Date(y, m, d, cfg.Hour, cfg.Minute, 0, 0, s.loc), true
+}
+
+func validBackupMinute(m int) bool {
+	switch m {
+	case 0, 10, 20, 30, 40, 50:
+		return true
+	default:
+		return false
+	}
+}
+
 func (s *BackupService) IsDue(cfg BackupConfig, lastRunAt string) bool {
 	if !cfg.Enabled {
 		return false
 	}
 	now := s.now().In(s.loc)
-	if now.Hour() != cfg.Hour {
+	slotStart, ok := s.scheduleSlotStart(cfg, now)
+	if !ok || now.Before(slotStart) {
 		return false
 	}
-	switch cfg.Interval {
-	case BackupIntervalDaily:
-	case BackupIntervalWeekly:
-		if int(now.Weekday()) != cfg.Weekday {
-			return false
-		}
-	case BackupIntervalMonthly:
-		if now.Day() != cfg.MonthDay {
-			return false
-		}
-	default:
-		return false
+	if lastRunAt == "" {
+		return true
 	}
-	if lastRunAt != "" {
-		if t, err := time.Parse(time.RFC3339, lastRunAt); err == nil {
-			lt := t.In(s.loc)
-			if lt.Year() == now.Year() && lt.Month() == now.Month() && lt.Day() == now.Day() &&
-				cfg.LastStatus == BackupStatusOK {
-				return false
-			}
-		}
+	t, err := time.Parse(time.RFC3339, lastRunAt)
+	if err != nil {
+		return true
+	}
+	lt := t.In(s.loc)
+	if cfg.LastStatus == BackupStatusOK && !lt.Before(slotStart) {
+		return false
 	}
 	return true
 }

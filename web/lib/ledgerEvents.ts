@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { fetchMonthBill, nextMonth, type MonthBillItem } from '@/lib/api';
 
 export const LEDGER_CHANGED = 'ledger:changed';
+export const LEDGER_META_CHANGED = 'ledger:meta-changed';
 
 export type LedgerKind = 'transaction' | 'balance';
 
@@ -15,6 +16,11 @@ export type LedgerChangedDetail = {
 export function notifyLedgerChanged(detail: LedgerChangedDetail) {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(LEDGER_CHANGED, { detail }));
+}
+
+export function notifyLedgerMetaChanged() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(LEDGER_META_CHANGED));
 }
 
 export function parseYearMonth(date: string): { year: number; month: number } | null {

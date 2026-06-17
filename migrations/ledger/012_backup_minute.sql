@@ -1,0 +1,1 @@
+ALTER TABLE settings ADD COLUMN backup_minute INTEGER NOT NULL DEFAULT 0;

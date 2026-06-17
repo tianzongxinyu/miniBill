@@ -4,6 +4,7 @@ import {
   parseExportFilename,
   type DownloadMethod,
 } from '@/lib/downloadFile';
+import { notifyLedgerMetaChanged } from '@/lib/ledgerEvents';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
 const AUTH_FORM_PATHS = ['/auth/login', '/auth/register'];
@@ -526,7 +527,9 @@ export async function upsertMonthlyBalance(
 }
 
 export async function createTag(name: string): Promise<Tag> {
-  return api<Tag>('/tags', { method: 'POST', body: JSON.stringify({ name }) });
+  const tag = await api<Tag>('/tags', { method: 'POST', body: JSON.stringify({ name }) });
+  notifyLedgerMetaChanged();
+  return tag;
 }
 
 export type TagUpdate = {
@@ -536,14 +539,17 @@ export type TagUpdate = {
 };
 
 export async function updateTag(id: number, patch: TagUpdate): Promise<Tag> {
-  return api<Tag>(`/tags/${id}`, {
+  const tag = await api<Tag>(`/tags/${id}`, {
     method: 'PUT',
     body: JSON.stringify(patch),
   });
+  notifyLedgerMetaChanged();
+  return tag;
 }
 
 export async function deleteTag(id: number): Promise<void> {
   await api(`/tags/${id}`, { method: 'DELETE' });
+  notifyLedgerMetaChanged();
 }
 
 export type EditableDateRange = { min_date: string; max_date: string };
@@ -620,7 +626,7 @@ export async function fetchContactDetail(id: number): Promise<ContactDetail> {
 }
 
 export async function createContact(name: string): Promise<Contact> {
-  return api<Contact>('/contacts', {
+  const contact = await api<Contact>('/contacts', {
     method: 'POST',
     body: JSON.stringify({
       name,
@@ -630,10 +636,13 @@ export async function createContact(name: string): Promise<Contact> {
       phone: '',
     }),
   });
+  notifyLedgerMetaChanged();
+  return contact;
 }
 
 export async function deleteContact(id: number): Promise<void> {
   await api(`/contacts/${id}`, { method: 'DELETE' });
+  notifyLedgerMetaChanged();
 }
 
 export type AmountColorScheme = 'red_up' | 'green_up';
@@ -661,6 +670,7 @@ export type BackupConfig = {
   enabled: boolean;
   interval: BackupInterval;
   hour: number;
+  minute: number;
   weekday: number;
   month_day: number;
   keep_count: number;
@@ -680,6 +690,7 @@ export async function updateBackup(patch: {
   enabled: boolean;
   interval: BackupInterval;
   hour: number;
+  minute: number;
   weekday: number;
   month_day: number;
   keep_count: number;

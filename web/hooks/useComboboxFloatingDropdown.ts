@@ -10,15 +10,33 @@ export type ComboboxDropdownPos = {
   flipUp: boolean;
 };
 
+type WidthMode = 'content' | 'page';
+
 type Options = {
   open: boolean;
   panelRef: RefObject<HTMLElement | null>;
   bottomSelectors?: string[];
   /** 为 true 时把 add-form 内保存按钮当作底部遮挡 */
   clipToAddForm?: boolean;
+  /** content=页面内容区（外层宽度减 padding，候选框默认）；page=整页容器（日期/月份选择器） */
+  widthMode?: WidthMode;
 };
 
 const GLOBAL_BOTTOM_SELECTORS = ['.mobile-tab-nav'];
+
+function pageBounds(pageContainer: Element, mode: WidthMode): { left: number; width: number } {
+  const rect = pageContainer.getBoundingClientRect();
+  if (mode === 'page') {
+    return { left: rect.left, width: rect.width };
+  }
+  const style = window.getComputedStyle(pageContainer);
+  const padL = parseFloat(style.paddingLeft) || 0;
+  const padR = parseFloat(style.paddingRight) || 0;
+  return {
+    left: rect.left + padL,
+    width: Math.max(0, rect.width - padL - padR),
+  };
+}
 
 function collectBottomLimit(panelRect: DOMRect, selectors: string[], root?: ParentNode | null) {
   let bottomLimit = window.innerHeight - 16;
@@ -40,6 +58,7 @@ export function useComboboxFloatingDropdown({
   panelRef,
   bottomSelectors = GLOBAL_BOTTOM_SELECTORS,
   clipToAddForm = false,
+  widthMode = 'content',
 }: Options) {
   const [pos, setPos] = useState<ComboboxDropdownPos | null>(null);
 
@@ -48,7 +67,6 @@ export function useComboboxFloatingDropdown({
     if (!panel) return;
 
     const panelRect = panel.getBoundingClientRect();
-    const pagePadX = window.matchMedia('(min-width: 1024px)').matches ? 32 : 16;
 
     let bottomLimit = collectBottomLimit(panelRect, bottomSelectors, null);
     if (clipToAddForm) {
@@ -56,7 +74,7 @@ export function useComboboxFloatingDropdown({
       if (addForm) {
         bottomLimit = Math.min(
           bottomLimit,
-          collectBottomLimit(panelRect, ['.form-submit-wrap', '.btn-danger-block'], addForm)
+          collectBottomLimit(panelRect, ['.page-footer-actions', '.btn-danger-block'], addForm)
         );
       }
     }
@@ -76,17 +94,25 @@ export function useComboboxFloatingDropdown({
       maxHeight = Math.max(120, Math.min(spaceAbove, preferMax));
     }
 
-    const isLg = window.matchMedia('(min-width: 1024px)').matches;
-    let left = pagePadX;
-    let width = window.innerWidth - pagePadX * 2;
+    const pageContainer = panel.closest('.max-w-3xl');
+    let left: number;
+    let width: number;
+    if (pageContainer) {
+      ({ left, width } = pageBounds(pageContainer, widthMode));
+    } else {
+      const margin = 16;
+      left = margin;
+      width = window.innerWidth - margin * 2;
+    }
 
-    if (isLg) {
-      const pageContainer = panel.closest('.max-w-3xl');
-      if (pageContainer) {
-        const pageRect = pageContainer.getBoundingClientRect();
-        left = pageRect.left;
-        width = pageRect.width;
-      }
+    const margin = 8;
+    if (left < margin) {
+      width -= margin - left;
+      left = margin;
+    }
+    const maxRight = window.innerWidth - margin;
+    if (left + width > maxRight) {
+      width = Math.max(0, maxRight - left);
     }
 
     setPos({
@@ -96,7 +122,7 @@ export function useComboboxFloatingDropdown({
       left,
       width,
     });
-  }, [panelRef, bottomSelectors, clipToAddForm]);
+  }, [panelRef, bottomSelectors, clipToAddForm, widthMode]);
 
   useLayoutEffect(() => {
     if (!open) {

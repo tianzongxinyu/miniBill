@@ -332,6 +332,7 @@ export function MonthPickerField({
         onClose={close}
         role="dialog"
         aria-label="选择月份"
+        widthMode="page"
       >
         <MonthPickerPanel {...panelProps} />
       </FloatingPickerPortal>

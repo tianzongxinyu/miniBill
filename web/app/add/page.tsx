@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DatePickerField } from '@/components/ui/DatePickerField';
 import { TagCombobox } from '@/components/ui/TagCombobox';
@@ -154,20 +154,18 @@ function AddContent() {
   };
 
   const backHref = returnTo;
-  const backLabel = isEdit ? '流水列表' : '首页';
 
   if (loading) {
     return (
-      <div>
-        <BackLink href={backHref}>{backLabel}</BackLink>
+      <div className="add-form">
         <p className="text-muted text-sm">加载中…</p>
+        <PageBackLink href={backHref} />
       </div>
     );
   }
 
   return (
     <form onSubmit={submit} className="add-form">
-      <BackLink href={backHref}>{backLabel}</BackLink>
       <PageHeader title={isEdit ? '编辑流水' : '记一笔'} />
 
       {error && <p className="form-alert-error">{error}</p>}
@@ -244,12 +242,6 @@ function AddContent() {
         </div>
       </div>
 
-      <div className="form-submit-wrap">
-        <button type="submit" className="form-submit">
-          保存
-        </button>
-      </div>
-
       {isEdit && (
         <>
           <button type="button" onClick={() => setConfirmOpen(true)} className="btn-danger-block mt-3">
@@ -267,6 +259,13 @@ function AddContent() {
           />
         </>
       )}
+
+      <PageFooterActions>
+        <button type="submit" className="form-submit">
+          保存
+        </button>
+        <PageBackLink href={backHref} />
+      </PageFooterActions>
     </form>
   );
 }

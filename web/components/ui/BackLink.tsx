@@ -1,9 +1,13 @@
 import Link from 'next/link';
 
-export function BackLink({ href, children }: { href: string; children: React.ReactNode }) {
+export function PageBackLink({ href }: { href: string }) {
   return (
-    <Link href={href} className="btn-ghost inline-flex mb-5 px-0 text-sm">
-      ← {children}
+    <Link href={href} className="page-back-link">
+      返回
     </Link>
   );
+}
+
+export function PageFooterActions({ children }: { children: React.ReactNode }) {
+  return <div className="page-footer-actions">{children}</div>;
 }

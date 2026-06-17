@@ -1,7 +1,17 @@
-import { apiList, fetchUsedTransactionContacts, type Contact, type Tag } from '@/lib/api';
+import { apiList, type Contact, type Tag } from '@/lib/api';
+import { LEDGER_META_CHANGED } from '@/lib/ledgerEvents';
 
 let enabledTagsPromise: Promise<Tag[]> | null = null;
-let usedContactsPromise: Promise<Contact[]> | null = null;
+let contactsPromise: Promise<Contact[]> | null = null;
+
+export function invalidateLedgerMetaCache() {
+  enabledTagsPromise = null;
+  contactsPromise = null;
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(LEDGER_META_CHANGED, invalidateLedgerMetaCache);
+}
 
 export function fetchEnabledTagsCached(): Promise<Tag[]> {
   if (!enabledTagsPromise) {
@@ -13,12 +23,12 @@ export function fetchEnabledTagsCached(): Promise<Tag[]> {
   return enabledTagsPromise;
 }
 
-export function fetchUsedContactsCached(): Promise<Contact[]> {
-  if (!usedContactsPromise) {
-    usedContactsPromise = fetchUsedTransactionContacts().catch((err) => {
-      usedContactsPromise = null;
+export function fetchContactsCached(): Promise<Contact[]> {
+  if (!contactsPromise) {
+    contactsPromise = apiList<Contact>('/contacts').catch((err) => {
+      contactsPromise = null;
       throw err;
     });
   }
-  return usedContactsPromise;
+  return contactsPromise;
 }

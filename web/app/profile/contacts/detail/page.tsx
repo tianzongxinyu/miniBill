@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import { Amount } from '@/components/ui/Amount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -23,7 +23,6 @@ function DetailInner() {
   const id = params.get('id');
   const returnTo = params.get('returnTo');
   const backHref = safeReturnTo(returnTo, '/profile/contacts/');
-  const backLabel = backHref.startsWith('/transactions') ? '流水' : '联系人';
   const contactId = id ? Number(id) : null;
   const [c, setC] = useState<ContactDetail | null>(null);
   const [error, setError] = useState('');
@@ -85,7 +84,6 @@ function DetailInner() {
 
   return (
     <div>
-      <BackLink href={backHref}>{backLabel}</BackLink>
       <div className={`${statGrid} mb-4 items-baseline`}>
         <h1 className="page-title min-w-0 px-4">{c.name}</h1>
         <div className="w-px mx-2 sm:mx-2.5 shrink-0" aria-hidden />
@@ -147,6 +145,7 @@ function DetailInner() {
           if (!deleting) setConfirmOpen(false);
         }}
       />
+      <PageBackLink href={backHref} />
     </div>
   );
 }

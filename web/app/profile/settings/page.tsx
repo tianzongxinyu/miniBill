@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import { useSettings } from '@/components/SettingsProvider';
 import { api, type AmountColorScheme } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
@@ -45,7 +45,6 @@ function SettingsContent() {
 
   return (
     <div className="space-y-6">
-      <BackLink href="/profile/">我的</BackLink>
       {msg && <p className="text-income text-sm">{msg}</p>}
 
       <div className="notebook p-4 space-y-3">
@@ -84,6 +83,7 @@ function SettingsContent() {
         <input type="password" placeholder="新密码" className="field" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} />
         <button className="btn-primary">修改</button>
       </form>
+      <PageBackLink href="/profile/" />
     </div>
   );
 }

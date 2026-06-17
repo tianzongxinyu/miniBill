@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   exportLedgerCSV,
@@ -248,8 +248,6 @@ function DataContent() {
 
   return (
     <div className="space-y-6">
-      <BackLink href="/profile/">我的</BackLink>
-
       {msg && <p className="text-income text-sm">{msg}</p>}
       {error && <p className="text-expense text-sm">{error}</p>}
 
@@ -340,6 +338,7 @@ function DataContent() {
           if (!restoring) setPendingRestore(null);
         }}
       />
+      <PageBackLink href="/profile/" />
     </div>
   );
 }

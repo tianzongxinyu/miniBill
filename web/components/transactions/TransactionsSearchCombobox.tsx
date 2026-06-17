@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TagChip } from '@/components/ui/TagChip';
 import { ContactChip } from '@/components/ui/ContactChip';
 import { type Contact, type Tag } from '@/lib/api';
-import { fetchEnabledTagsCached, fetchUsedContactsCached } from '@/lib/metaCache';
+import { fetchContactsCached, fetchEnabledTagsCached } from '@/lib/metaCache';
+import { LEDGER_META_CHANGED } from '@/lib/ledgerEvents';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 import { useClickOutside, useComboboxKeyboard } from '@/lib/combobox-utils';
 
@@ -39,7 +40,6 @@ export function TransactionsSearchCombobox({
   const panelRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const loadedRef = useRef(false);
   const suppressOpenOnFocusRef = useRef(false);
 
   const closeDropdown = useCallback(() => {
@@ -54,19 +54,25 @@ export function TransactionsSearchCombobox({
   useClickOutside([rootRef, dropdownRef], blur);
 
   const ensureCandidates = useCallback(async () => {
-    if (loadedRef.current) return;
-    loadedRef.current = true;
     try {
       const [tagItems, contactItems] = await Promise.all([
         fetchEnabledTagsCached(),
-        fetchUsedContactsCached(),
+        fetchContactsCached(),
       ]);
       setTags(tagItems);
       setContacts(contactItems);
     } catch {
-      loadedRef.current = false;
+      // keep stale list on transient errors
     }
   }, []);
+
+  useEffect(() => {
+    const refresh = () => {
+      void ensureCandidates();
+    };
+    window.addEventListener(LEDGER_META_CHANGED, refresh);
+    return () => window.removeEventListener(LEDGER_META_CHANGED, refresh);
+  }, [ensureCandidates]);
 
   const selectedTags = useMemo(
     () => selectedTagIds.map((id) => tags.find((t) => t.id === id)).filter(Boolean) as Tag[],

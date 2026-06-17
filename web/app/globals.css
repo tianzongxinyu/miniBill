@@ -122,6 +122,32 @@ body {
     @apply transition-colors duration-200 hover:text-ink;
   }
 
+  .page-back-link {
+    @apply flex w-full items-center justify-center mt-6 py-3 rounded-2xl border border-line text-sm font-medium text-muted;
+    @apply transition-all duration-200 ease-out hover:border-accent/30 hover:text-ink;
+    @apply active:scale-[0.98];
+  }
+
+  .page-footer-actions {
+    @apply flex flex-col gap-3 mt-6;
+    animation: fade-in-up 0.4s var(--ease-out-expo) both;
+    animation-delay: 160ms;
+  }
+
+  .page-footer-actions .page-back-link {
+    @apply mt-0;
+  }
+
+  @media (min-width: 1024px) {
+    .page-footer-actions {
+      @apply flex-row;
+    }
+
+    .page-footer-actions > * {
+      @apply flex-1 min-w-0;
+    }
+  }
+
   .tag-pill {
     @apply px-3 py-1 rounded-full text-xs border border-line text-muted bg-surface;
     @apply transition-all duration-200 ease-out hover:border-accent/30;
@@ -312,13 +338,9 @@ body {
     @apply right-0;
   }
 
-  /* —— 记一笔 form —— */
+  /* —— 记一笔 / 余额登记（与 PageTransition max-w-3xl 同宽，不再内层 max-w-lg）—— */
   .add-form {
-    @apply space-y-3 pb-20 max-w-lg mx-auto;
-  }
-
-  .add-form .btn-ghost {
-    @apply mb-2;
+    @apply w-full space-y-3 pb-20;
   }
 
   .form-hero {
@@ -439,12 +461,6 @@ body {
     @apply w-full resize-none rounded-2xl border-0 bg-accent-soft/30 px-3 py-2.5 text-sm text-ink;
     @apply transition-all duration-200 ease-out;
     @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:bg-surface;
-  }
-
-  .form-submit-wrap {
-    @apply pt-0;
-    animation: fade-in-up 0.4s var(--ease-out-expo) both;
-    animation-delay: 160ms;
   }
 
   .form-submit {
@@ -608,7 +624,7 @@ body {
   }
 
   .picker-floating-panel-body {
-    @apply relative overflow-y-auto max-h-[inherit] p-4 lg:p-8;
+    @apply relative overflow-y-auto overflow-x-hidden max-h-[inherit] min-w-0 p-4 lg:p-8;
   }
 
   .date-picker-header {
@@ -829,11 +845,11 @@ body {
   }
 
   .combobox-candidates-row {
-    @apply flex flex-wrap gap-2;
+    @apply flex flex-wrap gap-2 min-w-0;
   }
 
   .combobox-candidates-floating-body {
-    @apply h-full min-h-0 flex flex-col gap-2;
+    @apply h-full min-h-0 min-w-0 flex flex-col gap-2 overflow-x-hidden;
   }
 
   .combobox-floating-close {
@@ -877,7 +893,7 @@ body {
   .fab-button,
   .form-hero,
   .form-section,
-  .form-submit-wrap,
+  .page-footer-actions,
   .date-picker-panel,
   .picker-floating-panel,
   .confirm-overlay,

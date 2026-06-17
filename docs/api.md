@@ -72,6 +72,7 @@ Base URL: `/api`
   "enabled": true,
   "interval": "daily",
   "hour": 3,
+  "minute": 0,
   "weekday": 0,
   "month_day": 1,
   "keep_count": 30,
@@ -84,7 +85,7 @@ Base URL: `/api`
 }
 ```
 
-`interval`：`daily` / `weekly` / `monthly`。`weekday` 0–6（周日=0），`month_day` 1–28。`dir_path` 由服务端 `BACKUP_DIR` 决定，客户端不可修改。
+`interval`：`daily` / `weekly` / `monthly`。`hour` 0–23，`minute` 0 / 10 / 20 / 30 / 40 / 50。`weekday` 0–6（周日=0），`month_day` 1–28。`dir_path` 由服务端 `BACKUP_DIR` 决定，客户端不可修改。
 
 ### POST `/backup/run`
 

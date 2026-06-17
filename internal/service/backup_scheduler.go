@@ -27,8 +27,11 @@ func NewBackupScheduler(backup *BackupService, system *systemdb.Store, factory *
 
 func (sch *BackupScheduler) Run(ctx context.Context) {
 	if !sch.backup.DirConfigured() {
+		log.Printf("backup scheduler: disabled (BACKUP_DIR not configured)")
 		return
 	}
+	log.Printf("backup scheduler: started (interval=%s)", sch.interval)
+	sch.tick()
 	ticker := time.NewTicker(sch.interval)
 	defer ticker.Stop()
 	for {
@@ -43,6 +46,7 @@ func (sch *BackupScheduler) Run(ctx context.Context) {
 
 func (sch *BackupScheduler) tick() {
 	if err := sch.backup.CheckDirWritable(); err != nil {
+		log.Printf("backup scheduler: backup dir not writable: %v", err)
 		return
 	}
 	users, err := sch.system.ListUsers()
@@ -58,6 +62,7 @@ func (sch *BackupScheduler) tick() {
 func (sch *BackupScheduler) runUser(u *systemdb.User) {
 	path, err := sch.factory.LedgerPath(u.ID, u.DataPath)
 	if err != nil {
+		log.Printf("backup scheduler: ledger path user=%d: %v", u.ID, err)
 		return
 	}
 	db, err := sch.factory.Open(u.ID, u.DataPath)
@@ -73,7 +78,10 @@ func (sch *BackupScheduler) runUser(u *systemdb.User) {
 	if !sch.backup.IsDue(*cfg, cfg.LastRunAt) {
 		return
 	}
-	if _, err := sch.backup.RunBackup(db, u.ID, u.Username); err != nil {
+	filename, err := sch.backup.RunBackup(db, u.ID, u.Username)
+	if err != nil {
 		log.Printf("backup scheduler: backup user=%s path=%s: %v", u.Username, path, err)
+		return
 	}
+	log.Printf("backup scheduler: backup ok user=%s file=%s", u.Username, filename)
 }

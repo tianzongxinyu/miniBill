@@ -124,7 +124,8 @@ func TestBackupPruneOldBackups(t *testing.T) {
 }
 
 func TestBackupIsDue(t *testing.T) {
-	now := time.Date(2025, 6, 15, 3, 0, 0, 0, time.FixedZone("CST", 8*3600))
+	loc := time.FixedZone("CST", 8*3600)
+	now := time.Date(2025, 6, 15, 3, 0, 0, 0, loc)
 	svc := newBackupForTest(t, t.TempDir(), now)
 	cfg := BackupConfig{
 		Enabled:  true,
@@ -132,12 +133,63 @@ func TestBackupIsDue(t *testing.T) {
 		Hour:     3,
 	}
 	if !svc.IsDue(cfg, "") {
-		t.Fatal("expected due")
+		t.Fatal("expected due at scheduled hour")
 	}
 	cfg.LastRunAt = now.Format(time.RFC3339)
 	cfg.LastStatus = BackupStatusOK
 	if svc.IsDue(cfg, cfg.LastRunAt) {
-		t.Fatal("expected not due after success today")
+		t.Fatal("expected not due after success at scheduled slot")
+	}
+}
+
+func TestBackupIsDueLaterSameDay(t *testing.T) {
+	loc := time.FixedZone("CST", 8*3600)
+	now := time.Date(2025, 6, 15, 15, 0, 0, 0, loc)
+	svc := newBackupForTest(t, t.TempDir(), now)
+	cfg := BackupConfig{Enabled: true, Interval: BackupIntervalDaily, Hour: 3}
+	if !svc.IsDue(cfg, "") {
+		t.Fatal("expected due after scheduled hour on same day")
+	}
+}
+
+func TestBackupIsDueNotDueBeforeHour(t *testing.T) {
+	loc := time.FixedZone("CST", 8*3600)
+	now := time.Date(2025, 6, 15, 2, 59, 0, 0, loc)
+	svc := newBackupForTest(t, t.TempDir(), now)
+	cfg := BackupConfig{Enabled: true, Interval: BackupIntervalDaily, Hour: 3}
+	if svc.IsDue(cfg, "") {
+		t.Fatal("expected not due before scheduled hour")
+	}
+}
+
+func TestBackupIsDueManualBeforeScheduled(t *testing.T) {
+	loc := time.FixedZone("CST", 8*3600)
+	now := time.Date(2025, 6, 15, 16, 0, 0, 0, loc)
+	svc := newBackupForTest(t, t.TempDir(), now)
+	cfg := BackupConfig{
+		Enabled:    true,
+		Interval:   BackupIntervalDaily,
+		Hour:       15,
+		LastRunAt:  time.Date(2025, 6, 15, 10, 0, 0, 0, loc).Format(time.RFC3339),
+		LastStatus: BackupStatusOK,
+	}
+	if !svc.IsDue(cfg, cfg.LastRunAt) {
+		t.Fatal("expected due when manual backup was before scheduled slot")
+	}
+}
+
+func TestBackupIsDueNotDueBeforeMinute(t *testing.T) {
+	loc := time.FixedZone("CST", 8*3600)
+	now := time.Date(2025, 6, 15, 3, 29, 0, 0, loc)
+	svc := newBackupForTest(t, t.TempDir(), now)
+	cfg := BackupConfig{Enabled: true, Interval: BackupIntervalDaily, Hour: 3, Minute: 30}
+	if svc.IsDue(cfg, "") {
+		t.Fatal("expected not due before scheduled minute")
+	}
+	now = time.Date(2025, 6, 15, 3, 30, 0, 0, loc)
+	svc.now = func() time.Time { return now }
+	if !svc.IsDue(cfg, "") {
+		t.Fatal("expected due at scheduled minute")
 	}
 }
 
@@ -152,6 +204,15 @@ func TestBackupUpdateConfigValidation(t *testing.T) {
 		KeepCount: 10,
 	}); err == nil {
 		t.Fatal("expected validation error")
+	}
+	if _, err := svc.UpdateConfig(db, BackupConfig{
+		Enabled:   true,
+		Interval:  BackupIntervalDaily,
+		Hour:      3,
+		Minute:    15,
+		KeepCount: 10,
+	}); err == nil {
+		t.Fatal("expected validation error for invalid minute")
 	}
 }
 

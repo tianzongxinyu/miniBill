@@ -248,6 +248,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
         onClose={close}
         role="dialog"
         aria-label="选择日期"
+        widthMode="page"
       >
         {panelMode === 'year' ? (
           <>

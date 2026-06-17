@@ -14,6 +14,7 @@ type backupUpdateReq struct {
 	Enabled   bool   `json:"enabled"`
 	Interval  string `json:"interval"`
 	Hour      int    `json:"hour"`
+	Minute    int    `json:"minute"`
 	Weekday   int    `json:"weekday"`
 	MonthDay  int    `json:"month_day"`
 	KeepCount int    `json:"keep_count"`
@@ -40,6 +41,7 @@ func (s *Server) updateBackup(c *gin.Context) {
 			Enabled:   req.Enabled,
 			Interval:  req.Interval,
 			Hour:      req.Hour,
+			Minute:    req.Minute,
 			Weekday:   req.Weekday,
 			MonthDay:  req.MonthDay,
 			KeepCount: req.KeepCount,

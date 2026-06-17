@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -94,7 +94,6 @@ function TagsContent() {
 
   return (
     <div>
-      <BackLink href="/profile/">我的</BackLink>
       {error && <p className="text-expense text-sm mb-4">{error}</p>}
       <form onSubmit={create} className="flex gap-2 mb-4">
         <input className="field flex-1" placeholder="新标签" value={name} onChange={(e) => setName(e.target.value)} />
@@ -162,6 +161,7 @@ function TagsContent() {
           if (!deleting) setDeleteTarget(null);
         }}
       />
+      <PageBackLink href="/profile/" />
     </div>
   );
 }

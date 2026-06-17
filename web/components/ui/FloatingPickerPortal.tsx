@@ -14,6 +14,7 @@ type FloatingPickerPortalProps = {
   bodyClassName?: string;
   role?: string;
   'aria-label'?: string;
+  widthMode?: 'content' | 'page';
 };
 
 function FloatingPickerClose({ onClose }: { onClose: () => void }) {
@@ -44,9 +45,10 @@ export function FloatingPickerPortal({
   bodyClassName = '',
   role,
   'aria-label': ariaLabel,
+  widthMode,
 }: FloatingPickerPortalProps) {
   const [mounted, setMounted] = useState(false);
-  const pos = useComboboxFloatingDropdown({ open, panelRef: anchorRef });
+  const pos = useComboboxFloatingDropdown({ open, panelRef: anchorRef, widthMode });
 
   useEffect(() => {
     setMounted(true);

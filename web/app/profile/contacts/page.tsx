@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RequireAuth } from '@/components/RequireAuth';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink } from '@/components/ui/BackLink';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -71,7 +71,6 @@ function ContactsContent() {
 
   return (
     <div>
-      <BackLink href="/profile/">我的</BackLink>
       {error && <p className="text-expense text-sm mb-4">{error}</p>}
       <form onSubmit={create} className="flex gap-2 mb-4">
         <input
@@ -114,6 +113,7 @@ function ContactsContent() {
           if (!deleting) setDeleteTarget(null);
         }}
       />
+      <PageBackLink href="/profile/" />
     </div>
   );
 }

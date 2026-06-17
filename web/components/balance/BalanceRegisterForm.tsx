@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BackLink } from '@/components/ui/BackLink';
+import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { MonthPickerField } from '@/components/ui/MonthPickerField';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -133,9 +133,9 @@ export function BalanceRegisterForm({
   if (!initialLoaded) {
     return (
       <div className="add-form">
-        <BackLink href={backHref}>返回</BackLink>
         <PageHeader title={pageTitle} />
         <p className="text-muted text-sm">加载中…</p>
+        <PageBackLink href={backHref} />
       </div>
     );
   }
@@ -148,7 +148,6 @@ export function BalanceRegisterForm({
   return (
     <>
       <form onSubmit={save} className="add-form">
-        <BackLink href={backHref}>返回</BackLink>
         <PageHeader title={pageTitle} />
 
         {error && <p className="form-alert-error">{error}</p>}
@@ -203,11 +202,12 @@ export function BalanceRegisterForm({
           <p className="text-xs text-muted px-1">该月已有登记，保存将覆盖现有余额</p>
         )}
 
-        <div className="form-submit-wrap">
+        <PageFooterActions>
           <button type="submit" className="form-submit" disabled={saving || loadingMonth}>
             {saving ? '保存中…' : isEdit ? '保存修改' : '保存登记'}
           </button>
-        </div>
+          <PageBackLink href={backHref} />
+        </PageFooterActions>
       </form>
 
       <ConfirmDialog
