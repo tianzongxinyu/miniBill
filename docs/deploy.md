@@ -11,6 +11,59 @@ docker compose up -d --build
 
 访问 http://localhost:8080
 
+## 构建并推送镜像
+
+项目根目录已提供 `.dockerignore`，构建时不会把 `data/`、`.env`、`web/node_modules/` 等打进构建上下文。
+
+**构建并打标签**（将 `yourname/minibill` 换成你的仓库地址）：
+
+```bash
+docker build -t yourname/minibill:latest .
+
+# 国内拉基础镜像或 npm 慢时可加：
+# docker build \
+#   --build-arg IMAGE_PREFIX=docker.m.daocloud.io/library/ \
+#   --build-arg NPM_REGISTRY=https://registry.npmmirror.com \
+#   -t yourname/minibill:latest .
+```
+
+**登录并推送**：
+
+```bash
+docker login
+docker push yourname/minibill:latest
+# 建议同时推送版本号 tag，便于回滚
+# docker tag yourname/minibill:latest yourname/minibill:1.0.3
+# docker push yourname/minibill:1.0.3
+```
+
+**多架构**（NAS / ARM 等）：
+
+```bash
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t yourname/minibill:latest --push .
+```
+
+推送前可在本机试跑：
+
+```bash
+docker run --rm -p 8080:8080 -v "$(pwd)/data:/data" yourname/minibill:latest
+```
+
+## 从镜像仓库部署
+
+不使用本地 `build`，改用 `docker-compose.prod.yml`：
+
+```bash
+cp .env.example .env
+# 编辑 .env，取消注释并设置 MINIBILL_IMAGE=yourname/minibill:latest
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+镜像内已内置 `STATIC_DIR`、`MIGRATIONS_*` 等路径；运行时只需挂载 `./data:/data`，并按需调整 `ALLOW_REGISTRATION`、`BACKUP_DIR` 等环境变量。JWT 密钥仍在首次启动时写入数据目录，不会 bake 进镜像。
+
 ## 环境变量
 
 | 变量 | 说明 | 默认 |

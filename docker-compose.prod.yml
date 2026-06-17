@@ -1,0 +1,15 @@
+# 从镜像仓库拉取运行（不本地 build）。用法见 docs/deploy.md
+services:
+  minibill:
+    image: ${MINIBILL_IMAGE:?请在 .env 中设置 MINIBILL_IMAGE，例如 yourname/minibill:latest}
+    ports:
+      - "8080:8080"
+    environment:
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-true}
+      DATA_DIR: /data
+      BACKUP_DIR: ${BACKUP_DIR:-/data/backups}
+      JWT_EXPIRE_DAYS: "30"
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

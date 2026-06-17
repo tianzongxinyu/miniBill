@@ -92,8 +92,10 @@ MiniBill/
 ├── scripts/                      # 辅助脚本
 │   ├── dev-backend.sh            # 本地启动后端
 │   └── build-fpk.sh              # 构建 fnOS 安装包
-├── docker-compose.yml            # Docker Compose 编排
+├── docker-compose.yml            # Docker Compose 编排（本地 build）
+├── docker-compose.prod.yml       # 从镜像仓库拉取运行
 ├── Dockerfile                    # 容器镜像构建
+├── .dockerignore                 # 构建上下文排除项
 ├── go.mod                        # Go 模块声明
 ├── go.sum                        # 依赖校验和锁定
 └── .env.example                  # 环境变量示例

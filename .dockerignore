@@ -1,0 +1,34 @@
+# 本地数据与密钥（勿打进镜像）
+data/
+.env
+*.db
+
+# Git / IDE
+.git/
+.gitignore
+.cursor/
+.idea/
+.vscode/
+.DS_Store
+
+# 前端构建产物与依赖（镜像内重新 install / build）
+web/node_modules/
+web/.next/
+web/out/
+web/tsconfig.tsbuildinfo
+
+# fnOS 打包产物（与 Docker 镜像无关）
+fnos/
+dist/
+.fnos-shared/
+*.fpk
+
+# 本地编译产物
+/minibill
+/server
+/tmp
+
+# 演示与导入文件
+demo.csv
+ledger-import.csv
+*.xlsx
