@@ -3,6 +3,7 @@ version               = 1.0.7
 display_name          = 轻账单
 desc                  = 自托管多用户个人记账，数据存 NAS 本地 SQLite。支持收支流水、标签联系人、月年统计、CSV 导入导出与定时 zip 备份，手机可装 PWA。
 arch                  = x86_64
+platform              = x86
 source                = thirdparty
 maintainer            = yixin
 distributor           = yixin

@@ -42,6 +42,14 @@ manifest_arch() {
     esac
 }
 
+manifest_platform() {
+    case "$1" in
+        x86|amd64) echo "x86" ;;
+        arm|arm64) echo "arm" ;;
+        *) error "Unknown platform: $1" ;;
+    esac
+}
+
 ensure_fnpack() {
     if [ -x "$FNPACK" ]; then
         return
@@ -77,8 +85,9 @@ MANIFEST_BACKUP=""
 update_manifest() {
     local version="$1"
     local platform="$2"
-    local arch_label
+    local arch_label platform_label
     arch_label="$(manifest_arch "$platform")"
+    platform_label="$(manifest_platform "$platform")"
     local manifest="${FNOS_DIR}/manifest"
     if [ -z "$MANIFEST_BACKUP" ]; then
         MANIFEST_BACKUP="$(mktemp)"
@@ -87,9 +96,11 @@ update_manifest() {
     if [[ "$OSTYPE" == darwin* ]]; then
         sed -i '' "s/^version[[:space:]]*=.*/version               = ${version}/" "$manifest"
         sed -i '' "s/^arch[[:space:]]*=.*/arch                  = ${arch_label}/" "$manifest"
+        sed -i '' "s/^platform[[:space:]]*=.*/platform              = ${platform_label}/" "$manifest"
     else
         sed -i "s/^version[[:space:]]*=.*/version               = ${version}/" "$manifest"
         sed -i "s/^arch[[:space:]]*=.*/arch                  = ${arch_label}/" "$manifest"
+        sed -i "s/^platform[[:space:]]*=.*/platform              = ${platform_label}/" "$manifest"
     fi
 }
 
