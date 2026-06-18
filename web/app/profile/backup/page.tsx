@@ -11,9 +11,23 @@ import {
   type BackupInterval,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
+import { OptionPickerField } from '@/components/ui/OptionPickerField';
 
 const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 const BACKUP_MINUTES = [0, 10, 20, 30, 40, 50] as const;
+const HOUR_ITEMS = Array.from({ length: 24 }, (_, i) => ({
+  value: i,
+  label: String(i).padStart(2, '0'),
+}));
+const MINUTE_ITEMS = BACKUP_MINUTES.map((m) => ({
+  value: m,
+  label: String(m).padStart(2, '0'),
+}));
+const WEEKDAY_ITEMS = WEEKDAY_LABELS.map((label, i) => ({ value: i, label }));
+const MONTH_DAY_ITEMS = Array.from({ length: 28 }, (_, i) => ({
+  value: i + 1,
+  label: String(i + 1),
+}));
 
 function formatLastRun(iso?: string): string {
   if (!iso) return '尚未备份';
@@ -156,43 +170,38 @@ function BackupContent() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs text-muted">执行时间</label>
-              <div className="flex gap-2">
-                <select
-                  className="field flex-1"
-                  disabled={scheduleDisabled}
-                  value={cfg.hour}
-                  onChange={(e) => setCfg({ ...cfg, hour: Number(e.target.value) })}
-                >
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {String(i).padStart(2, '0')} 时
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="field flex-1"
-                  disabled={scheduleDisabled}
-                  value={cfg.minute ?? 0}
-                  onChange={(e) => setCfg({ ...cfg, minute: Number(e.target.value) })}
-                >
-                  {BACKUP_MINUTES.map((m) => (
-                    <option key={m} value={m}>
-                      {String(m).padStart(2, '0')} 分
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="min-w-0 space-y-1">
+              <label className="text-xs text-muted">时</label>
+              <OptionPickerField
+                value={cfg.hour}
+                onChange={(hour) => setCfg({ ...cfg, hour })}
+                items={HOUR_ITEMS}
+                disabled={scheduleDisabled}
+                ariaLabel="选择小时"
+                panelTitle="小时"
+                gridClassName="time-unit-picker-grid-hours"
+              />
             </div>
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
+              <label className="text-xs text-muted">分</label>
+              <OptionPickerField
+                value={cfg.minute ?? 0}
+                onChange={(minute) => setCfg({ ...cfg, minute })}
+                items={MINUTE_ITEMS}
+                disabled={scheduleDisabled}
+                ariaLabel="选择分钟"
+                panelTitle="分钟"
+                gridClassName="time-unit-picker-grid"
+              />
+            </div>
+            <div className="backup-keep-count-field min-w-0 space-y-1">
               <label className="text-xs text-muted">保留份数</label>
               <input
                 type="number"
                 min={1}
                 max={365}
-                className="field w-full"
+                className="field w-full tabular-nums text-center"
                 disabled={scheduleDisabled}
                 value={cfg.keep_count}
                 onChange={(e) =>
@@ -205,36 +214,30 @@ function BackupContent() {
           {cfg.interval === 'weekly' && (
             <div className="space-y-1">
               <label className="text-xs text-muted">星期</label>
-              <select
-                className="field w-full"
-                disabled={scheduleDisabled}
+              <OptionPickerField
                 value={cfg.weekday}
-                onChange={(e) => setCfg({ ...cfg, weekday: Number(e.target.value) })}
-              >
-                {WEEKDAY_LABELS.map((label, i) => (
-                  <option key={label} value={i}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+                onChange={(weekday) => setCfg({ ...cfg, weekday })}
+                items={WEEKDAY_ITEMS}
+                disabled={scheduleDisabled}
+                ariaLabel="选择星期"
+                panelTitle="星期"
+                gridClassName="time-unit-picker-grid-weekdays"
+              />
             </div>
           )}
 
           {cfg.interval === 'monthly' && (
             <div className="space-y-1">
               <label className="text-xs text-muted">每月几号（1–28）</label>
-              <select
-                className="field w-full"
-                disabled={scheduleDisabled}
+              <OptionPickerField
                 value={cfg.month_day}
-                onChange={(e) => setCfg({ ...cfg, month_day: Number(e.target.value) })}
-              >
-                {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={d}>
-                    {d} 日
-                  </option>
-                ))}
-              </select>
+                onChange={(month_day) => setCfg({ ...cfg, month_day })}
+                items={MONTH_DAY_ITEMS}
+                disabled={scheduleDisabled}
+                ariaLabel="选择日期"
+                panelTitle="每月几号"
+                gridClassName="time-unit-picker-grid-month-days"
+              />
             </div>
           )}
 

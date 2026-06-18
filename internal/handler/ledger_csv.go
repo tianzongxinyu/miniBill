@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,11 @@ func (s *Server) exportLedgerCSV(c *gin.Context) {
 		}
 		filename := fmt.Sprintf("minibill-ledger-%s.csv", time.Now().Format("20060102"))
 		c.Header("Content-Type", "text/csv; charset=utf-8")
-		c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+		c.Header("Content-Disposition", fmt.Sprintf(
+			`attachment; filename="%s"; filename*=UTF-8''%s`,
+			filename,
+			url.PathEscape(filename),
+		))
 		c.Header("Cache-Control", "no-cache")
 		c.Data(http.StatusOK, "text/csv; charset=utf-8", buf.Bytes())
 	})

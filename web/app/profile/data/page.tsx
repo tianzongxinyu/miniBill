@@ -189,8 +189,7 @@ function DataContent() {
     setMsg('');
     setExporting(true);
     try {
-      const { message } = await exportLedgerCSV();
-      setMsg(message);
+      await exportLedgerCSV();
     } catch (err) {
       setError(formatApiError(err, '导出失败'));
     } finally {
@@ -252,11 +251,17 @@ function DataContent() {
       {error && <p className="text-expense text-sm">{error}</p>}
 
       <div className="notebook p-4 space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-2 lg:hidden">
+          <h2 className="font-medium text-sm text-ink">导出账本</h2>
+          <p className="text-xs text-muted">
+            请在 Web 浏览器（电脑）中打开轻账单，前往「我的 → 数据管理」导出 CSV。
+          </p>
+        </div>
+
+        <div className="hidden lg:block space-y-2">
           <h2 className="font-medium text-sm text-ink">导出账本</h2>
           <p className="text-xs text-muted">
             导出 CSV 含流水与月度余额；日常支出行可查阅，再次导入时由系统根据余额重算。
-            手机或飞牛 App 内导出时，请通过系统分享面板选择「存储到文件」保存到本机。
           </p>
           <button
             type="button"

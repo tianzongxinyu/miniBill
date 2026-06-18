@@ -764,6 +764,79 @@ body {
     @apply text-muted/40 pointer-events-none hover:bg-transparent;
   }
 
+  .time-unit-picker {
+    @apply relative min-w-0 flex-1;
+  }
+
+  .time-unit-picker-field {
+    @apply flex w-full items-center justify-between gap-2 py-2.5 px-3.5 rounded-2xl border border-line bg-surface/80;
+    @apply text-sm text-ink transition-all duration-150;
+    @apply hover:border-accent/30 hover:bg-surface;
+  }
+
+  .time-unit-picker-field-open {
+    @apply border-accent/30 bg-surface ring-2 ring-accent/25;
+  }
+
+  .time-unit-picker-disabled .time-unit-picker-field {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .time-unit-picker-field-value {
+    @apply flex-1 text-center font-medium tabular-nums;
+  }
+
+  .time-unit-picker-field-chevron {
+    @apply shrink-0 text-muted transition-transform duration-200;
+  }
+
+  .time-unit-picker-field-chevron-open {
+    @apply rotate-180;
+  }
+
+  .time-unit-picker-panel {
+    @apply min-w-[12rem];
+  }
+
+  .time-unit-picker-panel-title {
+    @apply mb-3 text-sm font-semibold text-ink;
+  }
+
+  .time-unit-picker-grid {
+    @apply grid grid-cols-3 gap-2;
+  }
+
+  .time-unit-picker-grid-hours {
+    @apply grid grid-cols-4 gap-2;
+  }
+
+  .time-unit-picker-grid-weekdays {
+    @apply grid grid-cols-4 gap-2;
+  }
+
+  .time-unit-picker-grid-month-days {
+    @apply grid grid-cols-7 gap-2;
+  }
+
+  .time-unit-picker-option {
+    @apply py-2 px-1 rounded-2xl text-sm text-ink border border-transparent tabular-nums;
+    @apply transition-colors duration-150 hover:bg-accent-soft/50;
+  }
+
+  .time-unit-picker-option-selected {
+    @apply bg-accent text-white font-medium hover:bg-accent/90;
+  }
+
+  .backup-keep-count-field .field {
+    -moz-appearance: textfield;
+  }
+
+  .backup-keep-count-field .field::-webkit-outer-spin-button,
+  .backup-keep-count-field .field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   .transactions-toolbar {
     @apply flex items-center gap-3;
   }

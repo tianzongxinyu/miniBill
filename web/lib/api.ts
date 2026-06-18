@@ -1,9 +1,4 @@
-import {
-  downloadBlob,
-  downloadSuccessMessage,
-  parseExportFilename,
-  type DownloadMethod,
-} from '@/lib/downloadFile';
+import { downloadBlob, parseExportFilename } from '@/lib/downloadFile';
 import { notifyLedgerMetaChanged } from '@/lib/ledgerEvents';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
@@ -743,17 +738,13 @@ export type LedgerImportResult = {
   created_contacts: number;
 };
 
-export type LedgerExportResult = {
-  method: DownloadMethod;
-  message: string;
-};
+function exportFallbackFilename(): string {
+  return `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
+}
 
-export async function exportLedgerCSV(): Promise<LedgerExportResult> {
-  const token = getToken();
-  const headers: Record<string, string> = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const res = await fetch(`${API_BASE}/ledger/export`, { headers, credentials: 'same-origin' });
+async function fetchExportResponse(headers: Record<string, string>): Promise<Response> {
+  const exportUrl = `${API_BASE}/ledger/export`;
+  const res = await fetch(exportUrl, { headers, credentials: 'same-origin' });
   if (res.status === 401) {
     logoutOnUnauthorized();
     throw new ApiError('UNAUTHORIZED', '未授权', 401);
@@ -762,17 +753,25 @@ export async function exportLedgerCSV(): Promise<LedgerExportResult> {
     const data = await res.json().catch(() => ({}));
     throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
   }
+  return res;
+}
 
+export async function exportLedgerCSV(): Promise<void> {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  if (!token) {
+    logoutOnUnauthorized();
+    throw new ApiError('UNAUTHORIZED', '未授权', 401);
+  }
+
+  const res = await fetchExportResponse(headers);
   const blob = await res.blob();
   const disposition = res.headers.get('Content-Disposition');
-  const filename =
-    parseExportFilename(
-      disposition,
-      `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`
-    );
+  const filename = parseExportFilename(disposition, exportFallbackFilename());
 
-  const method = await downloadBlob(blob, filename);
-  return { method, message: downloadSuccessMessage(method) };
+  downloadBlob(blob, filename);
 }
 
 export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {
