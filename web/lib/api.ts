@@ -1,5 +1,8 @@
 import { downloadBlob, parseExportFilename } from '@/lib/downloadFile';
 import { notifyLedgerMetaChanged } from '@/lib/ledgerEvents';
+import { getActiveLocale, getStoredLocale } from '@/lib/i18n/utils';
+import { toIntlLocale } from '@/lib/i18n/intlLocale';
+import i18n from '@/src/i18n';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
 const AUTH_FORM_PATHS = ['/auth/login', '/auth/register'];
@@ -155,8 +158,10 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   const { authRedirect = true, ...fetchOptions } = options;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(fetchOptions.headers as Record<string, string>),
   };
+  const locale = getStoredLocale() ?? getActiveLocale();
+  headers['Accept-Language'] = toIntlLocale(locale);
+  Object.assign(headers, fetchOptions.headers as Record<string, string>);
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -169,13 +174,13 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     });
   } catch {
     if (fetchOptions.signal?.aborted) {
-      throw new ApiError('ABORTED', '请求已取消', 0);
+      throw new ApiError('ABORTED', i18n.t('error.aborted'), 0);
     }
-    throw new ApiError('NETWORK_ERROR', '无法连接后端，请先启动 go run ./cmd/server', 0);
+    throw new ApiError('NETWORK_ERROR', i18n.t('error.networkError'), 0);
   }
   if (res.status === 401 && !isAuthFormRequest(path, fetchOptions.method)) {
     if (authRedirect) logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', '未授权', 401);
+    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
@@ -184,7 +189,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     if (res.status >= 500 && !data.error) {
       throw new ApiError(
         'NETWORK_ERROR',
-        '无法连接后端，请确认 go run ./cmd/server 已启动',
+        i18n.t('error.networkErrorConfirm'),
         res.status
       );
     }
@@ -201,20 +206,6 @@ export async function apiList<T>(path: string, options?: RequestInit): Promise<T
   } catch {
     return [];
   }
-}
-
-const yuanFormatter = new Intl.NumberFormat('zh-CN', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-/** 元金额格式化（千分位 + 两位小数） */
-export function formatYuan(yuan: number): string {
-  return yuanFormatter.format(yuan);
-}
-
-export function centsToYuan(cents: number): string {
-  return formatYuan(cents / 100);
 }
 
 /** 表单输入用：纯数字字符串，不含千分位（兼容 type="number"） */
@@ -643,7 +634,7 @@ export async function deleteContact(id: number): Promise<void> {
 export type AmountColorScheme = 'red_up' | 'green_up';
 
 export type Settings = {
-  default_currency: string;
+  locale: string;
   default_date_mode: string;
   amount_color_scheme: AmountColorScheme;
 };
@@ -747,7 +738,7 @@ async function fetchExportResponse(headers: Record<string, string>): Promise<Res
   const res = await fetch(exportUrl, { headers, credentials: 'same-origin' });
   if (res.status === 401) {
     logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', '未授权', 401);
+    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
@@ -763,7 +754,7 @@ export async function exportLedgerCSV(): Promise<void> {
 
   if (!token) {
     logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', '未授权', 401);
+    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
 
   const res = await fetchExportResponse(headers);
@@ -790,7 +781,7 @@ export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {
   });
   if (res.status === 401) {
     logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', '未授权', 401);
+    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {

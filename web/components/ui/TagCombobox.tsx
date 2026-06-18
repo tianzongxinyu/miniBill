@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ApiError, Tag, createTag } from '@/lib/api';
 import { TagChip } from '@/components/ui/TagChip';
 import { ComboboxFloatingCandidates } from '@/components/ui/ComboboxFloatingCandidates';
@@ -23,6 +24,7 @@ export function TagCombobox({
   onChange,
   onTagsChange,
 }: TagComboboxProps) {
+  const { t } = useTranslation();
   const selectedTags = useMemo(() => {
     return selectedIds
       .map((id) => {
@@ -163,7 +165,7 @@ export function TagCombobox({
             ref={inputRef}
             type="text"
             className="combobox-input-inline"
-            placeholder={selectedTags.length === 0 ? '输入标签名' : ''}
+            placeholder={selectedTags.length === 0 ? t('tags.inputPlaceholder') : ''}
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
             onFocus={handleFocus}
@@ -203,7 +205,7 @@ export function TagCombobox({
               onClick={handleCreate}
               disabled={creating}
             >
-              + 创建「{trimmed}」
+              + {t('common.createNamed', { name: trimmed })}
             </button>
           )}
         </div>

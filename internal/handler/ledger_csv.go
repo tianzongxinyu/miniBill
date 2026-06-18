@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 )
@@ -18,7 +19,7 @@ func (s *Server) exportLedgerCSV(c *gin.Context) {
 	s.withLedger(c, func(db *sql.DB) {
 		userID := middleware.GetUserID(c)
 		var buf bytes.Buffer
-		if err := s.ledgerCSVSvc.Export(db, userID, &buf); err != nil {
+		if err := s.ledgerCSVSvc.Export(db, userID, localeFrom(c), &buf); err != nil {
 			serviceErr(c, err)
 			return
 		}
@@ -37,16 +38,16 @@ func (s *Server) exportLedgerCSV(c *gin.Context) {
 func (s *Server) importLedgerCSV(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		JSONValidation(c, "请上传 CSV 文件")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.csv_upload_required"))
 		return
 	}
 	if file.Size > service.MaxLedgerCSVImportBytes {
-		JSONValidation(c, "CSV 文件过大")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.csv_too_large"))
 		return
 	}
 	f, err := file.Open()
 	if err != nil {
-		JSONInternal(c, "无法读取文件")
+		JSONInternal(c, i18n.T(localeFromHeader(c), "error.csv_read_failed"))
 		return
 	}
 	defer f.Close()

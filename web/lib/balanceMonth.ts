@@ -1,3 +1,4 @@
+import i18n from '@/src/i18n';
 import { getCurrentYearMonth, prevMonth, type YearMonth } from '@/lib/api';
 
 /** 新增登记：1–15 日登记上月，16 日及以后登记当月。 */
@@ -13,5 +14,5 @@ export function resolveDefaultBalanceMonth(date = new Date()): YearMonth {
 }
 
 export function formatBalanceMonthLabel({ year, month }: YearMonth): string {
-  return `${year} 年 ${month} 月`;
+  return i18n.t('common.yearMonth', { year, month });
 }

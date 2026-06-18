@@ -11,6 +11,7 @@ import (
 	"github.com/minibill/minibill/internal/auth"
 	"github.com/minibill/minibill/internal/bootstrap"
 	"github.com/minibill/minibill/internal/domain"
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 )
@@ -82,12 +83,12 @@ func mapProvisionError(err error) string {
 
 func (s *Server) register(c *gin.Context) {
 	if !s.cfg.AllowRegistration {
-		JSONError(c, http.StatusForbidden, "FORBIDDEN", "注册已关闭")
+		JSONError(c, http.StatusForbidden, "FORBIDDEN", i18n.T(localeFromHeader(c), "error.registration_closed"))
 		return
 	}
 	var req credReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		JSONValidation(c, "invalid body")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.invalid_body"))
 		return
 	}
 	sys := &bootstrap.System{Store: s.system, Cfg: s.cfg, Factory: s.userFactory}
@@ -124,7 +125,7 @@ func (s *Server) login(c *gin.Context) {
 	}
 	user, err := s.system.GetByUsername(req.Username)
 	if err != nil || user == nil || !auth.CheckPassword(user.PasswordHash, req.Password) {
-		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", "用户名或密码错误")
+		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.invalid_credentials"))
 		return
 	}
 	remember := req.Remember == nil || *req.Remember
@@ -177,7 +178,7 @@ func (s *Server) changePassword(c *gin.Context) {
 	userID := middleware.GetUserID(c)
 	user, err := s.system.GetByID(userID)
 	if err != nil || user == nil || !auth.CheckPassword(user.PasswordHash, req.OldPassword) {
-		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", "原密码错误")
+		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.wrong_password"))
 		return
 	}
 	hash, _ := auth.HashPassword(req.NewPassword)
@@ -195,14 +196,14 @@ func (s *Server) listTags(c *gin.Context) {
 		if serviceErr(c, err) {
 			return
 		}
-		jsonItems(c, list)
+		jsonItems(c, localizeTags(list, localeFrom(c)))
 	})
 }
 
 func (s *Server) createTag(c *gin.Context) {
 	var req tagCreateReq
 	if err := c.ShouldBindJSON(&req); err != nil || req.Name == "" {
-		JSONValidation(c, "标签名必填")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.tag_name_required"))
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
@@ -211,7 +212,8 @@ func (s *Server) createTag(c *gin.Context) {
 			return
 		}
 		s.invalidateLedgerMeta(c)
-		c.JSON(http.StatusCreated, tag)
+		tags := localizeTags([]service.Tag{*tag}, localeFrom(c))
+		c.JSON(http.StatusCreated, tags[0])
 	})
 }
 
@@ -235,7 +237,8 @@ func (s *Server) updateTag(c *gin.Context) {
 			return
 		}
 		s.invalidateLedgerMeta(c)
-		c.JSON(http.StatusOK, tag)
+		tags := localizeTags([]service.Tag{*tag}, localeFrom(c))
+		c.JSON(http.StatusOK, tags[0])
 	})
 }
 
@@ -280,7 +283,7 @@ func (s *Server) getContact(c *gin.Context) {
 func (s *Server) createContact(c *gin.Context) {
 	var req service.Contact
 	if err := c.ShouldBindJSON(&req); err != nil || req.Name == "" {
-		JSONValidation(c, "姓名必填")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.contact_name_required"))
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
@@ -351,6 +354,7 @@ func (s *Server) listTransactions(c *gin.Context) {
 		if err := s.txSvc.EnrichBatchWithMeta(db, meta, page.Items); err != nil {
 			_ = s.txSvc.EnrichBatch(db, page.Items)
 		}
+		_ = localizeTxList(db, page.Items, localeFrom(c))
 		c.JSON(http.StatusOK, gin.H{
 			"items":       orEmptySlice(page.Items),
 			"next_cursor": page.NextCursor,
@@ -370,6 +374,7 @@ func (s *Server) getTransaction(c *gin.Context) {
 			return
 		}
 		_ = s.txSvc.Enrich(db, tx)
+		_ = localizeTx(db, tx, localeFrom(c))
 		c.JSON(http.StatusOK, tx)
 	})
 }

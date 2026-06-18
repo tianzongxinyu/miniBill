@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/components/AuthProvider';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { AppLogo } from '@/components/ui/AppLogo';
-import { APP_NAME } from '@/lib/appMeta';
 
 const SIDEBAR_KEY = 'sidebar-collapsed';
 const EXPANDED_W = 'lg:ml-64';
@@ -17,22 +17,26 @@ function readSidebarCollapsed(): boolean {
   return localStorage.getItem(SIDEBAR_KEY) === '1';
 }
 
-const tabs = [
-  { href: '/', label: '首页', icon: HomeIcon },
-  { href: '/transactions/', label: '流水', icon: ListIcon },
-  { href: '/stats/', label: '统计', icon: ChartIcon },
-  { href: '/profile/', label: '我的', icon: UserIcon },
-];
-
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/';
   return pathname === href || pathname.startsWith(href.replace(/\/$/, ''));
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(readSidebarCollapsed);
+
+  const tabs = useMemo(
+    () => [
+      { href: '/', label: t('nav.home'), icon: HomeIcon },
+      { href: '/transactions/', label: t('nav.transactions'), icon: ListIcon },
+      { href: '/stats/', label: t('nav.stats'), icon: ChartIcon },
+      { href: '/profile/', label: t('nav.profile'), icon: UserIcon },
+    ],
+    [t]
+  );
 
   const toggleSidebar = () => {
     setCollapsed((v) => {
@@ -63,26 +67,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <AppLogo size="sm" priority />
             {!collapsed && (
               <div className="min-w-0 animate-fade-in">
-                <div className="text-[16px] font-semibold tracking-tight text-ink">{APP_NAME}</div>
-                <div className="text-[11px] text-muted mt-0.5">个人记账本</div>
+                <div className="text-[16px] font-semibold tracking-tight text-ink">{t('app.name')}</div>
+                <div className="text-[11px] text-muted mt-0.5">{t('app.subtitle')}</div>
               </div>
             )}
           </div>
         </div>
 
         <nav className={`flex-1 space-y-1 ${collapsed ? 'px-2' : 'px-3'}`}>
-          {tabs.map((t) => {
-            const active = isActive(pathname, t.href);
-            const Icon = t.icon;
+          {tabs.map((tab) => {
+            const active = isActive(pathname, tab.href);
+            const Icon = tab.icon;
             return (
               <Link
-                key={t.href}
-                href={t.href}
-                title={collapsed ? t.label : undefined}
+                key={tab.href}
+                href={tab.href}
+                title={collapsed ? tab.label : undefined}
                 className={`${active ? 'nav-item-active' : 'nav-item'} ${collapsed ? 'justify-center px-0' : ''}`}
               >
                 <Icon active={active} />
-                {!collapsed && <span className="truncate">{t.label}</span>}
+                {!collapsed && <span className="truncate">{tab.label}</span>}
               </Link>
             );
           })}
@@ -101,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     onClick={logout}
                     className="text-[12px] text-muted hover:text-accent transition-colors duration-200 mt-0.5"
                   >
-                    退出登录
+                    {t('nav.logout')}
                   </button>
                 </div>
               </div>
@@ -110,7 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={logout}
-              title={`${user?.username} · 退出`}
+              title={t('common.logoutTitle', { username: user?.username ?? '' })}
               className="w-full flex justify-center py-2 rounded-2xl hover:bg-accent-soft/50 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-accent-soft flex items-center justify-center text-[12px] font-medium text-accent uppercase">
@@ -122,11 +126,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={toggleSidebar}
-            title={collapsed ? '展开侧栏' : '折叠侧栏'}
+            title={collapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
             className={`mt-2 w-full flex items-center gap-2 py-2 rounded-2xl text-muted hover:text-accent hover:bg-accent-soft/50 transition-all duration-200 ${collapsed ? 'justify-center' : 'px-3'}`}
           >
             <CollapseIcon collapsed={collapsed} />
-            {!collapsed && <span className="text-[12px]">收起侧栏</span>}
+            {!collapsed && <span className="text-[12px]">{t('nav.collapseSidebarLabel')}</span>}
           </button>
         </div>
       </aside>
@@ -136,13 +140,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md border-t border-line flex justify-around py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-50">
-        {tabs.map((t) => {
-          const active = isActive(pathname, t.href);
-          const Icon = t.icon;
+        {tabs.map((tab) => {
+          const active = isActive(pathname, tab.href);
+          const Icon = tab.icon;
           return (
             <Link
-              key={t.href}
-              href={t.href}
+              key={tab.href}
+              href={tab.href}
               className={`flex flex-col items-center gap-0.5 text-[10px] px-4 py-1.5 rounded-2xl transition-all duration-200 ${
                 active
                   ? 'text-accent font-medium bg-accent-soft'
@@ -150,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               }`}
             >
               <Icon active={active} />
-              {t.label}
+              {tab.label}
             </Link>
           );
         })}

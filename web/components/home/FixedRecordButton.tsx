@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 function PlusIcon() {
   return (
@@ -21,6 +22,7 @@ function BalanceIcon() {
 }
 
 export function FixedRecordButton() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,11 +36,11 @@ export function FixedRecordButton() {
           <div className="fab-glow" />
           <span className="fab-button">
             <PlusIcon />
-            <span>记一笔</span>
+            <span>{t('add.createTitle')}</span>
           </span>
           <span className="fab-button fab-button-secondary">
             <BalanceIcon />
-            <span>余额登记</span>
+            <span>{t('balance.registerButton')}</span>
           </span>
         </div>
       </div>
@@ -49,11 +51,11 @@ export function FixedRecordButton() {
               <div className="fab-glow" aria-hidden />
               <Link href="/add/?returnTo=/" className="fab-button">
                 <PlusIcon />
-                <span>记一笔</span>
+                <span>{t('add.createTitle')}</span>
               </Link>
               <Link href="/balance/?returnTo=/" className="fab-button fab-button-secondary">
                 <BalanceIcon />
-                <span>余额登记</span>
+                <span>{t('balance.registerButton')}</span>
               </Link>
             </div>
           </div>,

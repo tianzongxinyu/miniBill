@@ -7,17 +7,20 @@ import {
   updateSettings as putSettings,
   type Settings,
 } from '@/lib/api';
+import { loadLocale, takeExplicitLocale, type Locale } from '@/lib/i18n/utils';
 import { useAuth } from '@/components/AuthProvider';
 
 type SettingsCtx = {
   settings: Settings;
   scheme: AmountColorScheme;
+  locale: string;
   loading: boolean;
   updateSettings: (next: Settings) => Promise<void>;
+  setLocale: (locale: Locale) => void;
 };
 
 const defaultSettings: Settings = {
-  default_currency: 'CNY',
+  locale: 'zh-Hans',
   default_date_mode: 'today',
   amount_color_scheme: DEFAULT_AMOUNT_COLOR_SCHEME,
 };
@@ -39,8 +42,29 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     setLoading(true);
     fetchSettings()
-      .then((data) => {
-        if (!cancelled) setSettings(data);
+      .then(async (data) => {
+        if (cancelled) return;
+        const explicit = takeExplicitLocale();
+        if (explicit && explicit !== data.locale) {
+          try {
+            const saved = await putSettings({ ...data, locale: explicit });
+            if (!cancelled) {
+              setSettings(saved);
+              await loadLocale(saved.locale);
+            }
+            return;
+          } catch {
+            if (!cancelled) {
+              setSettings({ ...data, locale: explicit });
+              await loadLocale(explicit);
+            }
+            return;
+          }
+        }
+        if (!cancelled) {
+          setSettings(data);
+          await loadLocale(explicit ?? data.locale);
+        }
       })
       .catch(() => {
         if (!cancelled) setSettings(defaultSettings);
@@ -57,16 +81,24 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const updateSettings = useCallback(async (next: Settings) => {
     const saved = await putSettings(next);
     setSettings(saved);
+    await loadLocale(saved.locale);
+  }, []);
+
+  const setLocale = useCallback((locale: Locale) => {
+    void loadLocale(locale);
+    setSettings((prev) => ({ ...prev, locale }));
   }, []);
 
   const value = useMemo(
     () => ({
       settings,
       scheme: settings.amount_color_scheme,
+      locale: settings.locale,
       loading,
       updateSettings,
+      setLocale,
     }),
-    [settings, loading, updateSettings]
+    [settings, loading, updateSettings, setLocale]
   );
 
   return (

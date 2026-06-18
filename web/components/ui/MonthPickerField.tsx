@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClickOutside } from '@/lib/combobox-utils';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
@@ -12,8 +13,8 @@ function yearPageStart(y: number): number {
   return Math.floor((y - 1) / YEARS_PER_PAGE) * YEARS_PER_PAGE + 1;
 }
 
-function formatDisplay({ year, month }: YearMonth): string {
-  return `${year} 年 ${month} 月`;
+function formatDisplay({ year, month }: YearMonth, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  return t('common.yearMonth', { year, month });
 }
 
 type MonthPickerFieldProps = {
@@ -66,7 +67,8 @@ function MonthPickerPanel({
   onOpenYearView,
   onSelectMonth,
   onSelectYear,
-}: MonthPickerPanelProps) {
+  t,
+}: MonthPickerPanelProps & { t: (key: string, opts?: Record<string, unknown>) => string }) {
   if (panelMode === 'year') {
     return (
       <>
@@ -76,7 +78,7 @@ function MonthPickerPanel({
             className="month-picker-nav"
             onClick={onPrevYearPage}
             disabled={prevYearPageDisabled}
-            aria-label="上一组年份"
+            aria-label={t('picker.prevYearGroup')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
@@ -90,7 +92,7 @@ function MonthPickerPanel({
             className="month-picker-nav"
             onClick={onNextYearPage}
             disabled={nextYearPageDisabled}
-            aria-label="下一组年份"
+            aria-label={t('picker.nextYearGroup')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 18l6-6-6-6" />
@@ -134,7 +136,7 @@ function MonthPickerPanel({
           className="month-picker-nav"
           onClick={onPrevYear}
           disabled={prevYearDisabled}
-          aria-label="上一年"
+          aria-label={t('picker.prevYear')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -145,14 +147,14 @@ function MonthPickerPanel({
           className="month-picker-title tabular-nums hover:text-accent transition-colors border-0 bg-transparent cursor-pointer p-0"
           onClick={onOpenYearView}
         >
-          {viewYear} 年
+          {t('common.yearOnly', { year: viewYear })}
         </button>
         <button
           type="button"
           className="month-picker-nav"
           onClick={onNextYear}
           disabled={nextYearDisabled}
-          aria-label="下一年"
+          aria-label={t('picker.nextYear')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 18l6-6-6-6" />
@@ -181,7 +183,7 @@ function MonthPickerPanel({
               onClick={() => onSelectMonth(m)}
               disabled={monthDisabled}
             >
-              {m} 月
+              {t('common.monthOnly', { month: m })}
             </button>
           );
         })}
@@ -198,6 +200,7 @@ export function MonthPickerField({
   disabled,
   variant = 'compact',
 }: MonthPickerFieldProps) {
+  const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLButtonElement>(null);
   const floatingPanelRef = useRef<HTMLDivElement>(null);
@@ -317,7 +320,7 @@ export function MonthPickerField({
         aria-haspopup="dialog"
         disabled={disabled}
       >
-        <span className="month-picker-field-value tabular-nums">{formatDisplay(value)}</span>
+        <span className="month-picker-field-value tabular-nums">{formatDisplay(value, t)}</span>
         <span className={`month-picker-field-chevron${open ? ' month-picker-field-chevron-open' : ''}`} aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 9l6 6 6-6" />
@@ -331,10 +334,10 @@ export function MonthPickerField({
         panelRef={floatingPanelRef}
         onClose={close}
         role="dialog"
-        aria-label="选择月份"
+        aria-label={t('common.selectMonth')}
         widthMode="page"
       >
-        <MonthPickerPanel {...panelProps} />
+        <MonthPickerPanel {...panelProps} t={t} />
       </FloatingPickerPortal>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -18,13 +19,16 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = '确认',
-  cancelLabel = '取消',
+  confirmLabel,
+  cancelLabel,
   confirming = false,
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  const resolvedConfirm = confirmLabel ?? t('common.confirm');
+  const resolvedCancel = cancelLabel ?? t('common.cancel');
 
   useEffect(() => {
     setMounted(true);
@@ -70,10 +74,10 @@ export function ConfirmDialog({
         </p>
         <div className="confirm-actions">
           <button type="button" className="confirm-cancel" onClick={onClose} disabled={confirming}>
-            {cancelLabel}
+            {resolvedCancel}
           </button>
           <button type="button" className="confirm-confirm" onClick={onConfirm} disabled={confirming}>
-            {confirming ? '处理中…' : confirmLabel}
+            {confirming ? t('common.processing') : resolvedConfirm}
           </button>
         </div>
       </div>

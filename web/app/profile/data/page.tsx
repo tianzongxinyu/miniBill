@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { useSettings } from '@/components/SettingsProvider';
 import {
   exportLedgerCSV,
   fetchBackupFiles,
@@ -15,24 +17,8 @@ import {
   type BackupFilesPage,
   type LedgerImportResult,
 } from '@/lib/api';
+import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import { formatApiError } from '@/lib/errors';
-
-function formatImportSummary(r: LedgerImportResult): string {
-  const parts = [
-    `流水 ${r.imported_transactions} 条`,
-    `月度余额 ${r.imported_balances} 条`,
-  ];
-  if (r.skipped_daily_expense > 0) {
-    parts.push(`跳过日常支出 ${r.skipped_daily_expense} 条`);
-  }
-  if (r.created_tags > 0) {
-    parts.push(`新建标签 ${r.created_tags} 个`);
-  }
-  if (r.created_contacts > 0) {
-    parts.push(`新建联系人 ${r.created_contacts} 个`);
-  }
-  return parts.join('，');
-}
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -40,16 +26,17 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function formatModifiedAt(iso: string): string {
+function formatModifiedAt(iso: string, locale: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleString('zh-CN', { hour12: false });
+  return d.toLocaleString(toIntlLocale(locale), { hour12: false });
 }
 
 function BackupPickerDialog({
   open,
   loading,
   backupPage,
+  locale,
   onRefresh,
   onSelect,
   onClose,
@@ -57,10 +44,12 @@ function BackupPickerDialog({
   open: boolean;
   loading: boolean;
   backupPage: BackupFilesPage | null;
+  locale: string;
   onRefresh: () => void;
   onSelect: (item: BackupFileInfo) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -93,24 +82,24 @@ function BackupPickerDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="backup-picker-title" className="confirm-title">
-          选择备份文件
+          {t('data.selectBackup')}
         </h2>
         {backupPage?.user_dir && (
-          <p className="text-xs text-muted break-all mt-2">目录：{backupPage.user_dir}</p>
+          <p className="text-xs text-muted break-all mt-2">{t('common.directory', { path: backupPage.user_dir })}</p>
         )}
         <div className="mt-3 max-h-[min(50vh,320px)] overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-muted py-4 text-center">加载中…</p>
+            <p className="text-sm text-muted py-4 text-center">{t('common.loading')}</p>
           ) : !backupPage?.dir_configured ? (
             <p className="text-sm text-muted py-2">
-              备份目录未配置，请先在
+              {t('data.backupDirNotConfigured')}
               <Link href="/profile/backup/" className="text-accent mx-1 underline underline-offset-2">
-                备份管理
+                {t('profile.backup')}
               </Link>
-              中完成目录授权。
+              {t('data.backupDirNotConfiguredSuffix')}
             </p>
           ) : backupPage.items.length === 0 ? (
-            <p className="text-sm text-muted py-4 text-center">暂无备份文件</p>
+            <p className="text-sm text-muted py-4 text-center">{t('data.noBackups')}</p>
           ) : (
             <ul className="divide-y divide-line/60 rounded-2xl border border-line/80 overflow-hidden">
               {backupPage.items.map((item) => (
@@ -122,7 +111,7 @@ function BackupPickerDialog({
                   >
                     <div className="text-sm text-ink truncate">{item.filename}</div>
                     <div className="text-xs text-muted mt-0.5 tabular-nums">
-                      {formatModifiedAt(item.modified_at)} · {formatFileSize(item.size)}
+                      {formatModifiedAt(item.modified_at, locale)} · {formatFileSize(item.size)}
                     </div>
                   </button>
                 </li>
@@ -132,7 +121,7 @@ function BackupPickerDialog({
         </div>
         <div className="confirm-actions mt-4">
           <button type="button" className="confirm-cancel" onClick={onClose}>
-            取消
+            {t('common.cancel')}
           </button>
           <button
             type="button"
@@ -140,7 +129,7 @@ function BackupPickerDialog({
             disabled={loading}
             onClick={onRefresh}
           >
-            刷新
+            {t('common.refresh')}
           </button>
         </div>
       </div>
@@ -150,6 +139,8 @@ function BackupPickerDialog({
 }
 
 function DataContent() {
+  const { t, i18n } = useTranslation();
+  const { locale } = useSettings();
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
@@ -163,6 +154,26 @@ function DataContent() {
   const [pendingRestore, setPendingRestore] = useState<BackupFileInfo | null>(null);
   const [restoring, setRestoring] = useState(false);
 
+  const formatImportSummary = useCallback(
+    (r: LedgerImportResult): string => {
+      const parts = [
+        t('data.importSummaryTransactions', { count: r.imported_transactions }),
+        t('data.importSummaryBalances', { count: r.imported_balances }),
+      ];
+      if (r.skipped_daily_expense > 0) {
+        parts.push(t('data.importSummarySkippedDaily', { count: r.skipped_daily_expense }));
+      }
+      if (r.created_tags > 0) {
+        parts.push(t('data.importSummaryCreatedTags', { count: r.created_tags }));
+      }
+      if (r.created_contacts > 0) {
+        parts.push(t('data.importSummaryCreatedContacts', { count: r.created_contacts }));
+      }
+      return parts.join(i18n.language.startsWith('zh') ? '，' : ', ');
+    },
+    [t, i18n.language]
+  );
+
   const loadBackupFiles = useCallback(async () => {
     setBackupLoading(true);
     try {
@@ -170,12 +181,12 @@ function DataContent() {
       setBackupPage(page);
       return page;
     } catch (err) {
-      setError(formatApiError(err, '加载备份列表失败'));
+      setError(formatApiError(err, t('data.loadBackupListFailed')));
       return null;
     } finally {
       setBackupLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const openRestorePicker = async () => {
     setError('');
@@ -191,7 +202,7 @@ function DataContent() {
     try {
       await exportLedgerCSV();
     } catch (err) {
-      setError(formatApiError(err, '导出失败'));
+      setError(formatApiError(err, t('data.exportFailed')));
     } finally {
       setExporting(false);
     }
@@ -213,9 +224,9 @@ function DataContent() {
     setMsg('');
     try {
       const result = await importLedgerCSV(pendingFile);
-      setMsg(`导入完成：${formatImportSummary(result)}`);
+      setMsg(t('data.importComplete', { summary: formatImportSummary(result) }));
     } catch (err) {
-      setError(formatApiError(err, '导入失败'));
+      setError(formatApiError(err, t('data.importFailed')));
     } finally {
       setImporting(false);
       setPendingFile(null);
@@ -234,9 +245,9 @@ function DataContent() {
     setMsg('');
     try {
       const result = await restoreFromBackup(pendingRestore.filename);
-      setMsg(`已从备份恢复：${formatImportSummary(result)}`);
+      setMsg(t('data.restoreComplete', { summary: formatImportSummary(result) }));
     } catch (err) {
-      setError(formatApiError(err, '恢复失败'));
+      setError(formatApiError(err, t('data.restoreFailed')));
     } finally {
       setRestoring(false);
       setPendingRestore(null);
@@ -252,32 +263,26 @@ function DataContent() {
 
       <div className="notebook p-4 space-y-4">
         <div className="space-y-2 lg:hidden">
-          <h2 className="font-medium text-sm text-ink">导出账本</h2>
-          <p className="text-xs text-muted">
-            请在 Web 浏览器（电脑）中打开轻账单，前往「我的 → 数据管理」导出 CSV。
-          </p>
+          <h2 className="font-medium text-sm text-ink">{t('data.exportTitle')}</h2>
+          <p className="text-xs text-muted">{t('data.exportMobileHint')}</p>
         </div>
 
         <div className="hidden lg:block space-y-2">
-          <h2 className="font-medium text-sm text-ink">导出账本</h2>
-          <p className="text-xs text-muted">
-            导出 CSV 含流水与月度余额；日常支出行可查阅，再次导入时由系统根据余额重算。
-          </p>
+          <h2 className="font-medium text-sm text-ink">{t('data.exportTitle')}</h2>
+          <p className="text-xs text-muted">{t('data.exportDescription')}</p>
           <button
             type="button"
             className="btn-primary"
             disabled={exporting}
             onClick={() => void onExport()}
           >
-            {exporting ? '导出中…' : '导出 CSV'}
+            {exporting ? t('data.exporting') : t('data.exportCsv')}
           </button>
         </div>
 
         <div className="border-t border-line pt-4 space-y-2">
-          <h2 className="font-medium text-sm text-ink">导入账本（CSV）</h2>
-          <p className="text-xs text-muted">
-            覆盖导入：将清空现有流水与月度余额后写入文件内容。标签与联系人不存在时会自动创建。
-          </p>
+          <h2 className="font-medium text-sm text-ink">{t('data.importTitle')}</h2>
+          <p className="text-xs text-muted">{t('data.importDescription')}</p>
           <input
             ref={fileRef}
             type="file"
@@ -291,22 +296,20 @@ function DataContent() {
             disabled={importing || restoring}
             onClick={() => fileRef.current?.click()}
           >
-            {importing ? '导入中…' : '选择 CSV 文件'}
+            {importing ? t('data.importing') : t('data.selectCsv')}
           </button>
         </div>
 
         <div className="border-t border-line pt-4 space-y-2">
-          <h2 className="font-medium text-sm text-ink">从备份恢复</h2>
-          <p className="text-xs text-muted">
-            从 NAS 备份目录选择 zip 备份包覆盖恢复账本（与 CSV 导入相同，不可撤销）。
-          </p>
+          <h2 className="font-medium text-sm text-ink">{t('data.restoreTitle')}</h2>
+          <p className="text-xs text-muted">{t('data.restoreDescription')}</p>
           <button
             type="button"
             className="btn-segment px-4"
             disabled={restoreDisabled}
             onClick={() => void openRestorePicker()}
           >
-            {restoring ? '恢复中…' : '恢复'}
+            {restoring ? t('data.restoring') : t('data.restore')}
           </button>
         </div>
       </div>
@@ -315,6 +318,7 @@ function DataContent() {
         open={backupPickerOpen}
         loading={backupLoading}
         backupPage={backupPage}
+        locale={locale}
         onRefresh={() => void loadBackupFiles()}
         onSelect={onSelectBackup}
         onClose={() => setBackupPickerOpen(false)}
@@ -322,9 +326,9 @@ function DataContent() {
 
       <ConfirmDialog
         open={pendingFile !== null}
-        title="确认覆盖导入"
-        message={`将清空现有流水与月度余额，并导入「${pendingFile?.name ?? ''}」。此操作不可撤销。`}
-        confirmLabel="确认导入"
+        title={t('data.confirmImportTitle')}
+        message={t('data.confirmImportMessage', { filename: pendingFile?.name ?? '' })}
+        confirmLabel={t('data.confirmImport')}
         confirming={importing}
         onConfirm={() => void onConfirmImport()}
         onClose={() => {
@@ -334,9 +338,9 @@ function DataContent() {
 
       <ConfirmDialog
         open={pendingRestore !== null}
-        title="确认从备份恢复"
-        message={`将清空现有流水与月度余额，并从备份「${pendingRestore?.filename ?? ''}」恢复。此操作不可撤销。`}
-        confirmLabel="确认恢复"
+        title={t('data.confirmRestoreTitle')}
+        message={t('data.confirmRestoreMessage', { filename: pendingRestore?.filename ?? '' })}
+        confirmLabel={t('data.confirmRestore')}
         confirming={restoring}
         onConfirm={() => void onConfirmRestore()}
         onClose={() => {

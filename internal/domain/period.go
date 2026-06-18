@@ -66,20 +66,16 @@ func NextMonth(ym YearMonth) YearMonth {
 }
 
 const DailyExpenseTagName = "日常支出"
+const DailyExpensePresetKey = "daily_expense"
 
 // 系统预设标签须与 userdb.PresetTags 保持一致。
 
-func HasDailyExpenseTag(tagNames []string) bool {
-	for _, n := range tagNames {
-		if n == DailyExpenseTagName {
-			return true
-		}
-	}
-	return false
+func IsDailyExpensePreset(presetKey string) bool {
+	return presetKey == DailyExpensePresetKey
 }
 
-func IsSelectableTag(name string) bool {
-	return name != DailyExpenseTagName
+func IsSelectablePresetKey(presetKey string) bool {
+	return presetKey != DailyExpensePresetKey
 }
 
 func LastDayOfMonth(year, month int) string {

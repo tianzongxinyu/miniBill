@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { compareYearMonth, nextMonth, prevMonth, type YearMonth } from '@/lib/api';
 
 function PlusIcon() {
@@ -28,10 +31,12 @@ export function TransactionsFooter({
   addHref: string;
   onMonthChange: (ym: YearMonth) => void;
 }) {
+  const { t } = useTranslation();
+
   if (loadingMore) {
     return (
       <div className="bill-list-footer">
-        <span className="bill-list-footer-text">加载中…</span>
+        <span className="bill-list-footer-text">{t('common.loading')}</span>
       </div>
     );
   }
@@ -51,12 +56,12 @@ export function TransactionsFooter({
           className="transactions-footer-nav transactions-footer-nav-prev"
           onClick={() => onMonthChange(prev)}
         >
-          上个月
+          {t('transactions.prevMonth')}
         </button>
       ) : null}
       <Link href={addHref} className="fab-button fab-button-compact">
         <PlusIcon />
-        <span>记一笔</span>
+        <span>{t('transactions.addOne')}</span>
       </Link>
       {canNext ? (
         <button
@@ -64,7 +69,7 @@ export function TransactionsFooter({
           className="transactions-footer-nav transactions-footer-nav-next"
           onClick={() => onMonthChange(next)}
         >
-          下个月
+          {t('transactions.nextMonth')}
         </button>
       ) : null}
     </div>

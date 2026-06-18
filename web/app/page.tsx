@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { MonthBillCard } from '@/components/home/MonthBillCard';
 import { FixedRecordButton } from '@/components/home/FixedRecordButton';
@@ -25,6 +26,7 @@ function HomeSkeleton() {
 }
 
 function HomeContent() {
+  const { t } = useTranslation();
   const fetchPage = useCallback(
     (cursor: string | null) => fetchMonthBills({ cursor, limit: 5 }),
     []
@@ -33,7 +35,7 @@ function HomeContent() {
   const { items, setItems, loading, loadingMore, hasMore, error, sentinelRef, loadFirst } =
     useCursorPagination<MonthBillItem>({
       fetchPage,
-      onError: (e) => formatApiError(e, '加载失败'),
+      onError: (e) => formatApiError(e, t('home.loadFailed')),
     });
 
   const refresh = useCallback(async () => {
@@ -64,7 +66,7 @@ function HomeContent() {
           }}
         >
           <p className="text-center text-[11px] uppercase tracking-widest text-muted">
-            {pulling ? '刷新中' : pullDistance >= 64 ? '松开刷新' : '下拉刷新'}
+            {pulling ? t('home.refreshing') : pullDistance >= 64 ? t('home.releaseRefresh') : t('home.pullRefresh')}
           </p>
         </div>
       )}
@@ -78,8 +80,8 @@ function HomeContent() {
         <HomeSkeleton />
       ) : items.length === 0 ? (
         <div className="bill-empty">
-          <p className="text-sm text-muted">还没有账单记录</p>
-          <p className="text-xs text-muted/80 mt-1">记一笔流水后，这里会按月汇总</p>
+          <p className="text-sm text-muted">{t('home.emptyTitle')}</p>
+          <p className="text-xs text-muted/80 mt-1">{t('home.emptyHint')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -96,9 +98,9 @@ function HomeContent() {
       )}
 
       <div ref={sentinelRef} className="bill-list-footer">
-        {loadingMore && <span className="bill-list-footer-text">加载更多</span>}
+        {loadingMore && <span className="bill-list-footer-text">{t('common.loadMore')}</span>}
         {!hasMore && items.length > 0 && !loadingMore && (
-          <span className="bill-list-footer-text">— 已到底 —</span>
+          <span className="bill-list-footer-text">{t('common.endOfListDivider')}</span>
         )}
       </div>
 

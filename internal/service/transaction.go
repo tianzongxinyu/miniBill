@@ -206,20 +206,36 @@ func scanTransactionRow(scanner interface {
 	return &tx, nil
 }
 
-func validateTransactionCore(amount int64, typ, date string, tagNames []string, now time.Time) error {
+func validateTransactionCore(amount int64, typ, date string, now time.Time) error {
 	if amount <= 0 {
-		return fmt.Errorf("%w: amount must be positive", ErrValidation)
+		return fmt.Errorf("%w: amount_positive", ErrValidation)
 	}
 	if typ != "income" && typ != "expense" {
-		return fmt.Errorf("%w: invalid type", ErrValidation)
+		return fmt.Errorf("%w: invalid_type", ErrValidation)
 	}
 	if !domain.IsDateNotAfterToday(date, now) {
-		return fmt.Errorf("%w: 日期不能晚于今天", ErrValidation)
-	}
-	if domain.HasDailyExpenseTag(tagNames) {
-		return fmt.Errorf("%w: 不可使用系统标签「日常支出」", ErrValidation)
+		return fmt.Errorf("%w: date_after_today", ErrValidation)
 	}
 	return nil
+}
+
+func (s *TransactionService) hasDailyExpenseTag(db *sql.DB, tagIDs []int64) (bool, error) {
+	if len(tagIDs) == 0 {
+		return false, nil
+	}
+	placeholders := make([]string, len(tagIDs))
+	args := make([]interface{}, len(tagIDs)+1)
+	for i, id := range tagIDs {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	args[len(tagIDs)] = domain.DailyExpensePresetKey
+	q := fmt.Sprintf(`SELECT COUNT(*) FROM tags WHERE id IN (%s) AND preset_key = ?`, strings.Join(placeholders, ","))
+	var cnt int
+	if err := db.QueryRow(q, args...).Scan(&cnt); err != nil {
+		return false, err
+	}
+	return cnt > 0, nil
 }
 
 func loadTagsForTxIDs(db *sql.DB, ids []int64) (map[int64][]TransactionTagItem, error) {
@@ -510,11 +526,14 @@ func (s *TransactionService) Delete(db *sql.DB, id int64) error {
 }
 
 func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput) error {
-	names, err := s.tagNames(db, in.TagIDs)
+	hasDE, err := s.hasDailyExpenseTag(db, in.TagIDs)
 	if err != nil {
 		return err
 	}
-	return validateTransactionCore(in.Amount, in.Type, in.TransactionDate, names, s.now())
+	if hasDE {
+		return fmt.Errorf("%w: daily_expense_tag", ErrValidation)
+	}
+	return validateTransactionCore(in.Amount, in.Type, in.TransactionDate, s.now())
 }
 
 func (s *TransactionService) tagNames(db *sql.DB, ids []int64) ([]string, error) {
@@ -566,7 +585,7 @@ func nullInt64(p *int64) interface{} {
 
 func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	rows, err := db.Query(`
-		SELECT DISTINCT g.id, g.name, g.is_system, g.enabled, g.color_bg, g.color_fg, g.usage_count
+		SELECT DISTINCT g.id, g.name, g.preset_key, g.is_system, g.enabled, g.color_bg, g.color_fg, g.usage_count
 		FROM tags g
 		JOIN transaction_tags tt ON tt.tag_id = g.id
 		WHERE g.enabled = 1
@@ -577,12 +596,11 @@ func (s *TransactionService) ListUsedTags(db *sql.DB) ([]Tag, error) {
 	defer rows.Close()
 	var list []Tag
 	for rows.Next() {
-		var t Tag
-		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount); err != nil {
+		t, err := scanTag(rows)
+		if err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount))
+		list = append(list, t)
 	}
 	return list, nil
 }

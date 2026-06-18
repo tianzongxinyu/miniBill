@@ -1,0 +1,28 @@
+{
+  "exactValues": [
+    "MiniBill",
+    "—",
+    "…",
+    "CSV",
+    "zip",
+    "PWA",
+    "NAS",
+    "Docker",
+    "red_up",
+    "green_up",
+    "color_bg"
+  ],
+  "keys": {
+    "app.name": true,
+    "common.emDash": true,
+    "common.endOfListDivider": true
+  },
+  "valuePatterns": [
+    "^YYYY-MM(-DD)?$",
+    "^go run \\./cmd/server$",
+    "^\\{\\{year\\}\\}$",
+    "^\\{\\{month\\}\\}$",
+    "^\\{\\{count\\}\\} transactions$",
+    "^\\{\\{count\\}\\} monthly balances$"
+  ]
+}

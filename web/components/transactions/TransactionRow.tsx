@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { DailyExpenseAmount } from '@/components/ui/DailyExpenseAmount';
 import { Amount } from '@/components/ui/Amount';
 import { TagChip } from '@/components/ui/TagChip';
@@ -10,18 +11,17 @@ import type { Transaction, TransactionTagItem } from '@/lib/api';
 import { contactDetailHref, transactionEditHref } from '@/lib/url';
 import { stashTransactionsScroll } from '@/lib/scroll';
 
-const DAILY_EXPENSE_TAG = '日常支出';
-
 function tagItemsFor(tx: Transaction): TransactionTagItem[] {
   if (tx.tag_items?.length) return tx.tag_items;
   return (tx.tags ?? []).map((name) => ({ id: 0, name, color_bg: '', color_fg: '' }));
 }
 
 function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
-  const isDailySystem =
-    tx.is_system || (tx.tags?.includes(DAILY_EXPENSE_TAG) ?? false);
+  const { t } = useTranslation();
+  const isDailySystem = tx.is_system;
   const items = tagItemsFor(tx);
   const hasMeta = items.length > 0 || Boolean(tx.contact_id && tx.contact_name);
+  const emDash = t('common.emDash');
 
   return (
     <div className="flex justify-between gap-4 items-start">
@@ -30,8 +30,8 @@ function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
         <div className="mt-1 min-h-[1.25rem]">
           {hasMeta ? (
             <div className="flex flex-wrap items-center gap-1.5">
-              {items.map((t) => (
-                <TagChip key={t.id ? t.id : t.name} name={t.name} colorBg={t.color_bg} />
+              {items.map((tag) => (
+                <TagChip key={tag.id ? tag.id : tag.name} name={tag.name} colorBg={tag.color_bg} />
               ))}
               {tx.contact_id && tx.contact_name && (
                 <Link
@@ -44,7 +44,7 @@ function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
               )}
             </div>
           ) : (
-            <div className="text-sm text-ink truncate">—</div>
+            <div className="text-sm text-ink truncate">{emDash}</div>
           )}
         </div>
       </div>

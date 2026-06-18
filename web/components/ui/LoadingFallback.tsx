@@ -1,5 +1,10 @@
+'use client';
+
+import { useTranslation } from 'react-i18next';
+
 export function LoadingFallback() {
-  return <p className="text-muted text-sm">加载中…</p>;
+  const { t } = useTranslation();
+  return <p className="text-muted text-sm">{t('common.loading')}</p>;
 }
 
 export function ListSkeleton({ rows = 5 }: { rows?: number }) {

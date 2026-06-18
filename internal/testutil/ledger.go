@@ -25,9 +25,9 @@ func OpenLedgerDB(t *testing.T) *sql.DB {
 	}
 	for _, name := range userdb.PresetTags {
 		bg, fg := domain.RandomTagColors()
-		_, _ = db.Exec(`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?,1,1,?,?)`, name, bg, fg)
+		_, _ = db.Exec(`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg, preset_key) VALUES (?,1,1,?,?,?)`, name, bg, fg, domain.DailyExpensePresetKey)
 	}
-	_, _ = db.Exec(`INSERT OR IGNORE INTO settings (id) VALUES (1)`)
+	_, _ = db.Exec(`INSERT OR IGNORE INTO settings (id, locale, default_currency, default_date_mode, amount_color_scheme) VALUES (1,'zh-Hans','CNY','today','red_up')`)
 	return db
 }
 

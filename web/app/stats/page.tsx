@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { StatsChartFullscreen } from '@/components/stats/StatsChartFullscreen';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
@@ -18,6 +19,7 @@ import {
 } from '@/lib/statsChartFullscreen';
 
 function StatsContent() {
+  const { t } = useTranslation();
   const inlineScrollRef = useRef<HTMLDivElement>(null);
   const fullscreenScrollRef = useRef<HTMLDivElement>(null);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
@@ -123,8 +125,8 @@ function StatsContent() {
           type="button"
           onClick={openFullscreen}
           className="absolute top-2 right-2 z-10 btn-ghost p-1.5 rounded-lg text-muted hover:text-ink"
-          aria-label="全屏查看"
-          title="全屏查看"
+          aria-label={t('stats.fullscreen')}
+          title={t('stats.fullscreen')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -200,10 +202,10 @@ function StatsContent() {
       />
 
       {(active.loadingOlder || active.loadingNewer) && (
-        <p className="text-xs text-muted mb-2">加载更多…</p>
+        <p className="text-xs text-muted mb-2">{t('stats.loadMore')}</p>
       )}
 
-      <p className="text-xs text-muted">左右滑动或拖动图表查看更早或更新的数据</p>
+      <p className="text-xs text-muted">{t('stats.scrollHint')}</p>
     </div>
   );
 }

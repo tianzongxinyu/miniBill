@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Notebook } from '@/components/ui/Notebook';
 import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
@@ -23,6 +24,7 @@ import {
 import { fetchEarliestMonth, getCurrentYearMonth, type YearMonth } from '@/lib/api';
 
 function TransactionsContent() {
+  const { t } = useTranslation();
   const params = useSearchParams();
   const urlYear = params.get('year');
   const urlMonth = params.get('month');
@@ -137,7 +139,7 @@ function TransactionsContent() {
       {list.loading ? (
         <ListSkeleton />
       ) : list.items.length === 0 ? (
-        <EmptyNotebook message={searchActive ? '无匹配流水' : '暂无流水'} />
+        <EmptyNotebook message={searchActive ? t('transactions.noMatch') : t('transactions.empty')} />
       ) : (
         <Notebook>
           {list.items.map((tx) => (

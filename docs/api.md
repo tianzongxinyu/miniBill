@@ -57,11 +57,13 @@ Base URL: `/api`
 
 ```json
 {
-  "default_currency": "CNY",
+  "locale": "zh-Hans",
   "default_date_mode": "today",
   "amount_color_scheme": "red_up"
 }
 ```
+
+`locale`：界面语言，支持 20 种 locale ID（如 `zh-Hans`、`en`、`ja`），默认 `zh-Hans`。
 
 `amount_color_scheme`：`red_up`（收入红 / 支出绿，默认）或 `green_up`（收入绿 / 支出红）。
 

@@ -1,15 +1,35 @@
-import { centsToYuan } from '@/lib/api';
+import { toIntlLocale } from '@/lib/i18n/intlLocale';
 
-export function formatTypedMoney(cents: number, type: 'income' | 'expense'): string {
+function numberFormatter(locale: string): Intl.NumberFormat {
+  return new Intl.NumberFormat(toIntlLocale(locale), {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export function formatMoneyAmount(cents: number, locale: string, abs = false): string {
+  const yuan = abs ? Math.abs(cents) / 100 : cents / 100;
+  return numberFormatter(locale).format(yuan);
+}
+
+export function formatTypedMoney(
+  cents: number,
+  type: 'income' | 'expense',
+  locale: string
+): string {
   const sign = type === 'income' ? '+' : '-';
-  return `${sign}¥${centsToYuan(cents)}`;
+  return `${sign}${formatMoneyAmount(cents, locale, true)}`;
 }
 
-export function formatSignedMoney(cents: number): string {
+export function formatSignedMoney(cents: number, locale: string): string {
   const sign = cents >= 0 ? '+' : '-';
-  return `${sign}¥${centsToYuan(Math.abs(cents))}`;
+  return `${sign}${formatMoneyAmount(cents, locale, true)}`;
 }
 
-export function formatBalanceMoney(cents: number): string {
-  return `+¥${centsToYuan(cents)}`;
+export function formatBalanceMoney(cents: number, locale: string): string {
+  return `+${formatMoneyAmount(cents, locale, true)}`;
+}
+
+export function formatPlainMoney(cents: number, locale: string): string {
+  return numberFormatter(locale).format(cents / 100);
 }

@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { MonthPickerField } from '@/components/ui/MonthPickerField';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useSettings } from '@/components/SettingsProvider';
 import {
   ApiError,
   centsToYuanInput,
@@ -41,6 +43,8 @@ export function BalanceRegisterForm({
   returnTo,
   onInitialLoaded,
 }: BalanceRegisterFormProps) {
+  const { t } = useTranslation();
+  const { locale } = useSettings();
   const router = useRouter();
   const initialTargetRef = useRef(initialTarget);
   const [selectedMonth, setSelectedMonth] = useState(initialTarget);
@@ -86,13 +90,13 @@ export function BalanceRegisterForm({
         }
       } catch (err) {
         if (err instanceof ApiError && err.code === 'ABORTED') return;
-        setError(formatApiError(err, '加载失败'));
+        setError(formatApiError(err, t('balance.loadFailed')));
       } finally {
         setLoadingMonth(false);
         if (isInitial) setInitialLoaded(true);
       }
     },
-    [onInitialLoaded]
+    [onInitialLoaded, t]
   );
 
   useEffect(() => {
@@ -115,11 +119,11 @@ export function BalanceRegisterForm({
       notifyBalanceMonths(selectedMonth.year, selectedMonth.month);
       router.replace(returnTo);
     } catch (err) {
-      setError(formatApiError(err, '保存失败'));
+      setError(formatApiError(err, t('balance.saveFailed')));
       setSaving(false);
       setConfirmOpen(false);
     }
-  }, [balance, note, returnTo, router, selectedMonth]);
+  }, [balance, note, returnTo, router, selectedMonth, t]);
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,16 +138,20 @@ export function BalanceRegisterForm({
     return (
       <div className="add-form">
         <PageHeader title={pageTitle} />
-        <p className="text-muted text-sm">加载中…</p>
+        <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
     );
   }
 
+  const monthLabel = formatBalanceMonthLabel(selectedMonth);
   const overwriteMessage =
     existingBalanceCents != null
-      ? `${formatBalanceMonthLabel(selectedMonth)}已有余额登记（${formatBalanceMoney(existingBalanceCents)}），确认覆盖？`
-      : `${formatBalanceMonthLabel(selectedMonth)}已有余额登记，确认覆盖？`;
+      ? t('balance.overwriteWithAmount', {
+          month: monthLabel,
+          amount: formatBalanceMoney(existingBalanceCents, locale),
+        })
+      : t('balance.overwriteWithoutAmount', { month: monthLabel });
 
   return (
     <>
@@ -154,7 +162,6 @@ export function BalanceRegisterForm({
 
         <div className="form-hero">
           <div className="form-hero-amount">
-            <span className="form-hero-currency text-ink/80">¥</span>
             <input
               id="balance-amount"
               type="number"
@@ -172,7 +179,7 @@ export function BalanceRegisterForm({
 
         <div className="form-details form-section-delay-1">
           <div className="form-row">
-            <div className="form-label">月份</div>
+            <div className="form-label">{t('balance.month')}</div>
             <MonthPickerField
               value={selectedMonth}
               onChange={handleMonthChange}
@@ -184,12 +191,12 @@ export function BalanceRegisterForm({
           </div>
 
           <div className="form-row form-row-start">
-            <div className="form-label">备注</div>
+            <div className="form-label">{t('balance.note')}</div>
             <textarea
               id="balance-note"
               className="form-note-field"
               rows={2}
-              placeholder="可选"
+              placeholder={t('common.optional')}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={loadingMonth || saving}
@@ -197,14 +204,14 @@ export function BalanceRegisterForm({
           </div>
         </div>
 
-        {loadingMonth && <p className="text-xs text-muted px-1">加载中…</p>}
+        {loadingMonth && <p className="text-xs text-muted px-1">{t('common.loading')}</p>}
         {needsOverwriteHint && !loadingMonth && (
-          <p className="text-xs text-muted px-1">该月已有登记，保存将覆盖现有余额</p>
+          <p className="text-xs text-muted px-1">{t('balance.overwriteHint')}</p>
         )}
 
         <PageFooterActions>
           <button type="submit" className="form-submit" disabled={saving || loadingMonth}>
-            {saving ? '保存中…' : isEdit ? '保存修改' : '保存登记'}
+            {saving ? t('balance.saving') : isEdit ? t('balance.saveChanges') : t('balance.saveRegister')}
           </button>
           <PageBackLink href={backHref} />
         </PageFooterActions>
@@ -212,9 +219,9 @@ export function BalanceRegisterForm({
 
       <ConfirmDialog
         open={confirmOpen}
-        title="覆盖已有登记"
+        title={t('balance.overwriteTitle')}
         message={overwriteMessage}
-        confirmLabel="确认覆盖"
+        confirmLabel={t('balance.confirmOverwrite')}
         confirming={saving}
         onConfirm={() => void persist()}
         onClose={() => {

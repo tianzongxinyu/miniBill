@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useLayoutEffect, useState } from 'react';
+import i18n from '@/src/i18n';
 import {
   api,
   ApiError,
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const persist = (data: AuthResponse, remember: boolean) => {
     if (!data?.token || !data?.user?.username) {
-      throw new ApiError('INVALID_AUTH', '登录响应无效', 0);
+      throw new ApiError('INVALID_AUTH', i18n.t('auth.invalidAuth'), 0);
     }
     setAuthSession(data.token, data.user, remember);
     setUser(data.user);

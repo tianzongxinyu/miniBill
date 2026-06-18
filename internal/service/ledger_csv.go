@@ -14,24 +14,47 @@ import (
 
 	"github.com/minibill/minibill/internal/cache"
 	"github.com/minibill/minibill/internal/domain"
+	"github.com/minibill/minibill/internal/i18n"
 )
 
 const (
-	ledgerCSVHeader0  = "日期"
-	ledgerCSVHeader1  = "流向"
-	ledgerCSVHeader2  = "金额"
-	ledgerCSVHeader3  = "标签"
-	ledgerCSVHeader4  = "联系人"
-	ledgerCSVHeader5  = "备注"
-	balanceNoteMarker = "月度余额"
-	utf8BOM           = "\ufeff"
-	exportFlushEvery  = 200
+	utf8BOM          = "\ufeff"
+	exportFlushEvery = 200
 
 	MaxLedgerCSVImportBytes = 50 << 20 // 50 MiB
 	MaxLedgerCSVImportRows  = 100_000
 )
 
-var ledgerCSVHeader = []string{ledgerCSVHeader0, ledgerCSVHeader1, ledgerCSVHeader2, ledgerCSVHeader3, ledgerCSVHeader4, ledgerCSVHeader5}
+func csvHeaders(locale string) []string {
+	return []string{
+		i18n.T(locale, "csv.header.date"),
+		i18n.T(locale, "csv.header.flow"),
+		i18n.T(locale, "csv.header.amount"),
+		i18n.T(locale, "csv.header.tags"),
+		i18n.T(locale, "csv.header.contact"),
+		i18n.T(locale, "csv.header.note"),
+	}
+}
+
+func balanceNoteMarker(locale string) string {
+	return i18n.T(locale, "csv.balance_marker")
+}
+
+func dailyExpenseTagAliases() []string {
+	seen := map[string]struct{}{}
+	var out []string
+	for _, loc := range i18n.CatalogLocales() {
+		name := i18n.T(loc, "tag.daily_expense")
+		if _, ok := seen[name]; !ok {
+			seen[name] = struct{}{}
+			out = append(out, name)
+		}
+	}
+	if _, ok := seen[domain.DailyExpenseTagName]; !ok {
+		out = append(out, domain.DailyExpenseTagName)
+	}
+	return out
+}
 
 type LedgerCSVService struct {
 	txSvc     *TransactionService
@@ -83,12 +106,13 @@ type exportTxRow struct {
 	contactID sql.NullInt64
 }
 
-func (s *LedgerCSVService) Export(db *sql.DB, userID int64, w io.Writer) error {
+func (s *LedgerCSVService) Export(db *sql.DB, userID int64, locale string, w io.Writer) error {
 	if _, err := io.WriteString(w, utf8BOM); err != nil {
 		return err
 	}
 	cw := csv.NewWriter(w)
-	if err := cw.Write(ledgerCSVHeader); err != nil {
+	header := csvHeaders(locale)
+	if err := cw.Write(header); err != nil {
 		return err
 	}
 	cw.Flush()
@@ -183,7 +207,7 @@ func (s *LedgerCSVService) Export(db *sql.DB, userID int64, w io.Writer) error {
 			}
 			if err := writeRow([]string{
 				formatCSVDate(row.date),
-				formatCSVFlow(row.typ),
+				formatCSVFlow(row.typ, locale),
 				formatYuanFromCents(row.amount),
 				joinTags(meta.TxTagNames(row.id)),
 				contactName,
@@ -199,7 +223,7 @@ func (s *LedgerCSVService) Export(db *sql.DB, userID int64, w io.Writer) error {
 				formatYuanFromCents(b.balance),
 				"",
 				"",
-				balanceNoteMarker,
+				balanceNoteMarker(locale),
 			}); err != nil {
 				return err
 			}
@@ -221,7 +245,7 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 	cr.FieldsPerRecord = -1
 	header, err := cr.Read()
 	if err != nil {
-		return nil, fmt.Errorf("%w: invalid csv header", ErrValidation)
+		return nil, fmt.Errorf("%w: invalid_csv_header", ErrValidation)
 	}
 	if err := validateCSVHeader(header); err != nil {
 		return nil, err
@@ -242,10 +266,10 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 		}
 		rowCount++
 		if rowCount > MaxLedgerCSVImportRows {
-			return nil, fmt.Errorf("%w: CSV 行数超过上限", ErrValidation)
+			return nil, fmt.Errorf("%w: csv_row_limit", ErrValidation)
 		}
 		if len(record) < 6 {
-			return nil, fmt.Errorf("%w: row has fewer than 6 columns", ErrValidation)
+			return nil, fmt.Errorf("%w: csv_columns", ErrValidation)
 		}
 		for len(record) < 6 {
 			record = append(record, "")
@@ -254,9 +278,9 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 		note := strings.TrimSpace(row.cols[5])
 		date := strings.TrimSpace(row.cols[0])
 
-		if note == balanceNoteMarker {
+		if note == balanceNoteMarker("zh-Hans") || note == balanceNoteMarker("en") {
 			if !isYearMonth(date) {
-				return nil, fmt.Errorf("%w: 月度余额行日期须为 YYYY-MM", ErrValidation)
+				return nil, fmt.Errorf("%w: balance_date_format", ErrValidation)
 			}
 			ym, err := parseYearMonthKey(date)
 			if err != nil {
@@ -267,10 +291,10 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 				return nil, err
 			}
 			if bal < 0 {
-				return nil, fmt.Errorf("%w: 余额不能为负", ErrValidation)
+				return nil, fmt.Errorf("%w: balance_negative", ErrValidation)
 			}
 			if _, exists := balanceByMonth[date]; exists {
-				return nil, fmt.Errorf("%w: 重复月度余额 %s", ErrValidation, date)
+				return nil, fmt.Errorf("%w: duplicate_balance", ErrValidation)
 			}
 			balanceByMonth[date] = pendingBalance{year: ym.Year, month: ym.Month, balance: bal}
 			continue
@@ -282,7 +306,7 @@ func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) 
 		}
 
 		if !isFullDate(date) {
-			return nil, fmt.Errorf("%w: 流水日期须为 YYYY-MM-DD", ErrValidation)
+			return nil, fmt.Errorf("%w: tx_date_format", ErrValidation)
 		}
 		monthKey := date[:7]
 		txBuckets[monthKey] = append(txBuckets[monthKey], row)
@@ -387,7 +411,7 @@ func (s *LedgerCSVService) parseMonthTxs(
 		for _, name := range tagNames {
 			n := strings.TrimSpace(name)
 			if n == "" {
-				return nil, fmt.Errorf("%w: 标签名不能为空", ErrValidation)
+				return nil, fmt.Errorf("%w: tag_name_empty", ErrValidation)
 			}
 			id, err := meta.ResolveTagID(tx, n, &result.CreatedTags)
 			if err != nil {
@@ -396,7 +420,7 @@ func (s *LedgerCSVService) parseMonthTxs(
 			tagIDs = append(tagIDs, id)
 		}
 
-		if err := validateImportTx(date, typ, amount, tagNames, contactID, now); err != nil {
+		if err := validateImportTx(date, typ, amount, now); err != nil {
 			return nil, err
 		}
 
@@ -480,22 +504,25 @@ func insertMonthTxs(tx *sql.Tx, txs []parsedTx) error {
 	return nil
 }
 
-func validateImportTx(date, typ string, amount int64, tagNames []string, contactID *int64, now time.Time) error {
-	_ = contactID
-	return validateTransactionCore(amount, typ, date, tagNames, now)
+func validateImportTx(date, typ string, amount int64, now time.Time) error {
+	return validateTransactionCore(amount, typ, date, now)
 }
 
 func validateCSVHeader(header []string) error {
 	if len(header) < 6 {
-		return fmt.Errorf("%w: invalid csv header", ErrValidation)
+		return fmt.Errorf("%w: invalid_csv_header", ErrValidation)
 	}
 	header[0] = strings.TrimPrefix(strings.TrimSpace(header[0]), utf8BOM)
-	for i, want := range ledgerCSVHeader {
-		if strings.TrimSpace(header[i]) != want {
-			return fmt.Errorf("%w: expected header %v", ErrValidation, ledgerCSVHeader)
+	col0 := strings.TrimSpace(header[0])
+	col1 := strings.TrimSpace(header[1])
+	// Accept zh-Hans or en headers (and aliases via catalog)
+	validSets := [][]string{csvHeaders("zh-Hans"), csvHeaders("en")}
+	for _, want := range validSets {
+		if col0 == want[0] && col1 == want[1] {
+			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("%w: invalid_csv_header", ErrValidation)
 }
 
 func splitTagNames(col string) []string {
@@ -515,19 +542,22 @@ func splitTagNames(col string) []string {
 }
 
 func tagsFieldHasDailyExpense(tagsCol string) bool {
+	aliases := dailyExpenseTagAliases()
 	for _, name := range splitTagNames(tagsCol) {
-		if name == domain.DailyExpenseTagName {
-			return true
+		for _, alias := range aliases {
+			if name == alias {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-func formatCSVFlow(typ string) string {
+func formatCSVFlow(typ, locale string) string {
 	if typ == "income" {
-		return "收入"
+		return i18n.T(locale, "csv.flow.income")
 	}
-	return "支出"
+	return i18n.T(locale, "csv.flow.expense")
 }
 
 func formatCSVDate(date string) string {
@@ -543,14 +573,20 @@ func formatCSVMonth(year, month int) string {
 }
 
 func parseCSVFlow(flow string) (string, error) {
-	switch flow {
-	case "收入":
-		return "income", nil
-	case "支出":
-		return "expense", nil
-	default:
-		return "", fmt.Errorf("%w: 流向须为收入或支出", ErrValidation)
+	flow = strings.TrimSpace(flow)
+	incomeAliases := []string{i18n.T("zh-Hans", "csv.flow.income"), i18n.T("en", "csv.flow.income"), "收入", "Income"}
+	expenseAliases := []string{i18n.T("zh-Hans", "csv.flow.expense"), i18n.T("en", "csv.flow.expense"), "支出", "Expense"}
+	for _, a := range incomeAliases {
+		if flow == a {
+			return "income", nil
+		}
 	}
+	for _, a := range expenseAliases {
+		if flow == a {
+			return "expense", nil
+		}
+	}
+	return "", fmt.Errorf("%w: flow_required", ErrValidation)
 }
 
 func formatYuanFromCents(cents int64) string {
@@ -569,11 +605,11 @@ func formatYuanFromCents(cents int64) string {
 func parseYuanToCents(s string) (int64, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
-		return 0, fmt.Errorf("%w: 金额不能为空", ErrValidation)
+		return 0, fmt.Errorf("%w: amount_required", ErrValidation)
 	}
 	f, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		return 0, fmt.Errorf("%w: invalid amount", ErrValidation)
+		return 0, fmt.Errorf("%w: invalid_amount", ErrValidation)
 	}
 	return int64(math.Round(f * 100)), nil
 }
@@ -599,7 +635,7 @@ func isFullDate(s string) bool {
 func parseYearMonthKey(key string) (domain.YearMonth, error) {
 	t, err := time.Parse("2006-01", strings.TrimSpace(key))
 	if err != nil {
-		return domain.YearMonth{}, fmt.Errorf("%w: invalid month %s", ErrValidation, key)
+		return domain.YearMonth{}, fmt.Errorf("%w: invalid_month", ErrValidation)
 	}
 	y, m, _ := t.Date()
 	return domain.YearMonth{Year: y, Month: int(m)}, nil

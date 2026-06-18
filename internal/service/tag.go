@@ -12,20 +12,36 @@ var ErrSystemTag = errors.New("system tag")
 var ErrTagInUse = errors.New("tag in use")
 
 type Tag struct {
-	ID         int64  `json:"id"`
-	Name       string `json:"name"`
-	IsSystem   bool   `json:"is_system"`
-	Enabled    bool   `json:"enabled"`
-	Selectable bool   `json:"selectable"`
-	ColorBg    string `json:"color_bg"`
-	ColorFg    string `json:"color_fg"`
-	UsageCount int64  `json:"usage_count"`
+	ID         int64   `json:"id"`
+	Name       string  `json:"name"`
+	PresetKey  *string `json:"preset_key,omitempty"`
+	IsSystem   bool    `json:"is_system"`
+	Enabled    bool    `json:"enabled"`
+	Selectable bool    `json:"selectable"`
+	ColorBg    string  `json:"color_bg"`
+	ColorFg    string  `json:"color_fg"`
+	UsageCount int64   `json:"usage_count"`
 }
 
 type TagService struct{}
 
+const tagSelectCols = `id, name, preset_key, is_system, enabled, color_bg, color_fg, usage_count`
+
+func scanTag(scanner interface {
+	Scan(dest ...interface{}) error
+}) (Tag, error) {
+	var t Tag
+	var sys, en int
+	var presetKey sql.NullString
+	err := scanner.Scan(&t.ID, &t.Name, &presetKey, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount)
+	if err != nil {
+		return Tag{}, err
+	}
+	return tagFromRow(t.ID, t.Name, presetKey, sys, en, t.ColorBg, t.ColorFg, t.UsageCount), nil
+}
+
 func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
-	q := `SELECT id, name, is_system, enabled, color_bg, color_fg, usage_count FROM tags`
+	q := `SELECT ` + tagSelectCols + ` FROM tags`
 	if enabledOnly {
 		q += ` WHERE enabled = 1`
 	}
@@ -37,12 +53,11 @@ func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
 	defer rows.Close()
 	var list []Tag
 	for rows.Next() {
-		var t Tag
-		var sys, en int
-		if err := rows.Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount); err != nil {
+		t, err := scanTag(rows)
+		if err != nil {
 			return nil, err
 		}
-		list = append(list, tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount))
+		list = append(list, t)
 	}
 	return list, nil
 }
@@ -64,10 +79,7 @@ type TagUpdateInput struct {
 }
 
 func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, error) {
-	var t Tag
-	var sys, en int
-	err := db.QueryRow(`SELECT id, name, is_system, enabled, color_bg, color_fg, usage_count FROM tags WHERE id=?`, id).
-		Scan(&t.ID, &t.Name, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount)
+	t, err := scanTag(db.QueryRow(`SELECT `+tagSelectCols+` FROM tags WHERE id=?`, id))
 	if err == sql.ErrNoRows {
 		return nil, sql.ErrNoRows
 	}
@@ -75,17 +87,21 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 		return nil, err
 	}
 	if in.Enabled == nil && in.ColorBg == nil && in.ColorFg == nil {
-		return nil, fmt.Errorf("%w: 无更新字段", ErrValidation)
+		return nil, fmt.Errorf("%w: no_update_fields", ErrValidation)
 	}
 	if in.ColorFg != nil && in.ColorBg == nil {
-		return nil, fmt.Errorf("%w: 仅支持修改 color_bg", ErrValidation)
+		return nil, fmt.Errorf("%w: color_bg_only", ErrValidation)
 	}
 	if in.ColorBg != nil {
 		if !domain.ValidateTagColorHex(*in.ColorBg) {
-			return nil, fmt.Errorf("%w: 标签背景色格式无效", ErrValidation)
+			return nil, fmt.Errorf("%w: invalid_tag_color", ErrValidation)
 		}
 		t.ColorBg = *in.ColorBg
 		t.ColorFg = domain.TagTextColor
+	}
+	en := 0
+	if t.Enabled {
+		en = 1
 	}
 	if in.Enabled != nil {
 		en = 0
@@ -93,18 +109,16 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 			en = 1
 		}
 		t.Enabled = *in.Enabled
-	} else {
-		t.Enabled = en == 1
 	}
 	_, err = db.Exec(
 		`UPDATE tags SET enabled=?, color_bg=?, color_fg=? WHERE id=?`,
-		boolToInt(t.Enabled), t.ColorBg, t.ColorFg, id,
+		en, t.ColorBg, t.ColorFg, id,
 	)
 	if err != nil {
 		return nil, err
 	}
-	result := tagFromRow(t.ID, t.Name, sys, en, t.ColorBg, t.ColorFg, t.UsageCount)
-	return &result, nil
+	t.Enabled = en == 1
+	return &t, nil
 }
 
 func boolToInt(v bool) int {

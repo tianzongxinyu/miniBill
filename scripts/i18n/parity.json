@@ -1,0 +1,12 @@
+[
+  { "frontend": "transactions.dailyExpenseTag", "backend": "tag.daily_expense" },
+  { "frontend": "csv.headerDate", "backend": "csv.header.date" },
+  { "frontend": "csv.headerFlow", "backend": "csv.header.flow" },
+  { "frontend": "csv.headerAmount", "backend": "csv.header.amount" },
+  { "frontend": "csv.headerTags", "backend": "csv.header.tags" },
+  { "frontend": "csv.headerContact", "backend": "csv.header.contact" },
+  { "frontend": "csv.headerNote", "backend": "csv.header.note" },
+  { "frontend": "csv.flowIncome", "backend": "csv.flow.income" },
+  { "frontend": "csv.flowExpense", "backend": "csv.flow.expense" },
+  { "frontend": "csv.balanceMarker", "backend": "csv.balance_marker" }
+]

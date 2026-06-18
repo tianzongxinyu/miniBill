@@ -368,10 +368,6 @@ body {
     @apply flex items-baseline justify-between gap-3 w-full;
   }
 
-  .form-hero-currency {
-    @apply text-2xl font-semibold tabular-nums select-none shrink-0;
-  }
-
   .form-section {
     @apply bg-surface border border-line/80 rounded-3xl shadow-panel overflow-visible;
     animation: fade-in-up 0.4s var(--ease-out-expo) both;

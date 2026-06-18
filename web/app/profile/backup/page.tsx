@@ -1,8 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
+import { useSettings } from '@/components/SettingsProvider';
 import {
   fetchBackup,
   runBackupNow,
@@ -10,10 +12,10 @@ import {
   type BackupConfig,
   type BackupInterval,
 } from '@/lib/api';
+import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import { formatApiError } from '@/lib/errors';
 import { OptionPickerField } from '@/components/ui/OptionPickerField';
 
-const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 const BACKUP_MINUTES = [0, 10, 20, 30, 40, 50] as const;
 const HOUR_ITEMS = Array.from({ length: 24 }, (_, i) => ({
   value: i,
@@ -23,26 +25,47 @@ const MINUTE_ITEMS = BACKUP_MINUTES.map((m) => ({
   value: m,
   label: String(m).padStart(2, '0'),
 }));
-const WEEKDAY_ITEMS = WEEKDAY_LABELS.map((label, i) => ({ value: i, label }));
 const MONTH_DAY_ITEMS = Array.from({ length: 28 }, (_, i) => ({
   value: i + 1,
   label: String(i + 1),
 }));
 
-function formatLastRun(iso?: string): string {
-  if (!iso) return '尚未备份';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleString('zh-CN', { hour12: false });
-}
+const WEEKDAY_KEYS = [
+  'backup.weekdaySun',
+  'backup.weekdayMon',
+  'backup.weekdayTue',
+  'backup.weekdayWed',
+  'backup.weekdayThu',
+  'backup.weekdayFri',
+  'backup.weekdaySat',
+] as const;
 
 function BackupContent() {
+  const { t } = useTranslation();
+  const { locale } = useSettings();
   const [cfg, setCfg] = useState<BackupConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [running, setRunning] = useState(false);
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
+
+  const weekdayItems = useMemo(
+    () => WEEKDAY_KEYS.map((key, i) => ({ value: i, label: t(key) })),
+    [t]
+  );
+
+  const formatLastRun = useCallback(
+    (iso?: string): string => {
+      if (!iso) return t('backup.neverBackedUp');
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return t('backup.lastBackup', {
+        time: d.toLocaleString(toIntlLocale(locale), { hour12: false }),
+      });
+    },
+    [t, locale]
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,11 +74,11 @@ function BackupContent() {
       const data = await fetchBackup();
       setCfg(data);
     } catch (err) {
-      setError(formatApiError(err, '加载失败'));
+      setError(formatApiError(err, t('backup.loadFailed')));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -77,9 +100,9 @@ function BackupContent() {
         keep_count: cfg.keep_count,
       });
       setCfg(saved);
-      setMsg('已保存');
+      setMsg(t('backup.saved'));
     } catch (err) {
-      setError(formatApiError(err, '保存失败'));
+      setError(formatApiError(err, t('backup.saveFailed')));
     } finally {
       setSaving(false);
     }
@@ -91,10 +114,10 @@ function BackupContent() {
     setError('');
     try {
       const result = await runBackupNow();
-      setMsg(`备份完成：${result.filename}`);
+      setMsg(t('backup.backupComplete', { filename: result.filename }));
       await load();
     } catch (err) {
-      setError(formatApiError(err, '备份失败'));
+      setError(formatApiError(err, t('backup.backupFailed')));
     } finally {
       setRunning(false);
     }
@@ -103,7 +126,7 @@ function BackupContent() {
   if (loading || !cfg) {
     return (
       <div className="space-y-6">
-        <p className="text-sm text-muted">{loading ? '加载中…' : error || '无法加载'}</p>
+        <p className="text-sm text-muted">{loading ? t('common.loading') : error || t('common.cannotLoad')}</p>
         <PageBackLink href="/profile/" />
       </div>
     );
@@ -120,22 +143,19 @@ function BackupContent() {
 
       <div className="notebook p-4 space-y-4">
         <div className="space-y-2">
-          <h2 className="font-medium text-sm text-ink">备份目录</h2>
+          <h2 className="font-medium text-sm text-ink">{t('backup.backupDir')}</h2>
           {dirReady ? (
             <p className="text-xs text-muted break-all">
-              已配置：{cfg.dir_path}
+              {t('backup.configured', { path: cfg.dir_path })}
             </p>
           ) : (
-            <p className="text-xs text-muted">
-              备份目录未配置，可先保存下方定时设置；实际备份需在飞牛 OS 应用中心 → 轻账单 → 应用设置 → 运行设置中填写备份路径，或本地 / Docker 设置环境变量
-              BACKUP_DIR。
-            </p>
+            <p className="text-xs text-muted">{t('backup.dirNotConfigured')}</p>
           )}
         </div>
 
         <div className="border-t border-line pt-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-medium text-sm text-ink">定期备份</h2>
+            <h2 className="font-medium text-sm text-ink">{t('backup.scheduledBackup')}</h2>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -143,18 +163,18 @@ function BackupContent() {
                 disabled={scheduleDisabled}
                 onChange={(e) => setCfg({ ...cfg, enabled: e.target.checked })}
               />
-              <span className="text-ink">启用</span>
+              <span className="text-ink">{t('backup.enable')}</span>
             </label>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs text-muted">周期</label>
+            <label className="text-xs text-muted">{t('backup.interval')}</label>
             <div className="flex flex-wrap gap-2">
               {(
                 [
-                  ['daily', '每日'],
-                  ['weekly', '每周'],
-                  ['monthly', '每月'],
+                  ['daily', t('backup.daily')],
+                  ['weekly', t('backup.weekly')],
+                  ['monthly', t('backup.monthly')],
                 ] as const
               ).map(([value, label]) => (
                 <button
@@ -172,31 +192,31 @@ function BackupContent() {
 
           <div className="grid grid-cols-3 gap-3">
             <div className="min-w-0 space-y-1">
-              <label className="text-xs text-muted">时</label>
+              <label className="text-xs text-muted">{t('backup.hour')}</label>
               <OptionPickerField
                 value={cfg.hour}
                 onChange={(hour) => setCfg({ ...cfg, hour })}
                 items={HOUR_ITEMS}
                 disabled={scheduleDisabled}
-                ariaLabel="选择小时"
-                panelTitle="小时"
+                ariaLabel={t('backup.selectHour')}
+                panelTitle={t('backup.hourPanel')}
                 gridClassName="time-unit-picker-grid-hours"
               />
             </div>
             <div className="min-w-0 space-y-1">
-              <label className="text-xs text-muted">分</label>
+              <label className="text-xs text-muted">{t('backup.minute')}</label>
               <OptionPickerField
                 value={cfg.minute ?? 0}
                 onChange={(minute) => setCfg({ ...cfg, minute })}
                 items={MINUTE_ITEMS}
                 disabled={scheduleDisabled}
-                ariaLabel="选择分钟"
-                panelTitle="分钟"
+                ariaLabel={t('backup.selectMinute')}
+                panelTitle={t('backup.minutePanel')}
                 gridClassName="time-unit-picker-grid"
               />
             </div>
             <div className="backup-keep-count-field min-w-0 space-y-1">
-              <label className="text-xs text-muted">保留份数</label>
+              <label className="text-xs text-muted">{t('backup.keepCount')}</label>
               <input
                 type="number"
                 min={1}
@@ -213,14 +233,14 @@ function BackupContent() {
 
           {cfg.interval === 'weekly' && (
             <div className="space-y-1">
-              <label className="text-xs text-muted">星期</label>
+              <label className="text-xs text-muted">{t('backup.weekday')}</label>
               <OptionPickerField
                 value={cfg.weekday}
                 onChange={(weekday) => setCfg({ ...cfg, weekday })}
-                items={WEEKDAY_ITEMS}
+                items={weekdayItems}
                 disabled={scheduleDisabled}
-                ariaLabel="选择星期"
-                panelTitle="星期"
+                ariaLabel={t('backup.selectWeekday')}
+                panelTitle={t('backup.weekdayPanel')}
                 gridClassName="time-unit-picker-grid-weekdays"
               />
             </div>
@@ -228,22 +248,20 @@ function BackupContent() {
 
           {cfg.interval === 'monthly' && (
             <div className="space-y-1">
-              <label className="text-xs text-muted">每月几号（1–28）</label>
+              <label className="text-xs text-muted">{t('backup.monthDay')}</label>
               <OptionPickerField
                 value={cfg.month_day}
                 onChange={(month_day) => setCfg({ ...cfg, month_day })}
                 items={MONTH_DAY_ITEMS}
                 disabled={scheduleDisabled}
-                ariaLabel="选择日期"
-                panelTitle="每月几号"
+                ariaLabel={t('backup.selectMonthDay')}
+                panelTitle={t('backup.monthDayPanel')}
                 gridClassName="time-unit-picker-grid-month-days"
               />
             </div>
           )}
 
-          <p className="text-xs text-muted">
-            备份文件格式：{'{用户名}_轻账单_备份_{yyyyMMddHHmmss}.zip'}，内含同名 CSV。
-          </p>
+          <p className="text-xs text-muted">{t('backup.fileFormat')}</p>
 
           <button
             type="button"
@@ -251,28 +269,28 @@ function BackupContent() {
             disabled={scheduleDisabled}
             onClick={() => void onSave()}
           >
-            {saving ? '保存中…' : '保存设置'}
+            {saving ? t('backup.saving') : t('backup.saveSettings')}
           </button>
         </div>
 
         <div className="border-t border-line pt-4 space-y-2">
-          <h2 className="font-medium text-sm text-ink">立即备份</h2>
-          <p className="text-xs text-muted">导出当前账本 CSV 并压缩为 zip 写入备份目录。</p>
+          <h2 className="font-medium text-sm text-ink">{t('backup.runNow')}</h2>
+          <p className="text-xs text-muted">{t('backup.runNowDescription')}</p>
           <button
             type="button"
             className="btn-segment px-4"
             disabled={runDisabled}
             onClick={() => void onRunNow()}
           >
-            {running ? '备份中…' : '立即备份'}
+            {running ? t('backup.running') : t('backup.runNow')}
           </button>
         </div>
 
         <div className="border-t border-line pt-4 space-y-1 text-xs text-muted">
-          <p>最近备份：{formatLastRun(cfg.last_run_at)}</p>
-          {cfg.last_file && <p>文件：{cfg.last_file}</p>}
+          <p>{formatLastRun(cfg.last_run_at)}</p>
+          {cfg.last_file && <p>{t('common.file', { name: cfg.last_file })}</p>}
           {cfg.last_status === 'error' && cfg.last_error && (
-            <p className="text-expense">错误：{cfg.last_error}</p>
+            <p className="text-expense">{t('common.errorPrefix', { message: cfg.last_error })}</p>
           )}
         </div>
       </div>

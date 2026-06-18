@@ -11,12 +11,12 @@ export function SignedAmount({
   cents: number;
   className?: string;
 }) {
-  const { scheme } = useSettings();
+  const { scheme, locale } = useSettings();
   const color = amountClassForSign(cents, scheme);
 
   return (
     <span className={`inline-block amount-num font-medium ${color} ${className}`}>
-      {formatSignedMoney(cents)}
+      {formatSignedMoney(cents, locale)}
     </span>
   );
 }

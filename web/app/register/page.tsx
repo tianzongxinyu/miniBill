@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/components/AuthProvider';
+import { AuthPreferencesBar } from '@/components/ui/AuthPreferencesBar';
 import { formatApiError } from '@/lib/errors';
 import { redirectToHome } from '@/lib/api';
 import { AppLogo } from '@/components/ui/AppLogo';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const { register } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -18,66 +21,76 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     if (password !== confirmPassword) {
-      setError('两次输入的密码不一致');
+      setError(t('auth.passwordMismatch'));
       return;
     }
     try {
       await register(username, password);
       redirectToHome();
     } catch (err) {
-      setError(formatApiError(err, '注册失败'));
+      setError(formatApiError(err, t('auth.registerFailed')));
     }
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <aside className="hidden lg:flex lg:w-[42%] bg-gradient-to-br from-accent to-accent-muted flex-col justify-between p-10 text-white">
         <div className="animate-fade-in-up">
           <AppLogo size="lg" className="mb-8" priority />
-          <h1 className="text-3xl font-semibold tracking-tight">开始使用</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('auth.getStarted')}</h1>
           <p className="text-white/80 mt-3 text-base leading-relaxed max-w-xs">
-            创建账号，开启你的私人账本。所有数据存储在你自己的服务器上。
+            {t('auth.registerSubtitle')}
           </p>
         </div>
-        <p className="text-xs text-white/50">用户名 3～32 位 · 密码至少 6 位</p>
+        <p className="text-xs text-white/50">{t('auth.registerHints')}</p>
       </aside>
 
-      <div className="flex-1 flex items-center justify-center p-6 bg-canvas">
-        <form onSubmit={submit} className="w-full max-w-sm animate-scale-in space-y-5">
-          <div className="hidden lg:block mb-2">
-            <h2 className="text-xl font-semibold text-ink">注册账号</h2>
-            <p className="text-sm text-muted mt-1">填写以下信息</p>
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex items-center justify-center p-6 bg-canvas">
+          <form onSubmit={submit} className="w-full max-w-sm animate-scale-in space-y-5">
+            <div className="hidden lg:block mb-2">
+              <h2 className="text-xl font-semibold text-ink">{t('auth.registerAccount')}</h2>
+              <p className="text-sm text-muted mt-1">{t('auth.fillInfo')}</p>
+            </div>
+            {error && <p className="text-expense text-sm animate-fade-in">{error}</p>}
+            <input
+              className="field"
+              placeholder={t('auth.usernamePlaceholder')}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              className="field"
+              placeholder={t('auth.passwordPlaceholder')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            <input
+              type="password"
+              className="field"
+              placeholder={t('auth.confirmPassword')}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            <button type="submit" className="btn-primary-block">
+              {t('auth.register')}
+            </button>
+            <p className="text-center text-sm text-muted">
+              {t('auth.hasAccount')}
+              <Link href="/login/" className="text-ink underline underline-offset-4 hover:opacity-70 transition-opacity ml-1">
+                {t('auth.login')}
+              </Link>
+            </p>
+          </form>
+        </div>
+        <div className="shrink-0 px-6 pb-6 bg-canvas flex justify-center">
+          <div className="w-full max-w-sm">
+            <AuthPreferencesBar />
           </div>
-          {error && <p className="text-expense text-sm animate-fade-in">{error}</p>}
-          <input
-            className="field"
-            placeholder="用户名 3～32 位"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            className="field"
-            placeholder="密码至少 6 位"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-          <input
-            type="password"
-            className="field"
-            placeholder="确认密码"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-          <button type="submit" className="btn-primary-block">
-            注册
-          </button>
-          <p className="text-center text-sm text-muted">
-            已有账号？<Link href="/login/" className="text-ink underline underline-offset-4 hover:opacity-70 transition-opacity">登录</Link>
-          </p>
-        </form>
+        </div>
       </div>
     </div>
   );

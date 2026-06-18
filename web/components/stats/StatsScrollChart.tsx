@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
 import {
   amountClassForSign,
@@ -52,26 +53,31 @@ type StatsScrollChartProps = {
   tapToInspect?: boolean;
 };
 
-const SERIES_LABELS: Record<string, string> = {
-  expense: '总支出',
-  income: '总收入',
-  net: '净收入',
-  balance: '余额',
+const SERIES_LABEL_KEYS: Record<string, string> = {
+  expense: 'stats.totalExpense',
+  income: 'stats.totalIncome',
+  net: 'stats.netIncome',
+  balance: 'stats.balance',
 };
 
-function formatTooltipValue(dataKey: string, yuan: number, scheme: AmountColorScheme) {
+function formatTooltipValue(
+  dataKey: string,
+  yuan: number,
+  scheme: AmountColorScheme,
+  locale: string
+) {
   const cents = Math.round(yuan * 100);
   switch (dataKey) {
     case 'income':
-      return { text: formatTypedMoney(cents, 'income'), className: amountClassForType('income', scheme) };
+      return { text: formatTypedMoney(cents, 'income', locale), className: amountClassForType('income', scheme) };
     case 'expense':
-      return { text: formatTypedMoney(cents, 'expense'), className: amountClassForType('expense', scheme) };
+      return { text: formatTypedMoney(cents, 'expense', locale), className: amountClassForType('expense', scheme) };
     case 'net':
-      return { text: formatSignedMoney(cents), className: amountClassForSign(cents, scheme) };
+      return { text: formatSignedMoney(cents, locale), className: amountClassForSign(cents, scheme) };
     case 'balance':
-      return { text: formatBalanceMoney(cents), className: 'text-ink font-medium' };
+      return { text: formatBalanceMoney(cents, locale), className: 'text-ink font-medium' };
     default:
-      return { text: formatSignedMoney(cents), className: 'text-ink' };
+      return { text: formatSignedMoney(cents, locale), className: 'text-ink' };
   }
 }
 
@@ -86,11 +92,15 @@ function StatsChartTooltip({
   payload,
   label,
   scheme,
+  locale,
+  seriesLabels,
 }: {
   active?: boolean;
   payload?: TooltipPayload;
   label?: string | number;
   scheme: AmountColorScheme;
+  locale: string;
+  seriesLabels: Record<string, string>;
 }) {
   if (!active || !payload?.length) return null;
 
@@ -101,10 +111,10 @@ function StatsChartTooltip({
         {payload.map((entry) => {
           const key = String(entry.dataKey ?? '');
           const yuan = Number(entry.value ?? 0);
-          const { text, className } = formatTooltipValue(key, yuan, scheme);
+          const { text, className } = formatTooltipValue(key, yuan, scheme, locale);
           return (
             <li key={key} className="flex items-center justify-between gap-4 tabular-nums">
-              <span className="text-muted">{SERIES_LABELS[key] ?? key}</span>
+              <span className="text-muted">{seriesLabels[key] ?? key}</span>
               <span className={className}>{text}</span>
             </li>
           );
@@ -213,7 +223,15 @@ export function StatsScrollChart({
   height = 252,
   tapToInspect = false,
 }: StatsScrollChartProps) {
-  const { scheme } = useSettings();
+  const { t } = useTranslation();
+  const { scheme, locale } = useSettings();
+  const seriesLabels = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(SERIES_LABEL_KEYS).map(([key, labelKey]) => [key, t(labelKey)])
+      ),
+    [t]
+  );
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const tapStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -256,6 +274,8 @@ export function StatsScrollChart({
             payload={buildTooltipPayload(row, searchActive, hiddenSeries)}
             label={row.name}
             scheme={scheme}
+            locale={locale}
+            seriesLabels={seriesLabels}
           />
         );
       }
@@ -265,10 +285,12 @@ export function StatsScrollChart({
           payload={props.payload}
           label={props.label}
           scheme={scheme}
+          locale={locale}
+          seriesLabels={seriesLabels}
         />
       );
     },
-    [scheme, tapToInspect, pinnedIndex, chartData, searchActive, hiddenSeries]
+    [scheme, locale, seriesLabels, tapToInspect, pinnedIndex, chartData, searchActive, hiddenSeries]
   );
 
   const pickAtPointer = useCallback(
@@ -329,7 +351,7 @@ export function StatsScrollChart({
         style={{ width: chartWidth, height }}
         className="flex items-center justify-center text-sm text-muted"
       >
-        加载中…
+        {t('common.loading')}
       </div>
     );
   }
@@ -418,7 +440,7 @@ export function StatsScrollChart({
           fill={`url(#${netGradientId})`}
           dot={false}
           activeDot={false}
-          name="净收入"
+          name={seriesLabels.net}
           hide={hiddenSeries.has('net')}
           isAnimationActive={false}
         />
@@ -431,7 +453,7 @@ export function StatsScrollChart({
         strokeWidth={1}
         dot={false}
         activeDot={false}
-        name="总支出"
+        name={seriesLabels.expense}
         hide={hiddenSeries.has('expense')}
         isAnimationActive={false}
       />
@@ -443,7 +465,7 @@ export function StatsScrollChart({
         strokeWidth={1}
         dot={false}
         activeDot={false}
-        name="总收入"
+        name={seriesLabels.income}
         hide={hiddenSeries.has('income')}
         isAnimationActive={false}
       />
@@ -457,7 +479,7 @@ export function StatsScrollChart({
           fill={`url(#${balanceGradientId})`}
           dot={false}
           activeDot={false}
-          name="余额"
+          name={seriesLabels.balance}
           connectNulls={false}
           hide={hiddenSeries.has('balance')}
           isAnimationActive={false}

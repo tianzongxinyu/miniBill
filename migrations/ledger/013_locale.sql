@@ -1,0 +1,1 @@
+ALTER TABLE settings ADD COLUMN locale TEXT NOT NULL DEFAULT 'zh-Hans';

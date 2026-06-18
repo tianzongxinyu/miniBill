@@ -130,12 +130,12 @@ func (f *Factory) prepareLedger(db *sql.DB) error {
 	for _, name := range PresetTags {
 		bg, fg := domain.RandomTagColors()
 		if _, err := db.Exec(
-			`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 1, 1, ?, ?)`,
-			name, bg, fg,
+			`INSERT OR IGNORE INTO tags (name, is_system, enabled, color_bg, color_fg, preset_key) VALUES (?, 1, 1, ?, ?, ?)`,
+			name, bg, fg, domain.DailyExpensePresetKey,
 		); err != nil {
 			return err
 		}
 	}
-	_, err := db.Exec(`INSERT OR IGNORE INTO settings (id, default_currency, default_date_mode, amount_color_scheme) VALUES (1, 'CNY', 'today', 'red_up')`)
+	_, err := db.Exec(`INSERT OR IGNORE INTO settings (id, locale, default_currency, default_date_mode, amount_color_scheme) VALUES (1, 'zh-Hans', 'CNY', 'today', 'red_up')`)
 	return err
 }

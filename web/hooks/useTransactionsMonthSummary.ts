@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import i18n from '@/src/i18n';
 import { fetchMonthBill, getCurrentYearMonth, ApiError, type MonthBillItem, type YearMonth } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { useOnLedgerChanged, monthInDetail } from '@/lib/ledgerEvents';
@@ -29,7 +30,7 @@ export function useTransactionsMonthSummary({
     } catch (err) {
       if (err instanceof ApiError && err.code === 'ABORTED') return;
       setSummary(null);
-      setError(formatApiError(err, '加载月度汇总失败'));
+      setError(formatApiError(err, i18n.t('transactions.loadSummaryFailed')));
     } finally {
       setLoading(false);
     }
@@ -55,7 +56,7 @@ export function useTransactionsMonthSummary({
         if (ac.signal.aborted) return;
         if (err instanceof ApiError && err.code === 'ABORTED') return;
         setSummary(null);
-        setError(formatApiError(err, '加载月度汇总失败'));
+        setError(formatApiError(err, i18n.t('transactions.loadSummaryFailed')));
       })
       .finally(() => {
         if (!ac.signal.aborted) setLoading(false);

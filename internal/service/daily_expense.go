@@ -12,7 +12,7 @@ func (s *StatsService) sumRecordedRange(db *sql.DB, start, end string) (income, 
 
 func (s *StatsService) dailyExpenseTagID(db *sql.DB) (int64, error) {
 	var id int64
-	err := db.QueryRow(`SELECT id FROM tags WHERE name = ?`, domain.DailyExpenseTagName).Scan(&id)
+	err := db.QueryRow(`SELECT id FROM tags WHERE preset_key = ?`, domain.DailyExpensePresetKey).Scan(&id)
 	return id, err
 }
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
 import { StatsScrollChart } from '@/lib/dynamicStatsChart';
 import {
@@ -52,6 +53,7 @@ export function StatsChartFullscreen({
   scrollWidth,
   portraitFallback: portraitFallbackProp = false,
 }: StatsChartFullscreenProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [chartHeight, setChartHeight] = useState(252);
   const [portraitFallback, setPortraitFallback] = useState(false);
@@ -156,7 +158,7 @@ export function StatsChartFullscreen({
     <div className={panelClass}>
       <header className="shrink-0 flex items-center px-3 py-2 border-b border-line/60 bg-canvas/95 backdrop-blur-sm">
         <button type="button" className="btn-ghost px-2 text-sm" onClick={handleClose}>
-          ← 返回
+          ← {t('common.back')}
         </button>
       </header>
 

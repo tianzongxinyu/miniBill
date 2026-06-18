@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { Notebook } from '@/components/ui/Notebook';
@@ -17,6 +18,7 @@ import {
 import { formatApiError } from '@/lib/errors';
 
 function ContactsContent() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Contact[]>([]);
   const [usedIds, setUsedIds] = useState<Set<number>>(() => new Set());
   const [name, setName] = useState('');
@@ -36,9 +38,9 @@ function ContactsContent() {
     } catch (e) {
       setItems([]);
       setUsedIds(new Set());
-      setError(formatApiError(e, '加载失败'));
+      setError(formatApiError(e, t('contacts.loadFailed')));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -51,7 +53,7 @@ function ContactsContent() {
       setName('');
       void load();
     } catch (err) {
-      setError(formatApiError(err, '失败'));
+      setError(formatApiError(err, t('contacts.failed')));
     }
   };
 
@@ -63,7 +65,7 @@ function ContactsContent() {
       setDeleteTarget(null);
       void load();
     } catch (err) {
-      setError(formatApiError(err, '删除失败'));
+      setError(formatApiError(err, t('contacts.deleteFailed')));
     } finally {
       setDeleting(false);
     }
@@ -75,12 +77,12 @@ function ContactsContent() {
       <form onSubmit={create} className="flex gap-2 mb-4">
         <input
           className="field flex-1"
-          placeholder="姓名"
+          placeholder={t('contacts.namePlaceholder')}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
-        <button className="btn-primary shrink-0">添加</button>
+        <button className="btn-primary shrink-0">{t('contacts.add')}</button>
       </form>
       <Notebook>
         {items.map((c) => (
@@ -94,7 +96,7 @@ function ContactsContent() {
                 type="button"
                 onClick={() => setDeleteTarget(c)}
                 className="btn-ghost p-1 text-expense shrink-0"
-                aria-label={`删除联系人「${c.name}」`}
+                aria-label={t('contacts.deleteAria', { name: c.name })}
               >
                 <TrashIcon />
               </button>
@@ -104,9 +106,9 @@ function ContactsContent() {
       </Notebook>
       <ConfirmDialog
         open={deleteTarget != null}
-        title="删除联系人"
-        message={deleteTarget ? `确定删除联系人「${deleteTarget.name}」？` : ''}
-        confirmLabel="删除"
+        title={t('contacts.deleteTitle')}
+        message={deleteTarget ? t('contacts.deleteMessage', { name: deleteTarget.name }) : ''}
+        confirmLabel={t('common.delete')}
         confirming={deleting}
         onConfirm={() => void confirmRemove()}
         onClose={() => {

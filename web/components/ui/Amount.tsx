@@ -2,8 +2,7 @@
 
 import { useSettings } from '@/components/SettingsProvider';
 import { amountClassForType } from '@/lib/amountColors';
-import { formatTypedMoney } from '@/lib/formatMoney';
-import { centsToYuan } from '@/lib/api';
+import { formatPlainMoney, formatTypedMoney } from '@/lib/formatMoney';
 
 /** 只读展示：收入/支出流水与汇总（不含余额） */
 export function Amount({
@@ -17,7 +16,7 @@ export function Amount({
   showSign?: boolean;
   className?: string;
 }) {
-  const { scheme } = useSettings();
+  const { scheme, locale } = useSettings();
   const color =
     type != null
       ? `amount-num font-medium ${amountClassForType(type, scheme)}`
@@ -25,8 +24,8 @@ export function Amount({
 
   const text =
     showSign && type != null
-      ? formatTypedMoney(cents, type)
-      : `¥${centsToYuan(cents)}`;
+      ? formatTypedMoney(cents, type, locale)
+      : formatPlainMoney(cents, locale);
 
   return (
     <span className={`inline-block ${color} ${className}`}>{text}</span>

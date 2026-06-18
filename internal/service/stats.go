@@ -354,7 +354,7 @@ func (s *StatsService) sumTransactionsRange(db *sql.DB, start, end string, filte
 		}
 	} else {
 		q += " AND " + excludeDailyExpenseTagSQL("t")
-		args = append(args, domain.DailyExpenseTagName)
+		args = append(args, domain.DailyExpensePresetKey)
 	}
 	err = db.QueryRow(q, args...).Scan(&income, &expense)
 	return income, expense, err

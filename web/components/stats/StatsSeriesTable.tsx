@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/ui/Amount';
 import { BalanceAmount } from '@/components/ui/BalanceAmount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
@@ -23,6 +24,7 @@ type StatsSeriesTableProps = {
 };
 
 export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: StatsSeriesTableProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const tableRows = useMemo(() => [...rows].reverse(), [rows]);
@@ -30,6 +32,7 @@ export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: Sta
   const showExpense = isSeriesVisible(hiddenSeries, 'expense');
   const showNet = !searchActive && isSeriesVisible(hiddenSeries, 'net');
   const showBalance = !searchActive && isSeriesVisible(hiddenSeries, 'balance');
+  const emDash = t('common.emDash');
 
   const goToRow = (row: StatsChartRow) => {
     if (mode === 'month' && row.month != null) {
@@ -46,18 +49,18 @@ export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: Sta
       <table className="table-auto w-max min-w-full text-sm">
         <thead>
           <tr className="border-b border-line text-muted">
-            <th className="px-3 py-3 text-left font-medium whitespace-nowrap">日期</th>
+            <th className="px-3 py-3 text-left font-medium whitespace-nowrap">{t('stats.date')}</th>
             {showIncome && (
-              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">收入</th>
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">{t('stats.income')}</th>
             )}
             {showExpense && (
-              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">支出</th>
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">{t('stats.expense')}</th>
             )}
             {showNet && (
-              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">净收入</th>
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">{t('stats.netIncome')}</th>
             )}
             {showBalance && (
-              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">余额</th>
+              <th className="px-3 py-3 text-right font-medium whitespace-nowrap">{t('stats.balance')}</th>
             )}
           </tr>
         </thead>
@@ -89,7 +92,7 @@ export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: Sta
                   {row.balanceCents != null ? (
                     <BalanceAmount cents={row.balanceCents} className="text-sm" />
                   ) : (
-                    '—'
+                    emDash
                   )}
                 </td>
               )}

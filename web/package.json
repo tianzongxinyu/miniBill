@@ -5,14 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "dev:clean": "rm -rf .next && next dev",
-    "build": "next build",
+    "build": "npm run i18n:check && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "i18n:check": "node ../scripts/i18n/check-locales.mjs",
+    "i18n:sync-zh-hant": "node ../scripts/i18n/sync-zh-hant.mjs"
   },
   "dependencies": {
+    "i18next": "^26.3.1",
     "next": "^14.2.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.8",
     "recharts": "^2.13.3"
   },
   "devDependencies": {
@@ -20,6 +24,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
+    "opencc-js": "^1.3.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"

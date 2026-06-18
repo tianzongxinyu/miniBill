@@ -1,6 +1,7 @@
 'use client';
 
 import { MonthBillPastStats } from '@/components/stats/MonthBillStats';
+import { useTranslation } from 'react-i18next';
 import type { MonthBillItem } from '@/lib/api';
 
 export function TransactionsMonthSummary({
@@ -18,14 +19,16 @@ export function TransactionsMonthSummary({
   month: number;
   editable?: boolean;
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <section
         className="mb-3 pb-3 border-b border-line/50 min-h-[88px]"
-        aria-label="月度汇总加载中"
+        aria-label={t('transactions.loadingSummaryAria')}
         aria-busy
       >
-        <p className="text-xs text-muted">加载月度汇总…</p>
+        <p className="text-xs text-muted">{t('transactions.loadingSummary')}</p>
       </section>
     );
   }
@@ -39,7 +42,7 @@ export function TransactionsMonthSummary({
   return (
     <section
       className="mb-3 pb-3 border-b border-line/50"
-      aria-label={`${summary.year} 年 ${summary.month} 月汇总`}
+      aria-label={t('transactions.monthSummaryAria', { year: summary.year, month: summary.month })}
     >
       <MonthBillPastStats
         item={summary}

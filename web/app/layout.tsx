@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
+import { I18nProvider } from '@/components/I18nProvider';
 import { SettingsProvider } from '@/components/SettingsProvider';
 import { APP_DESCRIPTION, APP_NAME } from '@/lib/appMeta';
 
@@ -31,7 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body>
         <AuthProvider>
-          <SettingsProvider>{children}</SettingsProvider>
+          <SettingsProvider>
+            <I18nProvider>{children}</I18nProvider>
+          </SettingsProvider>
         </AuthProvider>
       </body>
     </html>

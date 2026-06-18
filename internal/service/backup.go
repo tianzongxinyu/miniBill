@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/minibill/minibill/internal/i18n"
 )
 
 const (
@@ -291,8 +293,13 @@ func (s *BackupService) ExportToZip(db *sql.DB, userID int64, username string) (
 		return "", err
 	}
 
+	st, _ := (&SettingsService{}).Get(db)
+	locale := i18n.DefaultLocale
+	if st != nil && st.Locale != "" {
+		locale = st.Locale
+	}
 	var csvBuf bytes.Buffer
-	if err := s.csvSvc.Export(db, userID, &csvBuf); err != nil {
+	if err := s.csvSvc.Export(db, userID, locale, &csvBuf); err != nil {
 		return "", err
 	}
 

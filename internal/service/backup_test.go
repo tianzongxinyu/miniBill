@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/testutil"
 )
 
@@ -60,7 +61,7 @@ func TestBackupExportZipFilename(t *testing.T) {
 	if !strings.HasPrefix(string(body), utf8BOM) {
 		t.Fatal("csv missing BOM")
 	}
-	if !strings.Contains(string(body), ledgerCSVHeader0) {
+	if !strings.Contains(string(body), i18n.T(i18n.DefaultLocale, "csv.header.date")) {
 		t.Fatal("csv missing header")
 	}
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TagChip } from '@/components/ui/TagChip';
 import { ContactChip } from '@/components/ui/ContactChip';
 import { type Contact, type Tag } from '@/lib/api';
@@ -32,6 +33,7 @@ export function TransactionsSearchCombobox({
   onContactIdChange,
   onClear,
 }: TransactionsSearchComboboxProps) {
+  const { t } = useTranslation();
   const [tags, setTags] = useState<Tag[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [focused, setFocused] = useState(false);
@@ -212,7 +214,7 @@ export function TransactionsSearchCombobox({
             ref={inputRef}
             type="text"
             className="combobox-input-inline"
-            placeholder={hasChips ? '备注关键词' : '备注 · 标签 · 联系人'}
+            placeholder={hasChips ? t('transactions.searchPlaceholderWithChips') : t('transactions.searchPlaceholder')}
             value={note}
             onChange={(e) => {
               onNoteChange(e.target.value);
@@ -235,7 +237,7 @@ export function TransactionsSearchCombobox({
               type="button"
               className="combobox-clear"
               onClick={clearAll}
-              aria-label="清除检索"
+              aria-label={t('transactions.clearSearch')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                 <path d="M18 6L6 18M6 6l12 12" />

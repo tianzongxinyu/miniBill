@@ -1,11 +1,21 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
 import { useClickOutside } from '@/lib/combobox-utils';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 
-const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
+const WEEKDAY_KEYS = [
+  'picker.weekdayMon',
+  'picker.weekdayTue',
+  'picker.weekdayWed',
+  'picker.weekdayThu',
+  'picker.weekdayFri',
+  'picker.weekdaySat',
+  'picker.weekdaySun',
+] as const;
+
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const YEARS_PER_PAGE = 12;
 
@@ -23,10 +33,13 @@ function toISO(y: number, m: number, d: number): string {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
-function formatDisplayDate(iso: string): string {
+function formatDisplayDate(
+  iso: string,
+  t: (key: string, opts?: Record<string, unknown>) => string
+): string {
   const p = parseISO(iso);
-  if (!p) return '选择日期';
-  return `${p.y} 年 ${p.m} 月 ${p.d} 日`;
+  if (!p) return t('common.selectDate');
+  return t('common.yearMonthDay', { year: p.y, month: p.m, day: p.d });
 }
 
 function todayISO(): string {
@@ -101,6 +114,8 @@ type DatePickerFieldProps = {
 };
 
 export function DatePickerField({ value, onChange, min, max, required }: DatePickerFieldProps) {
+  const { t } = useTranslation();
+  const weekdayLabels = useMemo(() => WEEKDAY_KEYS.map((key) => t(key)), [t]);
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLButtonElement>(null);
   const floatingPanelRef = useRef<HTMLDivElement>(null);
@@ -233,7 +248,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
             <path d="M16 2v4M8 2v4M3 10h18" />
           </svg>
         </span>
-        <span className="date-picker-field-value tabular-nums">{formatDisplayDate(value)}</span>
+        <span className="date-picker-field-value tabular-nums">{formatDisplayDate(value, t)}</span>
         <span className={`date-picker-field-chevron${open ? ' date-picker-field-chevron-open' : ''}`} aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 9l6 6 6-6" />
@@ -247,7 +262,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
         panelRef={floatingPanelRef}
         onClose={close}
         role="dialog"
-        aria-label="选择日期"
+        aria-label={t('common.selectDate')}
         widthMode="page"
       >
         {panelMode === 'year' ? (
@@ -258,7 +273,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="month-picker-nav"
                 onClick={() => setViewYearPageStart((s) => s - YEARS_PER_PAGE)}
                 disabled={prevYearPageDisabled}
-                aria-label="上一组年份"
+                aria-label={t('picker.prevYearGroup')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 18l-6-6 6-6" />
@@ -272,7 +287,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="month-picker-nav"
                 onClick={() => setViewYearPageStart((s) => s + YEARS_PER_PAGE)}
                 disabled={nextYearPageDisabled}
-                aria-label="下一组年份"
+                aria-label={t('picker.nextYearGroup')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 18l6-6-6-6" />
@@ -313,7 +328,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="month-picker-nav"
                 onClick={() => setViewYear((y) => y - 1)}
                 disabled={prevYearDisabled}
-                aria-label="上一年"
+                aria-label={t('picker.prevYear')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 18l-6-6 6-6" />
@@ -324,14 +339,14 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="month-picker-title tabular-nums hover:text-accent transition-colors border-0 bg-transparent cursor-pointer p-0"
                 onClick={openYearView}
               >
-                {viewYear} 年
+                {t('common.yearOnly', { year: viewYear })}
               </button>
               <button
                 type="button"
                 className="month-picker-nav"
                 onClick={() => setViewYear((y) => y + 1)}
                 disabled={nextYearDisabled}
-                aria-label="下一年"
+                aria-label={t('picker.nextYear')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 18l6-6-6-6" />
@@ -359,7 +374,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                     onClick={() => selectMonth(m)}
                     disabled={disabled}
                   >
-                    {m} 月
+                    {t('common.monthOnly', { month: m })}
                   </button>
                 );
               })}
@@ -373,7 +388,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="date-picker-nav"
                 onClick={prevMonth}
                 disabled={prevDisabled}
-                aria-label="上个月"
+                aria-label={t('picker.prevMonth')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 18l-6-6 6-6" />
@@ -384,14 +399,14 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="date-picker-title tabular-nums hover:text-accent transition-colors"
                 onClick={() => setPanelMode('month')}
               >
-                {viewYear} 年 {viewMonth} 月
+                {t('common.yearMonth', { year: viewYear, month: viewMonth })}
               </button>
               <button
                 type="button"
                 className="date-picker-nav"
                 onClick={nextMonthNav}
                 disabled={nextDisabled}
-                aria-label="下个月"
+                aria-label={t('picker.nextMonth')}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 18l6-6-6-6" />
@@ -400,7 +415,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
             </div>
 
             <div className="date-picker-weekdays">
-              {WEEKDAYS.map((w) => (
+              {weekdayLabels.map((w) => (
                 <span key={w} className="date-picker-weekday">
                   {w}
                 </span>
@@ -442,7 +457,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 onClick={selectToday}
                 disabled={isDisabled(today, min, max)}
               >
-                今天
+                {t('common.today')}
               </button>
             </div>
           </>

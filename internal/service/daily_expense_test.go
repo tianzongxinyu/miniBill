@@ -96,7 +96,7 @@ func TestRejectManualDailyExpenseTag(t *testing.T) {
 	defer db.Close()
 	txSvc := NewTransactionService(NewStatsService())
 	var tagID int64
-	if err := db.QueryRow(`SELECT id FROM tags WHERE name = ?`, domain.DailyExpenseTagName).Scan(&tagID); err != nil {
+	if err := db.QueryRow(`SELECT id FROM tags WHERE preset_key = ?`, domain.DailyExpensePresetKey).Scan(&tagID); err != nil {
 		t.Fatal(err)
 	}
 	_, err := txSvc.Create(db, CreateTransactionInput{

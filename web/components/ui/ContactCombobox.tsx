@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ApiError, Contact, createContact } from '@/lib/api';
 import { ContactChip } from '@/components/ui/ContactChip';
 import { ComboboxFloatingCandidates } from '@/components/ui/ComboboxFloatingCandidates';
@@ -15,6 +16,7 @@ type ContactComboboxProps = {
 };
 
 export function ContactCombobox({ contacts, value, onChange, onContactsChange }: ContactComboboxProps) {
+  const { t } = useTranslation();
   const selected = useMemo(
     () => (value ? contacts.find((c) => c.id === value) : undefined),
     [value, contacts]
@@ -130,7 +132,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
             ref={inputRef}
             type="text"
             className="combobox-input-inline"
-            placeholder={selected ? '搜索或更换' : '输入联系人姓名'}
+            placeholder={selected ? t('contacts.searchOrReplace') : t('contacts.inputPlaceholder')}
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
             onFocus={handleFocus}
@@ -170,7 +172,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
               onClick={handleCreate}
               disabled={creating}
             >
-              + 创建「{trimmed}」
+              + {t('common.createNamed', { name: trimmed })}
             </button>
           )}
         </div>

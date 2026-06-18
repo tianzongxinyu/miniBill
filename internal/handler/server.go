@@ -15,6 +15,7 @@ import (
 	"github.com/minibill/minibill/internal/cache"
 	"github.com/minibill/minibill/internal/config"
 	"github.com/minibill/minibill/internal/domain"
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 	"github.com/minibill/minibill/internal/systemdb"
@@ -209,36 +210,35 @@ func serviceErr(c *gin.Context, err error) bool {
 	if err == nil {
 		return false
 	}
+	locale := localeFrom(c)
 	if errors.Is(err, service.ErrValidation) {
 		msg := err.Error()
 		if idx := strings.Index(msg, ": "); idx >= 0 {
-			msg = msg[idx+2:]
+			key := msg[idx+2:]
+			JSONValidation(c, translateValidation(locale, key))
+			return true
 		}
 		JSONValidation(c, msg)
 		return true
 	}
-	if strings.Contains(err.Error(), "须") || strings.Contains(err.Error(), "不可") {
-		JSONValidation(c, err.Error())
-		return true
-	}
 	if err == sql.ErrNoRows {
-		JSONNotFound(c, "资源不存在")
+		JSONNotFound(c, i18n.T(locale, "error.not_found"))
 		return true
 	}
 	if errors.Is(err, service.ErrSystemTransaction) {
-		JSONError(c, http.StatusForbidden, "FORBIDDEN", "系统流水不可修改")
+		JSONError(c, http.StatusForbidden, "FORBIDDEN", i18n.T(locale, "error.system_tx_forbidden"))
 		return true
 	}
 	if err == service.ErrSystemTag {
-		JSONValidation(c, "系统预设标签不可删除")
+		JSONValidation(c, i18n.T(locale, "error.system_tag_forbidden"))
 		return true
 	}
 	if err == service.ErrTagInUse {
-		JSONValidation(c, "标签仍被流水引用")
+		JSONValidation(c, i18n.T(locale, "error.tag_in_use"))
 		return true
 	}
 	if err == service.ErrContactInUse {
-		JSONValidation(c, "联系人仍被流水引用")
+		JSONValidation(c, i18n.T(locale, "error.contact_in_use"))
 		return true
 	}
 	c.JSON(http.StatusInternalServerError, apierr.Body{Error: "INTERNAL", Message: err.Error()})
@@ -248,7 +248,7 @@ func serviceErr(c *gin.Context, err error) bool {
 func parseID(c *gin.Context, key string) (int64, bool) {
 	id, err := strconv.ParseInt(c.Param(key), 10, 64)
 	if err != nil {
-		JSONValidation(c, "invalid id")
+		JSONValidation(c, i18n.T(localeFrom(c), "error.invalid_id"))
 		return 0, false
 	}
 	return id, true
@@ -257,12 +257,12 @@ func parseID(c *gin.Context, key string) (int64, bool) {
 func parseYearMonth(c *gin.Context) (int, int, bool) {
 	y, err := strconv.Atoi(c.Param("year"))
 	if err != nil {
-		JSONValidation(c, "invalid year")
+		JSONValidation(c, i18n.T(localeFrom(c), "error.invalid_year"))
 		return 0, 0, false
 	}
 	m, err := strconv.Atoi(c.Param("month"))
 	if err != nil || m < 1 || m > 12 {
-		JSONValidation(c, "invalid month")
+		JSONValidation(c, i18n.T(localeFrom(c), "error.invalid_month"))
 		return 0, 0, false
 	}
 	return y, m, true

@@ -15,7 +15,7 @@ func excludeDailyExpenseTagSQL(alias string) string {
 	return fmt.Sprintf(`NOT EXISTS (
 		SELECT 1 FROM transaction_tags tt
 		JOIN tags g ON g.id = tt.tag_id
-		WHERE tt.transaction_id = %s.id AND g.name = ?
+		WHERE tt.transaction_id = %s.id AND g.preset_key = ?
 	)`, alias)
 }
 
@@ -85,15 +85,23 @@ func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64) (str
 	return strings.Join(parts, " AND "), args
 }
 
-func tagFromRow(id int64, name string, sys, en int, colorBg, colorFg string, usageCount int64) Tag {
-	return Tag{
+func tagFromRow(id int64, name string, presetKey sql.NullString, sys, en int, colorBg, colorFg string, usageCount int64) Tag {
+	pk := ""
+	if presetKey.Valid {
+		pk = presetKey.String
+	}
+	t := Tag{
 		ID:         id,
 		Name:       name,
 		IsSystem:   sys == 1,
 		Enabled:    en == 1,
-		Selectable: domain.IsSelectableTag(name),
+		Selectable: domain.IsSelectablePresetKey(pk),
 		ColorBg:    colorBg,
 		ColorFg:    domain.TagTextColor,
 		UsageCount: usageCount,
 	}
+	if pk != "" {
+		t.PresetKey = &pk
+	}
+	return t
 }

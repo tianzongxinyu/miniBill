@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -11,7 +12,7 @@ import { ContactCombobox } from '@/components/ui/ContactCombobox';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { LoadingFallback } from '@/components/ui/LoadingFallback';
 import { useSettings } from '@/components/SettingsProvider';
-import { amountClassForType, textOpacityClassForType } from '@/lib/amountColors';
+import { amountClassForType } from '@/lib/amountColors';
 import {
   Contact,
   deleteTransaction,
@@ -46,6 +47,7 @@ function mergeTagsForEdit(allTags: Tag[], tx: Transaction): Tag[] {
 }
 
 function AddContent() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useSearchParams();
   const { scheme } = useSettings();
@@ -90,7 +92,7 @@ function AddContent() {
   useEffect(() => {
     if (!isEdit) {
       loadMeta().catch((e) =>
-        setError(formatApiError(e, '加载失败'))
+        setError(formatApiError(e, t('add.loadFailed')))
       );
       return;
     }
@@ -109,7 +111,7 @@ function AddContent() {
         setSelectedTagItems(txData.tag_items ?? []);
         setContactId(txData.contact_id ?? '');
       })
-      .catch((e) => setError(formatApiError(e, '加载失败')))
+      .catch((e) => setError(formatApiError(e, t('add.loadFailed'))))
       .finally(() => setLoading(false));
   }, [editId, isEdit, loadMeta]);
 
@@ -118,7 +120,7 @@ function AddContent() {
     setError('');
     const cents = yuanToCents(amount);
     if (cents <= 0) {
-      setError('请输入有效金额');
+      setError(t('add.invalidAmount'));
       return;
     }
     const body = {
@@ -134,7 +136,7 @@ function AddContent() {
       notifyTransactionDates(date, originalDate);
       router.push(returnTo);
     } catch (err) {
-      setError(formatApiError(err, '保存失败'));
+      setError(formatApiError(err, t('add.saveFailed')));
     }
   };
 
@@ -147,7 +149,7 @@ function AddContent() {
       router.push(returnTo);
     } catch (err) {
       setConfirmOpen(false);
-      setError(formatApiError(err, '删除失败'));
+      setError(formatApiError(err, t('add.deleteFailed')));
     } finally {
       setDeleting(false);
     }
@@ -158,7 +160,7 @@ function AddContent() {
   if (loading) {
     return (
       <div className="add-form">
-        <p className="text-muted text-sm">加载中…</p>
+        <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
     );
@@ -166,25 +168,24 @@ function AddContent() {
 
   return (
     <form onSubmit={submit} className="add-form">
-      <PageHeader title={isEdit ? '编辑流水' : '记一笔'} />
+      <PageHeader title={isEdit ? t('add.editTitle') : t('add.createTitle')} />
 
       {error && <p className="form-alert-error">{error}</p>}
 
       <div className="form-hero">
         <div className="form-hero-type">
-          {(['expense', 'income'] as const).map((t) => (
+          {(['expense', 'income'] as const).map((flowType) => (
             <button
-              key={t}
+              key={flowType}
               type="button"
-              onClick={() => setType(t)}
-              className={type === t ? 'btn-segment-active' : 'btn-segment'}
+              onClick={() => setType(flowType)}
+              className={type === flowType ? 'btn-segment-active' : 'btn-segment'}
             >
-              {t === 'expense' ? '支出' : '收入'}
+              {flowType === 'expense' ? t('add.expense') : t('add.income')}
             </button>
           ))}
         </div>
         <div className="form-hero-amount">
-          <span className={`form-hero-currency ${textOpacityClassForType(type, scheme)}`}>¥</span>
           <input
             type="number"
             step="0.01"
@@ -200,7 +201,7 @@ function AddContent() {
 
       <div className="form-details form-section-delay-1">
         <div className="form-row">
-          <div className="form-label">日期</div>
+          <div className="form-label">{t('add.date')}</div>
           <DatePickerField
             value={date}
             onChange={setDate}
@@ -211,7 +212,7 @@ function AddContent() {
         </div>
 
         <div className="form-row">
-          <div className="form-label">标签</div>
+          <div className="form-label">{t('add.tags')}</div>
           <TagCombobox
             tags={tags}
             selectedIds={selectedTags}
@@ -222,7 +223,7 @@ function AddContent() {
         </div>
 
         <div className="form-row">
-          <div className="form-label">联系人</div>
+          <div className="form-label">{t('add.contact')}</div>
           <ContactCombobox
             contacts={contacts}
             value={contactId}
@@ -232,7 +233,7 @@ function AddContent() {
         </div>
 
         <div className="form-row form-row-start">
-          <div className="form-label">备注</div>
+          <div className="form-label">{t('add.note')}</div>
           <textarea
             className="form-note-field"
             rows={2}
@@ -245,14 +246,14 @@ function AddContent() {
       {isEdit && (
         <>
           <button type="button" onClick={() => setConfirmOpen(true)} className="btn-danger-block mt-3">
-            删除
+            {t('add.delete')}
           </button>
 
           <ConfirmDialog
             open={confirmOpen}
-            title="确认删除"
-            message="删除后无法恢复，确定要删除这笔流水吗？"
-            confirmLabel="删除"
+            title={t('add.confirmDeleteTitle')}
+            message={t('add.confirmDeleteMessage')}
+            confirmLabel={t('common.delete')}
             confirming={deleting}
             onClose={() => setConfirmOpen(false)}
             onConfirm={confirmRemove}
@@ -262,7 +263,7 @@ function AddContent() {
 
       <PageFooterActions>
         <button type="submit" className="form-submit">
-          保存
+          {t('common.save')}
         </button>
         <PageBackLink href={backHref} />
       </PageFooterActions>

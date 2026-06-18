@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { Notebook } from '@/components/ui/Notebook';
@@ -20,6 +21,7 @@ import {
 import { formatApiError } from '@/lib/errors';
 
 function TagsContent() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Tag[]>([]);
   const [usedIds, setUsedIds] = useState<Set<number>>(() => new Set());
   const [name, setName] = useState('');
@@ -36,13 +38,13 @@ function TagsContent() {
         fetchUsedTransactionTags(),
       ]);
       setItems(tags);
-      setUsedIds(new Set(used.map((t) => t.id)));
+      setUsedIds(new Set(used.map((tag) => tag.id)));
     } catch (e) {
       setItems([]);
       setUsedIds(new Set());
-      setError(formatApiError(e, '加载失败'));
+      setError(formatApiError(e, t('tags.loadFailed')));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -55,25 +57,25 @@ function TagsContent() {
       setName('');
       void load();
     } catch (err) {
-      setError(formatApiError(err, '添加失败'));
+      setError(formatApiError(err, t('tags.addFailed')));
     }
   };
 
-  const toggle = async (t: Tag) => {
+  const toggle = async (tag: Tag) => {
     try {
-      await updateTag(t.id, { enabled: !t.enabled });
+      await updateTag(tag.id, { enabled: !tag.enabled });
       void load();
     } catch (err) {
-      setError(formatApiError(err, '更新失败'));
+      setError(formatApiError(err, t('tags.updateFailed')));
     }
   };
 
   const saveColor = async (id: number, color_bg: string) => {
     try {
       const saved = await updateTag(id, { color_bg });
-      setItems((prev) => prev.map((t) => (t.id === id ? saved : t)));
+      setItems((prev) => prev.map((item) => (item.id === id ? saved : item)));
     } catch (err) {
-      setError(formatApiError(err, '颜色保存失败'));
+      setError(formatApiError(err, t('tags.colorSaveFailed')));
       throw err;
     }
   };
@@ -86,7 +88,7 @@ function TagsContent() {
       setDeleteTarget(null);
       void load();
     } catch (err) {
-      setError(formatApiError(err, '删除失败'));
+      setError(formatApiError(err, t('tags.deleteFailed')));
     } finally {
       setDeleting(false);
     }
@@ -96,54 +98,54 @@ function TagsContent() {
     <div>
       {error && <p className="text-expense text-sm mb-4">{error}</p>}
       <form onSubmit={create} className="flex gap-2 mb-4">
-        <input className="field flex-1" placeholder="新标签" value={name} onChange={(e) => setName(e.target.value)} />
-        <button className="btn-primary shrink-0">添加</button>
+        <input className="field flex-1" placeholder={t('tags.newPlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
+        <button className="btn-primary shrink-0">{t('tags.add')}</button>
       </form>
       <Notebook>
-        {items.map((t) => (
-          <div key={t.id} className="notebook-row">
+        {items.map((tag) => (
+          <div key={tag.id} className="notebook-row">
             <div className="flex justify-between items-start gap-3">
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className={!t.enabled ? 'opacity-45' : undefined}>
-                  <TagChip name={t.name} colorBg={t.color_bg} />
+                <span className={!tag.enabled ? 'opacity-45' : undefined}>
+                  <TagChip name={tag.name} colorBg={tag.color_bg} />
                 </span>
-                {t.is_system && <span className="text-muted text-xs shrink-0">*</span>}
+                {tag.is_system && <span className="text-muted text-xs shrink-0">*</span>}
               </div>
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setColorEditId((id) => (id === t.id ? null : t.id))}
+                  onClick={() => setColorEditId((id) => (id === tag.id ? null : tag.id))}
                   className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
-                  aria-label={`修改标签「${t.name}」颜色`}
-                  aria-expanded={colorEditId === t.id}
+                  aria-label={t('tags.changeColor', { name: tag.name })}
+                  aria-expanded={colorEditId === tag.id}
                 >
                   <PaletteIcon />
                 </button>
                 <button
                   type="button"
-                  onClick={() => toggle(t)}
+                  onClick={() => toggle(tag)}
                   className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
-                  aria-label={t.enabled ? `隐藏标签「${t.name}」` : `显示标签「${t.name}」`}
+                  aria-label={tag.enabled ? t('tags.hideTag', { name: tag.name }) : t('tags.showTag', { name: tag.name })}
                 >
-                  {t.enabled ? <EyeIcon /> : <EyeOffIcon />}
+                  {tag.enabled ? <EyeIcon /> : <EyeOffIcon />}
                 </button>
-                {!t.is_system && !usedIds.has(t.id) && (
+                {!tag.is_system && !usedIds.has(tag.id) && (
                   <button
                     type="button"
-                    onClick={() => setDeleteTarget(t)}
+                    onClick={() => setDeleteTarget(tag)}
                     className="btn-ghost p-1.5 text-expense shrink-0"
-                    aria-label={`删除标签「${t.name}」`}
+                    aria-label={t('tags.deleteTag', { name: tag.name })}
                   >
                     <TrashIcon />
                   </button>
                 )}
               </div>
             </div>
-            {colorEditId === t.id && (
+            {colorEditId === tag.id && (
               <TagColorPicker
-                name={t.name}
-                colorBg={t.color_bg}
-                onSave={(bg) => saveColor(t.id, bg)}
+                name={tag.name}
+                colorBg={tag.color_bg}
+                onSave={(bg) => saveColor(tag.id, bg)}
                 onClose={() => setColorEditId(null)}
               />
             )}
@@ -152,9 +154,9 @@ function TagsContent() {
       </Notebook>
       <ConfirmDialog
         open={deleteTarget != null}
-        title="删除标签"
-        message={deleteTarget ? `确定删除标签「${deleteTarget.name}」？` : ''}
-        confirmLabel="删除"
+        title={t('tags.deleteTitle')}
+        message={deleteTarget ? t('tags.deleteMessage', { name: deleteTarget.name }) : ''}
+        confirmLabel={t('common.delete')}
         confirming={deleting}
         onConfirm={() => void confirmRemove()}
         onClose={() => {

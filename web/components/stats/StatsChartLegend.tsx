@@ -1,18 +1,12 @@
 'use client';
 
 import { useSettings } from '@/components/SettingsProvider';
+import { useTranslation } from 'react-i18next';
 import {
   BALANCE_CHART_STROKE,
   chartStrokeForType,
   NET_INCOME_CHART_STROKE,
 } from '@/lib/amountColors';
-
-const SERIES_LABELS: Record<string, string> = {
-  expense: '总支出',
-  income: '总收入',
-  net: '净收入',
-  balance: '余额',
-};
 
 type LegendItem = {
   key: string;
@@ -30,20 +24,21 @@ export function StatsChartLegend({
   hiddenSeries: Set<string>;
   onToggleSeries: (dataKey: string) => void;
 }) {
+  const { t } = useTranslation();
   const { scheme } = useSettings();
   const incomeStroke = chartStrokeForType('income', scheme);
   const expenseStroke = chartStrokeForType('expense', scheme);
 
   const items: LegendItem[] = searchActive
     ? [
-        { key: 'expense', label: SERIES_LABELS.expense, color: expenseStroke },
-        { key: 'income', label: SERIES_LABELS.income, color: incomeStroke },
+        { key: 'expense', label: t('stats.totalExpense'), color: expenseStroke },
+        { key: 'income', label: t('stats.totalIncome'), color: incomeStroke },
       ]
     : [
-        { key: 'expense', label: SERIES_LABELS.expense, color: expenseStroke },
-        { key: 'income', label: SERIES_LABELS.income, color: incomeStroke },
-        { key: 'net', label: SERIES_LABELS.net, color: NET_INCOME_CHART_STROKE },
-        { key: 'balance', label: SERIES_LABELS.balance, color: BALANCE_CHART_STROKE },
+        { key: 'expense', label: t('stats.totalExpense'), color: expenseStroke },
+        { key: 'income', label: t('stats.totalIncome'), color: incomeStroke },
+        { key: 'net', label: t('stats.netIncome'), color: NET_INCOME_CHART_STROKE },
+        { key: 'balance', label: t('stats.balance'), color: BALANCE_CHART_STROKE },
       ];
 
   return (

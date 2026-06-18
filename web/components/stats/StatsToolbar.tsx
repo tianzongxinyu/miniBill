@@ -1,6 +1,7 @@
 'use client';
 
 import { TransactionsSearchCombobox } from '@/components/transactions/TransactionsSearchCombobox';
+import { useTranslation } from 'react-i18next';
 
 type StatsToolbarProps = {
   note: string;
@@ -25,6 +26,8 @@ export function StatsToolbar({
   mode,
   onModeChange,
 }: StatsToolbarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="stats-toolbar mb-4">
       <TransactionsSearchCombobox
@@ -42,14 +45,14 @@ export function StatsToolbar({
           onClick={() => onModeChange('month')}
           className={mode === 'month' ? 'btn-segment-active px-4' : 'btn-segment px-4'}
         >
-          按月
+          {t('stats.byMonth')}
         </button>
         <button
           type="button"
           onClick={() => onModeChange('year')}
           className={mode === 'year' ? 'btn-segment-active px-4' : 'btn-segment px-4'}
         >
-          按年
+          {t('stats.byYear')}
         </button>
       </div>
     </div>

@@ -9,10 +9,19 @@ import (
 	"time"
 
 	"github.com/minibill/minibill/internal/domain"
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/testutil"
 )
 
 const testLedgerUserID int64 = 1
+
+func zhCSVHeader() []string {
+	return csvHeaders(i18n.DefaultLocale)
+}
+
+func zhBalanceMarker() string {
+	return i18n.T(i18n.DefaultLocale, "csv.balance_marker")
+}
 
 func newLedgerCSVForTest(now time.Time) *LedgerCSVService {
 	stats := NewStatsService().WithNow(func() time.Time { return now })
@@ -43,7 +52,7 @@ func TestLedgerCSVExportIncludesDailyExpenseAndBalance(t *testing.T) {
 
 	svc := newLedgerCSVForTest(now)
 	var buf bytes.Buffer
-	if err := svc.Export(db, testLedgerUserID, &buf); err != nil {
+	if err := svc.Export(db, testLedgerUserID, i18n.DefaultLocale, &buf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -54,7 +63,7 @@ func TestLedgerCSVExportIncludesDailyExpenseAndBalance(t *testing.T) {
 	if len(records) < 4 {
 		t.Fatalf("records = %d, want >= 4", len(records))
 	}
-	if records[0][0] != ledgerCSVHeader0 {
+	if records[0][0] != i18n.T(i18n.DefaultLocale, "csv.header.date") {
 		t.Fatalf("header = %v", records[0])
 	}
 
@@ -69,7 +78,7 @@ func TestLedgerCSVExportIncludesDailyExpenseAndBalance(t *testing.T) {
 		if strings.Contains(row[3], domain.DailyExpenseTagName) {
 			hasDaily = true
 		}
-		if row[5] == balanceNoteMarker && row[0] == "2026-03" {
+		if row[5] == i18n.T(i18n.DefaultLocale, "csv.balance_marker") && row[0] == "2026-03" {
 			hasBalance = true
 		}
 	}
@@ -100,7 +109,7 @@ func TestLedgerCSVExportBalanceAfterMonthTransactions(t *testing.T) {
 
 	svc := newLedgerCSVForTest(now)
 	var buf bytes.Buffer
-	if err := svc.Export(db, testLedgerUserID, &buf); err != nil {
+	if err := svc.Export(db, testLedgerUserID, i18n.DefaultLocale, &buf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -115,13 +124,13 @@ func TestLedgerCSVExportBalanceAfterMonthTransactions(t *testing.T) {
 			continue
 		}
 		switch {
-		case row[0] == "2026-02" && row[5] == balanceNoteMarker:
+		case row[0] == "2026-02" && row[5] == zhBalanceMarker():
 			febBalanceIdx = i
 		case row[0] == "2026-03-05" && row[3] != domain.DailyExpenseTagName:
 			marLunchIdx = i
 		case strings.Contains(row[3], domain.DailyExpenseTagName):
 			marDailyIdx = i
-		case row[0] == "2026-03" && row[5] == balanceNoteMarker:
+		case row[0] == "2026-03" && row[5] == zhBalanceMarker():
 			marBalanceIdx = i
 		}
 	}
@@ -163,7 +172,7 @@ func TestLedgerCSVImportReplaceRoundTrip(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	if err := svc.Export(db, testLedgerUserID, &buf); err != nil {
+	if err := svc.Export(db, testLedgerUserID, i18n.DefaultLocale, &buf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -216,9 +225,9 @@ func TestLedgerCSVImportCreatesTagsAndContacts(t *testing.T) {
 	svc := newLedgerCSVForTest(now)
 
 	csvData := strings.Join([]string{
-		strings.Join(ledgerCSVHeader, ","),
+		strings.Join(zhCSVHeader(), ","),
 		"2026-04-01,支出,10.00,新标签,新联系人,测试",
-		"2026-04,,100.00,,,月度余额",
+		"2026-04,,100.00,,," + zhBalanceMarker(),
 	}, "\n")
 
 	result, err := svc.ImportReplace(db, testLedgerUserID, strings.NewReader(csvData))
@@ -245,11 +254,11 @@ func TestLedgerCSVImportSkipsTamperedDailyExpense(t *testing.T) {
 	svc := newLedgerCSVForTest(now)
 
 	csvData := strings.Join([]string{
-		strings.Join(ledgerCSVHeader, ","),
+		strings.Join(zhCSVHeader(), ","),
 		"2026-05-01,支出,50.00,餐饮,,午饭",
 		"2026-05-31,支出,999.00,日常支出,,",
-		"2026-05,,200.00,,,月度余额",
-		"2026-04,,100.00,,,月度余额",
+		"2026-05,,200.00,,," + zhBalanceMarker(),
+		"2026-04,,100.00,,," + zhBalanceMarker(),
 	}, "\n")
 
 	result, err := svc.ImportReplace(db, testLedgerUserID, strings.NewReader(csvData))
@@ -283,7 +292,7 @@ func TestLedgerCSVImportValidationRollback(t *testing.T) {
 	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (100,'expense','2026-01-01','keep')`)
 
 	csvData := strings.Join([]string{
-		strings.Join(ledgerCSVHeader, ","),
+		strings.Join(zhCSVHeader(), ","),
 		"2026-04-01,无效,10.00,餐饮,,",
 	}, "\n")
 
@@ -307,7 +316,7 @@ func TestLedgerCSVImportWithContact(t *testing.T) {
 	svc := newLedgerCSVForTest(now)
 
 	csvData := strings.Join([]string{
-		strings.Join(ledgerCSVHeader, ","),
+		strings.Join(zhCSVHeader(), ","),
 		"2026-04-01,收入,10.00,婚礼,李四,红包",
 	}, "\n")
 
@@ -326,5 +335,26 @@ func TestLedgerCSVImportWithContact(t *testing.T) {
 	_ = db.QueryRow(`SELECT contact_id FROM transactions WHERE note='红包'`).Scan(&cid)
 	if !cid.Valid {
 		t.Fatal("expected contact linked")
+	}
+}
+
+func TestLedgerCSVImportEnglishHeader(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+
+	now := time.Date(2026, 6, 15, 0, 0, 0, 0, time.UTC)
+	svc := newLedgerCSVForTest(now)
+
+	csvData := strings.Join([]string{
+		strings.Join(csvHeaders("en"), ","),
+		"2026-04-01,Expense,10.00,Food,,lunch",
+	}, "\n")
+
+	result, err := svc.ImportReplace(db, testLedgerUserID, strings.NewReader(csvData))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ImportedTransactions != 1 {
+		t.Fatalf("imported = %d", result.ImportedTransactions)
 	}
 }

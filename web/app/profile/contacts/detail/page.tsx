@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { Amount } from '@/components/ui/Amount';
@@ -18,6 +19,7 @@ import { formatApiError } from '@/lib/errors';
 import { safeReturnTo } from '@/lib/url';
 
 function DetailInner() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get('id');
@@ -33,8 +35,8 @@ function DetailInner() {
     if (!id) return;
     fetchContactDetail(Number(id))
       .then(setC)
-      .catch((e) => setError(formatApiError(e, '加载失败')));
-  }, [id]);
+      .catch((e) => setError(formatApiError(e, t('contacts.loadFailed'))));
+  }, [id, t]);
 
   const fetchPage = useCallback(
     (cursor: string | null) =>
@@ -46,7 +48,7 @@ function DetailInner() {
     enabled: contactId != null,
     fetchPage,
     getItemKey: (tx) => tx.id,
-    onError: (e) => formatApiError(e, '加载失败'),
+    onError: (e) => formatApiError(e, t('contacts.loadFailed')),
   });
 
   const animateIds = useLoadMoreAnimateIds(
@@ -66,7 +68,7 @@ function DetailInner() {
       await deleteContact(Number(id));
       router.replace('/profile/contacts/');
     } catch (err) {
-      setError(formatApiError(err, '删除失败'));
+      setError(formatApiError(err, t('contacts.deleteFailed')));
       setConfirmOpen(false);
       setDeleting(false);
     }
@@ -75,8 +77,8 @@ function DetailInner() {
   if (!c) return <LoadingFallback />;
 
   const stats = [
-    { label: '送出', value: <Amount cents={c.social_expense} type="expense" className="text-sm" /> },
-    { label: '收到', value: <Amount cents={c.social_income} type="income" className="text-sm" /> },
+    { label: t('contacts.sent'), value: <Amount cents={c.social_expense} type="expense" className="text-sm" /> },
+    { label: t('contacts.received'), value: <Amount cents={c.social_income} type="income" className="text-sm" /> },
   ];
 
   const statGrid = 'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center';
@@ -108,7 +110,7 @@ function DetailInner() {
       {list.loading ? (
         <ListSkeleton />
       ) : list.items.length === 0 ? (
-        <EmptyNotebook message="暂无流水" />
+        <EmptyNotebook message={t('transactions.empty')} />
       ) : (
         <Notebook>
           {list.items.map((tx) => (
@@ -117,9 +119,9 @@ function DetailInner() {
         </Notebook>
       )}
       <div ref={list.sentinelRef} className="h-4" aria-hidden />
-      {list.loadingMore && <p className="text-center text-sm text-muted py-2">加载中…</p>}
+      {list.loadingMore && <p className="text-center text-sm text-muted py-2">{t('common.loading')}</p>}
       {!list.loading && !list.hasMore && list.items.length > 0 && (
-        <p className="text-center text-sm text-muted py-2">已到底</p>
+        <p className="text-center text-sm text-muted py-2">{t('common.endOfList')}</p>
       )}
       {list.error && <p className="text-expense text-sm mt-2">{list.error}</p>}
 
@@ -131,14 +133,14 @@ function DetailInner() {
           disabled={deleting}
           className="btn-ghost px-0 text-expense text-sm mt-6"
         >
-          删除联系人
+          {t('contacts.deleteContact')}
         </button>
       )}
       <ConfirmDialog
         open={confirmOpen}
-        title="删除联系人"
-        message={`确定删除联系人「${c.name}」？`}
-        confirmLabel="删除"
+        title={t('contacts.deleteTitle')}
+        message={t('contacts.deleteMessage', { name: c.name })}
+        confirmLabel={t('common.delete')}
         confirming={deleting}
         onConfirm={() => void confirmRemove()}
         onClose={() => {
