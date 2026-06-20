@@ -4,7 +4,7 @@
 # Usage:
 #   ./scripts/build-fpk.sh [version] [platform]
 #
-# platform: x86 (default) or arm
+# platform: all (default, x86+arm in parallel), x86, or arm
 
 set -euo pipefail
 
@@ -15,7 +15,7 @@ FNPACK="${ROOT}/.fnos-shared/fnpack"
 FNPACK_VERSION="1.2.1"
 
 VERSION="${1:-1.0.0}"
-PLATFORM_ARG="${2:-x86}"
+PLATFORM_ARG="${2:-all}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -85,11 +85,12 @@ MANIFEST_BACKUP=""
 update_manifest() {
     local version="$1"
     local platform="$2"
+    local work_dir="${3:-$FNOS_DIR}"
     local arch_label platform_label
     arch_label="$(manifest_arch "$platform")"
     platform_label="$(manifest_platform "$platform")"
-    local manifest="${FNOS_DIR}/manifest"
-    if [ -z "$MANIFEST_BACKUP" ]; then
+    local manifest="${work_dir}/manifest"
+    if [ "$work_dir" = "$FNOS_DIR" ] && [ -z "$MANIFEST_BACKUP" ]; then
         MANIFEST_BACKUP="$(mktemp)"
         cp "$manifest" "$MANIFEST_BACKUP"
     fi
@@ -179,54 +180,95 @@ sync_fnos_icons() {
     fi
 }
 
-build_one() {
-    local version="$1"
-    local platform="$2"
-    local goarch
-    goarch="$(platform_to_goarch "$platform")"
-
-    update_manifest "$version" "$platform"
+prepare_shared() {
     sync_wizard_config
     ensure_web_out
     sync_fnos_icons
+    ensure_fnpack
+}
 
-    info "Building linux/${goarch} binary ..."
-    mkdir -p "${FNOS_DIR}/app/bin" "${FNOS_DIR}/app/web" "${FNOS_DIR}/app/migrations"
+setup_staging() {
+    local staging="$1"
+    rsync -a \
+        --exclude 'app/' \
+        --exclude 'minibill.fpk' \
+        --exclude '.DS_Store' \
+        "$FNOS_DIR/" "$staging/"
+    mkdir -p "$staging/app/bin" "$staging/app/web" "$staging/app/migrations"
+}
+
+build_one() {
+    local version="$1"
+    local platform="$2"
+    local work_dir="${3:-$FNOS_DIR}"
+    local goarch
+    goarch="$(platform_to_goarch "$platform")"
+
+    update_manifest "$version" "$platform" "$work_dir"
+
+    info "[$platform] Building linux/${goarch} binary ..."
+    mkdir -p "${work_dir}/app/bin" "${work_dir}/app/web" "${work_dir}/app/migrations"
     (
         cd "$ROOT"
-        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -o "${FNOS_DIR}/app/bin/minibill" ./cmd/server
+        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -o "${work_dir}/app/bin/minibill" ./cmd/server
     )
 
-    rm -rf "${FNOS_DIR}/app/web/out" "${FNOS_DIR}/app/migrations/system" "${FNOS_DIR}/app/migrations/ledger"
-    cp -a "$ROOT/web/out" "${FNOS_DIR}/app/web/out"
-    cp -a "$ROOT/migrations/system" "${FNOS_DIR}/app/migrations/system"
-    cp -a "$ROOT/migrations/ledger" "${FNOS_DIR}/app/migrations/ledger"
+    rm -rf "${work_dir}/app/web/out" "${work_dir}/app/migrations/system" "${work_dir}/app/migrations/ledger"
+    cp -a "$ROOT/web/out" "${work_dir}/app/web/out"
+    cp -a "$ROOT/migrations/system" "${work_dir}/app/migrations/system"
+    cp -a "$ROOT/migrations/ledger" "${work_dir}/app/migrations/ledger"
 
-    chmod +x "${FNOS_DIR}/app/bin/minibill" "${FNOS_DIR}"/cmd/*
-    ensure_fnpack
+    chmod +x "${work_dir}/app/bin/minibill" "${work_dir}"/cmd/*
 
-    info "Packing with fnpack ..."
-    rm -f "${FNOS_DIR}/minibill.fpk"
-    (cd "$FNOS_DIR" && "$FNPACK" build -d .)
+    info "[$platform] Packing with fnpack ..."
+    rm -f "${work_dir}/minibill.fpk"
+    (cd "$work_dir" && "$FNPACK" build -d .)
 
-    local fpk_src="${FNOS_DIR}/minibill.fpk"
-    [ -f "$fpk_src" ] || error "fnpack did not produce minibill.fpk"
+    local fpk_src="${work_dir}/minibill.fpk"
+    [ -f "$fpk_src" ] || error "[$platform] fnpack did not produce minibill.fpk"
 
     mkdir -p "$DIST_DIR"
     local fpk_dst="${DIST_DIR}/minibill_${version}_${platform}.fpk"
     mv -f "$fpk_src" "$fpk_dst"
 
-    if [ -f "${FNOS_DIR}/MiniBill.sc" ]; then
+    if [ -f "${work_dir}/MiniBill.sc" ]; then
         local repack
         repack="$(mktemp -d)"
         tar -xzf "$fpk_dst" -C "$repack"
-        cp "${FNOS_DIR}/MiniBill.sc" "$repack/"
+        cp "${work_dir}/MiniBill.sc" "$repack/"
         (cd "$repack" && tar -czf "$fpk_dst" *)
         rm -rf "$repack"
     fi
 
-    info "Built: $fpk_dst ($(du -h "$fpk_dst" | awk '{print $1}'))"
-    restore_manifest
+    info "[$platform] Built: $fpk_dst ($(du -h "$fpk_dst" | awk '{print $1}'))"
+
+    if [ "$work_dir" = "$FNOS_DIR" ]; then
+        restore_manifest
+    fi
+}
+
+build_all_parallel() {
+    local version="$1"
+    local tmpdir staging_x86 staging_arm
+    tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/minibill-fpk.XXXXXX")"
+    staging_x86="${tmpdir}/x86"
+    staging_arm="${tmpdir}/arm"
+    setup_staging "$staging_x86"
+    setup_staging "$staging_arm"
+
+    build_one "$version" x86 "$staging_x86" &
+    local pid_x86=$!
+    build_one "$version" arm "$staging_arm" &
+    local pid_arm=$!
+
+    local status_x86=0 status_arm=0
+    wait "$pid_x86" || status_x86=$?
+    wait "$pid_arm" || status_arm=$?
+    rm -rf "$tmpdir"
+
+    if [ "$status_x86" -ne 0 ] || [ "$status_arm" -ne 0 ]; then
+        error "Parallel build failed (x86=${status_x86}, arm=${status_arm})"
+    fi
 }
 
 main() {
@@ -236,10 +278,11 @@ main() {
     command -v curl >/dev/null 2>&1 || error "curl is required"
     [ -f "$ROOT/web/public/icon.png" ] || error "Missing web/public/icon.png"
 
+    prepare_shared
+
     case "$PLATFORM_ARG" in
         all)
-            build_one "$VERSION" x86
-            build_one "$VERSION" arm
+            build_all_parallel "$VERSION"
             ;;
         *)
             build_one "$VERSION" "$PLATFORM_ARG"

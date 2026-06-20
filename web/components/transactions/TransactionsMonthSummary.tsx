@@ -1,6 +1,7 @@
 'use client';
 
 import { MonthBillPastStats } from '@/components/stats/MonthBillStats';
+import { TransactionsSummaryFilters } from '@/components/transactions/TransactionsSummaryFilters';
 import { useTranslation } from 'react-i18next';
 import type { MonthBillItem } from '@/lib/api';
 import { formatYearMonth } from '@/lib/formatDate';
@@ -46,21 +47,28 @@ export function TransactionsMonthSummary({
   if (!summary) return null;
 
   return (
-    <article
-      className="bill-card bill-card-summary"
-      aria-label={t('transactions.monthSummaryAria', {
-        period: formatYearMonth({ year: summary.year, month: summary.month }),
-      })}
-    >
-      <MonthBillPastStats
-        item={summary}
-        variant="transactions"
-        year={year}
-        month={month}
-        editable={editable}
-        typeFilter={typeFilter}
-        onTypeFilterChange={onTypeFilterChange}
-      />
-    </article>
+    <div className="transactions-month-summary">
+      <article
+        className="bill-card bill-card-summary"
+        aria-label={t('transactions.monthSummaryAria', {
+          period: formatYearMonth({ year: summary.year, month: summary.month }),
+        })}
+      >
+        <MonthBillPastStats
+          item={summary}
+          variant="transactions"
+          year={year}
+          month={month}
+          editable={editable}
+        />
+      </article>
+      {onTypeFilterChange && (
+        <TransactionsSummaryFilters
+          summary={summary}
+          typeFilter={typeFilter}
+          onTypeFilterChange={onTypeFilterChange}
+        />
+      )}
+    </div>
   );
 }

@@ -8,7 +8,6 @@ import { SignedAmount } from '@/components/ui/SignedAmount';
 import { resolveNetIncomeCents } from '@/lib/netIncome';
 import { totalExpenseCents } from '@/lib/totalExpense';
 import type { MonthBillItem } from '@/lib/api';
-import type { TransactionTypeFilter } from '@/lib/url';
 
 function balanceRegisterHref(year: number, month: number) {
   const returnTo = encodeURIComponent(`/transactions/?year=${year}&month=${month}`);
@@ -21,38 +20,6 @@ function HomeStatStack({ label, children }: { label: string; children: React.Rea
       <div className="bill-stat-stack-label">{label}</div>
       <div className="bill-stat-stack-value">{children}</div>
     </div>
-  );
-}
-
-function FilterableStatStack({
-  label,
-  filterType,
-  active,
-  ariaLabel,
-  onClick,
-  children,
-}: {
-  label: string;
-  filterType: 'expense' | 'income';
-  active: boolean;
-  ariaLabel: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      className={`bill-stat-filter-btn bill-stat-filter-btn-${filterType}${active ? ' is-active' : ''}`}
-      aria-label={ariaLabel}
-      aria-pressed={active}
-      onClick={(e) => {
-        onClick();
-        e.currentTarget.blur();
-      }}
-    >
-      <span className="bill-stat-stack-label">{label}</span>
-      <span className="bill-stat-stack-value">{children}</span>
-    </button>
   );
 }
 
@@ -84,22 +51,17 @@ export function MonthBillPastStats({
   year,
   month,
   editable = false,
-  typeFilter = null,
-  onTypeFilterChange,
 }: {
   item: MonthBillItem;
   variant: 'home' | 'transactions';
   year?: number;
   month?: number;
   editable?: boolean;
-  typeFilter?: TransactionTypeFilter;
-  onTypeFilterChange?: (type: 'expense' | 'income') => void;
 }) {
   const { t } = useTranslation();
   const net = resolveNetIncomeCents(item);
   const expense = totalExpenseCents(item.total_expense, item.daily_expense);
   const emDash = t('common.emDash');
-  const filterable = variant === 'transactions' && onTypeFilterChange != null;
 
   const linkUnderline =
     'underline underline-offset-2 decoration-ink/45 hover:decoration-accent hover:text-accent';
@@ -124,26 +86,25 @@ export function MonthBillPastStats({
       emDash
     );
 
+  if (variant === 'transactions') {
+    return (
+      <div className="transactions-month-summary-columns">
+        <HomeStatStack label={t('stats.balance')}>{balanceCell}</HomeStatStack>
+        <HomeStatStack label={t('stats.netIncome')}>
+          <SignedAmount cents={net} className="text-sm" />
+        </HomeStatStack>
+      </div>
+    );
+  }
+
   return (
     <div className="bill-card-columns bill-card-columns-compact">
       <div className="bill-card-col bill-card-col-past">
         <HomeStatStack label={t('stats.balance')}>{balanceCell}</HomeStatStack>
         <div className="bill-stat-stack-rule" aria-hidden />
-        {filterable ? (
-          <FilterableStatStack
-            label={t('stats.totalExpense')}
-            filterType="expense"
-            active={typeFilter === 'expense'}
-            ariaLabel={t('transactions.filterExpenseAria')}
-            onClick={() => onTypeFilterChange('expense')}
-          >
-            <Amount cents={expense} type="expense" className="text-sm" />
-          </FilterableStatStack>
-        ) : (
-          <HomeStatStack label={t('stats.totalExpense')}>
-            <Amount cents={expense} type="expense" className="text-sm" />
-          </HomeStatStack>
-        )}
+        <HomeStatStack label={t('stats.totalExpense')}>
+          <Amount cents={expense} type="expense" className="text-sm" />
+        </HomeStatStack>
       </div>
       <div className="bill-card-split-divider bill-card-split-divider-full" aria-hidden />
       <div className="bill-card-col bill-card-col-past">
@@ -151,21 +112,9 @@ export function MonthBillPastStats({
           <SignedAmount cents={net} className="text-sm" />
         </HomeStatStack>
         <div className="bill-stat-stack-rule" aria-hidden />
-        {filterable ? (
-          <FilterableStatStack
-            label={t('stats.totalIncome')}
-            filterType="income"
-            active={typeFilter === 'income'}
-            ariaLabel={t('transactions.filterIncomeAria')}
-            onClick={() => onTypeFilterChange('income')}
-          >
-            <Amount cents={item.total_income} type="income" className="text-sm" />
-          </FilterableStatStack>
-        ) : (
-          <HomeStatStack label={t('stats.totalIncome')}>
-            <Amount cents={item.total_income} type="income" className="text-sm" />
-          </HomeStatStack>
-        )}
+        <HomeStatStack label={t('stats.totalIncome')}>
+          <Amount cents={item.total_income} type="income" className="text-sm" />
+        </HomeStatStack>
       </div>
     </div>
   );

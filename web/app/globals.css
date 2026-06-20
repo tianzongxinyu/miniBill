@@ -263,40 +263,53 @@ body {
     @apply border-accent/30 ring-1 ring-accent/10 shadow-[0_2px_12px_rgba(62,142,126,0.08)];
   }
 
-  .bill-card-summary {
-    @apply py-2.5 mb-3;
+  .bill-card-summary.bill-card {
+    @apply relative px-0 py-2.5 mb-0;
   }
 
-  .bill-card-summary .bill-stat-stack {
-    @apply text-right;
+  .bill-card-summary.bill-card::after {
+    content: '';
+    @apply pointer-events-none absolute inset-y-2.5 left-1/2 w-px -translate-x-1/2 bg-line/80;
   }
 
-  .bill-card-summary .bill-stat-stack-rule {
-    @apply my-0;
+  .transactions-month-summary {
+    @apply mb-3 w-full;
   }
 
-  .bill-card-summary .bill-stat-filter-btn {
-    @apply flex flex-col items-end gap-0 w-full py-1 px-0 flex-none text-right;
-    @apply rounded-xl border border-line/70 bg-accent-soft/30 cursor-pointer;
-    @apply transition-[background-color,border-color] duration-150;
-    @apply focus:outline-none focus-visible:border-line/70;
+  .transactions-month-summary-columns {
+    @apply grid w-full grid-cols-2 gap-x-2 sm:gap-x-3 px-0;
   }
 
-  .bill-card-summary .bill-stat-filter-btn:not(.is-active):hover {
-    @apply bg-accent-soft/45 border-line/70;
+  .transactions-month-summary-columns .bill-stat-stack {
+    @apply text-right px-3;
   }
 
-  .bill-card-summary .bill-stat-filter-btn-expense:not(.is-active),
-  .bill-card-summary .bill-stat-filter-btn-income:not(.is-active) {
-    @apply border-line/70 bg-accent-soft/30;
+  .transactions-month-summary-filters {
+    @apply mt-1.5;
   }
 
-  .bill-card-summary .bill-stat-filter-btn-expense.is-active {
-    @apply border-income/50 bg-income/15;
+  .transactions-month-summary-filters .bill-stat-filter-btn {
+    @apply flex flex-col items-end gap-0 w-full py-2 px-3 flex-none text-right;
+    @apply rounded-3xl border-0 ring-1 ring-inset ring-line/70 bg-accent-soft/30 cursor-pointer;
+    @apply transition-[background-color,box-shadow] duration-150;
+    @apply focus:outline-none focus-visible:ring-line/70;
   }
 
-  .bill-card-summary .bill-stat-filter-btn-income.is-active {
-    @apply border-expense/50 bg-expense/15;
+  .transactions-month-summary-filters .bill-stat-filter-btn:not(.is-active):hover {
+    @apply bg-accent-soft/45 ring-line/70;
+  }
+
+  .transactions-month-summary-filters .bill-stat-filter-btn-expense:not(.is-active),
+  .transactions-month-summary-filters .bill-stat-filter-btn-income:not(.is-active) {
+    @apply ring-line/70 bg-accent-soft/30;
+  }
+
+  .transactions-month-summary-filters .bill-stat-filter-btn-expense.is-active {
+    @apply ring-income/50 bg-income/15;
+  }
+
+  .transactions-month-summary-filters .bill-stat-filter-btn-income.is-active {
+    @apply ring-expense/50 bg-expense/15;
   }
 
   .bill-card-header {
