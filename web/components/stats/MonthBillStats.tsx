@@ -8,10 +8,52 @@ import { SignedAmount } from '@/components/ui/SignedAmount';
 import { resolveNetIncomeCents } from '@/lib/netIncome';
 import { totalExpenseCents } from '@/lib/totalExpense';
 import type { MonthBillItem } from '@/lib/api';
+import type { TransactionTypeFilter } from '@/lib/url';
 
 function balanceRegisterHref(year: number, month: number) {
   const returnTo = encodeURIComponent(`/transactions/?year=${year}&month=${month}`);
   return `/balance/?year=${year}&month=${month}&returnTo=${returnTo}`;
+}
+
+function HomeStatStack({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="bill-stat-stack">
+      <div className="bill-stat-stack-label">{label}</div>
+      <div className="bill-stat-stack-value">{children}</div>
+    </div>
+  );
+}
+
+function FilterableStatStack({
+  label,
+  filterType,
+  active,
+  ariaLabel,
+  onClick,
+  children,
+}: {
+  label: string;
+  filterType: 'expense' | 'income';
+  active: boolean;
+  ariaLabel: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className={`bill-stat-filter-btn bill-stat-filter-btn-${filterType}${active ? ' is-active' : ''}`}
+      aria-label={ariaLabel}
+      aria-pressed={active}
+      onClick={(e) => {
+        onClick();
+        e.currentTarget.blur();
+      }}
+    >
+      <span className="bill-stat-stack-label">{label}</span>
+      <span className="bill-stat-stack-value">{children}</span>
+    </button>
+  );
 }
 
 export function MonthBillCurrentSplit({ item }: { item: MonthBillItem }) {
@@ -21,15 +63,15 @@ export function MonthBillCurrentSplit({ item }: { item: MonthBillItem }) {
     <div className="bill-card-split">
       <div className="bill-stat-item">
         <div className="bill-stat-label">{t('stats.totalExpense')}</div>
-        <div className="bill-stat-value-lg mt-1">
-          <Amount cents={item.total_expense} type="expense" className="bill-stat-value-lg" />
+        <div className="bill-stat-value mt-1">
+          <Amount cents={item.total_expense} type="expense" className="bill-stat-value" />
         </div>
       </div>
       <div className="bill-card-split-divider" aria-hidden />
       <div className="bill-stat-item">
         <div className="bill-stat-label">{t('stats.totalIncome')}</div>
-        <div className="bill-stat-value-lg mt-1">
-          <Amount cents={item.total_income} type="income" className="bill-stat-value-lg" />
+        <div className="bill-stat-value mt-1">
+          <Amount cents={item.total_income} type="income" className="bill-stat-value" />
         </div>
       </div>
     </div>
@@ -42,64 +84,29 @@ export function MonthBillPastStats({
   year,
   month,
   editable = false,
+  typeFilter = null,
+  onTypeFilterChange,
 }: {
   item: MonthBillItem;
   variant: 'home' | 'transactions';
   year?: number;
   month?: number;
   editable?: boolean;
+  typeFilter?: TransactionTypeFilter;
+  onTypeFilterChange?: (type: 'expense' | 'income') => void;
 }) {
   const { t } = useTranslation();
   const net = resolveNetIncomeCents(item);
   const expense = totalExpenseCents(item.total_expense, item.daily_expense);
   const emDash = t('common.emDash');
-
-  if (variant === 'home') {
-    return (
-      <div className="bill-card-columns">
-        <div className="bill-card-col">
-          <div className="bill-stat-row">
-            <span className="bill-stat-row-label">{t('stats.balance')}</span>
-            <span className="bill-stat-row-value font-bold">
-              {item.balance != null ? (
-                <BalanceAmount cents={item.balance} className="text-sm font-bold" />
-              ) : (
-                emDash
-              )}
-            </span>
-          </div>
-          <div className="bill-stat-row">
-            <span className="bill-stat-row-label">{t('stats.totalExpense')}</span>
-            <span className="bill-stat-row-value">
-              <Amount cents={expense} type="expense" className="text-sm" />
-            </span>
-          </div>
-        </div>
-        <div className="bill-card-split-divider bill-card-split-divider-full" aria-hidden />
-        <div className="bill-card-col">
-          <div className="bill-stat-row">
-            <span className="bill-stat-row-label">{t('stats.netIncome')}</span>
-            <span className="bill-stat-row-value">
-              <SignedAmount cents={net} className="text-sm" />
-            </span>
-          </div>
-          <div className="bill-stat-row">
-            <span className="bill-stat-row-label">{t('stats.totalIncome')}</span>
-            <span className="bill-stat-row-value">
-              <Amount cents={item.total_income} type="income" className="text-sm" />
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filterable = variant === 'transactions' && onTypeFilterChange != null;
 
   const linkUnderline =
     'underline underline-offset-2 decoration-ink/45 hover:decoration-accent hover:text-accent';
 
   const balanceValue =
     item.balance != null ? (
-      <BalanceAmount cents={item.balance} className={`text-sm ${linkUnderline}`} />
+      <BalanceAmount cents={item.balance} className={`text-sm font-bold ${linkUnderline}`} />
     ) : editable && year != null && month != null ? (
       <span className={`text-muted ${linkUnderline}`}>{t('balance.registerBalance')}</span>
     ) : (
@@ -111,38 +118,55 @@ export function MonthBillPastStats({
       <Link href={balanceRegisterHref(year, month)} className="inline transition-colors">
         {balanceValue}
       </Link>
+    ) : item.balance != null ? (
+      <BalanceAmount cents={item.balance} className="text-sm font-bold" />
     ) : (
-      balanceValue
+      emDash
     );
 
   return (
-    <dl className="grid grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-3">
-      <div className="flex items-baseline justify-between gap-3 min-w-0">
-        <dt className="text-xs text-muted shrink-0">{t('stats.balance')}</dt>
-        <dd className="text-sm font-medium tabular-nums text-right m-0">{balanceCell}</dd>
+    <div className="bill-card-columns bill-card-columns-compact">
+      <div className="bill-card-col bill-card-col-past">
+        <HomeStatStack label={t('stats.balance')}>{balanceCell}</HomeStatStack>
+        <div className="bill-stat-stack-rule" aria-hidden />
+        {filterable ? (
+          <FilterableStatStack
+            label={t('stats.totalExpense')}
+            filterType="expense"
+            active={typeFilter === 'expense'}
+            ariaLabel={t('transactions.filterExpenseAria')}
+            onClick={() => onTypeFilterChange('expense')}
+          >
+            <Amount cents={expense} type="expense" className="text-sm" />
+          </FilterableStatStack>
+        ) : (
+          <HomeStatStack label={t('stats.totalExpense')}>
+            <Amount cents={expense} type="expense" className="text-sm" />
+          </HomeStatStack>
+        )}
       </div>
-      <div
-        className="row-span-2 w-px bg-line/60 self-stretch justify-self-center"
-        aria-hidden
-      />
-      <div className="flex items-baseline justify-between gap-3 min-w-0">
-        <dt className="text-xs text-muted shrink-0">{t('stats.netIncome')}</dt>
-        <dd className="text-sm font-medium tabular-nums text-right m-0">
+      <div className="bill-card-split-divider bill-card-split-divider-full" aria-hidden />
+      <div className="bill-card-col bill-card-col-past">
+        <HomeStatStack label={t('stats.netIncome')}>
           <SignedAmount cents={net} className="text-sm" />
-        </dd>
+        </HomeStatStack>
+        <div className="bill-stat-stack-rule" aria-hidden />
+        {filterable ? (
+          <FilterableStatStack
+            label={t('stats.totalIncome')}
+            filterType="income"
+            active={typeFilter === 'income'}
+            ariaLabel={t('transactions.filterIncomeAria')}
+            onClick={() => onTypeFilterChange('income')}
+          >
+            <Amount cents={item.total_income} type="income" className="text-sm" />
+          </FilterableStatStack>
+        ) : (
+          <HomeStatStack label={t('stats.totalIncome')}>
+            <Amount cents={item.total_income} type="income" className="text-sm" />
+          </HomeStatStack>
+        )}
       </div>
-      <div className="flex items-baseline justify-between gap-3 min-w-0">
-        <dt className="text-xs text-muted shrink-0">{t('stats.totalExpense')}</dt>
-        <dd className="text-sm font-medium tabular-nums text-right m-0">
-          <Amount cents={expense} type="expense" className="text-sm" />
-        </dd>
-      </div>
-      <div className="flex items-baseline justify-between gap-3 min-w-0">
-        <dt className="text-xs text-muted shrink-0">{t('stats.totalIncome')}</dt>
-        <dd className="text-sm font-medium tabular-nums text-right m-0">
-          <Amount cents={item.total_income} type="income" className="text-sm" />
-        </dd>
-      </div>
-    </dl>
+    </div>
   );
 }

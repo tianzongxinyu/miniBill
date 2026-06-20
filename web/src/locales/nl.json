@@ -24,8 +24,8 @@
     "redirecting": "Doorverwijzen…",
     "createNamed": "\"{{name}}\" aanmaken",
     "logoutTitle": "{{username}} · Uitloggen",
-    "yearMonth": "{{month}}-{{year}}",
-    "yearMonthDay": "{{day}}-{{month}}-{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Datum kiezen",
@@ -33,7 +33,12 @@
     "directory": "Map: {{path}}",
     "errorPrefix": "Fout: {{message}}",
     "file": "Bestand: {{name}}",
-    "cannotLoad": "Kan niet laden"
+    "cannotLoad": "Kan niet laden",
+    "loadFailed": "Laden mislukt",
+    "saveFailed": "Opslaan mislukt",
+    "deleteFailed": "Verwijderen mislukt",
+    "removeItem": "{{name}} verwijderen",
+    "removeContact": "Contact {{name}} verwijderen"
   },
   "nav": {
     "home": "Start",
@@ -41,9 +46,9 @@
     "stats": "Statistieken",
     "profile": "Profiel",
     "logout": "Uitloggen",
-    "expandSidebar": "Zijbalk uitklappen",
-    "collapseSidebar": "Zijbalk inklappen",
-    "collapseSidebarLabel": "Zijbalk inklappen"
+    "expandSidebar": "Uitklappen",
+    "collapseSidebar": "Inklappen",
+    "collapseSidebarLabel": "Inklappen"
   },
   "auth": {
     "welcomeBack": "Welkom terug",
@@ -60,14 +65,14 @@
     "invalidAuth": "Ongeldige inlogreactie",
     "passwordMismatch": "Wachtwoorden komen niet overeen",
     "getStarted": "Aan de slag",
-    "registerSubtitle": "Maak een account aan en start je privé-kasboek. Alle gegevens blijven op je server.",
+    "registerSubtitle": "Self-hosted ledger. Data op je server.",
     "registerHints": "Gebruikersnaam 3–32 tekens · Wachtwoord minimaal 6 tekens",
     "registerAccount": "Account aanmaken",
     "fillInfo": "Vul de gegevens hieronder in",
     "usernamePlaceholder": "Gebruikersnaam 3–32 tekens",
     "passwordPlaceholder": "Wachtwoord minimaal 6 tekens",
     "confirmPassword": "Bevestig wachtwoord",
-    "heroTagline": "Een lichtgewicht, self-hosted persoonlijk kasboek. Eenvoudig en overzichtelijk — je gegevens blijven bij jou.",
+    "heroTagline": "Licht self-hosted ledger. Jouw data blijft bij jou.",
     "heroBadges": "Self-hosted · Meerdere gebruikers · Open source",
     "usernameLength": "Gebruikersnaam moet 3–32 tekens bevatten",
     "usernameChars": "Gebruikersnaam mag alleen letters, cijfers en underscores bevatten",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Loslaten om te vernieuwen",
     "refreshing": "Vernieuwen",
     "emptyTitle": "Nog geen boekingen",
-    "emptyHint": "Voeg een transactie toe en maandelijkse overzichten verschijnen hier",
-    "loadFailed": "Laden mislukt"
+    "emptyHint": "Voeg een transactie toe en maandelijkse overzichten verschijnen hier"
   },
   "transactions": {
     "empty": "Geen transacties",
     "noMatch": "Geen overeenkomende transacties",
-    "prevMonth": "Vorige maand",
-    "nextMonth": "Volgende maand",
-    "addOne": "Transactie toevoegen",
+    "prevMonth": "Vorige",
+    "nextMonth": "Volgende",
+    "addOne": "Toevoegen",
     "searchPlaceholder": "Notitie · Tags · Contact",
     "searchPlaceholderWithChips": "Trefwoord in notitie",
     "clearSearch": "Zoekopdracht wissen",
     "loadingSummary": "Maandoverzicht laden…",
     "loadingSummaryAria": "Maandoverzicht laden",
-    "monthSummaryAria": "Overzicht voor {{month}}/{{year}}",
+    "monthSummaryAria": "Overzicht voor {{period}}",
     "loadSummaryFailed": "Maandoverzicht laden mislukt",
+    "emptyExpense": "Geen uitgaven deze maand",
+    "emptyIncome": "Geen inkomsten deze maand",
+    "filterExpenseAria": "Filter uitgaven, tik opnieuw om te wissen",
+    "filterIncomeAria": "Filter inkomsten, tik opnieuw om te wissen",
     "dailyExpenseTag": "Dagelijkse uitgaven"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "Per jaar",
     "fullscreen": "Volledig scherm",
     "loadMore": "Meer laden…",
-    "scrollHint": "Veeg of sleep de grafiek om eerdere of nieuwere gegevens te zien",
+    "scrollHint": "Veeg voor meer data",
     "totalExpense": "Totale uitgaven",
     "totalIncome": "Totale inkomsten",
     "netIncome": "Netto inkomen",
@@ -128,7 +136,6 @@
     "change": "Wijzigen",
     "passwordChanged": "Wachtwoord bijgewerkt",
     "colorSchemeUpdated": "Kleurenschema bijgewerkt",
-    "saveFailed": "Opslaan mislukt",
     "failed": "Mislukt",
     "language": "Taal",
     "languageSearch": "Talen zoeken"
@@ -144,11 +151,16 @@
     "changeColor": "Kleur wijzigen voor tag \"{{name}}\"",
     "deleteTag": "Tag \"{{name}}\" verwijderen",
     "dailyExpense": "Dagelijkse uitgaven",
-    "loadFailed": "Laden mislukt",
     "addFailed": "Toevoegen mislukt",
     "updateFailed": "Bijwerken mislukt",
     "colorSaveFailed": "Kleur opslaan mislukt",
-    "deleteFailed": "Verwijderen mislukt"
+    "colorPicker": {
+      "pickBg": "Achtergrond kiezen",
+      "refresh": "Andere kleuren",
+      "applyPresetAria": "Voorgestelde kleur toepassen",
+      "customBg": "Aangepaste achtergrond",
+      "apply": "Toepassen"
+    }
   },
   "contacts": {
     "namePlaceholder": "Naam",
@@ -161,8 +173,6 @@
     "deleteAria": "Contact \"{{name}}\" verwijderen",
     "sent": "Verzonden",
     "received": "Ontvangen",
-    "loadFailed": "Laden mislukt",
-    "deleteFailed": "Verwijderen mislukt",
     "failed": "Mislukt"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "{{count}} contacten aangemaakt"
   },
   "backup": {
-    "weekdaySun": "Zondag",
-    "weekdayMon": "Maandag",
-    "weekdayTue": "Dinsdag",
-    "weekdayWed": "Woensdag",
-    "weekdayThu": "Donderdag",
-    "weekdayFri": "Vrijdag",
-    "weekdaySat": "Zaterdag",
+    "weekdaySun": "Zo",
+    "weekdayMon": "Ma",
+    "weekdayTue": "Di",
+    "weekdayWed": "Wo",
+    "weekdayThu": "Do",
+    "weekdayFri": "Vr",
+    "weekdaySat": "Za",
     "neverBackedUp": "Nog nooit back-up gemaakt",
     "lastBackup": "Laatste back-up: {{time}}",
     "saved": "Opgeslagen",
     "backupComplete": "Back-up voltooid: {{filename}}",
     "backupFailed": "Back-up mislukt",
-    "loadFailed": "Laden mislukt",
     "backupDir": "Back-upmap",
     "configured": "Geconfigureerd: {{path}}",
-    "dirNotConfigured": "Back-upmap is niet geconfigureerd. Je kunt hieronder geplande instellingen opslaan; voor echte back-ups stel je het pad in via Feiniu OS App Center → MiniBill → App-instellingen → Runtime, of stel de omgevingsvariabele lokaal / in Docker in.",
+    "dirNotConfigured": "Backupmap niet ingesteld. App-instellingen of omgevingsvariabele.",
     "scheduledBackup": "Geplande back-up",
     "enable": "Inschakelen",
     "interval": "Frequentie",
@@ -242,8 +251,7 @@
     "saveSettings": "Instellingen opslaan",
     "runNow": "Nu back-up maken",
     "runNowDescription": "Exporteer het huidige kasboek-CSV en comprimeer het naar een zip in de back-upmap.",
-    "running": "Back-up maken…",
-    "saveFailed": "Opslaan mislukt"
+    "running": "Back-up maken…"
   },
   "add": {
     "editTitle": "Transactie bewerken",
@@ -256,11 +264,8 @@
     "note": "Notitie",
     "delete": "Verwijderen",
     "confirmDeleteTitle": "Verwijderen bevestigen",
-    "confirmDeleteMessage": "Dit kan niet ongedaan worden gemaakt. Deze transactie verwijderen?",
-    "invalidAmount": "Voer een geldig bedrag in",
-    "saveFailed": "Opslaan mislukt",
-    "deleteFailed": "Verwijderen mislukt",
-    "loadFailed": "Laden mislukt"
+    "confirmDeleteMessage": "Onomkeerbaar. Verwijderen?",
+    "invalidAmount": "Voer een geldig bedrag in"
   },
   "balance": {
     "registerTitle": "Saldo registreren",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Bestaande invoer overschrijven",
     "overwriteWithAmount": "{{month}} heeft al een saldo ({{amount}}). Overschrijven?",
     "overwriteWithoutAmount": "{{month}} heeft al een saldo. Overschrijven?",
-    "confirmOverwrite": "Overschrijven bevestigen",
-    "saveFailed": "Opslaan mislukt",
-    "loadFailed": "Laden mislukt"
+    "confirmOverwrite": "Overschrijven bevestigen"
   },
   "picker": {
     "prevYearGroup": "Vorig jaarbereik",
     "nextYearGroup": "Volgend jaarbereik",
     "prevYear": "Vorig jaar",
     "nextYear": "Volgend jaar",
-    "prevMonth": "Vorige maand",
-    "nextMonth": "Volgende maand",
+    "prevMonth": "Vorige",
+    "nextMonth": "Volgende",
     "weekdayMon": "Ma",
     "weekdayTue": "Di",
     "weekdayWed": "Wo",
@@ -327,8 +330,7 @@
     "csvTooLarge": "CSV-bestand is te groot",
     "csvReadFailed": "Kan bestand niet lezen",
     "backupDirMissing": "Back-upmap is niet geconfigureerd",
-    "backupFileRequired": "Selecteer een back-upbestand",
-    "loadFailed": "Laden mislukt"
+    "backupFileRequired": "Selecteer een back-upbestand"
   },
   "validation": {
     "dateAfterToday": "Datum mag niet na vandaag liggen",

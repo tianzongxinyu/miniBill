@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { DatePickerField } from '@/components/ui/DatePickerField';
 import { TagCombobox } from '@/components/ui/TagCombobox';
 import { ContactCombobox } from '@/components/ui/ContactCombobox';
@@ -92,7 +91,7 @@ function AddContent() {
   useEffect(() => {
     if (!isEdit) {
       loadMeta().catch((e) =>
-        setError(formatApiError(e, t('add.loadFailed')))
+        setError(formatApiError(e, t('common.loadFailed')))
       );
       return;
     }
@@ -111,7 +110,7 @@ function AddContent() {
         setSelectedTagItems(txData.tag_items ?? []);
         setContactId(txData.contact_id ?? '');
       })
-      .catch((e) => setError(formatApiError(e, t('add.loadFailed'))))
+      .catch((e) => setError(formatApiError(e, t('common.loadFailed'))))
       .finally(() => setLoading(false));
   }, [editId, isEdit, loadMeta]);
 
@@ -136,7 +135,7 @@ function AddContent() {
       notifyTransactionDates(date, originalDate);
       router.push(returnTo);
     } catch (err) {
-      setError(formatApiError(err, t('add.saveFailed')));
+      setError(formatApiError(err, t('common.saveFailed')));
     }
   };
 
@@ -149,7 +148,7 @@ function AddContent() {
       router.push(returnTo);
     } catch (err) {
       setConfirmOpen(false);
-      setError(formatApiError(err, t('add.deleteFailed')));
+      setError(formatApiError(err, t('common.deleteFailed')));
     } finally {
       setDeleting(false);
     }
@@ -167,9 +166,7 @@ function AddContent() {
   }
 
   return (
-    <form onSubmit={submit} className="add-form">
-      <PageHeader title={isEdit ? t('add.editTitle') : t('add.createTitle')} />
-
+    <form onSubmit={submit} className="add-form record-form">
       {error && <p className="form-alert-error">{error}</p>}
 
       <div className="form-hero">

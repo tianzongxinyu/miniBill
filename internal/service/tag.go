@@ -121,13 +121,6 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 	return &t, nil
 }
 
-func boolToInt(v bool) int {
-	if v {
-		return 1
-	}
-	return 0
-}
-
 func (s *TagService) Delete(db *sql.DB, id int64) error {
 	var sys int
 	err := db.QueryRow(`SELECT is_system FROM tags WHERE id=?`, id).Scan(&sys)

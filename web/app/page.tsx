@@ -35,7 +35,7 @@ function HomeContent() {
   const { items, setItems, loading, loadingMore, hasMore, error, sentinelRef, loadFirst } =
     useCursorPagination<MonthBillItem>({
       fetchPage,
-      onError: (e) => formatApiError(e, t('home.loadFailed')),
+      onError: (e) => formatApiError(e, t('common.loadFailed')),
     });
 
   const refresh = useCallback(async () => {

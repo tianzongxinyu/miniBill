@@ -15,7 +15,6 @@ import {
   enterChartFullscreen,
   exitChartFullscreen,
   isCoarseMobile,
-  shouldUsePortraitFallback,
 } from '@/lib/statsChartFullscreen';
 
 function StatsContent() {
@@ -23,7 +22,6 @@ function StatsContent() {
   const inlineScrollRef = useRef<HTMLDivElement>(null);
   const fullscreenScrollRef = useRef<HTMLDivElement>(null);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
-  const [portraitFallback, setPortraitFallback] = useState(false);
   const pendingScrollLeftRef = useRef(0);
 
   const scrollRef = fullscreenOpen ? fullscreenScrollRef : inlineScrollRef;
@@ -77,19 +75,24 @@ function StatsContent() {
   }, []);
 
   const openFullscreen = useCallback(async () => {
-    pendingScrollLeftRef.current = inlineScrollRef.current?.scrollLeft ?? 0;
+    const inlineEl = inlineScrollRef.current;
+    let scrollLeft = inlineEl?.scrollLeft ?? 0;
+    if (
+      inlineEl &&
+      scrollLeft === 0 &&
+      inlineEl.scrollWidth > inlineEl.clientWidth + 1
+    ) {
+      scrollLeft = inlineEl.scrollWidth - inlineEl.clientWidth;
+    }
+    pendingScrollLeftRef.current = scrollLeft;
     if (isCoarseMobile()) {
       await enterChartFullscreen();
-      setPortraitFallback(shouldUsePortraitFallback());
-    } else {
-      setPortraitFallback(false);
     }
     setFullscreenOpen(true);
   }, []);
 
   const closeFullscreen = useCallback(() => {
     setFullscreenOpen(false);
-    setPortraitFallback(false);
     void exitChartFullscreen();
   }, []);
 
@@ -191,7 +194,6 @@ function StatsContent() {
         hiddenSeries={hiddenSeries}
         onToggleSeries={toggleSeries}
         scrollWidth={scrollWidth}
-        portraitFallback={portraitFallback}
       />
 
       <StatsSeriesTable

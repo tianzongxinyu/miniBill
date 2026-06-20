@@ -24,8 +24,8 @@
     "redirecting": "Перенаправление…",
     "createNamed": "Создать «{{name}}»",
     "logoutTitle": "{{username}} · Выйти",
-    "yearMonth": "{{month}}.{{year}}",
-    "yearMonthDay": "{{day}}.{{month}}.{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Выбрать дату",
@@ -33,7 +33,12 @@
     "directory": "Каталог: {{path}}",
     "errorPrefix": "Ошибка: {{message}}",
     "file": "Файл: {{name}}",
-    "cannotLoad": "Не удалось загрузить"
+    "cannotLoad": "Не удалось загрузить",
+    "loadFailed": "Не удалось загрузить",
+    "saveFailed": "Не удалось сохранить",
+    "deleteFailed": "Не удалось удалить",
+    "removeItem": "Удалить {{name}}",
+    "removeContact": "Удалить контакт {{name}}"
   },
   "nav": {
     "home": "Главная",
@@ -41,9 +46,9 @@
     "stats": "Статистика",
     "profile": "Профиль",
     "logout": "Выйти",
-    "expandSidebar": "Развернуть боковую панель",
-    "collapseSidebar": "Свернуть боковую панель",
-    "collapseSidebarLabel": "Свернуть боковую панель"
+    "expandSidebar": "Развернуть",
+    "collapseSidebar": "Свернуть",
+    "collapseSidebarLabel": "Свернуть"
   },
   "auth": {
     "welcomeBack": "С возвращением",
@@ -60,14 +65,14 @@
     "invalidAuth": "Некорректный ответ авторизации",
     "passwordMismatch": "Пароли не совпадают",
     "getStarted": "Начать",
-    "registerSubtitle": "Создайте аккаунт и начните вести личный учёт. Все данные остаются на вашем сервере.",
-    "registerHints": "Имя 3–32 символа · Пароль не менее 6 символов",
+    "registerSubtitle": "Самохостинг. Данные на вашем сервере.",
+    "registerHints": "Логин 3–32 · Пароль ≥6",
     "registerAccount": "Создать аккаунт",
     "fillInfo": "Заполните данные ниже",
     "usernamePlaceholder": "Имя 3–32 символа",
     "passwordPlaceholder": "Пароль не менее 6 символов",
     "confirmPassword": "Подтвердите пароль",
-    "heroTagline": "Лёгкая самохостинговая книга учёта. Просто и понятно — ваши данные остаются у вас.",
+    "heroTagline": "Лёгкий самохостинг-учёт. Данные у вас.",
     "heroBadges": "Самохостинг · Несколько пользователей · Открытый код",
     "usernameLength": "Имя пользователя должно содержать от 3 до 32 символов",
     "usernameChars": "Имя пользователя может содержать только буквы, цифры и подчёркивания",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Отпустите для обновления",
     "refreshing": "Обновление",
     "emptyTitle": "Записей пока нет",
-    "emptyHint": "Добавьте транзакцию — здесь появятся месячные сводки",
-    "loadFailed": "Не удалось загрузить"
+    "emptyHint": "Добавьте транзакцию — здесь появятся месячные сводки"
   },
   "transactions": {
     "empty": "Нет транзакций",
     "noMatch": "Подходящих транзакций нет",
-    "prevMonth": "Предыдущий месяц",
-    "nextMonth": "Следующий месяц",
-    "addOne": "Добавить транзакцию",
+    "prevMonth": "Назад",
+    "nextMonth": "Вперёд",
+    "addOne": "Добавить",
     "searchPlaceholder": "Заметка · Теги · Контакт",
     "searchPlaceholderWithChips": "Ключевое слово в заметке",
     "clearSearch": "Очистить поиск",
     "loadingSummary": "Загрузка месячной сводки…",
     "loadingSummaryAria": "Загрузка месячной сводки",
-    "monthSummaryAria": "Сводка за {{month}}.{{year}}",
+    "monthSummaryAria": "Сводка за {{period}}",
     "loadSummaryFailed": "Не удалось загрузить месячную сводку",
+    "emptyExpense": "Нет расходов в этом месяце",
+    "emptyIncome": "Нет доходов в этом месяце",
+    "filterExpenseAria": "Фильтр расходов, нажмите снова для сброса",
+    "filterIncomeAria": "Фильтр доходов, нажмите снова для сброса",
     "dailyExpenseTag": "Ежедневные расходы"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "По годам",
     "fullscreen": "Полный экран",
     "loadMore": "Загрузка…",
-    "scrollHint": "Смахните или перетащите график, чтобы увидеть более ранние или новые данные",
+    "scrollHint": "Свайп для данных",
     "totalExpense": "Всего расходов",
     "totalIncome": "Всего доходов",
     "netIncome": "Чистый доход",
@@ -128,7 +136,6 @@
     "change": "Изменить",
     "passwordChanged": "Пароль обновлён",
     "colorSchemeUpdated": "Цветовая схема обновлена",
-    "saveFailed": "Не удалось сохранить",
     "failed": "Ошибка",
     "language": "Язык",
     "languageSearch": "Поиск языков"
@@ -144,11 +151,16 @@
     "changeColor": "Изменить цвет тега «{{name}}»",
     "deleteTag": "Удалить тег «{{name}}»",
     "dailyExpense": "Ежедневные расходы",
-    "loadFailed": "Не удалось загрузить",
     "addFailed": "Не удалось добавить",
     "updateFailed": "Не удалось обновить",
     "colorSaveFailed": "Не удалось сохранить цвет",
-    "deleteFailed": "Не удалось удалить"
+    "colorPicker": {
+      "pickBg": "Выбрать фон",
+      "refresh": "Другие цвета",
+      "applyPresetAria": "Применить цвет из списка",
+      "customBg": "Свой фон",
+      "apply": "Применить"
+    }
   },
   "contacts": {
     "namePlaceholder": "Имя",
@@ -161,13 +173,11 @@
     "deleteAria": "Удалить контакт «{{name}}»",
     "sent": "Отправлено",
     "received": "Получено",
-    "loadFailed": "Не удалось загрузить",
-    "deleteFailed": "Не удалось удалить",
     "failed": "Ошибка"
   },
   "data": {
     "exportTitle": "Экспорт учётной книги",
-    "exportMobileHint": "Откройте MiniBill в браузере на компьютере и перейдите в Профиль → Данные для экспорта CSV.",
+    "exportMobileHint": "ПК: Профиль → Данные, экспорт CSV.",
     "exportDescription": "CSV включает транзакции и месячные балансы. Строки ежедневных расходов читаемы; при повторном импорте они пересчитываются из балансов.",
     "exporting": "Экспорт…",
     "exportCsv": "Экспорт CSV",
@@ -190,7 +200,7 @@
     "importFailed": "Ошибка импорта",
     "restoreFailed": "Ошибка восстановления",
     "confirmImportTitle": "Подтвердить импорт с перезаписью",
-    "confirmImportMessage": "Все транзакции и месячные балансы будут удалены, затем будет импортирован «{{filename}}». Это нельзя отменить.",
+    "confirmImportMessage": "Очистка и импорт «{{filename}}». Нельзя отменить.",
     "confirmImport": "Подтвердить импорт",
     "confirmRestoreTitle": "Подтвердить восстановление из резервной копии",
     "confirmRestoreMessage": "Все транзакции и месячные балансы будут удалены, затем будет выполнено восстановление из «{{filename}}». Это нельзя отменить.",
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "создано {{count}} контактов"
   },
   "backup": {
-    "weekdaySun": "Воскресенье",
-    "weekdayMon": "Понедельник",
-    "weekdayTue": "Вторник",
-    "weekdayWed": "Среда",
-    "weekdayThu": "Четверг",
-    "weekdayFri": "Пятница",
-    "weekdaySat": "Суббота",
+    "weekdaySun": "Вс",
+    "weekdayMon": "Пн",
+    "weekdayTue": "Вт",
+    "weekdayWed": "Ср",
+    "weekdayThu": "Чт",
+    "weekdayFri": "Пт",
+    "weekdaySat": "Сб",
     "neverBackedUp": "Резервная копия не создавалась",
     "lastBackup": "Последняя копия: {{time}}",
     "saved": "Сохранено",
     "backupComplete": "Резервная копия создана: {{filename}}",
     "backupFailed": "Ошибка резервного копирования",
-    "loadFailed": "Не удалось загрузить",
     "backupDir": "Каталог резервных копий",
     "configured": "Настроено: {{path}}",
-    "dirNotConfigured": "Каталог резервных копий не настроен. Ниже можно сохранить расписание; для реального резервного копирования укажите путь в Feiniu OS App Center → MiniBill → Настройки приложения → Runtime или задайте переменную окружения локально / в Docker.",
+    "dirNotConfigured": "Папка бэкапа не задана. Настройки приложения или переменная среды.",
     "scheduledBackup": "Резервное копирование по расписанию",
     "enable": "Включить",
     "interval": "Интервал",
@@ -242,8 +251,7 @@
     "saveSettings": "Сохранить настройки",
     "runNow": "Создать копию сейчас",
     "runNowDescription": "Экспортировать текущий CSV учётной книги и упаковать в zip в каталог резервных копий.",
-    "running": "Создание копии…",
-    "saveFailed": "Не удалось сохранить"
+    "running": "Создание копии…"
   },
   "add": {
     "editTitle": "Редактировать транзакцию",
@@ -256,11 +264,8 @@
     "note": "Заметка",
     "delete": "Удалить",
     "confirmDeleteTitle": "Подтвердить удаление",
-    "confirmDeleteMessage": "Это нельзя отменить. Удалить эту транзакцию?",
-    "invalidAmount": "Введите корректную сумму",
-    "saveFailed": "Не удалось сохранить",
-    "deleteFailed": "Не удалось удалить",
-    "loadFailed": "Не удалось загрузить"
+    "confirmDeleteMessage": "Нельзя отменить. Удалить?",
+    "invalidAmount": "Введите корректную сумму"
   },
   "balance": {
     "registerTitle": "Записать баланс",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Перезаписать существующую запись",
     "overwriteWithAmount": "Для {{month}} уже есть баланс ({{amount}}). Перезаписать?",
     "overwriteWithoutAmount": "Для {{month}} уже есть баланс. Перезаписать?",
-    "confirmOverwrite": "Подтвердить перезапись",
-    "saveFailed": "Не удалось сохранить",
-    "loadFailed": "Не удалось загрузить"
+    "confirmOverwrite": "Подтвердить перезапись"
   },
   "picker": {
     "prevYearGroup": "Предыдущий диапазон лет",
     "nextYearGroup": "Следующий диапазон лет",
     "prevYear": "Предыдущий год",
     "nextYear": "Следующий год",
-    "prevMonth": "Предыдущий месяц",
-    "nextMonth": "Следующий месяц",
+    "prevMonth": "Назад",
+    "nextMonth": "Вперёд",
     "weekdayMon": "Пн",
     "weekdayTue": "Вт",
     "weekdayWed": "Ср",
@@ -327,8 +330,7 @@
     "csvTooLarge": "CSV-файл слишком большой",
     "csvReadFailed": "Не удалось прочитать файл",
     "backupDirMissing": "Каталог резервных копий не настроен",
-    "backupFileRequired": "Выберите файл резервной копии",
-    "loadFailed": "Не удалось загрузить"
+    "backupFileRequired": "Выберите файл резервной копии"
   },
   "validation": {
     "dateAfterToday": "Дата не может быть позже сегодняшней",

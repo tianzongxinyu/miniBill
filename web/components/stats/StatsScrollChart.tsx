@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
 import {
@@ -38,6 +38,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
+import { isFullscreenCssRotated } from '@/lib/statsChartFullscreen';
 
 type StatsScrollChartProps = {
   mode: 'month' | 'year';
@@ -162,6 +163,8 @@ function XAxisTick({
       textAnchor="middle"
       fill="#8a9390"
       fontSize={12}
+      data-category-name={label}
+      data-category-x={x}
       style={{ cursor: tapToInspect ? 'pointer' : undefined, pointerEvents: tapToInspect ? 'none' : undefined }}
     >
       {label}
@@ -172,43 +175,276 @@ function XAxisTick({
 const CHART_MARGIN = { top: 8, right: 8, left: 16, bottom: 16 };
 const CHART_MARGIN_FULLSCREEN = { top: 8, right: 8, left: 16, bottom: 28 };
 const Y_AXIS_WIDTH = 8;
+const SCROLL_CLEAR_THRESHOLD = 12;
+const PICK_DEBOUNCE_MS = 450;
+/** Chart-space gap so tap tooltip sits beside the reference line, not on it. */
+const TOOLTIP_LINE_GAP = 14;
+const TOOLTIP_EDGE_PAD = 8;
 
-/** Map screen pointer to nearest category index (matches Recharts scale="point" layout). */
-function pickIndexFromChartPointer(
-  clientX: number,
-  clientY: number,
-  shellEl: HTMLElement,
+function computeTapInspectTooltipStyle(
+  tooltipLeft: number,
+  tooltipWidth: number,
+  chartWidth: number
+): { left: number; top: number; transform: string } {
+  const gap = TOOLTIP_LINE_GAP;
+  const fitsRight = tooltipLeft + gap + tooltipWidth <= chartWidth - TOOLTIP_EDGE_PAD;
+  const fitsLeft = tooltipLeft - gap - tooltipWidth >= TOOLTIP_EDGE_PAD;
+
+  if (fitsRight || !fitsLeft) {
+    return { left: tooltipLeft + gap, top: 8, transform: 'none' };
+  }
+  return { left: tooltipLeft - gap, top: 8, transform: 'translateX(-100%)' };
+}
+
+function isCoarsePointer(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
+function tapDisplacementThreshold(): number {
+  if (typeof window === 'undefined') return 8;
+  return isCoarsePointer() ? 32 : 8;
+}
+
+type ChartPointerState = {
+  activeTooltipIndex?: number | string;
+  activeLabel?: string | number;
+  activeCoordinate?: { x?: number; y?: number };
+};
+
+type CategoryPick = {
+  index: number;
+  tooltipLeft: number;
+};
+
+function categoryCenterX(
+  index: number,
+  chartWidth: number,
+  dataLength: number,
+  pointWidth: number,
+  searchActive: boolean,
+  tapToInspect: boolean
+): number {
+  const margin = tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN;
+  const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
+  const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
+  const halfPoint = pointWidth / 2;
+  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
+  if (dataLength <= 1) return plotStart;
+  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
+  return plotStart + index * step;
+}
+
+function queryCategoryTickNodes(shellEl: HTMLElement): Element[] {
+  const byAttr = shellEl.querySelectorAll('[data-category-name]');
+  if (byAttr.length > 0) return Array.from(byAttr);
+
+  return Array.from(
+    shellEl.querySelectorAll('.recharts-xAxis .recharts-cartesian-axis-tick text, .recharts-xAxis text')
+  );
+}
+
+function readTickName(node: Element): string | null {
+  const fromAttr = node.getAttribute('data-category-name');
+  if (fromAttr) return fromAttr;
+  const text = node.textContent?.trim();
+  return text || null;
+}
+
+function readTickSvgX(node: Element): number | null {
+  const fromAttr = node.getAttribute('data-category-x') ?? node.getAttribute('x');
+  if (fromAttr == null) return null;
+  const tickX = Number(fromAttr);
+  return Number.isFinite(tickX) ? tickX : null;
+}
+
+function localXFromSvgCtm(clientX: number, clientY: number, shellEl: HTMLElement): number | null {
+  const svg = shellEl.querySelector('svg');
+  if (!(svg instanceof SVGSVGElement)) return null;
+  const pt = svg.createSVGPoint();
+  pt.x = clientX;
+  pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return null;
+  return pt.matrixTransform(ctm.inverse()).x;
+}
+
+function chartXToScreenY(chartX: number, shellEl: HTMLElement): number | null {
+  const svg = shellEl.querySelector('svg');
+  if (!(svg instanceof SVGSVGElement)) return null;
+  const pt = svg.createSVGPoint();
+  pt.x = chartX;
+  pt.y = 0;
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return null;
+  return pt.matrixTransform(ctm).y;
+}
+
+function pickIndexFromPlotFormula(
+  localX: number,
   chartWidth: number,
   dataLength: number,
   pointWidth: number,
   searchActive: boolean
-): number | null {
-  if (dataLength === 0) return null;
-  const surface = shellEl.querySelector('.recharts-surface') as SVGSVGElement | null;
-  if (!surface) return null;
-
-  const pt = surface.createSVGPoint();
-  pt.x = clientX;
-  pt.y = clientY;
-  const inv = surface.getScreenCTM()?.inverse();
-  if (!inv) return null;
-  const { x: svgX } = pt.matrixTransform(inv);
-
+): number {
+  const margin = CHART_MARGIN_FULLSCREEN;
   const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
-  const innerW =
-    chartWidth - CHART_MARGIN.left - CHART_MARGIN.right - Y_AXIS_WIDTH - yAxisRight;
+  const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
   const halfPoint = pointWidth / 2;
-  const plotStart = CHART_MARGIN.left + Y_AXIS_WIDTH + halfPoint;
+  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
 
-  let idx: number;
-  if (dataLength <= 1) {
-    idx = 0;
-  } else {
-    const step = (innerW - 2 * halfPoint) / (dataLength - 1);
-    idx = Math.round((svgX - plotStart) / step);
+  if (dataLength <= 1) return 0;
+  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
+  const idx = Math.round((localX - plotStart) / step);
+  return Math.max(0, Math.min(dataLength - 1, idx));
+}
+
+type SlotPickAxis = 'x' | 'y';
+
+function pickNearestSlot(
+  clientX: number,
+  clientY: number,
+  shellEl: HTMLElement,
+  axis: SlotPickAxis,
+  chartWidth: number,
+  dataLength: number,
+  pointWidth: number,
+  searchActive: boolean
+): number {
+  const shellRect = shellEl.getBoundingClientRect();
+  let bestIndex = 0;
+  let bestDist = Infinity;
+
+  for (let i = 0; i < dataLength; i++) {
+    const slotX = categoryCenterX(i, chartWidth, dataLength, pointWidth, searchActive, true);
+    let dist: number;
+    if (axis === 'x') {
+      dist = Math.abs(clientX - (shellRect.left + slotX));
+    } else {
+      const screenY = chartXToScreenY(slotX, shellEl);
+      if (screenY == null) continue;
+      dist = Math.abs(clientY - screenY);
+    }
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestIndex = i;
+    }
   }
-  if (idx < 0 || idx >= dataLength) return null;
-  return idx;
+
+  if (bestDist === Infinity && axis === 'y') {
+    const localX = localXFromSvgCtm(clientX, clientY, shellEl);
+    if (localX != null) {
+      return pickIndexFromPlotFormula(localX, chartWidth, dataLength, pointWidth, searchActive);
+    }
+  }
+
+  return bestIndex;
+}
+
+function pickRotatedCategoryFromTicks(
+  clientY: number,
+  shellEl: HTMLElement,
+  categoryNames: readonly string[]
+): number | null {
+  const ticks = queryCategoryTickNodes(shellEl);
+  if (ticks.length === 0) return null;
+
+  let bestName: string | null = null;
+  let bestDist = Infinity;
+
+  for (const node of ticks) {
+    const name = readTickName(node);
+    if (!name || categoryNames.indexOf(name) < 0) continue;
+    const rect = node.getBoundingClientRect();
+    const dist = Math.abs(clientY - (rect.top + rect.height / 2));
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestName = name;
+    }
+  }
+
+  if (bestName == null) return null;
+  const index = categoryNames.indexOf(bestName);
+  return index >= 0 ? index : null;
+}
+
+function tooltipAnchorX(
+  index: number,
+  shellEl: HTMLElement,
+  categoryNames: readonly string[],
+  chartWidth: number,
+  dataLength: number,
+  pointWidth: number,
+  searchActive: boolean
+): number {
+  const name = categoryNames[index];
+
+  if (isFullscreenCssRotated(shellEl)) {
+    const tickNode = queryCategoryTickNodes(shellEl).find((node) => readTickName(node) === name);
+    return (
+      (tickNode ? readTickSvgX(tickNode) : null) ??
+      categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true)
+    );
+  }
+
+  const shellRect = shellEl.getBoundingClientRect();
+  for (const node of queryCategoryTickNodes(shellEl)) {
+    if (readTickName(node) !== name) continue;
+    const rect = node.getBoundingClientRect();
+    return rect.left + rect.width / 2 - shellRect.left;
+  }
+
+  return categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true);
+}
+
+function pickCategoryAtPointer(
+  clientX: number,
+  clientY: number,
+  shellEl: HTMLElement,
+  chartWidth: number,
+  categoryNames: readonly string[],
+  pointWidth: number,
+  searchActive: boolean,
+  tapToInspect: boolean
+): CategoryPick | null {
+  const dataLength = categoryNames.length;
+  if (!tapToInspect || dataLength === 0) return null;
+
+  const index = isFullscreenCssRotated(shellEl)
+    ? (pickRotatedCategoryFromTicks(clientY, shellEl, categoryNames) ??
+      pickNearestSlot(
+        clientX,
+        clientY,
+        shellEl,
+        'y',
+        chartWidth,
+        dataLength,
+        pointWidth,
+        searchActive
+      ))
+    : pickNearestSlot(
+        clientX,
+        clientY,
+        shellEl,
+        'x',
+        chartWidth,
+        dataLength,
+        pointWidth,
+        searchActive
+      );
+
+  return {
+    index,
+    tooltipLeft: tooltipAnchorX(
+      index,
+      shellEl,
+      categoryNames,
+      chartWidth,
+      dataLength,
+      pointWidth,
+      searchActive
+    ),
+  };
 }
 
 export function StatsScrollChart({
@@ -232,9 +468,11 @@ export function StatsScrollChart({
       ),
     [t]
   );
-  const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
-  const shellRef = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState<CategoryPick | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null) as MutableRefObject<HTMLDivElement | null>;
   const tapStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastPickAtRef = useRef(0);
+  const tapInspectCleanupRef = useRef<(() => void) | null>(null);
   const balanceGradientId = useId().replace(/:/g, '');
   const netGradientId = useId().replace(/:/g, '');
   const incomeStroke = chartStrokeForType('income', scheme);
@@ -249,10 +487,26 @@ export function StatsScrollChart({
   );
 
   const chartData = useMemo(() => rows.map(chartRowToSeries), [rows]);
+  const categoryNames = useMemo(() => chartData.map((row) => String(row.name)), [chartData]);
 
   useEffect(() => {
-    setPinnedIndex(null);
+    setPinned(null);
   }, [tapToInspect, mode, searchActive, chartData.length]);
+
+  useEffect(() => {
+    if (!tapToInspect) return;
+    const el = shellRef.current?.closest('.stats-chart-scroll');
+    if (!el) return;
+    let prevScrollLeft = el.scrollLeft;
+    const onScroll = () => {
+      if (Math.abs(el.scrollLeft - prevScrollLeft) > SCROLL_CLEAR_THRESHOLD) {
+        setPinned(null);
+      }
+      prevScrollLeft = el.scrollLeft;
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [tapToInspect]);
 
   const chartWidth = Math.max(chartData.length * pointWidth, 320);
   const halfPoint = pointWidth / 2;
@@ -264,76 +518,204 @@ export function StatsScrollChart({
   const rightTicks = useMemo(() => axisTickValues(rightDomain, 4), [rightDomain]);
 
   const renderTooltip = useCallback(
-    (props: { active?: boolean; payload?: TooltipPayload; label?: string | number }) => {
-      if (tapToInspect && pinnedIndex != null) {
-        const row = chartData[pinnedIndex];
-        if (!row) return null;
-        return (
-          <StatsChartTooltip
-            active
-            payload={buildTooltipPayload(row, searchActive, hiddenSeries)}
-            label={row.name}
-            scheme={scheme}
-            locale={locale}
-            seriesLabels={seriesLabels}
-          />
-        );
-      }
-      return (
-        <StatsChartTooltip
-          active={props.active}
-          payload={props.payload}
-          label={props.label}
-          scheme={scheme}
-          locale={locale}
-          seriesLabels={seriesLabels}
-        />
-      );
-    },
-    [scheme, locale, seriesLabels, tapToInspect, pinnedIndex, chartData, searchActive, hiddenSeries]
+    (props: { active?: boolean; payload?: TooltipPayload; label?: string | number }) => (
+      <StatsChartTooltip
+        active={props.active}
+        payload={props.payload}
+        label={props.label}
+        scheme={scheme}
+        locale={locale}
+        seriesLabels={seriesLabels}
+      />
+    ),
+    [scheme, locale, seriesLabels]
   );
 
-  const pickAtPointer = useCallback(
+  const applyPickAt = useCallback((pick: CategoryPick) => {
+    setPinned((prev) => (prev?.index === pick.index ? null : pick));
+  }, []);
+
+  const commitPick = useCallback(
+    (pick: CategoryPick) => {
+      const now = Date.now();
+      if (now - lastPickAtRef.current < PICK_DEBOUNCE_MS) return;
+      lastPickAtRef.current = now;
+      applyPickAt(pick);
+    },
+    [applyPickAt]
+  );
+
+  const tryPickAt = useCallback(
     (clientX: number, clientY: number) => {
       const shell = shellRef.current;
       if (!shell) return;
-      const idx = pickIndexFromChartPointer(
+      const pick = pickCategoryAtPointer(
         clientX,
         clientY,
         shell,
         chartWidth,
-        chartData.length,
+        categoryNames,
         pointWidth,
-        searchActive
+        searchActive,
+        tapToInspect
       );
-      if (idx == null) return;
-      setPinnedIndex((prev) => (prev === idx ? null : idx));
+      if (pick == null) return;
+      commitPick(pick);
     },
-    [chartData.length, chartWidth, pointWidth, searchActive]
+    [commitPick, categoryNames, chartWidth, pointWidth, searchActive, tapToInspect]
   );
 
-  const handleShellPointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (!tapToInspect || e.button !== 0) return;
-      tapStartRef.current = { x: e.clientX, y: e.clientY };
+  const handleChartPointer = useCallback(
+    (state: ChartPointerState, event: React.SyntheticEvent) => {
+      if (!tapToInspect) return;
+
+      const label = state.activeLabel;
+      if (!isCoarsePointer() && label != null) {
+        const index = categoryNames.indexOf(String(label));
+        const shell = shellRef.current;
+        if (index >= 0 && shell) {
+          commitPick({
+            index,
+            tooltipLeft: tooltipAnchorX(
+              index,
+              shell,
+              categoryNames,
+              chartWidth,
+              chartData.length,
+              pointWidth,
+              searchActive
+            ),
+          });
+          return;
+        }
+      }
+
+      const native = event.nativeEvent;
+      let clientX: number | undefined;
+      let clientY: number | undefined;
+      if (native instanceof MouseEvent) {
+        clientX = native.clientX;
+        clientY = native.clientY;
+      } else if (native instanceof TouchEvent) {
+        const touch = native.changedTouches[0] ?? native.touches[0];
+        if (touch) {
+          clientX = touch.clientX;
+          clientY = touch.clientY;
+        }
+      }
+      if (clientX == null || clientY == null) return;
+      tryPickAt(clientX, clientY);
     },
-    [tapToInspect]
+    [
+      tapToInspect,
+      categoryNames,
+      chartData.length,
+      chartWidth,
+      commitPick,
+      pointWidth,
+      searchActive,
+      tryPickAt,
+    ]
   );
 
-  const handleShellPointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      if (!tapToInspect || e.button !== 0 || !tapStartRef.current) return;
-      const start = tapStartRef.current;
-      tapStartRef.current = null;
-      const scrollEl = shellRef.current?.closest('.stats-chart-scroll');
-      if (scrollEl?.classList.contains('is-dragging')) return;
-      const dx = Math.abs(e.clientX - start.x);
-      const dy = Math.abs(e.clientY - start.y);
-      if (dx > 4 || dy > 4) return;
-      pickAtPointer(e.clientX, e.clientY);
+  const bindTapInspectListeners = useCallback(
+    (shell: HTMLDivElement | null) => {
+      tapInspectCleanupRef.current?.();
+      tapInspectCleanupRef.current = null;
+      if (!tapToInspect || !shell) return;
+
+      const scrollEl = shell.closest('.stats-chart-scroll') as HTMLElement | null;
+      const target = scrollEl ?? shell;
+
+      const onTouchStart = (e: TouchEvent) => {
+        const touch = e.touches[0];
+        if (!touch) return;
+        tapStartRef.current = { x: touch.clientX, y: touch.clientY };
+      };
+
+      const onTouchMove = (e: TouchEvent) => {
+        void e;
+      };
+
+      const onTouchEnd = (e: TouchEvent) => {
+        const touch = e.changedTouches[0];
+        if (!touch || !tapStartRef.current) return;
+        const start = tapStartRef.current;
+        tapStartRef.current = null;
+
+        const threshold = tapDisplacementThreshold();
+        if (
+          Math.abs(touch.clientX - start.x) > threshold ||
+          Math.abs(touch.clientY - start.y) > threshold
+        ) {
+          return;
+        }
+        tryPickAt(touch.clientX, touch.clientY);
+      };
+
+      const capture = { passive: true, capture: true as const };
+      target.addEventListener('touchstart', onTouchStart, capture);
+      target.addEventListener('touchmove', onTouchMove, capture);
+      target.addEventListener('touchend', onTouchEnd, capture);
+      tapInspectCleanupRef.current = () => {
+        target.removeEventListener('touchstart', onTouchStart, capture);
+        target.removeEventListener('touchmove', onTouchMove, capture);
+        target.removeEventListener('touchend', onTouchEnd, capture);
+      };
     },
-    [tapToInspect, pickAtPointer]
+    [tapToInspect, tryPickAt]
   );
+
+  const setShellRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      shellRef.current = node;
+      bindTapInspectListeners(node);
+    },
+    [bindTapInspectListeners]
+  );
+
+  useEffect(() => {
+    if (tapToInspect && shellRef.current) {
+      bindTapInspectListeners(shellRef.current);
+    }
+    if (!tapToInspect) {
+      bindTapInspectListeners(null);
+    }
+  }, [tapToInspect, bindTapInspectListeners]);
+
+  useEffect(() => {
+    return () => {
+      tapInspectCleanupRef.current?.();
+      tapInspectCleanupRef.current = null;
+    };
+  }, []);
+
+  const pinnedRow = pinned != null ? chartData[pinned.index] : null;
+  const tapTooltipRef = useRef<HTMLDivElement | null>(null);
+  const [tapTooltipStyle, setTapTooltipStyle] = useState(() => ({
+    left: 0,
+    top: 8,
+    transform: 'none',
+  }));
+
+  useLayoutEffect(() => {
+    if (!tapToInspect || pinned == null) return;
+    const measured = tapTooltipRef.current?.offsetWidth ?? 0;
+    const width = measured > 0 ? measured : 280;
+    setTapTooltipStyle(
+      computeTapInspectTooltipStyle(pinned.tooltipLeft, width, chartWidth)
+    );
+  }, [
+    tapToInspect,
+    pinned,
+    chartWidth,
+    pinnedRow,
+    searchActive,
+    hiddenSeries,
+    scheme,
+    locale,
+    seriesLabels,
+  ]);
 
   const renderXAxisTick = useCallback(
     (props: { x?: number; y?: number; payload?: { value?: string } }) => (
@@ -358,17 +740,32 @@ export function StatsScrollChart({
 
   return (
     <div
-      ref={shellRef}
+      ref={setShellRef}
       style={{ width: chartWidth, height }}
-      className={tapToInspect ? 'cursor-pointer select-none' : undefined}
-      onPointerDown={tapToInspect ? handleShellPointerDown : undefined}
-      onPointerUp={tapToInspect ? handleShellPointerUp : undefined}
+      className={tapToInspect ? 'relative cursor-pointer select-none stats-chart-tap-inspect' : undefined}
     >
+      {tapToInspect && pinned && pinnedRow && (
+        <div
+          ref={tapTooltipRef}
+          className="absolute z-30 pointer-events-none w-max max-w-[min(20rem,calc(100%-1rem))]"
+          style={tapTooltipStyle}
+        >
+          <StatsChartTooltip
+            active
+            payload={buildTooltipPayload(pinnedRow, searchActive, hiddenSeries)}
+            label={pinnedRow.name}
+            scheme={scheme}
+            locale={locale}
+            seriesLabels={seriesLabels}
+          />
+        </div>
+      )}
       <ComposedChart
         width={chartWidth}
         height={height}
         data={chartData}
         margin={{ top: chartMargin.top, right: chartMargin.right, left: chartMargin.left, bottom: chartMargin.bottom }}
+        onClick={tapToInspect && !isCoarsePointer() ? handleChartPointer : undefined}
       >
       <defs>
         <linearGradient id={netGradientId} x1="0" y1="0" x2="0" y2="1">
@@ -385,8 +782,8 @@ export function StatsScrollChart({
         dataKey="name"
         type="category"
         scale="point"
-        interval={tapToInspect ? 'equidistantPreserveStart' : 'preserveStartEnd'}
-        minTickGap={tapToInspect ? 44 : 32}
+        interval={tapToInspect ? 0 : 'preserveStartEnd'}
+        minTickGap={tapToInspect ? 24 : 32}
         tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
         axisLine={false}
         tickLine={false}
@@ -422,14 +819,23 @@ export function StatsScrollChart({
         strokeDasharray="4 4"
         ifOverflow="extendDomain"
       />
-      <Tooltip
-        content={renderTooltip}
-        trigger={tapToInspect ? 'click' : 'hover'}
-        active={tapToInspect && pinnedIndex != null ? true : undefined}
-        defaultIndex={tapToInspect && pinnedIndex != null ? pinnedIndex : undefined}
-        cursor={{ stroke: '#8a9390', strokeWidth: 1, strokeDasharray: '4 4' }}
-        wrapperStyle={{ pointerEvents: 'none', zIndex: 20 }}
-      />
+      {tapToInspect && pinnedRow && (
+        <ReferenceLine
+          x={pinnedRow.name}
+          yAxisId="left"
+          stroke="#8a9390"
+          strokeWidth={1}
+          strokeDasharray="4 4"
+        />
+      )}
+      {!tapToInspect && (
+        <Tooltip
+          content={renderTooltip}
+          trigger="hover"
+          cursor={{ stroke: '#8a9390', strokeWidth: 1, strokeDasharray: '4 4' }}
+          wrapperStyle={{ pointerEvents: 'none', zIndex: 20 }}
+        />
+      )}
       {!searchActive && (
         <Area
           yAxisId="left"

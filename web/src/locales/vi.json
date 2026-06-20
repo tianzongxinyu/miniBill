@@ -24,8 +24,8 @@
     "redirecting": "Đang chuyển hướng…",
     "createNamed": "Tạo \"{{name}}\"",
     "logoutTitle": "{{username}} · Đăng xuất",
-    "yearMonth": "Tháng {{month}}/{{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Chọn ngày",
@@ -33,7 +33,12 @@
     "directory": "Thư mục: {{path}}",
     "errorPrefix": "Lỗi: {{message}}",
     "file": "Tệp: {{name}}",
-    "cannotLoad": "Không thể tải"
+    "cannotLoad": "Không thể tải",
+    "loadFailed": "Tải thất bại",
+    "saveFailed": "Lưu thất bại",
+    "deleteFailed": "Xóa thất bại",
+    "removeItem": "Xóa {{name}}",
+    "removeContact": "Xóa liên hệ {{name}}"
   },
   "nav": {
     "home": "Trang chủ",
@@ -41,9 +46,9 @@
     "stats": "Thống kê",
     "profile": "Hồ sơ",
     "logout": "Đăng xuất",
-    "expandSidebar": "Mở rộng thanh bên",
-    "collapseSidebar": "Thu gọn thanh bên",
-    "collapseSidebarLabel": "Thu gọn thanh bên"
+    "expandSidebar": "Mở rộng",
+    "collapseSidebar": "Thu gọn",
+    "collapseSidebarLabel": "Thu gọn"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -60,14 +65,14 @@
     "invalidAuth": "Phản hồi đăng nhập không hợp lệ",
     "passwordMismatch": "Mật khẩu không khớp",
     "getStarted": "Bắt đầu",
-    "registerSubtitle": "Tạo tài khoản và bắt đầu sổ cái riêng. Mọi dữ liệu ở trên máy chủ của bạn.",
+    "registerSubtitle": "Sổ self-hosted. Dữ liệu trên máy chủ của bạn.",
     "registerHints": "Tên người dùng 3–32 ký tự · Mật khẩu ít nhất 6 ký tự",
     "registerAccount": "Tạo tài khoản",
     "fillInfo": "Điền thông tin bên dưới",
     "usernamePlaceholder": "Tên người dùng 3–32 ký tự",
     "passwordPlaceholder": "Mật khẩu ít nhất 6 ký tự",
     "confirmPassword": "Xác nhận mật khẩu",
-    "heroTagline": "Sổ cái cá nhân nhẹ, tự lưu trữ. Đơn giản, rõ ràng — dữ liệu luôn ở với bạn.",
+    "heroTagline": "Sổ nhẹ self-hosted. Dữ liệu ở với bạn.",
     "heroBadges": "Tự lưu trữ · Đa người dùng · Mã nguồn mở",
     "usernameLength": "Tên người dùng phải có 3–32 ký tự",
     "usernameChars": "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Thả để làm mới",
     "refreshing": "Đang làm mới",
     "emptyTitle": "Chưa có hóa đơn",
-    "emptyHint": "Thêm giao dịch và tóm tắt tháng sẽ hiện ở đây",
-    "loadFailed": "Tải thất bại"
+    "emptyHint": "Thêm giao dịch và tóm tắt tháng sẽ hiện ở đây"
   },
   "transactions": {
     "empty": "Không có giao dịch",
     "noMatch": "Không có giao dịch khớp",
-    "prevMonth": "Tháng trước",
-    "nextMonth": "Tháng sau",
-    "addOne": "Thêm giao dịch",
+    "prevMonth": "Trước",
+    "nextMonth": "Sau",
+    "addOne": "Thêm",
     "searchPlaceholder": "Ghi chú · Thẻ · Liên hệ",
     "searchPlaceholderWithChips": "Từ khóa ghi chú",
     "clearSearch": "Xóa tìm kiếm",
     "loadingSummary": "Đang tải tóm tắt tháng…",
     "loadingSummaryAria": "Đang tải tóm tắt tháng",
-    "monthSummaryAria": "Tóm tắt tháng {{month}}/{{year}}",
+    "monthSummaryAria": "Tóm tắt {{period}}",
     "loadSummaryFailed": "Tải tóm tắt tháng thất bại",
+    "emptyExpense": "Không có chi tiêu tháng này",
+    "emptyIncome": "Không có thu nhập tháng này",
+    "filterExpenseAria": "Lọc chi tiêu, chạm lại để bỏ lọc",
+    "filterIncomeAria": "Lọc thu nhập, chạm lại để bỏ lọc",
     "dailyExpenseTag": "Chi tiêu hàng ngày"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "Theo năm",
     "fullscreen": "Toàn màn hình",
     "loadMore": "Đang tải thêm…",
-    "scrollHint": "Vuốt hoặc kéo biểu đồ để xem dữ liệu cũ hơn hoặc mới hơn",
+    "scrollHint": "Vuốt biểu đồ để xem thêm",
     "totalExpense": "Tổng chi tiêu",
     "totalIncome": "Tổng thu nhập",
     "netIncome": "Thu nhập ròng",
@@ -128,7 +136,6 @@
     "change": "Đổi",
     "passwordChanged": "Đã cập nhật mật khẩu",
     "colorSchemeUpdated": "Đã cập nhật bảng màu",
-    "saveFailed": "Lưu thất bại",
     "failed": "Thất bại",
     "language": "Ngôn ngữ",
     "languageSearch": "Tìm ngôn ngữ"
@@ -144,11 +151,16 @@
     "changeColor": "Đổi màu thẻ \"{{name}}\"",
     "deleteTag": "Xóa thẻ \"{{name}}\"",
     "dailyExpense": "Chi tiêu hàng ngày",
-    "loadFailed": "Tải thất bại",
     "addFailed": "Thêm thất bại",
     "updateFailed": "Cập nhật thất bại",
     "colorSaveFailed": "Lưu màu thất bại",
-    "deleteFailed": "Xóa thất bại"
+    "colorPicker": {
+      "pickBg": "Chọn nền",
+      "refresh": "Màu khác",
+      "applyPresetAria": "Áp dụng màu gợi ý",
+      "customBg": "Nền tùy chỉnh",
+      "apply": "Áp dụng"
+    }
   },
   "contacts": {
     "namePlaceholder": "Tên",
@@ -161,8 +173,6 @@
     "deleteAria": "Xóa liên hệ \"{{name}}\"",
     "sent": "Đã gửi",
     "received": "Đã nhận",
-    "loadFailed": "Tải thất bại",
-    "deleteFailed": "Xóa thất bại",
     "failed": "Thất bại"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "tạo {{count}} liên hệ"
   },
   "backup": {
-    "weekdaySun": "Chủ nhật",
-    "weekdayMon": "Thứ hai",
-    "weekdayTue": "Thứ ba",
-    "weekdayWed": "Thứ tư",
-    "weekdayThu": "Thứ năm",
-    "weekdayFri": "Thứ sáu",
-    "weekdaySat": "Thứ bảy",
+    "weekdaySun": "CN",
+    "weekdayMon": "T2",
+    "weekdayTue": "T3",
+    "weekdayWed": "T4",
+    "weekdayThu": "T5",
+    "weekdayFri": "T6",
+    "weekdaySat": "T7",
     "neverBackedUp": "Chưa từng sao lưu",
     "lastBackup": "Sao lưu lần cuối: {{time}}",
     "saved": "Đã lưu",
     "backupComplete": "Sao lưu xong: {{filename}}",
     "backupFailed": "Sao lưu thất bại",
-    "loadFailed": "Tải thất bại",
     "backupDir": "Thư mục sao lưu",
     "configured": "Đã cấu hình: {{path}}",
-    "dirNotConfigured": "Thư mục sao lưu chưa được cấu hình. Bạn có thể lưu cài đặt lịch bên dưới; để sao lưu thực tế, đặt đường dẫn trong Feiniu OS App Center → MiniBill → App settings → Runtime, hoặc đặt biến môi trường cục bộ / trong Docker.",
+    "dirNotConfigured": "Chưa cấu hình thư mục sao lưu. Cài đặt app hoặc biến môi trường.",
     "scheduledBackup": "Sao lưu theo lịch",
     "enable": "Bật",
     "interval": "Chu kỳ",
@@ -242,8 +251,7 @@
     "saveSettings": "Lưu cài đặt",
     "runNow": "Sao lưu ngay",
     "runNowDescription": "Xuất CSV sổ cái hiện tại và nén thành zip trong thư mục sao lưu.",
-    "running": "Đang sao lưu…",
-    "saveFailed": "Lưu thất bại"
+    "running": "Đang sao lưu…"
   },
   "add": {
     "editTitle": "Sửa giao dịch",
@@ -256,11 +264,8 @@
     "note": "Ghi chú",
     "delete": "Xóa",
     "confirmDeleteTitle": "Xác nhận xóa",
-    "confirmDeleteMessage": "Không thể hoàn tác. Xóa giao dịch này?",
-    "invalidAmount": "Nhập số tiền hợp lệ",
-    "saveFailed": "Lưu thất bại",
-    "deleteFailed": "Xóa thất bại",
-    "loadFailed": "Tải thất bại"
+    "confirmDeleteMessage": "Không hoàn tác. Xóa giao dịch?",
+    "invalidAmount": "Nhập số tiền hợp lệ"
   },
   "balance": {
     "registerTitle": "Ghi số dư",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Ghi đè mục hiện có",
     "overwriteWithAmount": "{{month}} đã có số dư ({{amount}}). Ghi đè?",
     "overwriteWithoutAmount": "{{month}} đã có mục số dư. Ghi đè?",
-    "confirmOverwrite": "Xác nhận ghi đè",
-    "saveFailed": "Lưu thất bại",
-    "loadFailed": "Tải thất bại"
+    "confirmOverwrite": "Xác nhận ghi đè"
   },
   "picker": {
     "prevYearGroup": "Khoảng năm trước",
     "nextYearGroup": "Khoảng năm sau",
     "prevYear": "Năm trước",
     "nextYear": "Năm sau",
-    "prevMonth": "Tháng trước",
-    "nextMonth": "Tháng sau",
+    "prevMonth": "Trước",
+    "nextMonth": "Sau",
     "weekdayMon": "T2",
     "weekdayTue": "T3",
     "weekdayWed": "T4",
@@ -327,8 +330,7 @@
     "csvTooLarge": "File CSV quá lớn",
     "csvReadFailed": "Không thể đọc file",
     "backupDirMissing": "Thư mục sao lưu chưa được cấu hình",
-    "backupFileRequired": "Vui lòng chọn file sao lưu",
-    "loadFailed": "Tải thất bại"
+    "backupFileRequired": "Vui lòng chọn file sao lưu"
   },
   "validation": {
     "dateAfterToday": "Ngày không thể sau hôm nay",

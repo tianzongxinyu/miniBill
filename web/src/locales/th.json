@@ -24,8 +24,8 @@
     "redirecting": "กำลังเปลี่ยนเส้นทาง…",
     "createNamed": "สร้าง \"{{name}}\"",
     "logoutTitle": "{{username}} · ออกจากระบบ",
-    "yearMonth": "เดือน {{month}}/{{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "เลือกวันที่",
@@ -33,7 +33,12 @@
     "directory": "ไดเรกทอรี: {{path}}",
     "errorPrefix": "ข้อผิดพลาด: {{message}}",
     "file": "ไฟล์: {{name}}",
-    "cannotLoad": "โหลดไม่ได้"
+    "cannotLoad": "โหลดไม่ได้",
+    "loadFailed": "โหลดไม่สำเร็จ",
+    "saveFailed": "บันทึกไม่สำเร็จ",
+    "deleteFailed": "ลบไม่สำเร็จ",
+    "removeItem": "ลบ {{name}}",
+    "removeContact": "ลบผู้ติดต่อ {{name}}"
   },
   "nav": {
     "home": "หน้าแรก",
@@ -41,9 +46,9 @@
     "stats": "สถิติ",
     "profile": "โปรไฟล์",
     "logout": "ออกจากระบบ",
-    "expandSidebar": "ขยายแถบด้านข้าง",
-    "collapseSidebar": "ยุบแถบด้านข้าง",
-    "collapseSidebarLabel": "ยุบแถบด้านข้าง"
+    "expandSidebar": "ขยาย",
+    "collapseSidebar": "ยุบ",
+    "collapseSidebarLabel": "ยุบ"
   },
   "auth": {
     "welcomeBack": "ยินดีต้อนรับกลับ",
@@ -60,14 +65,14 @@
     "invalidAuth": "การตอบกลับการเข้าสู่ระบบไม่ถูกต้อง",
     "passwordMismatch": "รหัสผ่านไม่ตรงกัน",
     "getStarted": "เริ่มต้น",
-    "registerSubtitle": "สร้างบัญชีและเริ่มสมุดบัญชีส่วนตัว ข้อมูลทั้งหมดอยู่บนเซิร์ฟเวอร์ของคุณ",
+    "registerSubtitle": "สมุด self-hosted ข้อมูลอยู่บนเซิร์ฟเวอร์ของคุณ",
     "registerHints": "ชื่อผู้ใช้ 3–32 ตัวอักษร · รหัสผ่านอย่างน้อย 6 ตัวอักษร",
     "registerAccount": "สร้างบัญชี",
     "fillInfo": "กรอกรายละเอียดด้านล่าง",
     "usernamePlaceholder": "ชื่อผู้ใช้ 3–32 ตัวอักษร",
     "passwordPlaceholder": "รหัสผ่านอย่างน้อย 6 ตัวอักษร",
     "confirmPassword": "ยืนยันรหัสผ่าน",
-    "heroTagline": "สมุดบัญชีส่วนตัวเบา ๆ ที่โฮสต์เอง เรียบง่ายและชัดเจน — ข้อมูลของคุณอยู่กับคุณ",
+    "heroTagline": "สมุดบัญชีเบา self-hosted ข้อมูลอยู่กับคุณ",
     "heroBadges": "โฮสต์เอง · หลายผู้ใช้ · โอเพนซอร์ส",
     "usernameLength": "ชื่อผู้ใช้ต้องมี 3–32 ตัวอักษร",
     "usernameChars": "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดล่าง",
@@ -78,22 +83,25 @@
     "releaseRefresh": "ปล่อยเพื่อรีเฟรช",
     "refreshing": "กำลังรีเฟรช",
     "emptyTitle": "ยังไม่มีบิล",
-    "emptyHint": "เพิ่มรายการแล้วสรุปรายเดือนจะแสดงที่นี่",
-    "loadFailed": "โหลดไม่สำเร็จ"
+    "emptyHint": "เพิ่มรายการแล้วสรุปรายเดือนจะแสดงที่นี่"
   },
   "transactions": {
     "empty": "ไม่มีรายการ",
     "noMatch": "ไม่มีรายการที่ตรง",
-    "prevMonth": "เดือนก่อน",
-    "nextMonth": "เดือนถัดไป",
-    "addOne": "เพิ่มรายการ",
+    "prevMonth": "ก่อน",
+    "nextMonth": "ถัดไป",
+    "addOne": "เพิ่ม",
     "searchPlaceholder": "หมายเหตุ · แท็ก · ผู้ติดต่อ",
     "searchPlaceholderWithChips": "คำสำคัญหมายเหตุ",
     "clearSearch": "ล้างการค้นหา",
     "loadingSummary": "กำลังโหลดสรุปรายเดือน…",
     "loadingSummaryAria": "กำลังโหลดสรุปรายเดือน",
-    "monthSummaryAria": "สรุป {{month}}/{{year}}",
+    "monthSummaryAria": "สรุป {{period}}",
     "loadSummaryFailed": "โหลดสรุปรายเดือนไม่สำเร็จ",
+    "emptyExpense": "ไม่มีรายจ่ายเดือนนี้",
+    "emptyIncome": "ไม่มีรายรับเดือนนี้",
+    "filterExpenseAria": "กรองรายจ่าย แตะอีกครั้งเพื่อยกเลิก",
+    "filterIncomeAria": "กรองรายรับ แตะอีกครั้งเพื่อยกเลิก",
     "dailyExpenseTag": "ค่าใช้จ่ายรายวัน"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "ตามปี",
     "fullscreen": "เต็มหน้าจอ",
     "loadMore": "กำลังโหลดเพิ่ม…",
-    "scrollHint": "ปัดหรือลากกราฟเพื่อดูข้อมูลเก่ากว่าหรือใหม่กว่า",
+    "scrollHint": "ปัดกราฟเพื่อดูข้อมูล",
     "totalExpense": "รายจ่ายรวม",
     "totalIncome": "รายรับรวม",
     "netIncome": "รายรับสุทธิ",
@@ -128,7 +136,6 @@
     "change": "เปลี่ยน",
     "passwordChanged": "อัปเดตรหัสผ่านแล้ว",
     "colorSchemeUpdated": "อัปเดตโครงสีแล้ว",
-    "saveFailed": "บันทึกไม่สำเร็จ",
     "failed": "ล้มเหลว",
     "language": "ภาษา",
     "languageSearch": "ค้นหาภาษา"
@@ -144,11 +151,16 @@
     "changeColor": "เปลี่ยนสีแท็ก \"{{name}}\"",
     "deleteTag": "ลบแท็ก \"{{name}}\"",
     "dailyExpense": "ค่าใช้จ่ายรายวัน",
-    "loadFailed": "โหลดไม่สำเร็จ",
     "addFailed": "เพิ่มไม่สำเร็จ",
     "updateFailed": "อัปเดตไม่สำเร็จ",
     "colorSaveFailed": "บันทึกสีไม่สำเร็จ",
-    "deleteFailed": "ลบไม่สำเร็จ"
+    "colorPicker": {
+      "pickBg": "เลือกพื้นหลัง",
+      "refresh": "สีชุดใหม่",
+      "applyPresetAria": "ใช้สีที่แนะนำ",
+      "customBg": "พื้นหลังกำหนดเอง",
+      "apply": "ใช้"
+    }
   },
   "contacts": {
     "namePlaceholder": "ชื่อ",
@@ -161,8 +173,6 @@
     "deleteAria": "ลบผู้ติดต่อ \"{{name}}\"",
     "sent": "ส่งแล้ว",
     "received": "รับแล้ว",
-    "loadFailed": "โหลดไม่สำเร็จ",
-    "deleteFailed": "ลบไม่สำเร็จ",
     "failed": "ล้มเหลว"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "สร้าง {{count}} ผู้ติดต่อ"
   },
   "backup": {
-    "weekdaySun": "วันอาทิตย์",
-    "weekdayMon": "วันจันทร์",
-    "weekdayTue": "วันอังคาร",
-    "weekdayWed": "วันพุธ",
-    "weekdayThu": "วันพฤหัสบดี",
-    "weekdayFri": "วันศุกร์",
-    "weekdaySat": "วันเสาร์",
+    "weekdaySun": "อา",
+    "weekdayMon": "จ",
+    "weekdayTue": "อ",
+    "weekdayWed": "พ",
+    "weekdayThu": "พฤ",
+    "weekdayFri": "ศ",
+    "weekdaySat": "ส",
     "neverBackedUp": "ยังไม่เคยสำรอง",
     "lastBackup": "สำรองล่าสุด: {{time}}",
     "saved": "บันทึกแล้ว",
     "backupComplete": "สำรองเสร็จ: {{filename}}",
     "backupFailed": "สำรองไม่สำเร็จ",
-    "loadFailed": "โหลดไม่สำเร็จ",
     "backupDir": "ไดเรกทอรีสำรอง",
     "configured": "ตั้งค่าแล้ว: {{path}}",
-    "dirNotConfigured": "ยังไม่ได้ตั้งค่าไดเรกทอรีสำรอง คุณสามารถบันทึกการตั้งค่าตามกำหนดด้านล่าง สำหรับสำรองจริง ตั้ง path ใน Feiniu OS App Center → MiniBill → App settings → Runtime หรือตั้ง env var ในเครื่อง / Docker",
+    "dirNotConfigured": "ยังไม่ตั้งโฟลเดอร์สำรอง ตั้งในแอปหรือตัวแปรสภาพแวดล้อม",
     "scheduledBackup": "สำรองตามกำหนด",
     "enable": "เปิดใช้",
     "interval": "ช่วงเวลา",
@@ -242,8 +251,7 @@
     "saveSettings": "บันทึกการตั้งค่า",
     "runNow": "สำรองตอนนี้",
     "runNowDescription": "ส่งออก CSV สมุดบัญชีปัจจุบันและบีบอัดเป็น zip ในไดเรกทอรีสำรอง",
-    "running": "กำลังสำรอง…",
-    "saveFailed": "บันทึกไม่สำเร็จ"
+    "running": "กำลังสำรอง…"
   },
   "add": {
     "editTitle": "แก้ไขรายการ",
@@ -256,11 +264,8 @@
     "note": "หมายเหตุ",
     "delete": "ลบ",
     "confirmDeleteTitle": "ยืนยันการลบ",
-    "confirmDeleteMessage": "ย้อนกลับไม่ได้ ลบรายการนี้?",
-    "invalidAmount": "ใส่จำนวนเงินที่ถูกต้อง",
-    "saveFailed": "บันทึกไม่สำเร็จ",
-    "deleteFailed": "ลบไม่สำเร็จ",
-    "loadFailed": "โหลดไม่สำเร็จ"
+    "confirmDeleteMessage": "ยกเลิกไม่ได้ ลบรายการ?",
+    "invalidAmount": "ใส่จำนวนเงินที่ถูกต้อง"
   },
   "balance": {
     "registerTitle": "ลงทะเบียนยอดคงเหลือ",
@@ -276,17 +281,15 @@
     "overwriteTitle": "แทนที่รายการที่มี",
     "overwriteWithAmount": "{{month}} มียอดคงเหลือ ({{amount}}) แล้ว แทนที่?",
     "overwriteWithoutAmount": "{{month}} มียอดคงเหลือแล้ว แทนที่?",
-    "confirmOverwrite": "ยืนยันแทนที่",
-    "saveFailed": "บันทึกไม่สำเร็จ",
-    "loadFailed": "โหลดไม่สำเร็จ"
+    "confirmOverwrite": "ยืนยันแทนที่"
   },
   "picker": {
     "prevYearGroup": "ช่วงปีก่อน",
     "nextYearGroup": "ช่วงปีถัดไป",
     "prevYear": "ปีก่อน",
     "nextYear": "ปีถัดไป",
-    "prevMonth": "เดือนก่อน",
-    "nextMonth": "เดือนถัดไป",
+    "prevMonth": "ก่อน",
+    "nextMonth": "ถัดไป",
     "weekdayMon": "จ",
     "weekdayTue": "อ",
     "weekdayWed": "พ",
@@ -327,8 +330,7 @@
     "csvTooLarge": "ไฟล์ CSV ใหญ่เกินไป",
     "csvReadFailed": "อ่านไฟล์ไม่ได้",
     "backupDirMissing": "ยังไม่ได้ตั้งค่าไดเรกทอรีสำรอง",
-    "backupFileRequired": "กรุณาเลือกไฟล์สำรอง",
-    "loadFailed": "โหลดไม่สำเร็จ"
+    "backupFileRequired": "กรุณาเลือกไฟล์สำรอง"
   },
   "validation": {
     "dateAfterToday": "วันที่ต้องไม่เกินวันนี้",

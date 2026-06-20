@@ -8,6 +8,7 @@ import { DailyExpenseAmount } from '@/components/ui/DailyExpenseAmount';
 import { Amount } from '@/components/ui/Amount';
 import { TagChip } from '@/components/ui/TagChip';
 import type { Transaction, TransactionTagItem } from '@/lib/api';
+import { formatISODate } from '@/lib/formatDate';
 import { contactDetailHref, transactionEditHref } from '@/lib/url';
 import { stashTransactionsScroll } from '@/lib/scroll';
 
@@ -26,7 +27,7 @@ function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
   return (
     <div className="flex justify-between gap-4 items-start">
       <div className="min-w-0 flex-1">
-        <div className="text-xs text-muted tabular-nums">{tx.transaction_date}</div>
+        <div className="text-xs text-muted tabular-nums">{formatISODate(tx.transaction_date)}</div>
         <div className="mt-1 min-h-[1.25rem]">
           {hasMeta ? (
             <div className="flex flex-wrap items-center gap-1.5">

@@ -5,6 +5,7 @@ import {
   type MonthSeriesPoint,
   type YearSeriesPoint,
 } from '@/lib/api';
+import { formatYearMonthShort } from '@/lib/formatDate';
 
 export type StatsChartRow = {
   key: string;
@@ -28,11 +29,6 @@ export const LEFT_AXIS_FILL = 0.7;
 
 export function isSeriesVisible(hiddenSeries: Set<string>, key: StatsSeriesKey) {
   return !hiddenSeries.has(key);
-}
-
-export function monthShortLabel(year: number, month: number) {
-  const yy = year % 100;
-  return `${yy}/${month}`;
 }
 
 function toYuan(cents: number) {
@@ -95,7 +91,7 @@ export function buildStatsChartRows(
       const prevRegistered = registeredByMonth.get(`${prev.year}-${prev.month}`);
       return {
         key: `${m.year}-${String(m.month).padStart(2, '0')}`,
-        shortLabel: monthShortLabel(m.year, m.month),
+        shortLabel: formatYearMonthShort({ year: m.year, month: m.month }),
         yearLabel: String(m.year),
         year: m.year,
         month: m.month,

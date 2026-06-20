@@ -24,8 +24,8 @@
     "redirecting": "Yönlendiriliyor…",
     "createNamed": "\"{{name}}\" oluştur",
     "logoutTitle": "{{username}} · Çıkış",
-    "yearMonth": "{{month}}.{{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Tarih seç",
@@ -33,7 +33,12 @@
     "directory": "Dizin: {{path}}",
     "errorPrefix": "Hata: {{message}}",
     "file": "Dosya: {{name}}",
-    "cannotLoad": "Yüklenemiyor"
+    "cannotLoad": "Yüklenemiyor",
+    "loadFailed": "Yükleme başarısız",
+    "saveFailed": "Kaydetme başarısız",
+    "deleteFailed": "Silme başarısız",
+    "removeItem": "{{name}} kaldır",
+    "removeContact": "Kişi {{name}} kaldır"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -41,9 +46,9 @@
     "stats": "İstatistikler",
     "profile": "Profil",
     "logout": "Çıkış",
-    "expandSidebar": "Kenar çubuğunu genişlet",
-    "collapseSidebar": "Kenar çubuğunu daralt",
-    "collapseSidebarLabel": "Kenar çubuğunu daralt"
+    "expandSidebar": "Genişlet",
+    "collapseSidebar": "Daralt",
+    "collapseSidebarLabel": "Daralt"
   },
   "auth": {
     "welcomeBack": "Tekrar hoş geldiniz",
@@ -60,14 +65,14 @@
     "invalidAuth": "Geçersiz giriş yanıtı",
     "passwordMismatch": "Parolalar eşleşmiyor",
     "getStarted": "Başlayın",
-    "registerSubtitle": "Hesap oluşturun ve özel defterinize başlayın. Tüm veriler sunucunuzda kalır.",
+    "registerSubtitle": "Self-hosted defter. Veriler sunucunuzda.",
     "registerHints": "Kullanıcı adı 3–32 karakter · Parola en az 6 karakter",
     "registerAccount": "Hesap oluştur",
     "fillInfo": "Aşağıdaki bilgileri doldurun",
     "usernamePlaceholder": "Kullanıcı adı 3–32 karakter",
     "passwordPlaceholder": "Parola en az 6 karakter",
     "confirmPassword": "Parolayı onayla",
-    "heroTagline": "Hafif, kendi barındırmalı kişisel defter. Basit ve net — verileriniz sizinle kalır.",
+    "heroTagline": "Hafif self-hosted defter. Veriler sizde.",
     "heroBadges": "Kendi barındırmalı · Çok kullanıcılı · Açık kaynak",
     "usernameLength": "Kullanıcı adı 3–32 karakter olmalı",
     "usernameChars": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Yenilemek için bırakın",
     "refreshing": "Yenileniyor",
     "emptyTitle": "Henüz fatura yok",
-    "emptyHint": "İşlem ekleyin, aylık özetler burada görünecek",
-    "loadFailed": "Yükleme başarısız"
+    "emptyHint": "İşlem ekleyin, aylık özetler burada görünecek"
   },
   "transactions": {
     "empty": "İşlem yok",
     "noMatch": "Eşleşen işlem yok",
-    "prevMonth": "Önceki ay",
-    "nextMonth": "Sonraki ay",
-    "addOne": "İşlem ekle",
+    "prevMonth": "Önceki",
+    "nextMonth": "Sonraki",
+    "addOne": "Ekle",
     "searchPlaceholder": "Not · Etiketler · Kişi",
     "searchPlaceholderWithChips": "Not anahtar kelimesi",
     "clearSearch": "Aramayı temizle",
     "loadingSummary": "Aylık özet yükleniyor…",
     "loadingSummaryAria": "Aylık özet yükleniyor",
-    "monthSummaryAria": "{{month}}/{{year}} özeti",
+    "monthSummaryAria": "{{period}} özeti",
     "loadSummaryFailed": "Aylık özet yüklenemedi",
+    "emptyExpense": "Bu ay gider yok",
+    "emptyIncome": "Bu ay gelir yok",
+    "filterExpenseAria": "Giderleri filtrele, temizlemek için tekrar dokun",
+    "filterIncomeAria": "Gelirleri filtrele, temizlemek için tekrar dokun",
     "dailyExpenseTag": "Günlük gider"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "Yıla göre",
     "fullscreen": "Tam ekran",
     "loadMore": "Daha fazla yükleniyor…",
-    "scrollHint": "Daha eski veya yeni verileri görmek için grafiği kaydırın veya sürükleyin",
+    "scrollHint": "Daha fazla veri için kaydır",
     "totalExpense": "Toplam gider",
     "totalIncome": "Toplam gelir",
     "netIncome": "Net gelir",
@@ -128,7 +136,6 @@
     "change": "Değiştir",
     "passwordChanged": "Parola güncellendi",
     "colorSchemeUpdated": "Renk şeması güncellendi",
-    "saveFailed": "Kaydetme başarısız",
     "failed": "Başarısız",
     "language": "Dil",
     "languageSearch": "Dil ara"
@@ -144,11 +151,16 @@
     "changeColor": "\"{{name}}\" etiketinin rengini değiştir",
     "deleteTag": "\"{{name}}\" etiketini sil",
     "dailyExpense": "Günlük gider",
-    "loadFailed": "Yükleme başarısız",
     "addFailed": "Ekleme başarısız",
     "updateFailed": "Güncelleme başarısız",
     "colorSaveFailed": "Renk kaydedilemedi",
-    "deleteFailed": "Silme başarısız"
+    "colorPicker": {
+      "pickBg": "Arka plan seç",
+      "refresh": "Başka renkler",
+      "applyPresetAria": "Önerilen rengi uygula",
+      "customBg": "Özel arka plan",
+      "apply": "Uygula"
+    }
   },
   "contacts": {
     "namePlaceholder": "Ad",
@@ -161,8 +173,6 @@
     "deleteAria": "\"{{name}}\" kişisini sil",
     "sent": "Gönderildi",
     "received": "Alındı",
-    "loadFailed": "Yükleme başarısız",
-    "deleteFailed": "Silme başarısız",
     "failed": "Başarısız"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "{{count}} kişi oluşturuldu"
   },
   "backup": {
-    "weekdaySun": "Pazar",
-    "weekdayMon": "Pazartesi",
-    "weekdayTue": "Salı",
-    "weekdayWed": "Çarşamba",
-    "weekdayThu": "Perşembe",
-    "weekdayFri": "Cuma",
-    "weekdaySat": "Cumartesi",
+    "weekdaySun": "Paz",
+    "weekdayMon": "Pzt",
+    "weekdayTue": "Sal",
+    "weekdayWed": "Çar",
+    "weekdayThu": "Per",
+    "weekdayFri": "Cum",
+    "weekdaySat": "Cmt",
     "neverBackedUp": "Hiç yedeklenmedi",
     "lastBackup": "Son yedekleme: {{time}}",
     "saved": "Kaydedildi",
     "backupComplete": "Yedekleme tamamlandı: {{filename}}",
     "backupFailed": "Yedekleme başarısız",
-    "loadFailed": "Yükleme başarısız",
     "backupDir": "Yedekleme dizini",
     "configured": "Yapılandırıldı: {{path}}",
-    "dirNotConfigured": "Yedekleme dizini yapılandırılmamış. Aşağıdaki zamanlanmış ayarları kaydedebilirsiniz; gerçek yedekleme için yolu Feiniu OS App Center → MiniBill → App settings → Runtime içinde ayarlayın veya env var'ı yerel / Docker'da ayarlayın.",
+    "dirNotConfigured": "Yedek klasörü ayarlı değil. Uygulama ayarları veya ortam değişkeni.",
     "scheduledBackup": "Zamanlanmış yedekleme",
     "enable": "Etkinleştir",
     "interval": "Aralık",
@@ -242,8 +251,7 @@
     "saveSettings": "Ayarları kaydet",
     "runNow": "Şimdi yedekle",
     "runNowDescription": "Mevcut defter CSV'sini dışa aktarın ve yedek dizininde zip'e sıkıştırın.",
-    "running": "Yedekleniyor…",
-    "saveFailed": "Kaydetme başarısız"
+    "running": "Yedekleniyor…"
   },
   "add": {
     "editTitle": "İşlemi düzenle",
@@ -256,11 +264,8 @@
     "note": "Not",
     "delete": "Sil",
     "confirmDeleteTitle": "Silmeyi onayla",
-    "confirmDeleteMessage": "Geri alınamaz. Bu işlem silinsin mi?",
-    "invalidAmount": "Geçerli bir tutar girin",
-    "saveFailed": "Kaydetme başarısız",
-    "deleteFailed": "Silme başarısız",
-    "loadFailed": "Yükleme başarısız"
+    "confirmDeleteMessage": "Geri alınamaz. Silinsin mi?",
+    "invalidAmount": "Geçerli bir tutar girin"
   },
   "balance": {
     "registerTitle": "Bakiye kaydet",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Mevcut kaydın üzerine yaz",
     "overwriteWithAmount": "{{month}} ayında zaten bakiye var ({{amount}}). Üzerine yazılsın mı?",
     "overwriteWithoutAmount": "{{month}} ayında zaten bakiye kaydı var. Üzerine yazılsın mı?",
-    "confirmOverwrite": "Üzerine yazmayı onayla",
-    "saveFailed": "Kaydetme başarısız",
-    "loadFailed": "Yükleme başarısız"
+    "confirmOverwrite": "Üzerine yazmayı onayla"
   },
   "picker": {
     "prevYearGroup": "Önceki yıl aralığı",
     "nextYearGroup": "Sonraki yıl aralığı",
     "prevYear": "Önceki yıl",
     "nextYear": "Sonraki yıl",
-    "prevMonth": "Önceki ay",
-    "nextMonth": "Sonraki ay",
+    "prevMonth": "Önceki",
+    "nextMonth": "Sonraki",
     "weekdayMon": "Pzt",
     "weekdayTue": "Sal",
     "weekdayWed": "Çar",
@@ -327,8 +330,7 @@
     "csvTooLarge": "CSV dosyası çok büyük",
     "csvReadFailed": "Dosya okunamıyor",
     "backupDirMissing": "Yedekleme dizini yapılandırılmamış",
-    "backupFileRequired": "Lütfen bir yedek dosyası seçin",
-    "loadFailed": "Yükleme başarısız"
+    "backupFileRequired": "Lütfen bir yedek dosyası seçin"
   },
   "validation": {
     "dateAfterToday": "Tarih bugünden sonra olamaz",

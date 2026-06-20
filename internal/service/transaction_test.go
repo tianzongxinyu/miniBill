@@ -209,6 +209,31 @@ func TestListByCursorFilteredIgnoresMonth(t *testing.T) {
 	}
 }
 
+func TestListByCursorFilteredByType(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	txSvc := NewTransactionService(NewStatsService())
+
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (300, 'expense', '2026-06-05', '午饭')`)
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (500, 'income', '2026-06-10', '工资')`)
+
+	expensePage, err := txSvc.ListByCursorFiltered(db, ListFilter{Year: 2026, Month: 6, Type: "expense"}, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(expensePage.Items) != 1 || expensePage.Items[0].Type != "expense" {
+		t.Fatalf("expense items = %+v", expensePage.Items)
+	}
+
+	incomePage, err := txSvc.ListByCursorFiltered(db, ListFilter{Year: 2026, Month: 6, Type: "income"}, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(incomePage.Items) != 1 || incomePage.Items[0].Type != "income" {
+		t.Fatalf("income items = %+v", incomePage.Items)
+	}
+}
+
 func TestListUsedTagsAndContacts(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()

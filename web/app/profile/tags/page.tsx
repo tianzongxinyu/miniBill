@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
@@ -10,8 +10,8 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/VisibilityIcon';
 import { TagChip } from '@/components/ui/TagChip';
 import { TagColorPicker } from '@/components/ui/TagColorPicker';
+import { useManagedEntityList } from '@/hooks/useManagedEntityList';
 import {
-  apiList,
   createTag,
   deleteTag,
   fetchUsedTransactionTags,
@@ -22,44 +22,28 @@ import { formatApiError } from '@/lib/errors';
 
 function TagsContent() {
   const { t } = useTranslation();
-  const [items, setItems] = useState<Tag[]>([]);
-  const [usedIds, setUsedIds] = useState<Set<number>>(() => new Set());
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<Tag | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [colorEditId, setColorEditId] = useState<number | null>(null);
-
-  const load = useCallback(async () => {
-    setError('');
-    try {
-      const [tags, used] = await Promise.all([
-        apiList<Tag>('/tags'),
-        fetchUsedTransactionTags(),
-      ]);
-      setItems(tags);
-      setUsedIds(new Set(used.map((tag) => tag.id)));
-    } catch (e) {
-      setItems([]);
-      setUsedIds(new Set());
-      setError(formatApiError(e, t('tags.loadFailed')));
-    }
-  }, [t]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  const create = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createTag(name);
-      setName('');
-      void load();
-    } catch (err) {
-      setError(formatApiError(err, t('tags.addFailed')));
-    }
-  };
+  const {
+    items,
+    setItems,
+    usedIds,
+    name,
+    setName,
+    error,
+    setError,
+    deleteTarget,
+    setDeleteTarget,
+    deleting,
+    create,
+    confirmRemove,
+    load,
+  } = useManagedEntityList<Tag>({
+    listPath: '/tags',
+    fetchUsed: fetchUsedTransactionTags,
+    createItem: createTag,
+    deleteItem: deleteTag,
+    createErrorFallback: t('tags.addFailed'),
+  });
 
   const toggle = async (tag: Tag) => {
     try {
@@ -77,20 +61,6 @@ function TagsContent() {
     } catch (err) {
       setError(formatApiError(err, t('tags.colorSaveFailed')));
       throw err;
-    }
-  };
-
-  const confirmRemove = async () => {
-    if (!deleteTarget || deleting) return;
-    setDeleting(true);
-    try {
-      await deleteTag(deleteTarget.id);
-      setDeleteTarget(null);
-      void load();
-    } catch (err) {
-      setError(formatApiError(err, t('tags.deleteFailed')));
-    } finally {
-      setDeleting(false);
     }
   };
 

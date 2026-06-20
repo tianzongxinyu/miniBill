@@ -17,15 +17,15 @@ export function isCoarseMobile(): boolean {
   return window.matchMedia('(pointer: coarse) and (max-width: 1024px)').matches;
 }
 
-export function isLandscapeOrientation(): boolean {
-  if (typeof window === 'undefined') return false;
-  const type = screen.orientation?.type;
-  if (type) return type.startsWith('landscape');
-  return window.matchMedia('(orientation: landscape)').matches;
+export function isFullscreenCssRotated(el: HTMLElement): boolean {
+  const panel = el.closest('.stats-chart-fullscreen-landscape');
+  if (!panel) return false;
+  return getComputedStyle(panel).transform !== 'none';
 }
 
 export function shouldUsePortraitFallback(): boolean {
-  return isCoarseMobile() && !isLandscapeOrientation();
+  if (!isCoarseMobile()) return false;
+  return window.matchMedia('(orientation: portrait)').matches;
 }
 
 /** Must be called directly from a user gesture (click/tap). */

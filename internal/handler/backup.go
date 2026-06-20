@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 )
 
@@ -64,13 +63,11 @@ func (s *Server) runBackup(c *gin.Context) {
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
-		userID := middleware.GetUserID(c)
-		user, err := s.system.GetByID(userID)
-		if err != nil || user == nil {
-			JSONUnauthorized(c)
+		user, ok := s.currentUser(c)
+		if !ok {
 			return
 		}
-		filename, err := s.backupSvc.RunBackup(db, userID, user.Username)
+		filename, err := s.backupSvc.RunBackup(db, user.ID, user.Username)
 		if serviceErr(c, err) {
 			return
 		}
@@ -79,10 +76,8 @@ func (s *Server) runBackup(c *gin.Context) {
 }
 
 func (s *Server) listBackupFiles(c *gin.Context) {
-	userID := middleware.GetUserID(c)
-	user, err := s.system.GetByID(userID)
-	if err != nil || user == nil {
-		JSONUnauthorized(c)
+	user, ok := s.currentUser(c)
+	if !ok {
 		return
 	}
 	page, err := s.backupSvc.ListBackupFiles(user.Username)
@@ -107,13 +102,11 @@ func (s *Server) restoreBackup(c *gin.Context) {
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
-		userID := middleware.GetUserID(c)
-		user, err := s.system.GetByID(userID)
-		if err != nil || user == nil {
-			JSONUnauthorized(c)
+		user, ok := s.currentUser(c)
+		if !ok {
 			return
 		}
-		result, err := s.backupSvc.RestoreFromZip(db, userID, user.Username, req.Filename)
+		result, err := s.backupSvc.RestoreFromZip(db, user.ID, user.Username, req.Filename)
 		if serviceErr(c, err) {
 			return
 		}

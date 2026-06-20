@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/minibill/minibill/internal/auth"
 	"github.com/minibill/minibill/internal/bootstrap"
-	"github.com/minibill/minibill/internal/domain"
 	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
@@ -22,9 +21,8 @@ type credReq struct {
 }
 
 type loginReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Remember *bool  `json:"remember"`
+	credReq
+	Remember *bool `json:"remember"`
 }
 
 type transactionReq struct {
@@ -102,12 +100,12 @@ func (s *Server) register(c *gin.Context) {
 			JSONValidation(c, msg)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL", "message": err.Error()})
+		JSONInternal(c, err.Error())
 		return
 	}
 	token, err := s.authSvc.Sign(user.ID, user.Username)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
+		JSONInternal(c, "")
 		return
 	}
 	setAuthCookie(c, token, true, s.cfg)
@@ -120,7 +118,7 @@ func (s *Server) register(c *gin.Context) {
 func (s *Server) login(c *gin.Context) {
 	var req loginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		JSONValidation(c, "invalid body")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.invalid_body"))
 		return
 	}
 	user, err := s.system.GetByUsername(req.Username)
@@ -135,7 +133,7 @@ func (s *Server) login(c *gin.Context) {
 	}
 	token, err := s.authSvc.SignWithExpire(user.ID, user.Username, expire)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
+		JSONInternal(c, "")
 		return
 	}
 	setAuthCookie(c, token, remember, s.cfg)
@@ -168,7 +166,7 @@ func (s *Server) logout(c *gin.Context) {
 func (s *Server) changePassword(c *gin.Context) {
 	var req changePasswordReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		JSONValidation(c, "invalid body")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.invalid_body"))
 		return
 	}
 	if err := auth.ValidatePassword(req.NewPassword); err != nil {
@@ -183,7 +181,7 @@ func (s *Server) changePassword(c *gin.Context) {
 	}
 	hash, _ := auth.HashPassword(req.NewPassword)
 	if err := s.system.UpdatePassword(userID, hash); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL"})
+		JSONInternal(c, "")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"ok": true})
@@ -497,20 +495,10 @@ func (s *Server) dashboard(c *gin.Context) {
 
 func (s *Server) monthBills(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "5"))
-	var cursor *domain.YearMonth
-	if raw := strings.TrimSpace(c.Query("cursor")); raw != "" {
-		parts := strings.Split(raw, "-")
-		if len(parts) != 2 {
-			JSONValidation(c, "cursor must be YYYY-MM")
-			return
-		}
-		y, errY := strconv.Atoi(parts[0])
-		m, errM := strconv.Atoi(parts[1])
-		if errY != nil || errM != nil || m < 1 || m > 12 {
-			JSONValidation(c, "cursor must be YYYY-MM")
-			return
-		}
-		cursor = &domain.YearMonth{Year: y, Month: m}
+	cursor, ok := parseYearMonthQuery(c.Query("cursor"))
+	if !ok {
+		JSONValidation(c, "cursor must be YYYY-MM")
+		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
 		page, err := s.statsSvc.MonthBills(db, cursor, limit)
@@ -560,8 +548,7 @@ func (s *Server) monthlyStats(c *gin.Context) {
 }
 
 func (s *Server) monthSeries(c *gin.Context) {
-	if c.Query("cursor") != "" && c.Query("after") != "" {
-		JSONValidation(c, "cursor and after are mutually exclusive")
+	if rejectCursorAndAfter(c) {
 		return
 	}
 	cursor, ok := parseYearMonthQuery(c.Query("cursor"))
@@ -598,8 +585,7 @@ func (s *Server) yearlyStats(c *gin.Context) {
 }
 
 func (s *Server) yearSeries(c *gin.Context) {
-	if c.Query("cursor") != "" && c.Query("after") != "" {
-		JSONValidation(c, "cursor and after are mutually exclusive")
+	if rejectCursorAndAfter(c) {
 		return
 	}
 	var cursor, after *int

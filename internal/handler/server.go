@@ -317,3 +317,21 @@ func parseYearMonthQuery(raw string) (*domain.YearMonth, bool) {
 	ym := domain.YearMonth{Year: y, Month: m}
 	return &ym, true
 }
+
+func rejectCursorAndAfter(c *gin.Context) bool {
+	if c.Query("cursor") != "" && c.Query("after") != "" {
+		JSONValidation(c, "cursor and after are mutually exclusive")
+		return true
+	}
+	return false
+}
+
+func (s *Server) currentUser(c *gin.Context) (*systemdb.User, bool) {
+	userID := middleware.GetUserID(c)
+	user, err := s.system.GetByID(userID)
+	if err != nil || user == nil {
+		JSONUnauthorized(c)
+		return nil, false
+	}
+	return user, true
+}

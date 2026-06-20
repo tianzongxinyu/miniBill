@@ -113,8 +113,7 @@ func (s *TransactionService) buildListWhere(f ListFilter) (whereSQL string, args
 			where = append(where, "t.transaction_date >= ? AND t.transaction_date < ?")
 			args = append(args, start, end)
 		} else if f.Year > 0 {
-			start := fmt.Sprintf("%04d-01-01", f.Year)
-			end := fmt.Sprintf("%04d-01-01", f.Year+1)
+			start, end := yearRange(f.Year)
 			where = append(where, "t.transaction_date >= ? AND t.transaction_date < ?")
 			args = append(args, start, end)
 		}
@@ -249,11 +248,7 @@ func loadTagsForTxIDs(db *sql.DB, ids []int64) (map[int64][]TransactionTagItem, 
 		placeholders[i] = "?"
 		args[i] = id
 	}
-	q := fmt.Sprintf(`
-		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id
-		WHERE tt.transaction_id IN (%s)
-		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
+	q := fmt.Sprintf(domain.TxTagsByTransactionIDsSQL, strings.Join(placeholders, ","))
 	rows, err := db.Query(q, args...)
 	if err != nil {
 		return nil, err
@@ -281,7 +276,7 @@ func loadContactNamesForIDs(db *sql.DB, ids []int64) (map[int64]string, error) {
 		placeholders[i] = "?"
 		args[i] = id
 	}
-	q := fmt.Sprintf(`SELECT id, name FROM contacts WHERE id IN (%s)`, strings.Join(placeholders, ","))
+	q := fmt.Sprintf(domain.ContactNamesByIDsSQL, strings.Join(placeholders, ","))
 	rows, err := db.Query(q, args...)
 	if err != nil {
 		return nil, err
@@ -318,10 +313,7 @@ func (s *TransactionService) enrich(db *sql.DB, tx *Transaction) error {
 	return nil
 }
 
-func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error {
-	if len(items) == 0 {
-		return nil
-	}
+func resetBatchEnrichment(items []Transaction) ([]int64, map[int64]struct{}) {
 	ids := make([]int64, len(items))
 	contactIDSet := map[int64]struct{}{}
 	for i := range items {
@@ -334,11 +326,10 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 			contactIDSet[*items[i].ContactID] = struct{}{}
 		}
 	}
+	return ids, contactIDSet
+}
 
-	tagMap, err := loadTagsForTxIDs(db, ids)
-	if err != nil {
-		return err
-	}
+func applyTagEnrichment(items []Transaction, tagMap map[int64][]TransactionTagItem) {
 	for i := range items {
 		for _, item := range tagMap[items[i].ID] {
 			items[i].TagIDs = append(items[i].TagIDs, item.ID)
@@ -346,6 +337,27 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 			items[i].TagItems = append(items[i].TagItems, item)
 		}
 	}
+}
+
+func applyContactEnrichment(items []Transaction, names map[int64]string) {
+	for i := range items {
+		if items[i].ContactID != nil {
+			items[i].ContactName = names[*items[i].ContactID]
+		}
+	}
+}
+
+func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error {
+	if len(items) == 0 {
+		return nil
+	}
+	ids, contactIDSet := resetBatchEnrichment(items)
+
+	tagMap, err := loadTagsForTxIDs(db, ids)
+	if err != nil {
+		return err
+	}
+	applyTagEnrichment(items, tagMap)
 
 	if len(contactIDSet) == 0 {
 		return nil
@@ -358,11 +370,7 @@ func (s *TransactionService) EnrichBatch(db *sql.DB, items []Transaction) error 
 	if err != nil {
 		return err
 	}
-	for i := range items {
-		if items[i].ContactID != nil {
-			items[i].ContactName = names[*items[i].ContactID]
-		}
-	}
+	applyContactEnrichment(items, names)
 	return nil
 }
 
@@ -370,51 +378,34 @@ func (s *TransactionService) EnrichBatchWithMeta(db *sql.DB, meta *cache.LedgerM
 	if len(items) == 0 {
 		return nil
 	}
-	ids := make([]int64, len(items))
-	contactIDs := map[int64]struct{}{}
-	for i := range items {
-		ids[i] = items[i].ID
-		items[i].TagIDs = nil
-		items[i].Tags = nil
-		items[i].TagItems = nil
-		items[i].ContactName = ""
-		if items[i].ContactID != nil {
-			contactIDs[*items[i].ContactID] = struct{}{}
-		}
-	}
+	ids, contactIDSet := resetBatchEnrichment(items)
 
-	tagMap, err := meta.TxTagsForIDs(db, ids)
+	tagMapRaw, err := meta.TxTagsForIDs(db, ids)
 	if err != nil {
 		return err
 	}
-	for i := range items {
-		if entries, ok := tagMap[items[i].ID]; ok && len(entries) > 0 {
-			for _, e := range entries {
-				items[i].TagIDs = append(items[i].TagIDs, e.ID)
-				items[i].Tags = append(items[i].Tags, e.Name)
-				items[i].TagItems = append(items[i].TagItems, TransactionTagItem{
-					ID: e.ID, Name: e.Name, ColorBg: e.ColorBg, ColorFg: e.ColorFg,
-				})
-			}
+	tagMap := make(map[int64][]TransactionTagItem, len(tagMapRaw))
+	for txID, entries := range tagMapRaw {
+		for _, e := range entries {
+			tagMap[txID] = append(tagMap[txID], TransactionTagItem{
+				ID: e.ID, Name: e.Name, ColorBg: e.ColorBg, ColorFg: e.ColorFg,
+			})
 		}
 	}
+	applyTagEnrichment(items, tagMap)
 
-	if len(contactIDs) == 0 {
+	if len(contactIDSet) == 0 {
 		return nil
 	}
-	cids := make([]int64, 0, len(contactIDs))
-	for id := range contactIDs {
+	cids := make([]int64, 0, len(contactIDSet))
+	for id := range contactIDSet {
 		cids = append(cids, id)
 	}
 	names, err := meta.ContactNamesBatch(db, cids)
 	if err != nil {
 		return err
 	}
-	for i := range items {
-		if items[i].ContactID != nil {
-			items[i].ContactName = names[*items[i].ContactID]
-		}
-	}
+	applyContactEnrichment(items, names)
 	return nil
 }
 
@@ -534,33 +525,6 @@ func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput) err
 		return fmt.Errorf("%w: daily_expense_tag", ErrValidation)
 	}
 	return validateTransactionCore(in.Amount, in.Type, in.TransactionDate, s.now())
-}
-
-func (s *TransactionService) tagNames(db *sql.DB, ids []int64) ([]string, error) {
-	if len(ids) == 0 {
-		return nil, nil
-	}
-	placeholders := make([]string, len(ids))
-	args := make([]interface{}, len(ids))
-	for i, id := range ids {
-		placeholders[i] = "?"
-		args[i] = id
-	}
-	q := fmt.Sprintf(`SELECT name FROM tags WHERE id IN (%s)`, strings.Join(placeholders, ","))
-	rows, err := db.Query(q, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var names []string
-	for rows.Next() {
-		var n string
-		if err := rows.Scan(&n); err != nil {
-			return nil, err
-		}
-		names = append(names, n)
-	}
-	return names, nil
 }
 
 func (s *TransactionService) Enrich(db *sql.DB, tx *Transaction) error {

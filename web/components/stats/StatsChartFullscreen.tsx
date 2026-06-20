@@ -5,14 +5,19 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
 import { StatsScrollChart } from '@/lib/dynamicStatsChart';
+import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import {
   exitChartFullscreen,
   isCoarseMobile,
+  isFullscreenCssRotated,
   shouldUsePortraitFallback,
 } from '@/lib/statsChartFullscreen';
-import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import type { StatsChartRow } from '@/lib/statsChartData';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
+
+function scrollUsesVerticalAxis(scrollEl: HTMLElement): boolean {
+  return isFullscreenCssRotated(scrollEl);
+}
 
 type StatsChartFullscreenProps = {
   open: boolean;
@@ -31,7 +36,6 @@ type StatsChartFullscreenProps = {
   hiddenSeries: Set<string>;
   onToggleSeries: (dataKey: string) => void;
   scrollWidth: number;
-  portraitFallback?: boolean;
 };
 
 export function StatsChartFullscreen({
@@ -51,7 +55,6 @@ export function StatsChartFullscreen({
   hiddenSeries,
   onToggleSeries,
   scrollWidth,
-  portraitFallback: portraitFallbackProp = false,
 }: StatsChartFullscreenProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
@@ -59,25 +62,42 @@ export function StatsChartFullscreen({
   const [portraitFallback, setPortraitFallback] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const restoredScrollRef = useRef(false);
+  const trackedScrollLeftRef = useRef(initialScrollLeft);
 
-  const rotatedScroll = portraitFallbackProp || portraitFallback;
+  const syncTrackedScrollLeft = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (isCoarseMobile()) return;
+    trackedScrollLeftRef.current = el.scrollLeft;
+  }, [scrollRef]);
 
-  const { onMouseDown: onChartMouseDown, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } =
-    useHorizontalDragScroll(scrollRef, {
-      enabled: open,
-      scrollAxis: rotatedScroll ? 'y' : 'x',
-      captureTouch: rotatedScroll,
-    });
+  const handleScroll = useCallback(() => {
+    syncTrackedScrollLeft();
+    onScroll();
+  }, [onScroll, syncTrackedScrollLeft]);
+
+  const {
+    onMouseDown: onChartMouseDown,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerCancel,
+  } = useHorizontalDragScroll(scrollRef, {
+    enabled: open && !isCoarseMobile(),
+    scrollAxis: portraitFallback ? 'y' : 'x',
+    captureTouch: portraitFallback,
+  });
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleClose = useCallback(() => {
-    onScrollLeftChange(scrollRef.current?.scrollLeft ?? initialScrollLeft);
+    syncTrackedScrollLeft();
+    onScrollLeftChange(trackedScrollLeftRef.current);
     void exitChartFullscreen();
     onClose();
-  }, [initialScrollLeft, onClose, onScrollLeftChange, scrollRef]);
+  }, [onClose, onScrollLeftChange, syncTrackedScrollLeft]);
 
   useEffect(() => {
     if (!open) {
@@ -91,10 +111,12 @@ export function StatsChartFullscreen({
         setPortraitFallback(false);
         return;
       }
-      setPortraitFallback(portraitFallbackProp || shouldUsePortraitFallback());
+      setPortraitFallback(shouldUsePortraitFallback());
     };
 
     syncFallback();
+    const raf = requestAnimationFrame(syncFallback);
+    const delayed = window.setTimeout(syncFallback, 100);
 
     const portraitMq = window.matchMedia('(orientation: portrait)');
     const landscapeMq = window.matchMedia('(orientation: landscape)');
@@ -111,6 +133,8 @@ export function StatsChartFullscreen({
     document.addEventListener('keydown', onKey);
 
     return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(delayed);
       document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
       portraitMq.removeEventListener('change', syncFallback);
@@ -118,7 +142,7 @@ export function StatsChartFullscreen({
       screen.orientation?.removeEventListener('change', syncFallback);
       void exitChartFullscreen();
     };
-  }, [open, portraitFallbackProp, handleClose]);
+  }, [open, handleClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -134,6 +158,11 @@ export function StatsChartFullscreen({
   }, [open, portraitFallback]);
 
   useEffect(() => {
+    if (!open) return;
+    trackedScrollLeftRef.current = initialScrollLeft;
+  }, [open, initialScrollLeft]);
+
+  useEffect(() => {
     if (!open || restoredScrollRef.current) return;
     const el = scrollRef.current;
     if (!el) return;
@@ -141,8 +170,66 @@ export function StatsChartFullscreen({
     restoredScrollRef.current = true;
     requestAnimationFrame(() => {
       el.scrollLeft = initialScrollLeft;
+      trackedScrollLeftRef.current = initialScrollLeft;
     });
   }, [open, initialScrollLeft, scrollRef]);
+
+  useEffect(() => {
+    if (!open || !isCoarseMobile()) return;
+
+    let el: HTMLDivElement | null = null;
+    let raf = 0;
+    let bound = false;
+    const TOUCH_SCROLL_THRESHOLD = 4;
+    let startX = 0;
+    let startY = 0;
+    let startScrollLeft = 0;
+    let scrolling = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch || !el) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startScrollLeft = trackedScrollLeftRef.current;
+      scrolling = false;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch || !el) return;
+      const verticalAxis = scrollUsesVerticalAxis(el);
+      const delta = verticalAxis ? touch.clientY - startY : touch.clientX - startX;
+      if (!scrolling && Math.abs(delta) < TOUCH_SCROLL_THRESHOLD) return;
+      scrolling = true;
+      e.preventDefault();
+      const nextScrollLeft = startScrollLeft - delta;
+      el.scrollLeft = nextScrollLeft;
+      trackedScrollLeftRef.current = nextScrollLeft;
+    };
+
+    const bind = () => {
+      el = scrollRef.current;
+      if (!el) {
+        raf = requestAnimationFrame(bind);
+        return;
+      }
+      if (bound) return;
+      bound = true;
+      el.addEventListener('touchstart', onTouchStart, { passive: true });
+      el.addEventListener('touchmove', onTouchMove, { passive: false });
+    };
+
+    bind();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (el) {
+        el.removeEventListener('touchstart', onTouchStart);
+        el.removeEventListener('touchmove', onTouchMove);
+      }
+    };
+  }, [open, portraitFallback, scrollRef]);
 
   if (!mounted || !open) return null;
 
@@ -157,21 +244,21 @@ export function StatsChartFullscreen({
   const content = (
     <div className={panelClass}>
       <header className="shrink-0 flex items-center px-3 py-2 border-b border-line/60 bg-canvas/95 backdrop-blur-sm">
-        <button type="button" className="btn-ghost px-2 text-sm" onClick={handleClose}>
+        <button type="button" className="btn-ghost px-2 text-sm shrink-0" onClick={handleClose}>
           ← {t('common.back')}
         </button>
       </header>
 
-      <div ref={scrollAreaRef} className="flex-1 min-h-0 overflow-hidden">
+      <div ref={scrollAreaRef} className="flex-1 min-h-0 min-w-0 w-full overflow-hidden">
         <div
           ref={scrollRef as React.RefObject<HTMLDivElement>}
-          onScroll={onScroll}
+          onScroll={handleScroll}
           onMouseDown={onChartMouseDown}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerCancel}
-          className={`stats-chart-scroll stats-chart-scroll-fullscreen h-full overflow-x-auto overflow-y-hidden${rotatedScroll ? ' stats-chart-scroll-rotated' : ''}`}
+          className={`stats-chart-scroll stats-chart-scroll-fullscreen stats-chart-scroll-tap-inspect h-full w-full min-w-0 overflow-x-auto overflow-y-hidden${portraitFallback ? ' stats-chart-scroll-rotated' : ''}`}
         >
           <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner stats-chart-scroll-inner-fullscreen px-4 pt-2 pb-3">
             <StatsScrollChart

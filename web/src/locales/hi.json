@@ -24,8 +24,8 @@
     "redirecting": "पुनर्निर्देशित…",
     "createNamed": "\"{{name}}\" बनाएँ",
     "logoutTitle": "{{username}} · साइन आउट",
-    "yearMonth": "{{month}}, {{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "तारीख चुनें",
@@ -33,7 +33,12 @@
     "directory": "निर्देशिका: {{path}}",
     "errorPrefix": "त्रुटि: {{message}}",
     "file": "फ़ाइल: {{name}}",
-    "cannotLoad": "लोड नहीं हो सका"
+    "cannotLoad": "लोड नहीं हो सका",
+    "loadFailed": "लोड विफल",
+    "saveFailed": "सहेजना विफल",
+    "deleteFailed": "हटाना विफल",
+    "removeItem": "{{name}} हटाएँ",
+    "removeContact": "संपर्क {{name}} हटाएँ"
   },
   "nav": {
     "home": "होम",
@@ -41,9 +46,9 @@
     "stats": "आँकड़े",
     "profile": "प्रोफ़ाइल",
     "logout": "साइन आउट",
-    "expandSidebar": "साइडबार विस्तृत करें",
-    "collapseSidebar": "साइडबार संकुचित करें",
-    "collapseSidebarLabel": "साइडबार संकुचित करें"
+    "expandSidebar": "खोलें",
+    "collapseSidebar": "बंद",
+    "collapseSidebarLabel": "बंद"
   },
   "auth": {
     "welcomeBack": "वापसी पर स्वागत है",
@@ -60,14 +65,14 @@
     "invalidAuth": "अमान्य साइन-इन प्रतिक्रिया",
     "passwordMismatch": "पासवर्ड मेल नहीं खाते",
     "getStarted": "शुरू करें",
-    "registerSubtitle": "खाता बनाएँ और अपना निजी लेजर शुरू करें। सभी डेटा आपके सर्वर पर रहता है।",
+    "registerSubtitle": "सेल्फ-होस्टेड लेजर। डेटा आपके सर्वर पर।",
     "registerHints": "उपयोगकर्ता नाम 3–32 अक्षर · पासवर्ड कम से कम 6 अक्षर",
     "registerAccount": "खाता बनाएँ",
     "fillInfo": "नीचे विवरण भरें",
     "usernamePlaceholder": "उपयोगकर्ता नाम 3–32 अक्षर",
     "passwordPlaceholder": "पासवर्ड कम से कम 6 अक्षर",
     "confirmPassword": "पासवर्ड की पुष्टि करें",
-    "heroTagline": "एक हल्का, स्व-होस्टेड व्यक्तिगत लेजर। सरल और स्पष्ट — आपका डेटा आपके साथ रहता है।",
+    "heroTagline": "हल्का सेल्फ-होस्टेड लेजर। डेटा आपके पास।",
     "heroBadges": "स्व-होस्टेड · बहु-उपयोगकर्ता · ओपन सोर्स",
     "usernameLength": "उपयोगकर्ता नाम 3–32 अक्षर का होना चाहिए",
     "usernameChars": "उपयोगकर्ता नाम में केवल अक्षर, संख्याएँ और अंडरस्कोर हो सकते हैं",
@@ -78,22 +83,25 @@
     "releaseRefresh": "रीफ़्रेश के लिए छोड़ें",
     "refreshing": "रीफ़्रेश हो रहा है",
     "emptyTitle": "अभी कोई बिल नहीं",
-    "emptyHint": "लेनदेन जोड़ें और मासिक सारांश यहाँ दिखाई देंगे",
-    "loadFailed": "लोड विफल"
+    "emptyHint": "लेनदेन जोड़ें और मासिक सारांश यहाँ दिखाई देंगे"
   },
   "transactions": {
     "empty": "कोई लेनदेन नहीं",
     "noMatch": "कोई मेल खाता लेनदेन नहीं",
-    "prevMonth": "पिछला महीना",
-    "nextMonth": "अगला महीना",
-    "addOne": "लेनदेन जोड़ें",
+    "prevMonth": "पिछला",
+    "nextMonth": "अगला",
+    "addOne": "जोड़ें",
     "searchPlaceholder": "नोट · टैग · संपर्क",
     "searchPlaceholderWithChips": "नोट कीवर्ड",
     "clearSearch": "खोज साफ़ करें",
     "loadingSummary": "मासिक सारांश लोड हो रहा है…",
     "loadingSummaryAria": "मासिक सारांश लोड हो रहा है",
-    "monthSummaryAria": "{{month}}/{{year}} का सारांश",
+    "monthSummaryAria": "{{period}} का सारांश",
     "loadSummaryFailed": "मासिक सारांश लोड विफल",
+    "emptyExpense": "इस महीने कोई व्यय नहीं",
+    "emptyIncome": "इस महीने कोई आय नहीं",
+    "filterExpenseAria": "व्यय फ़िल्टर करें, हटाने के लिए फिर टैप करें",
+    "filterIncomeAria": "आय फ़िल्टर करें, हटाने के लिए फिर टैप करें",
     "dailyExpenseTag": "दैनिक खर्च"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "वर्ष के अनुसार",
     "fullscreen": "पूर्ण स्क्रीन",
     "loadMore": "और लोड हो रहा है…",
-    "scrollHint": "पुराना या नया डेटा देखने के लिए चार्ट स्वाइप या खींचें",
+    "scrollHint": "और डेटा के लिए स्वाइप करें",
     "totalExpense": "कुल व्यय",
     "totalIncome": "कुल आय",
     "netIncome": "शुद्ध आय",
@@ -128,7 +136,6 @@
     "change": "बदलें",
     "passwordChanged": "पासवर्ड अपडेट किया गया",
     "colorSchemeUpdated": "रंग योजना अपडेट की गई",
-    "saveFailed": "सहेजना विफल",
     "failed": "विफल",
     "language": "भाषा",
     "languageSearch": "भाषाएँ खोजें"
@@ -144,11 +151,16 @@
     "changeColor": "टैग \"{{name}}\" का रंग बदलें",
     "deleteTag": "टैग \"{{name}}\" हटाएँ",
     "dailyExpense": "दैनिक खर्च",
-    "loadFailed": "लोड विफल",
     "addFailed": "जोड़ना विफल",
     "updateFailed": "अपडेट विफल",
     "colorSaveFailed": "रंग सहेजना विफल",
-    "deleteFailed": "हटाना विफल"
+    "colorPicker": {
+      "pickBg": "पृष्ठभूमि चुनें",
+      "refresh": "और रंग",
+      "applyPresetAria": "सुझावित रंग लागू करें",
+      "customBg": "कस्टम पृष्ठभूमि",
+      "apply": "लागू करें"
+    }
   },
   "contacts": {
     "namePlaceholder": "नाम",
@@ -161,8 +173,6 @@
     "deleteAria": "संपर्क \"{{name}}\" हटाएँ",
     "sent": "भेजा",
     "received": "प्राप्त",
-    "loadFailed": "लोड विफल",
-    "deleteFailed": "हटाना विफल",
     "failed": "विफल"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "{{count}} संपर्क बनाए"
   },
   "backup": {
-    "weekdaySun": "रविवार",
-    "weekdayMon": "सोमवार",
-    "weekdayTue": "मंगलवार",
-    "weekdayWed": "बुधवार",
-    "weekdayThu": "गुरुवार",
-    "weekdayFri": "शुक्रवार",
-    "weekdaySat": "शनिवार",
+    "weekdaySun": "र",
+    "weekdayMon": "सो",
+    "weekdayTue": "मं",
+    "weekdayWed": "बु",
+    "weekdayThu": "गु",
+    "weekdayFri": "शु",
+    "weekdaySat": "श",
     "neverBackedUp": "कभी बैकअप नहीं लिया",
     "lastBackup": "अंतिम बैकअप: {{time}}",
     "saved": "सहेजा गया",
     "backupComplete": "बैकअप पूर्ण: {{filename}}",
     "backupFailed": "बैकअप विफल",
-    "loadFailed": "लोड विफल",
     "backupDir": "बैकअप निर्देशिका",
     "configured": "कॉन्फ़िगर: {{path}}",
-    "dirNotConfigured": "बैकअप निर्देशिका कॉन्फ़िगर नहीं है। आप नीचे अनुसूचित सेटिंग्स सहेज सकते हैं; वास्तविक बैकअप के लिए, Feiniu OS App Center → MiniBill → App settings → Runtime में पथ सेट करें, या स्थानीय / Docker में env var सेट करें।",
+    "dirNotConfigured": "बैकअप फ़ोल्डर सेट नहीं। ऐप सेटिंग या एनवायरनमेंट वेरिएबल।",
     "scheduledBackup": "अनुसूचित बैकअप",
     "enable": "सक्षम करें",
     "interval": "अंतराल",
@@ -242,8 +251,7 @@
     "saveSettings": "सेटिंग्स सहेजें",
     "runNow": "अभी बैकअप लें",
     "runNowDescription": "वर्तमान लेजर CSV निर्यात करें और बैकअप निर्देशिका में zip में संपीड़ित करें।",
-    "running": "बैकअप हो रहा है…",
-    "saveFailed": "सहेजना विफल"
+    "running": "बैकअप हो रहा है…"
   },
   "add": {
     "editTitle": "लेनदेन संपादित करें",
@@ -256,11 +264,8 @@
     "note": "नोट",
     "delete": "हटाएँ",
     "confirmDeleteTitle": "हटाने की पुष्टि करें",
-    "confirmDeleteMessage": "इसे पूर्ववत नहीं किया जा सकता। यह लेनदेन हटाएँ?",
-    "invalidAmount": "मान्य राशि दर्ज करें",
-    "saveFailed": "सहेजना विफल",
-    "deleteFailed": "हटाना विफल",
-    "loadFailed": "लोड विफल"
+    "confirmDeleteMessage": "पूर्ववत नहीं। हटाएँ?",
+    "invalidAmount": "मान्य राशि दर्ज करें"
   },
   "balance": {
     "registerTitle": "शेष दर्ज करें",
@@ -276,17 +281,15 @@
     "overwriteTitle": "मौजूदा प्रविष्टि ओवरराइट करें",
     "overwriteWithAmount": "{{month}} में पहले से शेष ({{amount}}) है। ओवरराइट करें?",
     "overwriteWithoutAmount": "{{month}} में पहले से शेष प्रविष्टि है। ओवरराइट करें?",
-    "confirmOverwrite": "ओवरराइट की पुष्टि करें",
-    "saveFailed": "सहेजना विफल",
-    "loadFailed": "लोड विफल"
+    "confirmOverwrite": "ओवरराइट की पुष्टि करें"
   },
   "picker": {
     "prevYearGroup": "पिछली वर्ष सीमा",
     "nextYearGroup": "अगली वर्ष सीमा",
     "prevYear": "पिछला वर्ष",
     "nextYear": "अगला वर्ष",
-    "prevMonth": "पिछला महीना",
-    "nextMonth": "अगला महीना",
+    "prevMonth": "पिछला",
+    "nextMonth": "अगला",
     "weekdayMon": "सो",
     "weekdayTue": "मं",
     "weekdayWed": "बु",
@@ -327,8 +330,7 @@
     "csvTooLarge": "CSV फ़ाइल बहुत बड़ी है",
     "csvReadFailed": "फ़ाइल पढ़ी नहीं जा सकी",
     "backupDirMissing": "बैकअप निर्देशिका कॉन्फ़िगर नहीं है",
-    "backupFileRequired": "कृपया बैकअप फ़ाइल चुनें",
-    "loadFailed": "लोड विफल"
+    "backupFileRequired": "कृपया बैकअप फ़ाइल चुनें"
   },
   "validation": {
     "dateAfterToday": "तारीख आज के बाद नहीं हो सकती",

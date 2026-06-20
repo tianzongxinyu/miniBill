@@ -140,6 +140,45 @@ export function useStatsSeriesScroll<T>({
     return () => cancelAnimationFrame(raf);
   }, [enabled, loading, hasMoreOlder, hasMoreNewer, items, loadOlder, loadNewer, scrollRef]);
 
+  useEffect(() => {
+    if (!enabled) return;
+
+    let el = scrollRef.current;
+    let raf = 0;
+    let boundEl: HTMLDivElement | null = null;
+    let observer: ResizeObserver | null = null;
+
+    const checkOverflow = () => {
+      const target = scrollRef.current;
+      if (!target || loading || loadingOlderRef.current || loadingNewerRef.current) return;
+      if (!hasMoreOlder && !hasMoreNewer) return;
+      if (target.scrollWidth > target.clientWidth + 1) return;
+      if (hasMoreOlder) void loadOlder();
+      else if (hasMoreNewer) void loadNewer();
+    };
+
+    const bind = () => {
+      el = scrollRef.current;
+      if (!el) {
+        raf = requestAnimationFrame(bind);
+        return;
+      }
+      if (boundEl === el) return;
+      observer?.disconnect();
+      observer = new ResizeObserver(() => requestAnimationFrame(checkOverflow));
+      observer.observe(el);
+      boundEl = el;
+      requestAnimationFrame(checkOverflow);
+    };
+
+    bind();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer?.disconnect();
+    };
+  }, [enabled, loading, hasMoreOlder, hasMoreNewer, loadOlder, loadNewer, scrollRef, items]);
+
   const onScroll = useCallback(() => {
     if (scrollRafRef.current != null) return;
     scrollRafRef.current = requestAnimationFrame(() => {

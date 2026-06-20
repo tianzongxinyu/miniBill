@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { MonthPickerField } from '@/components/ui/MonthPickerField';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { useSettings } from '@/components/SettingsProvider';
 import {
   ApiError,
@@ -15,7 +14,7 @@ import {
   upsertMonthlyBalance,
   type YearMonth,
 } from '@/lib/api';
-import { formatBalanceMonthLabel } from '@/lib/balanceMonth';
+import { formatYearMonth } from '@/lib/formatDate';
 import { formatApiError } from '@/lib/errors';
 import { formatBalanceMoney } from '@/lib/formatMoney';
 import { notifyBalanceMonths } from '@/lib/ledgerEvents';
@@ -26,22 +25,18 @@ function sameMonth(a: YearMonth, b: YearMonth) {
 
 type BalanceRegisterFormProps = {
   backHref: string;
-  pageTitle: string;
   initialTarget: YearMonth;
   minMonth: YearMonth | null;
   maxMonth: YearMonth;
   returnTo: string;
-  onInitialLoaded?: (info: { isEdit: boolean }) => void;
 };
 
 export function BalanceRegisterForm({
   backHref,
-  pageTitle,
   initialTarget,
   minMonth,
   maxMonth,
   returnTo,
-  onInitialLoaded,
 }: BalanceRegisterFormProps) {
   const { t } = useTranslation();
   const { locale } = useSettings();
@@ -76,7 +71,6 @@ export function BalanceRegisterForm({
           setExistingBalanceCents(record.balance);
           if (isInitial) {
             setIsEdit(true);
-            onInitialLoaded?.({ isEdit: true });
           }
         } else {
           setBalance('');
@@ -85,18 +79,17 @@ export function BalanceRegisterForm({
           setExistingBalanceCents(null);
           if (isInitial) {
             setIsEdit(false);
-            onInitialLoaded?.({ isEdit: false });
           }
         }
       } catch (err) {
         if (err instanceof ApiError && err.code === 'ABORTED') return;
-        setError(formatApiError(err, t('balance.loadFailed')));
+        setError(formatApiError(err, t('common.loadFailed')));
       } finally {
         setLoadingMonth(false);
         if (isInitial) setInitialLoaded(true);
       }
     },
-    [onInitialLoaded, t]
+    [t]
   );
 
   useEffect(() => {
@@ -119,7 +112,7 @@ export function BalanceRegisterForm({
       notifyBalanceMonths(selectedMonth.year, selectedMonth.month);
       router.replace(returnTo);
     } catch (err) {
-      setError(formatApiError(err, t('balance.saveFailed')));
+      setError(formatApiError(err, t('common.saveFailed')));
       setSaving(false);
       setConfirmOpen(false);
     }
@@ -137,14 +130,13 @@ export function BalanceRegisterForm({
   if (!initialLoaded) {
     return (
       <div className="add-form">
-        <PageHeader title={pageTitle} />
         <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
     );
   }
 
-  const monthLabel = formatBalanceMonthLabel(selectedMonth);
+  const monthLabel = formatYearMonth(selectedMonth);
   const overwriteMessage =
     existingBalanceCents != null
       ? t('balance.overwriteWithAmount', {
@@ -156,8 +148,6 @@ export function BalanceRegisterForm({
   return (
     <>
       <form onSubmit={save} className="add-form">
-        <PageHeader title={pageTitle} />
-
         {error && <p className="form-alert-error">{error}</p>}
 
         <div className="form-hero">

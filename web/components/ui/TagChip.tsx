@@ -1,4 +1,7 @@
+'use client';
+
 import { TAG_TEXT_COLOR } from '@/lib/tagColors';
+import { useTranslation } from 'react-i18next';
 
 type TagChipProps = {
   name: string;
@@ -18,6 +21,7 @@ export function TagChip({
   className = '',
   onRemove,
 }: TagChipProps) {
+  const { t } = useTranslation();
   const bg = colorBg || DEFAULT_BG;
 
   return (
@@ -39,7 +43,7 @@ export function TagChip({
             e.stopPropagation();
             onRemove();
           }}
-          aria-label={`移除 ${name}`}
+          aria-label={t('common.removeItem', { name })}
         >
           ×
         </button>

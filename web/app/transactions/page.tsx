@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Notebook } from '@/components/ui/Notebook';
@@ -18,23 +18,32 @@ import { useTransactionsMonthSummary } from '@/hooks/useTransactionsMonthSummary
 import {
   buildAddHref,
   buildTransactionsHref,
+  parseTransactionTypeFromQuery,
   parseTransactionsFiltersFromQuery,
   parseYearMonthFromQuery,
+  type TransactionTypeFilter,
 } from '@/lib/url';
-import { fetchEarliestMonth, getCurrentYearMonth, type YearMonth } from '@/lib/api';
+import { scrollToTop } from '@/lib/scroll';
+import { useEarliestMonth } from '@/hooks/useEarliestMonth';
+import { getCurrentYearMonth, type YearMonth } from '@/lib/api';
 
 function TransactionsContent() {
   const { t } = useTranslation();
+  const router = useRouter();
   const params = useSearchParams();
   const urlYear = params.get('year');
   const urlMonth = params.get('month');
   const urlNote = params.get('note');
   const urlTags = params.get('tags');
   const urlContact = params.get('contact');
+  const urlType = params.get('type');
   const initial = parseYearMonthFromQuery(params);
   const [year, setYear] = useState(initial.year);
   const [month, setMonth] = useState(initial.month);
-  const [earliest, setEarliest] = useState<YearMonth | null>(null);
+  const [typeFilter, setTypeFilter] = useState<TransactionTypeFilter>(() =>
+    parseTransactionTypeFromQuery(params)
+  );
+  const earliest = useEarliestMonth();
   const {
     noteQuery,
     setNoteQuery,
@@ -61,8 +70,8 @@ function TransactionsContent() {
   }, [urlNote, urlTags, urlContact, params, hydrateSearchFilters]);
 
   useEffect(() => {
-    fetchEarliestMonth().then(setEarliest).catch(() => setEarliest(null));
-  }, []);
+    setTypeFilter(parseTransactionTypeFromQuery(params));
+  }, [urlType, params]);
 
   const list = useTransactionsList({
     year,
@@ -71,9 +80,33 @@ function TransactionsContent() {
     tagIds: selectedTagIds,
     contactId,
     searchActive,
+    typeFilter,
   });
 
   const monthSummary = useTransactionsMonthSummary({ year, month, enabled: !searchActive });
+
+  const syncTransactionsUrl = useCallback(
+    (ym: YearMonth, type: TransactionTypeFilter) => {
+      router.replace(
+        buildTransactionsHref({
+          year: ym.year,
+          month: ym.month,
+          ...(type ? { type } : {}),
+        })
+      );
+    },
+    [router]
+  );
+
+  const handleTypeFilterChange = useCallback(
+    (type: 'expense' | 'income') => {
+      const next: TransactionTypeFilter = typeFilter === type ? null : type;
+      setTypeFilter(next);
+      scrollToTop(false);
+      syncTransactionsUrl({ year, month }, next);
+    },
+    [typeFilter, year, month, syncTransactionsUrl]
+  );
 
   const handleMonthChange = useCallback((ym: YearMonth) => {
     setYear(ym.year);
@@ -97,9 +130,17 @@ function TransactionsContent() {
         note: searchActive ? debouncedNote : undefined,
         tagIds: searchActive ? selectedTagIds : undefined,
         contactId: searchActive ? contactId : undefined,
+        ...(typeFilter && !searchActive ? { type: typeFilter } : {}),
       }),
-    [year, month, searchActive, debouncedNote, selectedTagIds, contactId]
+    [year, month, searchActive, debouncedNote, selectedTagIds, contactId, typeFilter]
   );
+
+  const emptyMessage = useMemo(() => {
+    if (searchActive) return t('transactions.noMatch');
+    if (typeFilter === 'expense') return t('transactions.emptyExpense');
+    if (typeFilter === 'income') return t('transactions.emptyIncome');
+    return t('transactions.empty');
+  }, [searchActive, typeFilter, t]);
 
   const addHref = useMemo(
     () => buildAddHref({ year, month, returnTo: transactionsHref }),
@@ -131,6 +172,8 @@ function TransactionsContent() {
           year={year}
           month={month}
           editable
+          typeFilter={typeFilter}
+          onTypeFilterChange={handleTypeFilterChange}
         />
       )}
 
@@ -139,7 +182,7 @@ function TransactionsContent() {
       {list.loading ? (
         <ListSkeleton />
       ) : list.items.length === 0 ? (
-        <EmptyNotebook message={searchActive ? t('transactions.noMatch') : t('transactions.empty')} />
+        <EmptyNotebook message={emptyMessage} />
       ) : (
         <Notebook>
           {list.items.map((tx) => (

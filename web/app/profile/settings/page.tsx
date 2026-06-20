@@ -42,7 +42,7 @@ function SettingsContent() {
       await updateSettings({ ...settings, amount_color_scheme: scheme });
       setMsg(t('settings.colorSchemeUpdated'));
     } catch (err) {
-      setMsg(formatApiError(err, t('settings.saveFailed')));
+      setMsg(formatApiError(err, t('common.saveFailed')));
     } finally {
       setSavingScheme(false);
     }
@@ -56,7 +56,7 @@ function SettingsContent() {
     try {
       await updateSettings({ ...settings, locale });
     } catch (err) {
-      setMsg(formatApiError(err, t('settings.saveFailed')));
+      setMsg(formatApiError(err, t('common.saveFailed')));
     } finally {
       setSavingLocale(false);
     }

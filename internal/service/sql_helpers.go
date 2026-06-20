@@ -31,6 +31,10 @@ func monthRange(year, month int) (start, end string) {
 	return start, end
 }
 
+func yearRange(year int) (start, end string) {
+	return fmt.Sprintf("%04d-01-01", year), fmt.Sprintf("%04d-01-01", year+1)
+}
+
 func loadMonthlyBalance(db *sql.DB, year, month int) (sql.NullInt64, error) {
 	var bal sql.NullInt64
 	err := db.QueryRow(

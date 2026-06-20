@@ -24,8 +24,8 @@
     "redirecting": "جارٍ إعادة التوجيه…",
     "createNamed": "إنشاء \"{{name}}\"",
     "logoutTitle": "{{username}} · تسجيل الخروج",
-    "yearMonth": "{{year}}/{{month}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "اختر التاريخ",
@@ -33,7 +33,12 @@
     "directory": "الدليل: {{path}}",
     "errorPrefix": "خطأ: {{message}}",
     "file": "الملف: {{name}}",
-    "cannotLoad": "تعذّر التحميل"
+    "cannotLoad": "تعذّر التحميل",
+    "loadFailed": "فشل التحميل",
+    "saveFailed": "فشل الحفظ",
+    "deleteFailed": "فشل الحذف",
+    "removeItem": "إزالة {{name}}",
+    "removeContact": "إزالة جهة الاتصال {{name}}"
   },
   "nav": {
     "home": "الرئيسية",
@@ -41,9 +46,9 @@
     "stats": "الإحصائيات",
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج",
-    "expandSidebar": "توسيع الشريط الجانبي",
-    "collapseSidebar": "طي الشريط الجانبي",
-    "collapseSidebarLabel": "طي الشريط الجانبي"
+    "expandSidebar": "توسيع",
+    "collapseSidebar": "طي",
+    "collapseSidebarLabel": "طي"
   },
   "auth": {
     "welcomeBack": "مرحبًا بعودتك",
@@ -60,14 +65,14 @@
     "invalidAuth": "استجابة تسجيل دخول غير صالحة",
     "passwordMismatch": "كلمتا المرور غير متطابقتين",
     "getStarted": "ابدأ الآن",
-    "registerSubtitle": "أنشئ حسابًا وابدأ دفتر حسابك الخاص. تبقى جميع البيانات على خادمك.",
+    "registerSubtitle": "دفتر مستضاف ذاتياً. البيانات على خادمك.",
     "registerHints": "اسم المستخدم 3–32 حرفًا · كلمة المرور 6 أحرف على الأقل",
     "registerAccount": "إنشاء حساب",
     "fillInfo": "املأ التفاصيل أدناه",
     "usernamePlaceholder": "اسم المستخدم 3–32 حرفًا",
     "passwordPlaceholder": "كلمة المرور 6 أحرف على الأقل",
     "confirmPassword": "تأكيد كلمة المرور",
-    "heroTagline": "دفتر حساب شخصي خفيف ومستضاف ذاتيًا. بسيط وواضح — بياناتك تبقى معك.",
+    "heroTagline": "دفتر خفيف مستضاف ذاتياً. بياناتك معك.",
     "heroBadges": "مستضاف ذاتيًا · متعدد المستخدمين · مفتوح المصدر",
     "usernameLength": "يجب أن يكون اسم المستخدم من 3 إلى 32 حرفًا",
     "usernameChars": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط",
@@ -78,22 +83,25 @@
     "releaseRefresh": "أفلت للتحديث",
     "refreshing": "جارٍ التحديث",
     "emptyTitle": "لا توجد فواتير بعد",
-    "emptyHint": "أضف معاملة وستظهر الملخصات الشهرية هنا",
-    "loadFailed": "فشل التحميل"
+    "emptyHint": "أضف معاملة وستظهر الملخصات الشهرية هنا"
   },
   "transactions": {
     "empty": "لا توجد معاملات",
     "noMatch": "لا توجد معاملات مطابقة",
-    "prevMonth": "الشهر السابق",
-    "nextMonth": "الشهر التالي",
-    "addOne": "إضافة معاملة",
+    "prevMonth": "السابق",
+    "nextMonth": "التالي",
+    "addOne": "إضافة",
     "searchPlaceholder": "ملاحظة · وسوم · جهة اتصال",
     "searchPlaceholderWithChips": "كلمة مفتاحية للملاحظة",
     "clearSearch": "مسح البحث",
     "loadingSummary": "جارٍ تحميل الملخص الشهري…",
     "loadingSummaryAria": "جارٍ تحميل الملخص الشهري",
-    "monthSummaryAria": "ملخص {{month}}/{{year}}",
+    "monthSummaryAria": "ملخص {{period}}",
     "loadSummaryFailed": "فشل تحميل الملخص الشهري",
+    "emptyExpense": "لا مصروفات هذا الشهر",
+    "emptyIncome": "لا دخل هذا الشهر",
+    "filterExpenseAria": "تصفية المصروفات، اضغط مرة أخرى للإلغاء",
+    "filterIncomeAria": "تصفية الدخل، اضغط مرة أخرى للإلغاء",
     "dailyExpenseTag": "المصروف اليومي"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "حسب السنة",
     "fullscreen": "ملء الشاشة",
     "loadMore": "جارٍ تحميل المزيد…",
-    "scrollHint": "اسحب أو حرّك الرسم البياني لرؤية بيانات أقدم أو أحدث",
+    "scrollHint": "اسحب الرسم لمزيد من البيانات",
     "totalExpense": "إجمالي المصروفات",
     "totalIncome": "إجمالي الدخل",
     "netIncome": "صافي الدخل",
@@ -128,7 +136,6 @@
     "change": "تغيير",
     "passwordChanged": "تم تحديث كلمة المرور",
     "colorSchemeUpdated": "تم تحديث مخطط الألوان",
-    "saveFailed": "فشل الحفظ",
     "failed": "فشل",
     "language": "اللغة",
     "languageSearch": "البحث عن اللغات"
@@ -144,11 +151,16 @@
     "changeColor": "تغيير لون الوسم \"{{name}}\"",
     "deleteTag": "حذف الوسم \"{{name}}\"",
     "dailyExpense": "المصروف اليومي",
-    "loadFailed": "فشل التحميل",
     "addFailed": "فشل الإضافة",
     "updateFailed": "فشل التحديث",
     "colorSaveFailed": "فشل حفظ اللون",
-    "deleteFailed": "فشل الحذف"
+    "colorPicker": {
+      "pickBg": "اختر الخلفية",
+      "refresh": "ألوان أخرى",
+      "applyPresetAria": "تطبيق لون مقترح",
+      "customBg": "خلفية مخصصة",
+      "apply": "تطبيق"
+    }
   },
   "contacts": {
     "namePlaceholder": "الاسم",
@@ -161,8 +173,6 @@
     "deleteAria": "حذف جهة الاتصال \"{{name}}\"",
     "sent": "مُرسل",
     "received": "مُستلم",
-    "loadFailed": "فشل التحميل",
-    "deleteFailed": "فشل الحذف",
     "failed": "فشل"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "تم إنشاء {{count}} جهة اتصال"
   },
   "backup": {
-    "weekdaySun": "الأحد",
-    "weekdayMon": "الاثنين",
-    "weekdayTue": "الثلاثاء",
-    "weekdayWed": "الأربعاء",
-    "weekdayThu": "الخميس",
-    "weekdayFri": "الجمعة",
-    "weekdaySat": "السبت",
+    "weekdaySun": "أحد",
+    "weekdayMon": "إثن",
+    "weekdayTue": "ثلا",
+    "weekdayWed": "أرب",
+    "weekdayThu": "خمي",
+    "weekdayFri": "جمع",
+    "weekdaySat": "سبت",
     "neverBackedUp": "لم يتم النسخ الاحتياطي مطلقًا",
     "lastBackup": "آخر نسخة احتياطية: {{time}}",
     "saved": "تم الحفظ",
     "backupComplete": "اكتمل النسخ الاحتياطي: {{filename}}",
     "backupFailed": "فشل النسخ الاحتياطي",
-    "loadFailed": "فشل التحميل",
     "backupDir": "دليل النسخ الاحتياطي",
     "configured": "مُعد: {{path}}",
-    "dirNotConfigured": "دليل النسخ الاحتياطي غير مُعد. يمكنك حفظ الإعدادات المجدولة أدناه؛ للنسخ الاحتياطي الفعلي، عيّن المسار في Feiniu OS App Center → MiniBill → App settings → Runtime، أو عيّن متغير البيئة محليًا / في Docker.",
+    "dirNotConfigured": "مجلد النسخ غير مضبوط. إعدادات التطبيق أو متغير البيئة.",
     "scheduledBackup": "نسخ احتياطي مجدول",
     "enable": "تفعيل",
     "interval": "الفترة",
@@ -242,8 +251,7 @@
     "saveSettings": "حفظ الإعدادات",
     "runNow": "نسخ احتياطي الآن",
     "runNowDescription": "تصدير CSV دفتر الحساب الحالي وضغطه في zip في دليل النسخ الاحتياطي.",
-    "running": "جارٍ النسخ الاحتياطي…",
-    "saveFailed": "فشل الحفظ"
+    "running": "جارٍ النسخ الاحتياطي…"
   },
   "add": {
     "editTitle": "تعديل المعاملة",
@@ -256,11 +264,8 @@
     "note": "ملاحظة",
     "delete": "حذف",
     "confirmDeleteTitle": "تأكيد الحذف",
-    "confirmDeleteMessage": "لا يمكن التراجع عن هذا. حذف هذه المعاملة؟",
-    "invalidAmount": "أدخل مبلغًا صالحًا",
-    "saveFailed": "فشل الحفظ",
-    "deleteFailed": "فشل الحذف",
-    "loadFailed": "فشل التحميل"
+    "confirmDeleteMessage": "لا تراجع. حذف المعاملة؟",
+    "invalidAmount": "أدخل مبلغًا صالحًا"
   },
   "balance": {
     "registerTitle": "تسجيل الرصيد",
@@ -276,17 +281,15 @@
     "overwriteTitle": "استبدال الإدخال الموجود",
     "overwriteWithAmount": "{{month}} لديه بالفعل رصيد ({{amount}}). استبدال؟",
     "overwriteWithoutAmount": "{{month}} لديه بالفعل إدخال رصيد. استبدال؟",
-    "confirmOverwrite": "تأكيد الاستبدال",
-    "saveFailed": "فشل الحفظ",
-    "loadFailed": "فشل التحميل"
+    "confirmOverwrite": "تأكيد الاستبدال"
   },
   "picker": {
     "prevYearGroup": "نطاق السنة السابق",
     "nextYearGroup": "نطاق السنة التالي",
     "prevYear": "السنة السابقة",
     "nextYear": "السنة التالية",
-    "prevMonth": "الشهر السابق",
-    "nextMonth": "الشهر التالي",
+    "prevMonth": "السابق",
+    "nextMonth": "التالي",
     "weekdayMon": "إث",
     "weekdayTue": "ثل",
     "weekdayWed": "أر",
@@ -327,8 +330,7 @@
     "csvTooLarge": "ملف CSV كبير جدًا",
     "csvReadFailed": "تعذّر قراءة الملف",
     "backupDirMissing": "دليل النسخ الاحتياطي غير مُعد",
-    "backupFileRequired": "يرجى اختيار ملف نسخ احتياطي",
-    "loadFailed": "فشل التحميل"
+    "backupFileRequired": "يرجى اختيار ملف نسخ احتياطي"
   },
   "validation": {
     "dateAfterToday": "لا يمكن أن يكون التاريخ بعد اليوم",

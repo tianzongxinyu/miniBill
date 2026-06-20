@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ApiError,
   fetchTransactions,
@@ -11,6 +12,7 @@ import { formatApiError } from '@/lib/errors';
 import { scrollToTop, pullTransactionsScroll, scrollToY, currentPathWithSearch } from '@/lib/scroll';
 import { useOnLedgerChanged, monthInDetail } from '@/lib/ledgerEvents';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
+import type { TransactionTypeFilter } from '@/lib/url';
 
 function monthKey(y: number, m: number) {
   return `${y}-${m}`;
@@ -23,6 +25,7 @@ type UseTransactionsListOptions = {
   tagIds: number[];
   contactId: number | null;
   searchActive: boolean;
+  typeFilter: TransactionTypeFilter;
 };
 
 export function useTransactionsList({
@@ -32,17 +35,20 @@ export function useTransactionsList({
   tagIds,
   contactId,
   searchActive,
+  typeFilter,
 }: UseTransactionsListOptions) {
+  const { t } = useTranslation();
   const monthInflightRef = useRef<Map<string, Promise<TransactionsPage>>>(new Map());
   const reloadAbortRef = useRef<AbortController | null>(null);
-  const filtersRef = useRef({ year, month, note, tagIds, contactId, searchActive });
-  filtersRef.current = { year, month, note, tagIds, contactId, searchActive };
+  const filtersRef = useRef({ year, month, note, tagIds, contactId, searchActive, typeFilter });
+  filtersRef.current = { year, month, note, tagIds, contactId, searchActive, typeFilter };
 
   const fetchOnce = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
     const f = filtersRef.current;
+    const typeKey = !f.searchActive && f.typeFilter ? f.typeFilter : '';
     const key =
       (f.searchActive ? 'search' : monthKey(f.year, f.month)) +
-      `|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${cursor ?? ''}`;
+      `|${typeKey}|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${cursor ?? ''}`;
     const inflight = monthInflightRef.current;
 
     // 首屏 reload 带 AbortSignal，不能与进行中的去重请求共用 Promise；
@@ -56,7 +62,11 @@ export function useTransactionsList({
     const pending = fetchTransactions({
       ...(f.searchActive
         ? { note: f.note, tagIds: f.tagIds, contactId: f.contactId }
-        : { year: f.year, month: f.month }),
+        : {
+            year: f.year,
+            month: f.month,
+            ...(f.typeFilter ? { type: f.typeFilter } : {}),
+          }),
       cursor: cursor ?? undefined,
       limit: 10,
       signal,
@@ -74,7 +84,7 @@ export function useTransactionsList({
     enabled: false,
     gateUntilUserScrolls: true,
     getItemKey: (tx) => tx.id,
-    onError: (e) => formatApiError(e, '加载失败'),
+    onError: (e) => formatApiError(e, t('common.loadFailed')),
   });
 
   const { reset, applyPage, setLoading, setError } = pagination;
@@ -101,13 +111,13 @@ export function useTransactionsList({
     } catch (e) {
       if (reloadAbortRef.current !== ac) return;
       if (e instanceof ApiError && e.code === 'ABORTED') return;
-      setError(formatApiError(e, '加载失败'));
+      setError(formatApiError(e, t('common.loadFailed')));
     } finally {
       if (reloadAbortRef.current === ac) {
         setLoading(false);
       }
     }
-  }, [reset, applyPage, setLoading, setError, fetchOnce, year, month, note, tagIds, contactId, searchActive]);
+  }, [reset, applyPage, setLoading, setError, fetchOnce, year, month, note, tagIds, contactId, searchActive, typeFilter]);
 
   useEffect(() => {
     void reload();

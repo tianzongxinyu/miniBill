@@ -24,8 +24,8 @@
     "redirecting": "Reindirizzamento…",
     "createNamed": "Crea \"{{name}}\"",
     "logoutTitle": "{{username}} · Esci",
-    "yearMonth": "{{month}}-{{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Seleziona data",
@@ -33,7 +33,12 @@
     "directory": "Cartella: {{path}}",
     "errorPrefix": "Errore: {{message}}",
     "file": "Documento: {{name}}",
-    "cannotLoad": "Impossibile caricare"
+    "cannotLoad": "Impossibile caricare",
+    "loadFailed": "Caricamento non riuscito",
+    "saveFailed": "Salvataggio non riuscito",
+    "deleteFailed": "Eliminazione non riuscita",
+    "removeItem": "Rimuovi {{name}}",
+    "removeContact": "Rimuovi contatto {{name}}"
   },
   "nav": {
     "home": "Pagina iniziale",
@@ -41,9 +46,9 @@
     "stats": "Statistiche",
     "profile": "Profilo",
     "logout": "Esci",
-    "expandSidebar": "Espandi barra laterale",
-    "collapseSidebar": "Comprimi barra laterale",
-    "collapseSidebarLabel": "Comprimi barra laterale"
+    "expandSidebar": "Espandi",
+    "collapseSidebar": "Comprimi",
+    "collapseSidebarLabel": "Comprimi"
   },
   "auth": {
     "welcomeBack": "Bentornato",
@@ -60,14 +65,14 @@
     "invalidAuth": "Risposta di autenticazione non valida",
     "passwordMismatch": "Le password non coincidono",
     "getStarted": "Inizia",
-    "registerSubtitle": "Crea un account e avvia il tuo registro privato. Tutti i dati restano sul tuo server.",
+    "registerSubtitle": "Ledger self-hosted. Dati sul tuo server.",
     "registerHints": "Nome utente 3–32 caratteri · Password almeno 6 caratteri",
     "registerAccount": "Crea account",
     "fillInfo": "Compila i dati qui sotto",
     "usernamePlaceholder": "Nome utente 3–32 caratteri",
     "passwordPlaceholder": "Password almeno 6 caratteri",
     "confirmPassword": "Conferma password",
-    "heroTagline": "Un registro personale leggero e self-hosted. Semplice e chiaro — i tuoi dati restano con te.",
+    "heroTagline": "Ledger leggero self-hosted. I tuoi dati restano con te.",
     "heroBadges": "Self-hosted · Multi-utente · Open source",
     "usernameLength": "Il nome utente deve contenere da 3 a 32 caratteri",
     "usernameChars": "Il nome utente può contenere solo lettere, numeri e trattini bassi",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Rilascia per aggiornare",
     "refreshing": "Aggiornamento",
     "emptyTitle": "Nessun movimento",
-    "emptyHint": "Aggiungi una transazione e qui appariranno i riepiloghi mensili",
-    "loadFailed": "Caricamento non riuscito"
+    "emptyHint": "Aggiungi una transazione e qui appariranno i riepiloghi mensili"
   },
   "transactions": {
     "empty": "Nessuna transazione",
     "noMatch": "Nessuna transazione corrispondente",
-    "prevMonth": "Mese precedente",
-    "nextMonth": "Mese successivo",
-    "addOne": "Aggiungi transazione",
+    "prevMonth": "Prec.",
+    "nextMonth": "Succ.",
+    "addOne": "Aggiungi",
     "searchPlaceholder": "Nota · Etichette · Contatto",
     "searchPlaceholderWithChips": "Parola chiave nella nota",
     "clearSearch": "Cancella ricerca",
     "loadingSummary": "Caricamento riepilogo mensile…",
     "loadingSummaryAria": "Caricamento riepilogo mensile",
-    "monthSummaryAria": "Riepilogo di {{month}}/{{year}}",
+    "monthSummaryAria": "Riepilogo di {{period}}",
     "loadSummaryFailed": "Impossibile caricare il riepilogo mensile",
+    "emptyExpense": "Nessuna spesa questo mese",
+    "emptyIncome": "Nessuna entrata questo mese",
+    "filterExpenseAria": "Filtra spese, tocca di nuovo per annullare",
+    "filterIncomeAria": "Filtra entrate, tocca di nuovo per annullare",
     "dailyExpenseTag": "Spesa giornaliera"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "Per anno",
     "fullscreen": "Schermo intero",
     "loadMore": "Caricamento…",
-    "scrollHint": "Scorri o trascina il grafico per vedere dati precedenti o più recenti",
+    "scrollHint": "Scorri il grafico per più dati",
     "totalExpense": "Totale uscite",
     "totalIncome": "Totale entrate",
     "netIncome": "Saldo netto",
@@ -128,7 +136,6 @@
     "change": "Cambia",
     "passwordChanged": "Password aggiornata",
     "colorSchemeUpdated": "Schema colori aggiornato",
-    "saveFailed": "Salvataggio non riuscito",
     "failed": "Non riuscito",
     "language": "Lingua",
     "languageSearch": "Cerca lingue"
@@ -144,11 +151,16 @@
     "changeColor": "Cambia colore etichetta \"{{name}}\"",
     "deleteTag": "Elimina etichetta \"{{name}}\"",
     "dailyExpense": "Spesa giornaliera",
-    "loadFailed": "Caricamento non riuscito",
     "addFailed": "Aggiunta non riuscita",
     "updateFailed": "Aggiornamento non riuscito",
     "colorSaveFailed": "Salvataggio colore non riuscito",
-    "deleteFailed": "Eliminazione non riuscita"
+    "colorPicker": {
+      "pickBg": "Scegli sfondo",
+      "refresh": "Altri colori",
+      "applyPresetAria": "Applica colore suggerito",
+      "customBg": "Sfondo personalizzato",
+      "apply": "Applica"
+    }
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -161,8 +173,6 @@
     "deleteAria": "Elimina contatto \"{{name}}\"",
     "sent": "Inviato",
     "received": "Ricevuto",
-    "loadFailed": "Caricamento non riuscito",
-    "deleteFailed": "Eliminazione non riuscita",
     "failed": "Non riuscito"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "{{count}} contatti creati"
   },
   "backup": {
-    "weekdaySun": "Domenica",
-    "weekdayMon": "Lunedì",
-    "weekdayTue": "Martedì",
-    "weekdayWed": "Mercoledì",
-    "weekdayThu": "Giovedì",
-    "weekdayFri": "Venerdì",
-    "weekdaySat": "Sabato",
+    "weekdaySun": "Dom",
+    "weekdayMon": "Lun",
+    "weekdayTue": "Mar",
+    "weekdayWed": "Mer",
+    "weekdayThu": "Gio",
+    "weekdayFri": "Ven",
+    "weekdaySat": "Sab",
     "neverBackedUp": "Mai eseguito un backup",
     "lastBackup": "Ultimo backup: {{time}}",
     "saved": "Salvato",
     "backupComplete": "Backup completato: {{filename}}",
     "backupFailed": "Backup non riuscito",
-    "loadFailed": "Caricamento non riuscito",
     "backupDir": "Directory di backup",
     "configured": "Configurata: {{path}}",
-    "dirNotConfigured": "Directory di backup non configurata. Puoi salvare le impostazioni programmate qui sotto; per i backup effettivi, imposta il percorso in Feiniu OS App Center → MiniBill → Impostazioni app → Runtime, o imposta la variabile d'ambiente localmente / in Docker.",
+    "dirNotConfigured": "Cartella backup non impostata. Impostazioni app o variabile d'ambiente.",
     "scheduledBackup": "Backup programmato",
     "enable": "Attiva",
     "interval": "Intervallo",
@@ -242,8 +251,7 @@
     "saveSettings": "Salva impostazioni",
     "runNow": "Backup ora",
     "runNowDescription": "Esporta il CSV del registro corrente e lo comprime in uno zip nella directory di backup.",
-    "running": "Backup in corso…",
-    "saveFailed": "Salvataggio non riuscito"
+    "running": "Backup in corso…"
   },
   "add": {
     "editTitle": "Modifica transazione",
@@ -256,11 +264,8 @@
     "note": "Nota",
     "delete": "Elimina",
     "confirmDeleteTitle": "Conferma eliminazione",
-    "confirmDeleteMessage": "Questa azione non può essere annullata. Eliminare questa transazione?",
-    "invalidAmount": "Inserisci un importo valido",
-    "saveFailed": "Salvataggio non riuscito",
-    "deleteFailed": "Eliminazione non riuscita",
-    "loadFailed": "Caricamento non riuscito"
+    "confirmDeleteMessage": "Irreversibile. Eliminare?",
+    "invalidAmount": "Inserisci un importo valido"
   },
   "balance": {
     "registerTitle": "Registra saldo",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Sovrascrivi voce esistente",
     "overwriteWithAmount": "{{month}} ha già un saldo ({{amount}}). Sovrascrivere?",
     "overwriteWithoutAmount": "{{month}} ha già un saldo registrato. Sovrascrivere?",
-    "confirmOverwrite": "Conferma sovrascrittura",
-    "saveFailed": "Salvataggio non riuscito",
-    "loadFailed": "Caricamento non riuscito"
+    "confirmOverwrite": "Conferma sovrascrittura"
   },
   "picker": {
     "prevYearGroup": "Intervallo anni precedente",
     "nextYearGroup": "Intervallo anni successivo",
     "prevYear": "Anno precedente",
     "nextYear": "Anno successivo",
-    "prevMonth": "Mese precedente",
-    "nextMonth": "Mese successivo",
+    "prevMonth": "Prec.",
+    "nextMonth": "Succ.",
     "weekdayMon": "Lun",
     "weekdayTue": "Mar",
     "weekdayWed": "Mer",
@@ -327,8 +330,7 @@
     "csvTooLarge": "File CSV troppo grande",
     "csvReadFailed": "Impossibile leggere il file",
     "backupDirMissing": "Directory di backup non configurata",
-    "backupFileRequired": "Seleziona un file di backup",
-    "loadFailed": "Caricamento non riuscito"
+    "backupFileRequired": "Seleziona un file di backup"
   },
   "validation": {
     "dateAfterToday": "La data non può essere successiva a oggi",

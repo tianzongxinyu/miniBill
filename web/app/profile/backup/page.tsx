@@ -74,7 +74,7 @@ function BackupContent() {
       const data = await fetchBackup();
       setCfg(data);
     } catch (err) {
-      setError(formatApiError(err, t('backup.loadFailed')));
+      setError(formatApiError(err, t('common.loadFailed')));
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ function BackupContent() {
       setCfg(saved);
       setMsg(t('backup.saved'));
     } catch (err) {
-      setError(formatApiError(err, t('backup.saveFailed')));
+      setError(formatApiError(err, t('common.saveFailed')));
     } finally {
       setSaving(false);
     }

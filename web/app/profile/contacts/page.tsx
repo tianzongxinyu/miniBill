@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
@@ -8,68 +7,34 @@ import { PageBackLink } from '@/components/ui/BackLink';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { useManagedEntityList } from '@/hooks/useManagedEntityList';
 import {
-  apiList,
   createContact,
   deleteContact,
   fetchUsedTransactionContacts,
   type Contact,
 } from '@/lib/api';
-import { formatApiError } from '@/lib/errors';
 
 function ContactsContent() {
   const { t } = useTranslation();
-  const [items, setItems] = useState<Contact[]>([]);
-  const [usedIds, setUsedIds] = useState<Set<number>>(() => new Set());
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
-  const load = useCallback(async () => {
-    setError('');
-    try {
-      const [contacts, used] = await Promise.all([
-        apiList<Contact>('/contacts'),
-        fetchUsedTransactionContacts(),
-      ]);
-      setItems(contacts);
-      setUsedIds(new Set(used.map((c) => c.id)));
-    } catch (e) {
-      setItems([]);
-      setUsedIds(new Set());
-      setError(formatApiError(e, t('contacts.loadFailed')));
-    }
-  }, [t]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  const create = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createContact(name);
-      setName('');
-      void load();
-    } catch (err) {
-      setError(formatApiError(err, t('contacts.failed')));
-    }
-  };
-
-  const confirmRemove = async () => {
-    if (!deleteTarget || deleting) return;
-    setDeleting(true);
-    try {
-      await deleteContact(deleteTarget.id);
-      setDeleteTarget(null);
-      void load();
-    } catch (err) {
-      setError(formatApiError(err, t('contacts.deleteFailed')));
-    } finally {
-      setDeleting(false);
-    }
-  };
+  const {
+    items,
+    usedIds,
+    name,
+    setName,
+    error,
+    deleteTarget,
+    setDeleteTarget,
+    deleting,
+    create,
+    confirmRemove,
+  } = useManagedEntityList<Contact>({
+    listPath: '/contacts',
+    fetchUsed: fetchUsedTransactionContacts,
+    createItem: createContact,
+    deleteItem: deleteContact,
+    createErrorFallback: t('contacts.failed'),
+  });
 
   return (
     <div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TagChip } from '@/components/ui/TagChip';
 import { generateRandomTagBgOptions, isTagColorHex } from '@/lib/tagColors';
 
@@ -14,6 +15,7 @@ type TagColorPickerProps = {
 const OPTION_COUNT = 12;
 
 export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPickerProps) {
+  const { t } = useTranslation();
   const [bg, setBg] = useState(colorBg);
   const [options, setOptions] = useState(() => generateRandomTagBgOptions(OPTION_COUNT, colorBg));
   const [saving, setSaving] = useState(false);
@@ -55,14 +57,14 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs text-muted shrink-0">选择背景色</span>
+          <span className="text-xs text-muted shrink-0">{t('tags.colorPicker.pickBg')}</span>
           <button
             type="button"
             className="btn-ghost text-xs px-2 py-0.5 text-accent shrink-0"
             disabled={saving}
             onClick={refreshOptions}
           >
-            换一批
+            {t('tags.colorPicker.refresh')}
           </button>
         </div>
         <TagChip name={name} colorBg={valid ? bg : colorBg} active />
@@ -75,7 +77,7 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
               key={presetBg}
               type="button"
               disabled={saving}
-              aria-label="应用候选背景色"
+              aria-label={t('tags.colorPicker.applyPresetAria')}
               className={`h-9 rounded-xl border-2 transition-transform hover:scale-105 disabled:opacity-50 ${
                 selected ? 'border-white ring-2 ring-ink/30 scale-105' : 'border-transparent'
               }`}
@@ -90,7 +92,7 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
       </div>
       <div className="flex flex-wrap items-end gap-3 pt-1 border-t border-line/60">
         <label className="text-xs text-muted space-y-1">
-          自定义背景
+          {t('tags.colorPicker.customBg')}
           <input
             type="color"
             value={valid ? bg : '#3B6FA8'}
@@ -105,7 +107,7 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
           disabled={saving || !valid || !changed}
           onClick={() => void save(bg)}
         >
-          {saving ? '保存中…' : '应用'}
+          {saving ? t('common.processing') : t('tags.colorPicker.apply')}
         </button>
       </div>
     </div>

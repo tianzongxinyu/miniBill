@@ -24,8 +24,8 @@
     "redirecting": "Redirecionando…",
     "createNamed": "Criar \"{{name}}\"",
     "logoutTitle": "{{username}} · Sair",
-    "yearMonth": "{{month}} de {{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Selecionar data",
@@ -33,7 +33,12 @@
     "directory": "Diretório: {{path}}",
     "errorPrefix": "Erro: {{message}}",
     "file": "Arquivo: {{name}}",
-    "cannotLoad": "Não foi possível carregar"
+    "cannotLoad": "Não foi possível carregar",
+    "loadFailed": "Falha ao carregar",
+    "saveFailed": "Falha ao salvar",
+    "deleteFailed": "Falha ao excluir",
+    "removeItem": "Remover {{name}}",
+    "removeContact": "Remover contato {{name}}"
   },
   "nav": {
     "home": "Início",
@@ -41,9 +46,9 @@
     "stats": "Estatísticas",
     "profile": "Perfil",
     "logout": "Sair",
-    "expandSidebar": "Expandir barra lateral",
-    "collapseSidebar": "Recolher barra lateral",
-    "collapseSidebarLabel": "Recolher barra lateral"
+    "expandSidebar": "Expandir",
+    "collapseSidebar": "Recolher",
+    "collapseSidebarLabel": "Recolher"
   },
   "auth": {
     "welcomeBack": "Bem-vindo de volta",
@@ -60,14 +65,14 @@
     "invalidAuth": "Resposta de autenticação inválida",
     "passwordMismatch": "As senhas não coincidem",
     "getStarted": "Começar",
-    "registerSubtitle": "Crie uma conta e inicie seu livro-caixa privado. Todos os dados ficam no seu servidor.",
-    "registerHints": "Usuário 3–32 caracteres · Senha com pelo menos 6 caracteres",
+    "registerSubtitle": "Ledger auto-hospedado. Dados no seu servidor.",
+    "registerHints": "Usuário 3–32 · Senha ≥6",
     "registerAccount": "Criar conta",
     "fillInfo": "Preencha os dados abaixo",
     "usernamePlaceholder": "Usuário 3–32 caracteres",
     "passwordPlaceholder": "Senha com pelo menos 6 caracteres",
     "confirmPassword": "Confirmar senha",
-    "heroTagline": "Um livro-caixa pessoal leve e auto-hospedado. Simples e claro — seus dados ficam com você.",
+    "heroTagline": "Ledger leve auto-hospedado. Seus dados com você.",
     "heroBadges": "Auto-hospedado · Multiusuário · Código aberto",
     "usernameLength": "O usuário deve ter de 3 a 32 caracteres",
     "usernameChars": "O usuário só pode conter letras, números e sublinhados",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Solte para atualizar",
     "refreshing": "Atualizando",
     "emptyTitle": "Nenhum lançamento ainda",
-    "emptyHint": "Adicione uma transação e os resumos mensais aparecerão aqui",
-    "loadFailed": "Falha ao carregar"
+    "emptyHint": "Adicione uma transação e os resumos mensais aparecerão aqui"
   },
   "transactions": {
     "empty": "Nenhuma transação",
     "noMatch": "Nenhuma transação encontrada",
-    "prevMonth": "Mês anterior",
-    "nextMonth": "Próximo mês",
-    "addOne": "Adicionar transação",
+    "prevMonth": "Ant.",
+    "nextMonth": "Próx.",
+    "addOne": "Adicionar",
     "searchPlaceholder": "Observação · Tags · Contato",
     "searchPlaceholderWithChips": "Palavra-chave na observação",
     "clearSearch": "Limpar busca",
     "loadingSummary": "Carregando resumo mensal…",
     "loadingSummaryAria": "Carregando resumo mensal",
-    "monthSummaryAria": "Resumo de {{month}}/{{year}}",
+    "monthSummaryAria": "Resumo de {{period}}",
     "loadSummaryFailed": "Falha ao carregar resumo mensal",
+    "emptyExpense": "Sem despesas neste mês",
+    "emptyIncome": "Sem receitas neste mês",
+    "filterExpenseAria": "Filtrar despesas, toque novamente para limpar",
+    "filterIncomeAria": "Filtrar receitas, toque novamente para limpar",
     "dailyExpenseTag": "Gasto diário"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "Por ano",
     "fullscreen": "Tela cheia",
     "loadMore": "Carregando mais…",
-    "scrollHint": "Deslize ou arraste o gráfico para ver dados anteriores ou mais recentes",
+    "scrollHint": "Deslize o gráfico para mais dados",
     "totalExpense": "Total de despesas",
     "totalIncome": "Total de receitas",
     "netIncome": "Saldo líquido",
@@ -128,7 +136,6 @@
     "change": "Alterar",
     "passwordChanged": "Senha atualizada",
     "colorSchemeUpdated": "Esquema de cores atualizado",
-    "saveFailed": "Falha ao salvar",
     "failed": "Falhou",
     "language": "Idioma",
     "languageSearch": "Buscar idiomas"
@@ -144,11 +151,16 @@
     "changeColor": "Alterar cor da tag \"{{name}}\"",
     "deleteTag": "Excluir tag \"{{name}}\"",
     "dailyExpense": "Gasto diário",
-    "loadFailed": "Falha ao carregar",
     "addFailed": "Falha ao adicionar",
     "updateFailed": "Falha ao atualizar",
     "colorSaveFailed": "Falha ao salvar cor",
-    "deleteFailed": "Falha ao excluir"
+    "colorPicker": {
+      "pickBg": "Escolher fundo",
+      "refresh": "Outras cores",
+      "applyPresetAria": "Aplicar cor sugerida",
+      "customBg": "Fundo personalizado",
+      "apply": "Aplicar"
+    }
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -161,13 +173,11 @@
     "deleteAria": "Excluir contato \"{{name}}\"",
     "sent": "Enviado",
     "received": "Recebido",
-    "loadFailed": "Falha ao carregar",
-    "deleteFailed": "Falha ao excluir",
     "failed": "Falhou"
   },
   "data": {
     "exportTitle": "Exportar livro-caixa",
-    "exportMobileHint": "Abra o MiniBill em um navegador de desktop e vá em Perfil → Dados para exportar CSV.",
+    "exportMobileHint": "Navegador PC: Perfil → Dados, exportar CSV.",
     "exportDescription": "O CSV inclui transações e saldos mensais. Linhas de gasto diário são legíveis; a reimportação as recalcula a partir dos saldos.",
     "exporting": "Exportando…",
     "exportCsv": "Exportar CSV",
@@ -190,7 +200,7 @@
     "importFailed": "Falha na importação",
     "restoreFailed": "Falha na restauração",
     "confirmImportTitle": "Confirmar importação com substituição",
-    "confirmImportMessage": "Isso limpará todas as transações e saldos mensais e importará \"{{filename}}\". Esta ação não pode ser desfeita.",
+    "confirmImportMessage": "Limpa ledger, importa «{{filename}}». Irreversível.",
     "confirmImport": "Confirmar importação",
     "confirmRestoreTitle": "Confirmar restauração do backup",
     "confirmRestoreMessage": "Isso limpará todas as transações e saldos mensais e restaurará de \"{{filename}}\". Esta ação não pode ser desfeita.",
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "{{count}} contatos criados"
   },
   "backup": {
-    "weekdaySun": "Domingo",
-    "weekdayMon": "Segunda-feira",
-    "weekdayTue": "Terça-feira",
-    "weekdayWed": "Quarta-feira",
-    "weekdayThu": "Quinta-feira",
-    "weekdayFri": "Sexta-feira",
-    "weekdaySat": "Sábado",
+    "weekdaySun": "Dom",
+    "weekdayMon": "Seg",
+    "weekdayTue": "Ter",
+    "weekdayWed": "Qua",
+    "weekdayThu": "Qui",
+    "weekdayFri": "Sex",
+    "weekdaySat": "Sáb",
     "neverBackedUp": "Nunca fez backup",
     "lastBackup": "Último backup: {{time}}",
     "saved": "Salvo",
     "backupComplete": "Backup concluído: {{filename}}",
     "backupFailed": "Falha no backup",
-    "loadFailed": "Falha ao carregar",
     "backupDir": "Diretório de backup",
     "configured": "Configurado: {{path}}",
-    "dirNotConfigured": "Diretório de backup não configurado. Você pode salvar as configurações agendadas abaixo; para backups reais, defina o caminho em Feiniu OS App Center → MiniBill → Configurações do app → Runtime, ou defina a variável de ambiente localmente / no Docker.",
+    "dirNotConfigured": "Pasta backup não definida. Configurações do app ou variável de ambiente.",
     "scheduledBackup": "Backup agendado",
     "enable": "Ativar",
     "interval": "Intervalo",
@@ -242,8 +251,7 @@
     "saveSettings": "Salvar configurações",
     "runNow": "Fazer backup agora",
     "runNowDescription": "Exporta o CSV atual do livro-caixa e o compacta em um zip no diretório de backup.",
-    "running": "Fazendo backup…",
-    "saveFailed": "Falha ao salvar"
+    "running": "Fazendo backup…"
   },
   "add": {
     "editTitle": "Editar transação",
@@ -256,11 +264,8 @@
     "note": "Observação",
     "delete": "Excluir",
     "confirmDeleteTitle": "Confirmar exclusão",
-    "confirmDeleteMessage": "Esta ação não pode ser desfeita. Excluir esta transação?",
-    "invalidAmount": "Digite um valor válido",
-    "saveFailed": "Falha ao salvar",
-    "deleteFailed": "Falha ao excluir",
-    "loadFailed": "Falha ao carregar"
+    "confirmDeleteMessage": "Irreversível. Excluir transação?",
+    "invalidAmount": "Digite um valor válido"
   },
   "balance": {
     "registerTitle": "Registrar saldo",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Substituir registro existente",
     "overwriteWithAmount": "{{month}} já tem um saldo ({{amount}}). Substituir?",
     "overwriteWithoutAmount": "{{month}} já tem um saldo registrado. Substituir?",
-    "confirmOverwrite": "Confirmar substituição",
-    "saveFailed": "Falha ao salvar",
-    "loadFailed": "Falha ao carregar"
+    "confirmOverwrite": "Confirmar substituição"
   },
   "picker": {
     "prevYearGroup": "Intervalo de anos anterior",
     "nextYearGroup": "Próximo intervalo de anos",
     "prevYear": "Ano anterior",
     "nextYear": "Próximo ano",
-    "prevMonth": "Mês anterior",
-    "nextMonth": "Próximo mês",
+    "prevMonth": "Ant.",
+    "nextMonth": "Próx.",
     "weekdayMon": "Seg",
     "weekdayTue": "Ter",
     "weekdayWed": "Qua",
@@ -327,8 +330,7 @@
     "csvTooLarge": "Arquivo CSV muito grande",
     "csvReadFailed": "Não foi possível ler o arquivo",
     "backupDirMissing": "Diretório de backup não configurado",
-    "backupFileRequired": "Selecione um arquivo de backup",
-    "loadFailed": "Falha ao carregar"
+    "backupFileRequired": "Selecione um arquivo de backup"
   },
   "validation": {
     "dateAfterToday": "A data não pode ser posterior a hoje",

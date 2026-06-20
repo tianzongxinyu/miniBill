@@ -1,4 +1,7 @@
+'use client';
+
 import { CONTACT_CHIP_BG, CONTACT_CHIP_FG } from '@/lib/tagColors';
+import { useTranslation } from 'react-i18next';
 
 type ContactChipProps = {
   name: string;
@@ -16,6 +19,7 @@ export function ContactChip({
   subtitle,
   onRemove,
 }: ContactChipProps) {
+  const { t } = useTranslation();
   return (
     <span
       className={`tag-chip ${active ? 'font-medium ring-2 ring-accent/30' : ''} ${className}`}
@@ -38,7 +42,7 @@ export function ContactChip({
             e.stopPropagation();
             onRemove();
           }}
-          aria-label={`移除联系人 ${name}`}
+          aria-label={t('common.removeContact', { name })}
         >
           ×
         </button>

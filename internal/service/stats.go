@@ -501,8 +501,7 @@ func (s *StatsService) YearlyStats(db *sql.DB, filter StatsFilter) ([]YearlyStat
 
 func (s *StatsService) YearStat(db *sql.DB, year int, filter StatsFilter) (*YearlyStatItem, error) {
 	if filter.HasFilter() {
-		start := fmt.Sprintf("%04d-01-01", year)
-		end := fmt.Sprintf("%04d-01-01", year+1)
+		start, end := yearRange(year)
 		item := &YearlyStatItem{Year: year}
 		ti, te, err := s.sumTransactionsRange(db, start, end, filter)
 		if err != nil {
@@ -513,8 +512,7 @@ func (s *StatsService) YearStat(db *sql.DB, year int, filter StatsFilter) (*Year
 	}
 
 	if year == s.currentYearMonth().Year {
-		start := fmt.Sprintf("%04d-01-01", year)
-		end := fmt.Sprintf("%04d-01-01", year+1)
+		start, end := yearRange(year)
 		item := &YearlyStatItem{Year: year}
 		ti, te, err := s.sumTransactionsRange(db, start, end, StatsFilter{})
 		if err != nil {

@@ -126,16 +126,6 @@ export function setAuthSession(token: string, user: User, remember: boolean) {
   notifyAuthSession();
 }
 
-/** @deprecated use setAuthSession */
-export function setToken(token: string) {
-  setAuthSession(token, getStoredUser() ?? { id: 0, username: '' }, getRememberLogin());
-}
-
-export function clearAuthToken() {
-  clearAuthStorage();
-  notifyAuthLogout();
-}
-
 /** 清除登录态并跳转登录页（整页刷新，避免 SPA 状态卡住） */
 export async function logoutAndRedirect() {
   await clearAuthAndGoLogin();
@@ -154,16 +144,32 @@ function logoutOnUnauthorized() {
   void clearAuthAndGoLogin();
 }
 
-export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
-  const { authRedirect = true, ...fetchOptions } = options;
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
+function buildApiHeaders(extra?: Record<string, string>, skipContentType?: boolean): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (!skipContentType) headers['Content-Type'] = 'application/json';
   const locale = getStoredLocale() ?? getActiveLocale();
   headers['Accept-Language'] = toIntlLocale(locale);
-  Object.assign(headers, fetchOptions.headers as Record<string, string>);
+  if (extra) Object.assign(headers, extra);
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
+
+async function parseApiErrorResponse(res: Response): Promise<never> {
+  if (res.status >= 500) {
+    const data = await res.json().catch(() => ({}));
+    if (!data.error) {
+      throw new ApiError('NETWORK_ERROR', i18n.t('error.networkErrorConfirm'), res.status);
+    }
+  }
+  const data = await res.json().catch(() => ({}));
+  throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
+}
+
+async function apiRaw(path: string, options: ApiOptions = {}): Promise<Response> {
+  const { authRedirect = true, ...fetchOptions } = options;
+  const skipContentType = fetchOptions.body instanceof FormData;
+  const headers = buildApiHeaders(fetchOptions.headers as Record<string, string>, skipContentType);
 
   let res: Response;
   try {
@@ -182,20 +188,16 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     if (authRedirect) logoutOnUnauthorized();
     throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
-  if (res.status === 204) return undefined as T;
-  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    // Next.js dev proxy returns 500 with empty body when Go backend is down/restarting
-    if (res.status >= 500 && !data.error) {
-      throw new ApiError(
-        'NETWORK_ERROR',
-        i18n.t('error.networkErrorConfirm'),
-        res.status
-      );
-    }
-    throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
+    await parseApiErrorResponse(res);
   }
-  return data as T;
+  return res;
+}
+
+export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  const res = await apiRaw(path, options);
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
 }
 
 /** 列表接口：保证始终返回数组，避免 items.map 报错 */
@@ -291,11 +293,7 @@ export async function fetchMonthBills(opts?: {
   params.set('limit', String(opts?.limit ?? 5));
   if (opts?.cursor) params.set('cursor', opts.cursor);
   const data = await api<MonthBillsResponse>(`/stats/month-bills?${params}`);
-  return {
-    items: Array.isArray(data?.items) ? data.items : [],
-    next_cursor: data?.next_cursor ?? null,
-    has_more: Boolean(data?.has_more),
-  };
+  return normalizeCursorPage(data);
 }
 
 export async function fetchMonthBill(
@@ -337,19 +335,19 @@ export type StatsSeriesPage<T> = {
   has_more_newer: boolean;
 };
 
-export type StatsSearchFilter = {
+export type TransactionSearchFilter = {
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
 };
 
-export type TransactionSearchInput = {
-  note?: string;
-  tagIds?: number[];
-  contactId?: number | null;
-};
+/** @deprecated use TransactionSearchFilter */
+export type StatsSearchFilter = TransactionSearchFilter;
 
-export function isTransactionSearchActive(input: TransactionSearchInput): boolean {
+/** @deprecated use TransactionSearchFilter */
+export type TransactionSearchInput = TransactionSearchFilter;
+
+export function isTransactionSearchActive(input: TransactionSearchFilter): boolean {
   return (
     Boolean(input.note?.trim()) ||
     Boolean(input.tagIds && input.tagIds.length > 0) ||
@@ -357,25 +355,26 @@ export function isTransactionSearchActive(input: TransactionSearchInput): boolea
   );
 }
 
-function appendStatsSearchFilter(params: URLSearchParams, filter?: StatsSearchFilter) {
+function appendSearchFilter(params: URLSearchParams, filter?: TransactionSearchFilter) {
   const note = filter?.note?.trim();
   if (note) params.set('note', note);
   filter?.tagIds?.forEach((id) => params.append('tag_ids', String(id)));
   if (filter?.contactId != null) params.set('contact_id', String(filter.contactId));
 }
 
-export async function fetchMonthSeries(opts?: {
-  limit?: number;
-  cursor?: string | null;
-  after?: string | null;
-  searchFilter?: StatsSearchFilter;
-}): Promise<StatsSeriesPage<MonthSeriesPoint>> {
-  const params = new URLSearchParams();
-  params.set('limit', String(opts?.limit ?? 12));
-  if (opts?.cursor) params.set('cursor', opts.cursor);
-  if (opts?.after) params.set('after', opts.after);
-  appendStatsSearchFilter(params, opts?.searchFilter);
-  const data = await api<StatsSeriesPage<MonthSeriesPoint>>(`/stats/month-series?${params}`);
+function normalizeCursorPage<T>(data: {
+  items?: T[] | null;
+  next_cursor?: string | null;
+  has_more?: boolean;
+}): { items: T[]; next_cursor: string | null; has_more: boolean } {
+  return {
+    items: Array.isArray(data?.items) ? data.items : [],
+    next_cursor: data?.next_cursor ?? null,
+    has_more: Boolean(data?.has_more),
+  };
+}
+
+function normalizeStatsSeriesPage<T>(data: StatsSeriesPage<T>): StatsSeriesPage<T> {
   return {
     items: Array.isArray(data?.items) ? data.items : [],
     older_cursor: data?.older_cursor ?? null,
@@ -384,24 +383,40 @@ export async function fetchMonthSeries(opts?: {
   };
 }
 
+async function fetchStatsSeries<T>(
+  path: string,
+  opts?: {
+    limit?: number;
+    cursor?: string | null;
+    after?: string | null;
+    searchFilter?: TransactionSearchFilter;
+  }
+): Promise<StatsSeriesPage<T>> {
+  const params = new URLSearchParams();
+  params.set('limit', String(opts?.limit ?? 12));
+  if (opts?.cursor) params.set('cursor', opts.cursor);
+  if (opts?.after) params.set('after', opts.after);
+  appendSearchFilter(params, opts?.searchFilter);
+  const data = await api<StatsSeriesPage<T>>(`${path}?${params}`);
+  return normalizeStatsSeriesPage(data);
+}
+
+export async function fetchMonthSeries(opts?: {
+  limit?: number;
+  cursor?: string | null;
+  after?: string | null;
+  searchFilter?: TransactionSearchFilter;
+}): Promise<StatsSeriesPage<MonthSeriesPoint>> {
+  return fetchStatsSeries<MonthSeriesPoint>('/stats/month-series', opts);
+}
+
 export async function fetchYearSeries(opts?: {
   limit?: number;
   cursor?: string | null;
   after?: string | null;
-  searchFilter?: StatsSearchFilter;
+  searchFilter?: TransactionSearchFilter;
 }): Promise<StatsSeriesPage<YearSeriesPoint>> {
-  const params = new URLSearchParams();
-  params.set('limit', String(opts?.limit ?? 10));
-  if (opts?.cursor) params.set('cursor', opts.cursor);
-  if (opts?.after) params.set('after', opts.after);
-  appendStatsSearchFilter(params, opts?.searchFilter);
-  const data = await api<StatsSeriesPage<YearSeriesPoint>>(`/stats/year-series?${params}`);
-  return {
-    items: Array.isArray(data?.items) ? data.items : [],
-    older_cursor: data?.older_cursor ?? null,
-    has_more_older: Boolean(data?.has_more_older),
-    has_more_newer: Boolean(data?.has_more_newer),
-  };
+  return fetchStatsSeries<YearSeriesPoint>('/stats/year-series', { ...opts, limit: opts?.limit ?? 10 });
 }
 
 export type TransactionsPage = {
@@ -416,6 +431,7 @@ export async function fetchTransactions(opts: {
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
+  type?: 'expense' | 'income';
   cursor?: string | null;
   limit?: number;
   signal?: AbortSignal;
@@ -432,7 +448,7 @@ export async function fetchTransactions(opts: {
   });
 
   if (searchActive) {
-    appendStatsSearchFilter(params, {
+    appendSearchFilter(params, {
       note: opts.note,
       tagIds: opts.tagIds,
       contactId: opts.contactId,
@@ -442,14 +458,14 @@ export async function fetchTransactions(opts: {
     params.set('month', String(opts.month));
   }
 
+  if (opts.type === 'expense' || opts.type === 'income') {
+    params.set('type', opts.type);
+  }
+
   const data = await api<TransactionsPage>(`/transactions?${params}`, {
     signal: opts.signal,
   });
-  return {
-    items: Array.isArray(data?.items) ? data.items : [],
-    next_cursor: data?.next_cursor ?? null,
-    has_more: Boolean(data?.has_more),
-  };
+  return normalizeCursorPage(data);
 }
 
 export async function fetchUsedTransactionTags(): Promise<Tag[]> {
@@ -733,31 +749,17 @@ function exportFallbackFilename(): string {
   return `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
 }
 
-async function fetchExportResponse(headers: Record<string, string>): Promise<Response> {
-  const exportUrl = `${API_BASE}/ledger/export`;
-  const res = await fetch(exportUrl, { headers, credentials: 'same-origin' });
-  if (res.status === 401) {
-    logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
-  }
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
-  }
-  return res;
+async function fetchExportResponse(): Promise<Response> {
+  return apiRaw('/ledger/export');
 }
 
 export async function exportLedgerCSV(): Promise<void> {
-  const token = getToken();
-  const headers: Record<string, string> = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  if (!token) {
+  if (!getToken()) {
     logoutOnUnauthorized();
     throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
 
-  const res = await fetchExportResponse(headers);
+  const res = await fetchExportResponse();
   const blob = await res.blob();
   const disposition = res.headers.get('Content-Disposition');
   const filename = parseExportFilename(disposition, exportFallbackFilename());
@@ -766,26 +768,9 @@ export async function exportLedgerCSV(): Promise<void> {
 }
 
 export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {
-  const token = getToken();
-  const headers: Record<string, string> = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-
   const form = new FormData();
   form.append('file', file);
 
-  const res = await fetch(`${API_BASE}/ledger/import`, {
-    method: 'POST',
-    headers,
-    body: form,
-    credentials: 'same-origin',
-  });
-  if (res.status === 401) {
-    logoutOnUnauthorized();
-    throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
-  }
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
-  }
-  return data as LedgerImportResult;
+  const res = await apiRaw('/ledger/import', { method: 'POST', body: form });
+  return (await res.json()) as LedgerImportResult;
 }

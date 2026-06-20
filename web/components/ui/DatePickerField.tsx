@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
+import { formatISODate, formatYearMonth, parseISODate, toISODate } from '@/lib/formatDate';
 import { useClickOutside } from '@/lib/combobox-utils';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
+import { YearMonthPickerPanel } from '@/components/ui/YearMonthPickerPanel';
+import { YEARS_PER_PAGE, yearPageStart } from '@/lib/pickerUtils';
 
 const WEEKDAY_KEYS = [
   'picker.weekdayMon',
@@ -16,35 +19,9 @@ const WEEKDAY_KEYS = [
   'picker.weekdaySun',
 ] as const;
 
-const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const YEARS_PER_PAGE = 12;
-
-function yearPageStart(y: number): number {
-  return Math.floor((y - 1) / YEARS_PER_PAGE) * YEARS_PER_PAGE + 1;
-}
-
-function parseISO(iso: string): { y: number; m: number; d: number } | null {
-  const [y, m, d] = iso.split('-').map(Number);
-  if (!y || !m || !d) return null;
-  return { y, m, d };
-}
-
-function toISO(y: number, m: number, d: number): string {
-  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-}
-
-function formatDisplayDate(
-  iso: string,
-  t: (key: string, opts?: Record<string, unknown>) => string
-): string {
-  const p = parseISO(iso);
-  if (!p) return t('common.selectDate');
-  return t('common.yearMonthDay', { year: p.y, month: p.m, day: p.d });
-}
-
 function todayISO(): string {
   const t = new Date();
-  return toISO(t.getFullYear(), t.getMonth() + 1, t.getDate());
+  return toISODate(t.getFullYear(), t.getMonth() + 1, t.getDate());
 }
 
 function daysInMonth(y: number, m: number): number {
@@ -52,12 +29,12 @@ function daysInMonth(y: number, m: number): number {
 }
 
 function monthRange(y: number, m: number): { first: string; last: string } {
-  return { first: toISO(y, m, 1), last: toISO(y, m, daysInMonth(y, m)) };
+  return { first: toISODate(y, m, 1), last: toISODate(y, m, daysInMonth(y, m)) };
 }
 
 function yearMonthFromISO(iso?: string): YearMonth | null {
   if (!iso) return null;
-  const p = parseISO(iso);
+  const p = parseISODate(iso);
   if (!p) return null;
   return { year: p.y, month: p.m };
 }
@@ -90,16 +67,16 @@ function buildCalendarDays(viewYear: number, viewMonth: number): CalendarDay[] {
 
   for (let i = startOffset - 1; i >= 0; i--) {
     const day = prevTotal - i;
-    cells.push({ iso: toISO(prevYear, prevMonth, day), day, inMonth: false });
+    cells.push({ iso: toISODate(prevYear, prevMonth, day), day, inMonth: false });
   }
   for (let day = 1; day <= total; day++) {
-    cells.push({ iso: toISO(viewYear, viewMonth, day), day, inMonth: true });
+    cells.push({ iso: toISODate(viewYear, viewMonth, day), day, inMonth: true });
   }
   const nextMonth = viewMonth === 12 ? 1 : viewMonth + 1;
   const nextYear = viewMonth === 12 ? viewYear + 1 : viewYear;
   let nextDay = 1;
   while (cells.length % 7 !== 0 || cells.length < 42) {
-    cells.push({ iso: toISO(nextYear, nextMonth, nextDay), day: nextDay, inMonth: false });
+    cells.push({ iso: toISODate(nextYear, nextMonth, nextDay), day: nextDay, inMonth: false });
     nextDay++;
   }
   return cells;
@@ -122,8 +99,8 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
   const [open, setOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<'day' | 'month' | 'year'>('day');
 
-  const parsed = parseISO(value);
-  const fallback = parseISO(todayISO())!;
+  const parsed = parseISODate(value);
+  const fallback = parseISODate(todayISO())!;
   const [viewYear, setViewYear] = useState(parsed?.y ?? fallback.y);
   const [viewMonth, setViewMonth] = useState(parsed?.m ?? fallback.m);
   const [viewYearPageStart, setViewYearPageStart] = useState(() => yearPageStart(parsed?.y ?? fallback.y));
@@ -232,6 +209,11 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
     setPanelMode('year');
   };
 
+  const pickerValue: YearMonth = {
+    year: parsed?.y ?? viewYear,
+    month: parsed?.m ?? viewMonth,
+  };
+
   return (
     <div ref={rootRef} className="date-picker">
       <button
@@ -248,7 +230,9 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
             <path d="M16 2v4M8 2v4M3 10h18" />
           </svg>
         </span>
-        <span className="date-picker-field-value tabular-nums">{formatDisplayDate(value, t)}</span>
+        <span className="date-picker-field-value tabular-nums">
+          {value ? formatISODate(value) : t('common.selectDate')}
+        </span>
         <span className={`date-picker-field-chevron${open ? ' date-picker-field-chevron-open' : ''}`} aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 9l6 6 6-6" />
@@ -265,121 +249,28 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
         aria-label={t('common.selectDate')}
         widthMode="page"
       >
-        {panelMode === 'year' ? (
-          <>
-            <div className="month-picker-header">
-              <button
-                type="button"
-                className="month-picker-nav"
-                onClick={() => setViewYearPageStart((s) => s - YEARS_PER_PAGE)}
-                disabled={prevYearPageDisabled}
-                aria-label={t('picker.prevYearGroup')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-              <span className="month-picker-title tabular-nums">
-                {viewYearPageStart} – {viewYearPageStart + YEARS_PER_PAGE - 1}
-              </span>
-              <button
-                type="button"
-                className="month-picker-nav"
-                onClick={() => setViewYearPageStart((s) => s + YEARS_PER_PAGE)}
-                disabled={nextYearPageDisabled}
-                aria-label={t('picker.nextYearGroup')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            </div>
-            <div className="month-picker-grid">
-              {yearPageYears.map((y) => {
-                const disabled = isYearDisabled(y);
-                const selected = parsed?.y === y;
-                const isCurrent = y === new Date().getFullYear();
-                return (
-                  <button
-                    key={y}
-                    type="button"
-                    className={[
-                      'month-picker-month',
-                      selected && 'month-picker-month-selected',
-                      isCurrent && !selected && 'month-picker-month-current',
-                      disabled && 'month-picker-month-disabled',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => selectYear(y)}
-                    disabled={disabled}
-                  >
-                    {y}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        ) : panelMode === 'month' ? (
-          <>
-            <div className="month-picker-header">
-              <button
-                type="button"
-                className="month-picker-nav"
-                onClick={() => setViewYear((y) => y - 1)}
-                disabled={prevYearDisabled}
-                aria-label={t('picker.prevYear')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="month-picker-title tabular-nums hover:text-accent transition-colors border-0 bg-transparent cursor-pointer p-0"
-                onClick={openYearView}
-              >
-                {t('common.yearOnly', { year: viewYear })}
-              </button>
-              <button
-                type="button"
-                className="month-picker-nav"
-                onClick={() => setViewYear((y) => y + 1)}
-                disabled={nextYearDisabled}
-                aria-label={t('picker.nextYear')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            </div>
-            <div className="month-picker-grid">
-              {MONTHS.map((m) => {
-                const disabled = isMonthDisabled(viewYear, m);
-                const selected = parsed?.y === viewYear && parsed?.m === m;
-                const isCurrent =
-                  viewYear === new Date().getFullYear() && m === new Date().getMonth() + 1;
-                return (
-                  <button
-                    key={m}
-                    type="button"
-                    className={[
-                      'month-picker-month',
-                      selected && 'month-picker-month-selected',
-                      isCurrent && !selected && 'month-picker-month-current',
-                      disabled && 'month-picker-month-disabled',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => selectMonth(m)}
-                    disabled={disabled}
-                  >
-                    {t('common.monthOnly', { month: m })}
-                  </button>
-                );
-              })}
-            </div>
-          </>
+        {panelMode === 'year' || panelMode === 'month' ? (
+          <YearMonthPickerPanel
+            panelMode={panelMode}
+            viewYear={viewYear}
+            viewYearPageStart={viewYearPageStart}
+            value={pickerValue}
+            prevYearDisabled={prevYearDisabled}
+            nextYearDisabled={nextYearDisabled}
+            prevYearPageDisabled={prevYearPageDisabled}
+            nextYearPageDisabled={nextYearPageDisabled}
+            yearPageYears={yearPageYears}
+            isDisabled={isMonthDisabled}
+            isYearDisabled={isYearDisabled}
+            onPrevYearPage={() => setViewYearPageStart((s) => s - YEARS_PER_PAGE)}
+            onNextYearPage={() => setViewYearPageStart((s) => s + YEARS_PER_PAGE)}
+            onPrevYear={() => setViewYear((y) => y - 1)}
+            onNextYear={() => setViewYear((y) => y + 1)}
+            onOpenYearView={openYearView}
+            onSelectMonth={selectMonth}
+            onSelectYear={selectYear}
+            t={t}
+          />
         ) : (
           <>
             <div className="date-picker-header">
@@ -399,7 +290,7 @@ export function DatePickerField({ value, onChange, min, max, required }: DatePic
                 className="date-picker-title tabular-nums hover:text-accent transition-colors"
                 onClick={() => setPanelMode('month')}
               >
-                {t('common.yearMonth', { year: viewYear, month: viewMonth })}
+                {formatYearMonth({ year: viewYear, month: viewMonth })}
               </button>
               <button
                 type="button"

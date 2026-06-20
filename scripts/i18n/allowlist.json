@@ -15,7 +15,9 @@
   "keys": {
     "app.name": true,
     "common.emDash": true,
-    "common.endOfListDivider": true
+    "common.endOfListDivider": true,
+    "common.yearMonth": true,
+    "common.yearMonthDay": true
   },
   "valuePatterns": [
     "^YYYY-MM(-DD)?$",

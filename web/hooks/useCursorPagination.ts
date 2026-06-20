@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import i18n from '@/src/i18n';
 import { getScrollY } from '@/lib/scroll';
 
 export type CursorPage<T> = {
@@ -26,7 +27,7 @@ export function useCursorPagination<T>({
   rootMargin = '120px',
   gateUntilUserScrolls = false,
   getItemKey,
-  onError = (e) => (e instanceof Error ? e.message : '加载失败'),
+  onError = (e) => (e instanceof Error ? e.message : i18n.t('common.loadFailed')),
   onBeforeLoadMore,
   onAfterLoadMore,
 }: UseCursorPaginationOptions<T>) {

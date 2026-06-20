@@ -1,4 +1,5 @@
 import { getCurrentYearMonth, type YearMonth } from '@/lib/api';
+import { parseISODate, toISODate } from '@/lib/formatDate';
 
 export type YearMonthParseFallback = 'current' | 'null';
 
@@ -32,12 +33,21 @@ export function safeReturnTo(raw: string | null, fallback: string): string {
   return fallback;
 }
 
+export type TransactionTypeFilter = 'expense' | 'income' | null;
+
+export function parseTransactionTypeFromQuery(params: URLSearchParams): TransactionTypeFilter {
+  const raw = params.get('type');
+  if (raw === 'expense' || raw === 'income') return raw;
+  return null;
+}
+
 export type TransactionsHrefOptions = {
   year: number;
   month: number;
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
+  type?: 'expense' | 'income';
 };
 
 export function buildTransactionsHref(opts: TransactionsHrefOptions): string {
@@ -50,11 +60,10 @@ export function buildTransactionsHref(opts: TransactionsHrefOptions): string {
   if (opts.contactId != null && opts.contactId > 0) {
     params.set('contact', String(opts.contactId));
   }
+  if (opts.type === 'expense' || opts.type === 'income') {
+    params.set('type', opts.type);
+  }
   return `/transactions/?${params.toString()}`;
-}
-
-function toISODate(y: number, m: number, d: number): string {
-  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
 /** 流水月默认记一笔日期：当月用今天，历史月用该月最后一天 */
@@ -82,15 +91,9 @@ export function parseDateParam(raw: string | null): string | null {
   const [y, m, d] = parts;
   if (!y || !m || !d || m < 1 || m > 12 || d < 1 || d > 31) return null;
   const iso = toISODate(y, m, d);
-  const parsed = parseISOToParts(iso);
+  const parsed = parseISODate(iso);
   if (!parsed || parsed.y !== y || parsed.m !== m || parsed.d !== d) return null;
   return iso;
-}
-
-function parseISOToParts(iso: string): { y: number; m: number; d: number } | null {
-  const [y, m, d] = iso.split('-').map(Number);
-  if (!y || !m || !d) return null;
-  return { y, m, d };
 }
 
 export function contactDetailHref(contactId: number, returnTo?: string): string {

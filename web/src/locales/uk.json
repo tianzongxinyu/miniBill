@@ -24,8 +24,8 @@
     "redirecting": "Перенаправлення…",
     "createNamed": "Створити \"{{name}}\"",
     "logoutTitle": "{{username}} · Вийти",
-    "yearMonth": "{{month}}.{{year}}",
-    "yearMonthDay": "{{day}}/{{month}}/{{year}}",
+    "yearMonth": "{{year}}-{{month}}",
+    "yearMonthDay": "{{year}}-{{month}}-{{day}}",
     "yearOnly": "{{year}}",
     "monthOnly": "{{month}}",
     "selectDate": "Обрати дату",
@@ -33,7 +33,12 @@
     "directory": "Каталог: {{path}}",
     "errorPrefix": "Помилка: {{message}}",
     "file": "Файл: {{name}}",
-    "cannotLoad": "Не вдалося завантажити"
+    "cannotLoad": "Не вдалося завантажити",
+    "loadFailed": "Не вдалося завантажити",
+    "saveFailed": "Не вдалося зберегти",
+    "deleteFailed": "Не вдалося видалити",
+    "removeItem": "Видалити {{name}}",
+    "removeContact": "Видалити контакт {{name}}"
   },
   "nav": {
     "home": "Головна",
@@ -41,9 +46,9 @@
     "stats": "Статистика",
     "profile": "Профіль",
     "logout": "Вийти",
-    "expandSidebar": "Розгорнути бічну панель",
-    "collapseSidebar": "Згорнути бічну панель",
-    "collapseSidebarLabel": "Згорнути бічну панель"
+    "expandSidebar": "Розгорнути",
+    "collapseSidebar": "Згорнути",
+    "collapseSidebarLabel": "Згорнути"
   },
   "auth": {
     "welcomeBack": "З поверненням",
@@ -60,14 +65,14 @@
     "invalidAuth": "Недійсна відповідь входу",
     "passwordMismatch": "Паролі не збігаються",
     "getStarted": "Почати",
-    "registerSubtitle": "Створіть обліковий запис і почніть приватну книгу. Усі дані залишаються на вашому сервері.",
+    "registerSubtitle": "Самохостинг. Дані на вашому сервері.",
     "registerHints": "Ім'я користувача 3–32 символи · Пароль щонайменше 6 символів",
     "registerAccount": "Створити обліковий запис",
     "fillInfo": "Заповніть дані нижче",
     "usernamePlaceholder": "Ім'я користувача 3–32 символи",
     "passwordPlaceholder": "Пароль щонайменше 6 символів",
     "confirmPassword": "Підтвердити пароль",
-    "heroTagline": "Легка самохостована особиста книга. Просто і зрозуміло — ваші дані залишаються з вами.",
+    "heroTagline": "Легкий самохостинг-облік. Дані у вас.",
     "heroBadges": "Самохостований · Багатокористувацький · Відкритий код",
     "usernameLength": "Ім'я користувача має містити 3–32 символи",
     "usernameChars": "Ім'я користувача може містити лише літери, цифри та підкреслення",
@@ -78,22 +83,25 @@
     "releaseRefresh": "Відпустіть, щоб оновити",
     "refreshing": "Оновлення",
     "emptyTitle": "Ще немає рахунків",
-    "emptyHint": "Додайте транзакцію — тут з'являться місячні підсумки",
-    "loadFailed": "Не вдалося завантажити"
+    "emptyHint": "Додайте транзакцію — тут з'являться місячні підсумки"
   },
   "transactions": {
     "empty": "Немає транзакцій",
     "noMatch": "Немає відповідних транзакцій",
-    "prevMonth": "Попередній місяць",
-    "nextMonth": "Наступний місяць",
-    "addOne": "Додати транзакцію",
+    "prevMonth": "Назад",
+    "nextMonth": "Вперед",
+    "addOne": "Додати",
     "searchPlaceholder": "Примітка · Теги · Контакт",
     "searchPlaceholderWithChips": "Ключове слово примітки",
     "clearSearch": "Очистити пошук",
     "loadingSummary": "Завантаження місячного підсумку…",
     "loadingSummaryAria": "Завантаження місячного підсумку",
-    "monthSummaryAria": "Підсумок за {{month}}/{{year}}",
+    "monthSummaryAria": "Підсумок за {{period}}",
     "loadSummaryFailed": "Не вдалося завантажити місячний підсумок",
+    "emptyExpense": "Немає витрат цього місяця",
+    "emptyIncome": "Немає доходів цього місяця",
+    "filterExpenseAria": "Фільтр витрат, натисніть знову для скидання",
+    "filterIncomeAria": "Фільтр доходів, натисніть знову для скидання",
     "dailyExpenseTag": "Щоденні витрати"
   },
   "stats": {
@@ -101,7 +109,7 @@
     "byYear": "За роком",
     "fullscreen": "На весь екран",
     "loadMore": "Завантаження ще…",
-    "scrollHint": "Проведіть або перетягніть графік, щоб побачити старіші або новіші дані",
+    "scrollHint": "Свайп для даних",
     "totalExpense": "Загальні витрати",
     "totalIncome": "Загальний дохід",
     "netIncome": "Чистий дохід",
@@ -128,7 +136,6 @@
     "change": "Змінити",
     "passwordChanged": "Пароль оновлено",
     "colorSchemeUpdated": "Колірну схему оновлено",
-    "saveFailed": "Не вдалося зберегти",
     "failed": "Помилка",
     "language": "Мова",
     "languageSearch": "Пошук мов"
@@ -144,11 +151,16 @@
     "changeColor": "Змінити колір тега \"{{name}}\"",
     "deleteTag": "Видалити тег \"{{name}}\"",
     "dailyExpense": "Щоденні витрати",
-    "loadFailed": "Не вдалося завантажити",
     "addFailed": "Не вдалося додати",
     "updateFailed": "Не вдалося оновити",
     "colorSaveFailed": "Не вдалося зберегти колір",
-    "deleteFailed": "Не вдалося видалити"
+    "colorPicker": {
+      "pickBg": "Обрати фон",
+      "refresh": "Інші кольори",
+      "applyPresetAria": "Застосувати запропонований колір",
+      "customBg": "Власний фон",
+      "apply": "Застосувати"
+    }
   },
   "contacts": {
     "namePlaceholder": "Ім'я",
@@ -161,8 +173,6 @@
     "deleteAria": "Видалити контакт \"{{name}}\"",
     "sent": "Надіслано",
     "received": "Отримано",
-    "loadFailed": "Не вдалося завантажити",
-    "deleteFailed": "Не вдалося видалити",
     "failed": "Помилка"
   },
   "data": {
@@ -202,22 +212,21 @@
     "importSummaryCreatedContacts": "створено {{count}} контактів"
   },
   "backup": {
-    "weekdaySun": "Неділя",
-    "weekdayMon": "Понеділок",
-    "weekdayTue": "Вівторок",
-    "weekdayWed": "Середа",
-    "weekdayThu": "Четвер",
-    "weekdayFri": "П'ятниця",
-    "weekdaySat": "Субота",
+    "weekdaySun": "Нд",
+    "weekdayMon": "Пн",
+    "weekdayTue": "Вт",
+    "weekdayWed": "Ср",
+    "weekdayThu": "Чт",
+    "weekdayFri": "Пт",
+    "weekdaySat": "Сб",
     "neverBackedUp": "Резервну копію ніколи не створювали",
     "lastBackup": "Остання резервна копія: {{time}}",
     "saved": "Збережено",
     "backupComplete": "Резервну копію створено: {{filename}}",
     "backupFailed": "Резервна копія не вдалася",
-    "loadFailed": "Не вдалося завантажити",
     "backupDir": "Каталог резервних копій",
     "configured": "Налаштовано: {{path}}",
-    "dirNotConfigured": "Каталог резервних копій не налаштовано. Можете зберегти заплановані налаштування нижче; для фактичного резервного копіювання вкажіть шлях у Feiniu OS App Center → MiniBill → App settings → Runtime або встановіть env var локально / у Docker.",
+    "dirNotConfigured": "Папку резерву не налаштовано. Налаштування застосунку або змінна середовища.",
     "scheduledBackup": "Заплановане резервне копіювання",
     "enable": "Увімкнути",
     "interval": "Інтервал",
@@ -242,8 +251,7 @@
     "saveSettings": "Зберегти налаштування",
     "runNow": "Резервна копія зараз",
     "runNowDescription": "Експортувати поточний CSV книги та стиснути в zip у каталозі резервних копій.",
-    "running": "Створення резервної копії…",
-    "saveFailed": "Не вдалося зберегти"
+    "running": "Створення резервної копії…"
   },
   "add": {
     "editTitle": "Редагувати транзакцію",
@@ -256,11 +264,8 @@
     "note": "Примітка",
     "delete": "Видалити",
     "confirmDeleteTitle": "Підтвердити видалення",
-    "confirmDeleteMessage": "Це не можна скасувати. Видалити цю транзакцію?",
-    "invalidAmount": "Введіть дійсну суму",
-    "saveFailed": "Не вдалося зберегти",
-    "deleteFailed": "Не вдалося видалити",
-    "loadFailed": "Не вдалося завантажити"
+    "confirmDeleteMessage": "Незворотно. Видалити?",
+    "invalidAmount": "Введіть дійсну суму"
   },
   "balance": {
     "registerTitle": "Зареєструвати баланс",
@@ -276,17 +281,15 @@
     "overwriteTitle": "Перезаписати наявний запис",
     "overwriteWithAmount": "У {{month}} вже є баланс ({{amount}}). Перезаписати?",
     "overwriteWithoutAmount": "У {{month}} вже є запис балансу. Перезаписати?",
-    "confirmOverwrite": "Підтвердити перезапис",
-    "saveFailed": "Не вдалося зберегти",
-    "loadFailed": "Не вдалося завантажити"
+    "confirmOverwrite": "Підтвердити перезапис"
   },
   "picker": {
     "prevYearGroup": "Попередній діапазон років",
     "nextYearGroup": "Наступний діапазон років",
     "prevYear": "Попередній рік",
     "nextYear": "Наступний рік",
-    "prevMonth": "Попередній місяць",
-    "nextMonth": "Наступний місяць",
+    "prevMonth": "Назад",
+    "nextMonth": "Вперед",
     "weekdayMon": "Пн",
     "weekdayTue": "Вт",
     "weekdayWed": "Ср",
@@ -327,8 +330,7 @@
     "csvTooLarge": "Файл CSV занадто великий",
     "csvReadFailed": "Не вдалося прочитати файл",
     "backupDirMissing": "Каталог резервних копій не налаштовано",
-    "backupFileRequired": "Виберіть файл резервної копії",
-    "loadFailed": "Не вдалося завантажити"
+    "backupFileRequired": "Виберіть файл резервної копії"
   },
   "validation": {
     "dateAfterToday": "Дата не може бути пізнішою за сьогодні",

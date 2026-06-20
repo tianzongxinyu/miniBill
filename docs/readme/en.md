@@ -6,7 +6,7 @@ A lightweight, self-hosted, multi-user personal finance web app.
 
 ## Features
 
-- **Self-hosted multi-user**: Data stored in local SQLite with a separate ledger per user; supports Docker deployment and Feiniu NAS (fnOS) install packages
+- **Self-hosted multi-user**: Data stored in local SQLite with a separate ledger per user; supports Docker deployment and FygoOS install packages
 - **Income & expense transactions**: Record income/expense with tags, contacts, notes, and dates; browse by month with cursor pagination and keyword search
 - **Monthly balance**: Record actual account balance each month and compare against transaction totals
 - **Daily expenses**: Estimate monthly everyday spending not tracked transaction-by-transaction; automatically included in total expenses
@@ -76,9 +76,9 @@ cd web && npm install && npm run dev
 
 The frontend dev server proxies `/api` to `:8080`.
 
-## Feiniu NAS (fnOS) Packaging
+## FygoOS Packaging
 
-MiniBill can be packaged as a native fnOS `.fpk` install package, running directly on Feiniu NAS without Docker.
+MiniBill can be packaged as a native FygoOS `.fpk` install package, running directly on FygoOS without Docker.
 
 ### Build Requirements
 
@@ -107,7 +107,7 @@ The script: compiles Linux backend binary → copies frontend static assets and 
 
 ### Install & Configure
 
-1. Log in to fnOS → **App Center** → **Manual Install**
+1. Log in to FygoOS → **App Center** → **Manual Install**
 2. Upload the `.fpk` file matching your NAS architecture
 3. In the install wizard, set **service port** (default `18080`) and whether registration is open
 4. Choose a data disk for the data directory (not the system disk)

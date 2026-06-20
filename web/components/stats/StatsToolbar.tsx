@@ -43,14 +43,14 @@ export function StatsToolbar({
         <button
           type="button"
           onClick={() => onModeChange('month')}
-          className={mode === 'month' ? 'btn-segment-active px-4' : 'btn-segment px-4'}
+          className={mode === 'month' ? 'btn-segment-active' : 'btn-segment'}
         >
           {t('stats.byMonth')}
         </button>
         <button
           type="button"
           onClick={() => onModeChange('year')}
-          className={mode === 'year' ? 'btn-segment-active px-4' : 'btn-segment px-4'}
+          className={mode === 'year' ? 'btn-segment-active' : 'btn-segment'}
         >
           {t('stats.byYear')}
         </button>

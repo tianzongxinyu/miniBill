@@ -17,7 +17,9 @@ body {
 
 @media (max-width: 1023px) {
   html {
-    font-size: 14px;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     scrollbar-width: none;
     -ms-overflow-style: none;
     overscroll-behavior-y: none;
@@ -34,9 +36,60 @@ body {
     overscroll-behavior-y: none;
   }
 
-  /* 底部 Tab 文案/图标用固定 px（text-[10px]、18px icon），不随 rem 放大 */
+  /* iOS Safari：输入框字号 < 16px 会聚焦自动放大页面 */
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='hidden']):not([type='image']):not([type='range']):not([type='color']):not([type='file']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* class 选择器覆盖 text-sm，防 iOS 聚焦放大 */
+  .field,
+  .form-note-field,
+  .form-amount-input,
+  .combobox-input-inline,
+  .form-details .combobox-input-inline,
+  .date-picker-field-value,
+  .month-picker-field-value,
+  .backup-keep-count-field .field {
+    font-size: 16px;
+  }
+
+  /* 固定小字 +1 档 */
+  .bill-stat-label,
+  .bill-list-footer-text,
+  .form-label,
+  .date-picker-weekday {
+    font-size: 13px;
+  }
+
+  .text-\[10px\] {
+    font-size: 12px;
+  }
+
+  .text-\[11px\] {
+    font-size: 13px;
+  }
+
+  .text-\[12px\] {
+    font-size: 14px;
+  }
+
+  .text-\[14px\] {
+    font-size: 16px;
+  }
+
+  .form-details .combobox-chip-row {
+    @apply justify-start;
+  }
+
+  .form-details .combobox-input-inline {
+    @apply text-left;
+  }
+
+  /* 底部 Tab 文案用固定 px（+1 档），图标仍 18px */
   .mobile-tab-nav a {
-    font-size: 10px;
+    font-size: 12px;
     padding-top: 6px;
     padding-bottom: 6px;
   }
@@ -49,15 +102,6 @@ body {
 }
 
 @layer components {
-  .page-title {
-    @apply text-xl font-semibold tracking-tight text-ink animate-fade-in-up;
-  }
-
-  .page-subtitle {
-    @apply text-sm text-muted animate-fade-in;
-    animation-delay: 60ms;
-  }
-
   .page-enter {
     animation: fade-in 0.45s var(--ease-out-expo) both;
   }
@@ -219,12 +263,84 @@ body {
     @apply border-accent/30 ring-1 ring-accent/10 shadow-[0_2px_12px_rgba(62,142,126,0.08)];
   }
 
+  .bill-card-summary {
+    @apply py-2.5 mb-3;
+  }
+
+  .bill-card-summary .bill-stat-stack {
+    @apply text-right;
+  }
+
+  .bill-card-summary .bill-stat-stack-rule {
+    @apply my-0;
+  }
+
+  .bill-card-summary .bill-stat-filter-btn {
+    @apply flex flex-col items-end gap-0 w-full py-1 px-0 flex-none text-right;
+    @apply rounded-xl border border-line/70 bg-accent-soft/30 cursor-pointer;
+    @apply transition-[background-color,border-color] duration-150;
+    @apply focus:outline-none focus-visible:border-line/70;
+  }
+
+  .bill-card-summary .bill-stat-filter-btn:not(.is-active):hover {
+    @apply bg-accent-soft/45 border-line/70;
+  }
+
+  .bill-card-summary .bill-stat-filter-btn-expense:not(.is-active),
+  .bill-card-summary .bill-stat-filter-btn-income:not(.is-active) {
+    @apply border-line/70 bg-accent-soft/30;
+  }
+
+  .bill-card-summary .bill-stat-filter-btn-expense.is-active {
+    @apply border-income/50 bg-income/15;
+  }
+
+  .bill-card-summary .bill-stat-filter-btn-income.is-active {
+    @apply border-expense/50 bg-expense/15;
+  }
+
   .bill-card-header {
     @apply flex items-center gap-3 mb-2.5 pb-2 border-b border-line/60;
   }
 
   .bill-card-month {
     @apply text-sm font-medium text-ink tabular-nums tracking-tight text-left;
+  }
+
+  .bill-card-past {
+    @apply py-2.5;
+  }
+
+  .bill-card-past .bill-card-header {
+    @apply mb-1.5 pb-1.5;
+  }
+
+  .bill-card-col-past {
+    @apply flex flex-col gap-0 min-w-0;
+  }
+
+  .bill-stat-stack {
+    @apply text-right;
+  }
+
+  .bill-stat-stack-label {
+    @apply text-[10px] text-muted leading-none;
+  }
+
+  .bill-stat-stack-value {
+    @apply text-sm font-semibold tabular-nums leading-none mt-0.5;
+  }
+
+  .bill-stat-stack-value .amount-num {
+    @apply leading-none;
+  }
+
+  .bill-stat-stack-rule {
+    @apply border-t border-line/60 my-0.5;
+  }
+
+  .bill-card-columns-compact {
+    @apply gap-x-2 sm:gap-x-3;
   }
 
   .bill-card-split {
@@ -304,7 +420,7 @@ body {
 
   .fab-button {
     @apply relative flex flex-1 items-center justify-center gap-2 min-w-0 py-3.5 rounded-3xl;
-    @apply bg-accent text-white text-sm font-medium;
+    @apply bg-accent text-white text-xs font-medium;
     @apply shadow-[0_4px_16px_rgba(62,142,126,0.25)] ring-1 ring-accent/20;
     @apply transition-all duration-200 ease-out;
     @apply hover:bg-accent/90;
@@ -447,6 +563,18 @@ body {
     -moz-appearance: textfield;
   }
 
+  .record-form .form-hero-amount {
+    @apply items-baseline;
+  }
+
+  .record-form .form-amount-input {
+    @apply text-4xl leading-none py-0;
+  }
+
+  .record-form .form-row {
+    @apply px-2 grid-cols-[3.5rem_minmax(0,1fr)] gap-x-1.5;
+  }
+
   .form-amount-input::-webkit-outer-spin-button,
   .form-amount-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -461,7 +589,7 @@ body {
 
   .form-submit {
     @apply relative flex items-center justify-center w-full py-3 rounded-3xl;
-    @apply bg-accent text-white text-sm font-medium;
+    @apply bg-accent text-white text-xs font-medium;
     @apply shadow-[0_4px_16px_rgba(62,142,126,0.2)] ring-1 ring-accent/20;
     @apply transition-all duration-200 ease-out;
     @apply hover:bg-accent/90;
@@ -499,20 +627,40 @@ body {
 
   .stats-chart-scroll-fullscreen {
     @apply pb-1;
+    touch-action: none;
+  }
+
+  .stats-chart-scroll-tap-inspect {
+    touch-action: pan-x pinch-zoom;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stats-chart-scroll-tap-inspect.stats-chart-scroll {
+    cursor: default;
+  }
+
+  .stats-chart-scroll-rotated {
+    touch-action: pan-y pinch-zoom;
   }
 
   .stats-chart-scroll-inner-fullscreen {
     box-sizing: border-box;
+    contain: none;
   }
 
   .stats-chart-fullscreen-landscape {
-    position: absolute;
+    position: fixed;
     top: 0;
-    left: 100%;
+    left: 0;
     width: 100vh;
     height: 100vw;
-    transform: rotate(90deg);
-    transform-origin: top left;
+  }
+
+  @media (orientation: portrait) {
+    .stats-chart-fullscreen-landscape {
+      transform: rotate(90deg) translateY(-100vw);
+      transform-origin: top left;
+    }
   }
 
   /* —— 确认弹窗 —— */
@@ -579,7 +727,9 @@ body {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
   }
 
-  .date-picker-field-open {
+  .date-picker-field-open,
+  .month-picker-field-open,
+  .time-unit-picker-field-open {
     @apply bg-surface border-accent/30 ring-2 ring-accent/25;
   }
 
@@ -702,10 +852,6 @@ body {
     @apply flex-1 text-right;
   }
 
-  .month-picker-field-open {
-    @apply border-accent/30 bg-surface ring-2 ring-accent/25;
-  }
-
   .month-picker-disabled .month-picker-field {
     @apply opacity-50 cursor-not-allowed;
   }
@@ -770,10 +916,6 @@ body {
     @apply hover:border-accent/30 hover:bg-surface;
   }
 
-  .time-unit-picker-field-open {
-    @apply border-accent/30 bg-surface ring-2 ring-accent/25;
-  }
-
   .time-unit-picker-disabled .time-unit-picker-field {
     @apply opacity-50 cursor-not-allowed;
   }
@@ -833,8 +975,14 @@ body {
     margin: 0;
   }
 
-  .transactions-toolbar {
+  .transactions-toolbar,
+  .stats-toolbar {
     @apply flex items-center gap-3;
+  }
+
+  .transactions-toolbar > .combobox,
+  .stats-toolbar > .combobox {
+    @apply flex-1 min-w-0;
   }
 
   .transactions-toolbar .combobox-panel,
@@ -847,20 +995,21 @@ body {
   }
 
   .transactions-toolbar .month-picker-field {
-    @apply py-2.5 transition-all duration-200 ease-out;
+    @apply px-2 gap-1 w-auto py-2.5 transition-all duration-200 ease-out;
     @apply hover:border-accent/30 hover:bg-accent-soft/50;
   }
 
-  .transactions-toolbar .month-picker-field-open {
-    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
-  }
-
-  .stats-toolbar {
-    @apply flex items-center justify-between gap-3;
+  .transactions-toolbar .month-picker-field-value {
+    @apply text-sm tabular-nums whitespace-nowrap;
   }
 
   .stats-toolbar-right {
     @apply shrink-0 flex gap-2;
+  }
+
+  .stats-toolbar-right .btn-segment,
+  .stats-toolbar-right .btn-segment-active {
+    @apply flex-none px-2.5 py-2;
   }
 
   .combobox {
@@ -929,11 +1078,11 @@ body {
 
   .combobox-candidates-floating .tag-chip,
   .combobox-candidates-row .tag-chip {
-    @apply text-sm px-2.5 py-1.5;
+    @apply text-xs px-3 py-1;
   }
 
   .combobox-candidates-row .tag-pill.combobox-candidate-create {
-    @apply text-sm px-3 py-1.5;
+    @apply text-xs px-3 py-1;
   }
 
   .combobox-candidate {
@@ -953,8 +1102,6 @@ body {
   .page-enter,
   .page-slide-left,
   .page-slide-right,
-  .page-title,
-  .page-subtitle,
   .notebook,
   .notebook-row,
   .btn-primary,
@@ -979,5 +1126,14 @@ body {
 
   .notebook-row:hover {
     transform: none;
+  }
+}
+
+/* iOS：根字号 18px（Android 保持 16px） */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 1023px) {
+    html {
+      font-size: 18px;
+    }
   }
 }

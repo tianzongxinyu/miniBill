@@ -35,7 +35,7 @@ function DetailInner() {
     if (!id) return;
     fetchContactDetail(Number(id))
       .then(setC)
-      .catch((e) => setError(formatApiError(e, t('contacts.loadFailed'))));
+      .catch((e) => setError(formatApiError(e, t('common.loadFailed'))));
   }, [id, t]);
 
   const fetchPage = useCallback(
@@ -48,7 +48,7 @@ function DetailInner() {
     enabled: contactId != null,
     fetchPage,
     getItemKey: (tx) => tx.id,
-    onError: (e) => formatApiError(e, t('contacts.loadFailed')),
+    onError: (e) => formatApiError(e, t('common.loadFailed')),
   });
 
   const animateIds = useLoadMoreAnimateIds(
@@ -68,7 +68,7 @@ function DetailInner() {
       await deleteContact(Number(id));
       router.replace('/profile/contacts/');
     } catch (err) {
-      setError(formatApiError(err, t('contacts.deleteFailed')));
+      setError(formatApiError(err, t('common.deleteFailed')));
       setConfirmOpen(false);
       setDeleting(false);
     }
@@ -87,7 +87,7 @@ function DetailInner() {
   return (
     <div>
       <div className={`${statGrid} mb-4 items-baseline`}>
-        <h1 className="page-title min-w-0 px-4">{c.name}</h1>
+        <p className="text-base font-semibold text-ink min-w-0 px-4 truncate">{c.name}</p>
         <div className="w-px mx-2 sm:mx-2.5 shrink-0" aria-hidden />
         <div className="flex items-baseline justify-end min-w-0 pl-3 pr-4 text-sm">
           <span className={amountSlot}>

@@ -1,5 +1,7 @@
+'use client';
+
 import Image from 'next/image';
-import { APP_NAME } from '@/lib/appMeta';
+import { useTranslation } from 'react-i18next';
 
 const sizes = {
   sm: 36,
@@ -14,12 +16,13 @@ type AppLogoProps = {
 };
 
 export function AppLogo({ size = 'sm', className = '', priority = false }: AppLogoProps) {
+  const { t } = useTranslation();
   const px = typeof size === 'number' ? size : sizes[size];
 
   return (
     <Image
       src="/icon.png"
-      alt={APP_NAME}
+      alt={t('app.name')}
       width={px}
       height={px}
       className={`rounded-2xl shrink-0 ${className}`}

@@ -271,11 +271,7 @@ func (m *LedgerMeta) TxTagsForIDs(q SQLExec, txIDs []int64) (map[int64][]TxTagEn
 		placeholders[i] = "?"
 		args[i] = id
 	}
-	query := fmt.Sprintf(`
-		SELECT tt.transaction_id, tt.tag_id, g.name, g.color_bg, g.color_fg FROM transaction_tags tt
-		JOIN tags g ON g.id = tt.tag_id
-		WHERE tt.transaction_id IN (%s)
-		ORDER BY tt.transaction_id, g.name`, strings.Join(placeholders, ","))
+	query := fmt.Sprintf(domain.TxTagsByTransactionIDsSQL, strings.Join(placeholders, ","))
 	rows, err := q.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -338,7 +334,7 @@ func (m *LedgerMeta) ContactNamesBatch(q SQLExec, ids []int64) (map[int64]string
 		placeholders[i] = "?"
 		args[i] = id
 	}
-	query := fmt.Sprintf(`SELECT id, name FROM contacts WHERE id IN (%s)`, strings.Join(placeholders, ","))
+	query := fmt.Sprintf(domain.ContactNamesByIDsSQL, strings.Join(placeholders, ","))
 	rows, err := q.Query(query, args...)
 	if err != nil {
 		return nil, err
