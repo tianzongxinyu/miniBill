@@ -195,12 +195,13 @@ setup_staging() {
         --exclude '.DS_Store' \
         "$FNOS_DIR/" "$staging/"
     mkdir -p "$staging/app/bin" "$staging/app/web" "$staging/app/migrations"
+    cp -a "$FNOS_DIR/app/ui" "$staging/app/ui"
 }
 
-build_one() {
+stage_binary() {
     local version="$1"
     local platform="$2"
-    local work_dir="${3:-$FNOS_DIR}"
+    local work_dir="$3"
     local goarch
     goarch="$(platform_to_goarch "$platform")"
 
@@ -219,6 +220,12 @@ build_one() {
     cp -a "$ROOT/migrations/ledger" "${work_dir}/app/migrations/ledger"
 
     chmod +x "${work_dir}/app/bin/minibill" "${work_dir}"/cmd/*
+}
+
+pack_fpk() {
+    local version="$1"
+    local platform="$2"
+    local work_dir="$3"
 
     info "[$platform] Packing with fnpack ..."
     rm -f "${work_dir}/minibill.fpk"
@@ -241,6 +248,15 @@ build_one() {
     fi
 
     info "[$platform] Built: $fpk_dst ($(du -h "$fpk_dst" | awk '{print $1}'))"
+}
+
+build_one() {
+    local version="$1"
+    local platform="$2"
+    local work_dir="${3:-$FNOS_DIR}"
+
+    stage_binary "$version" "$platform" "$work_dir"
+    pack_fpk "$version" "$platform" "$work_dir"
 
     if [ "$work_dir" = "$FNOS_DIR" ]; then
         restore_manifest
@@ -256,19 +272,23 @@ build_all_parallel() {
     setup_staging "$staging_x86"
     setup_staging "$staging_arm"
 
-    build_one "$version" x86 "$staging_x86" &
+    stage_binary "$version" x86 "$staging_x86" &
     local pid_x86=$!
-    build_one "$version" arm "$staging_arm" &
+    stage_binary "$version" arm "$staging_arm" &
     local pid_arm=$!
 
     local status_x86=0 status_arm=0
     wait "$pid_x86" || status_x86=$?
     wait "$pid_arm" || status_arm=$?
-    rm -rf "$tmpdir"
-
     if [ "$status_x86" -ne 0 ] || [ "$status_arm" -ne 0 ]; then
-        error "Parallel build failed (x86=${status_x86}, arm=${status_arm})"
+        rm -rf "$tmpdir"
+        error "Parallel compile failed (x86=${status_x86}, arm=${status_arm})"
     fi
+
+    # fnpack is not safe to run in parallel (shared temp state).
+    pack_fpk "$version" x86 "$staging_x86"
+    pack_fpk "$version" arm "$staging_arm"
+    rm -rf "$tmpdir"
 }
 
 main() {
@@ -277,6 +297,7 @@ main() {
     command -v go >/dev/null 2>&1 || error "go is required"
     command -v curl >/dev/null 2>&1 || error "curl is required"
     [ -f "$ROOT/web/public/icon.png" ] || error "Missing web/public/icon.png"
+    [ -f "$FNOS_DIR/app/ui/config" ] || error "Missing fnos/app/ui/config — restore with: git restore fnos/app/ui/config"
 
     prepare_shared
 
