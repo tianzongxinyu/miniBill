@@ -8,7 +8,7 @@ import { DailyExpenseAmount } from '@/components/ui/DailyExpenseAmount';
 import { Amount } from '@/components/ui/Amount';
 import { TagChip } from '@/components/ui/TagChip';
 import type { Transaction, TransactionTagItem } from '@/lib/api';
-import { formatISODate } from '@/lib/formatDate';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { contactDetailHref, transactionEditHref } from '@/lib/url';
 import { stashTransactionsScroll } from '@/lib/scroll';
 
@@ -19,6 +19,7 @@ function tagItemsFor(tx: Transaction): TransactionTagItem[] {
 
 function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
   const { t } = useTranslation();
+  const { formatISODate } = useFormatDate();
   const isDailySystem = tx.is_system;
   const items = tagItemsFor(tx);
   const hasMeta = items.length > 0 || Boolean(tx.contact_id && tx.contact_name);

@@ -482,8 +482,8 @@ export function StatsScrollChart({
     () =>
       rowsProp.length > 0
         ? rowsProp
-        : buildStatsChartRows(mode, monthItems, yearItems, searchActive),
-    [rowsProp, mode, monthItems, yearItems, searchActive]
+        : buildStatsChartRows(mode, monthItems, yearItems, searchActive, locale),
+    [rowsProp, mode, monthItems, yearItems, searchActive, locale]
   );
 
   const chartData = useMemo(() => rows.map(chartRowToSeries), [rows]);

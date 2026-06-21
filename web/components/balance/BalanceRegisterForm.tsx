@@ -14,7 +14,7 @@ import {
   upsertMonthlyBalance,
   type YearMonth,
 } from '@/lib/api';
-import { formatYearMonth } from '@/lib/formatDate';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { formatApiError } from '@/lib/errors';
 import { formatBalanceMoney } from '@/lib/formatMoney';
 import { notifyBalanceMonths } from '@/lib/ledgerEvents';
@@ -40,6 +40,7 @@ export function BalanceRegisterForm({
 }: BalanceRegisterFormProps) {
   const { t } = useTranslation();
   const { locale } = useSettings();
+  const { formatYearMonth } = useFormatDate();
   const router = useRouter();
   const initialTargetRef = useRef(initialTarget);
   const [selectedMonth, setSelectedMonth] = useState(initialTarget);

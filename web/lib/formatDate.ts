@@ -1,4 +1,5 @@
 import type { YearMonth } from '@/lib/api';
+import { toIntlLocale } from '@/lib/i18n/intlLocale';
 
 function pad2(n: number): string {
   return String(n).padStart(2, '0');
@@ -18,17 +19,43 @@ export function toISODate(y: number, m: number, d: number): string {
   return `${y}-${pad2(m)}-${pad2(d)}`;
 }
 
-export function formatYearMonth({ year, month }: YearMonth): string {
-  return `${year}-${pad2(month)}`;
+function localDate(y: number, m: number, d = 1): Date {
+  return new Date(y, m - 1, d);
 }
 
-/** 统计图/表精简月标签：yy/MM */
-export function formatYearMonthShort({ year, month }: YearMonth): string {
-  return `${pad2(year % 100)}/${pad2(month)}`;
+function dateFormatter(locale: string): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
 }
 
-export function formatISODate(iso: string): string {
+function yearMonthFormatter(locale: string): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    year: 'numeric',
+    month: 'numeric',
+  });
+}
+
+function yearMonthShortFormatter(locale: string): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    year: '2-digit',
+    month: 'numeric',
+  });
+}
+
+export function formatYearMonth({ year, month }: YearMonth, locale: string): string {
+  return yearMonthFormatter(locale).format(localDate(year, month));
+}
+
+/** 统计图/表精简月标签 */
+export function formatYearMonthShort({ year, month }: YearMonth, locale: string): string {
+  return yearMonthShortFormatter(locale).format(localDate(year, month));
+}
+
+export function formatISODate(iso: string, locale: string): string {
   const p = parseISODate(iso);
   if (!p) return iso;
-  return `${p.y}-${pad2(p.m)}-${pad2(p.d)}`;
+  return dateFormatter(locale).format(localDate(p.y, p.m, p.d));
 }

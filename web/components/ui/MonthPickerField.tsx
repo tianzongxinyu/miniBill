@@ -6,7 +6,7 @@ import { useClickOutside } from '@/lib/combobox-utils';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 import { YearMonthPickerPanel } from '@/components/ui/YearMonthPickerPanel';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
-import { formatYearMonth } from '@/lib/formatDate';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { YEARS_PER_PAGE, yearPageStart } from '@/lib/pickerUtils';
 
 type MonthPickerFieldProps = {
@@ -28,6 +28,7 @@ export function MonthPickerField({
   variant = 'compact',
 }: MonthPickerFieldProps) {
   const { t } = useTranslation();
+  const { formatYearMonth } = useFormatDate();
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLButtonElement>(null);
   const floatingPanelRef = useRef<HTMLDivElement>(null);

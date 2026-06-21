@@ -8,9 +8,11 @@ import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
 import { StatsScrollChart, statsChartWidth } from '@/lib/dynamicStatsChart';
 import { StatsSeriesTable } from '@/components/stats/StatsSeriesTable';
 import { StatsToolbar } from '@/components/stats/StatsToolbar';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStatsPage } from '@/hooks/useStatsPage';
 import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import { buildStatsChartRows } from '@/lib/statsChartData';
+import { useSettings } from '@/components/SettingsProvider';
 import {
   enterChartFullscreen,
   exitChartFullscreen,
@@ -19,6 +21,7 @@ import {
 
 function StatsContent() {
   const { t } = useTranslation();
+  const { locale } = useSettings();
   const inlineScrollRef = useRef<HTMLDivElement>(null);
   const fullscreenScrollRef = useRef<HTMLDivElement>(null);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
@@ -53,8 +56,8 @@ function StatsContent() {
   } = useStatsPage(scrollRef);
 
   const chartRows = useMemo(
-    () => buildStatsChartRows(mode, monthSeries.items, yearSeries.items, searchActive),
-    [mode, monthSeries.items, yearSeries.items, searchActive]
+    () => buildStatsChartRows(mode, monthSeries.items, yearSeries.items, searchActive, locale),
+    [mode, monthSeries.items, yearSeries.items, searchActive, locale]
   );
 
   const scrollWidth = statsChartWidth(chartRows.length, active.pointWidth);

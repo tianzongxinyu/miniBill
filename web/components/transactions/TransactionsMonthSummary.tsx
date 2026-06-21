@@ -4,7 +4,7 @@ import { MonthBillPastStats } from '@/components/stats/MonthBillStats';
 import { TransactionsSummaryFilters } from '@/components/transactions/TransactionsSummaryFilters';
 import { useTranslation } from 'react-i18next';
 import type { MonthBillItem } from '@/lib/api';
-import { formatYearMonth } from '@/lib/formatDate';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import type { TransactionTypeFilter } from '@/lib/url';
 
 export function TransactionsMonthSummary({
@@ -27,6 +27,7 @@ export function TransactionsMonthSummary({
   onTypeFilterChange?: (type: 'expense' | 'income') => void;
 }) {
   const { t } = useTranslation();
+  const { formatYearMonth } = useFormatDate();
 
   if (loading) {
     return (

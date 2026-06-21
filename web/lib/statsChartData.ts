@@ -78,7 +78,8 @@ export function buildStatsChartRows(
   mode: 'month' | 'year',
   monthItems: MonthSeriesPoint[],
   yearItems: YearSeriesPoint[],
-  searchActive: boolean
+  searchActive: boolean,
+  locale: string
 ): StatsChartRow[] {
   if (mode === 'month') {
     const registeredByMonth = registeredBalanceByMonth(monthItems);
@@ -91,7 +92,7 @@ export function buildStatsChartRows(
       const prevRegistered = registeredByMonth.get(`${prev.year}-${prev.month}`);
       return {
         key: `${m.year}-${String(m.month).padStart(2, '0')}`,
-        shortLabel: formatYearMonthShort({ year: m.year, month: m.month }),
+        shortLabel: formatYearMonthShort({ year: m.year, month: m.month }, locale),
         yearLabel: String(m.year),
         year: m.year,
         month: m.month,

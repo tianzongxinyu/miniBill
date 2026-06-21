@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { compareYearMonth, type YearMonth } from '@/lib/api';
-import { formatISODate, formatYearMonth, parseISODate, toISODate } from '@/lib/formatDate';
+import { parseISODate, toISODate } from '@/lib/formatDate';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { useClickOutside } from '@/lib/combobox-utils';
 import { FloatingPickerPortal } from '@/components/ui/FloatingPickerPortal';
 import { YearMonthPickerPanel } from '@/components/ui/YearMonthPickerPanel';
@@ -92,6 +93,7 @@ type DatePickerFieldProps = {
 
 export function DatePickerField({ value, onChange, min, max, required }: DatePickerFieldProps) {
   const { t } = useTranslation();
+  const { formatISODate, formatYearMonth } = useFormatDate();
   const weekdayLabels = useMemo(() => WEEKDAY_KEYS.map((key) => t(key)), [t]);
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLButtonElement>(null);

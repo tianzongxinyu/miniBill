@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { MonthBillItem } from '@/lib/api';
-import { formatYearMonth } from '@/lib/formatDate';
 import { MonthStatsGrid } from '@/components/stats/MonthStatsGrid';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export function MonthBillCard({ item }: { item: MonthBillItem }) {
+  const { formatYearMonth } = useFormatDate();
   const title = formatYearMonth({ year: item.year, month: item.month });
 
   return (
