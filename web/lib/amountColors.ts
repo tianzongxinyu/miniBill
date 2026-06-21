@@ -43,6 +43,16 @@ export function textClassForType(
   return classForDirection(type === 'income' ? 'up' : 'down', scheme, 'text');
 }
 
+/** 收支筛选按钮激活态 ring/bg，与 textClassForType 语义一致 */
+export function filterActiveClassesForType(
+  type: 'income' | 'expense',
+  scheme: AmountColorScheme
+): string {
+  const semantic = textClassForType(type, scheme).replace('text-', '');
+  if (semantic === 'expense') return 'ring-expense/50 bg-expense/15';
+  return 'ring-income/50 bg-income/15';
+}
+
 export function amountClassForSign(cents: number, scheme: AmountColorScheme): string {
   return classForDirection(cents >= 0 ? 'up' : 'down', scheme, 'text');
 }

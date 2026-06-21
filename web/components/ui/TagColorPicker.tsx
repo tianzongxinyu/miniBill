@@ -52,7 +52,7 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
   return (
     <div
       ref={panelRef}
-      className="mt-2 p-3 rounded-2xl border border-line bg-surface shadow-panel space-y-3"
+      className="mt-2 p-3 rounded-2xl border border-[var(--control-border)] bg-surface shadow-panel space-y-3"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center justify-between gap-2">
@@ -97,7 +97,7 @@ export function TagColorPicker({ name, colorBg, onSave, onClose }: TagColorPicke
             type="color"
             value={valid ? bg : '#3B6FA8'}
             disabled={saving}
-            className="block h-9 w-14 cursor-pointer rounded-lg border border-line bg-transparent p-0.5"
+            className="block h-9 w-14 cursor-pointer rounded-lg border border-[var(--control-border)] bg-transparent p-0.5"
             onChange={(e) => setBg(e.target.value)}
           />
         </label>

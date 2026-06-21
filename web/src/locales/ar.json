@@ -173,7 +173,11 @@
     "deleteAria": "حذف جهة الاتصال \"{{name}}\"",
     "sent": "مُرسل",
     "received": "مُستلم",
-    "failed": "فشل"
+    "failed": "فشل",
+    "filterSentAria": "تصفية المرسل، اضغط مرة أخرى للإلغاء",
+    "filterReceivedAria": "تصفية المستلم، اضغط مرة أخرى للإلغاء",
+    "emptySent": "لا توجد معاملات مرسلة",
+    "emptyReceived": "لا توجد معاملات مستلمة"
   },
   "data": {
     "exportTitle": "تصدير دفتر الحساب",

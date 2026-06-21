@@ -173,7 +173,11 @@
     "deleteAria": "删除「{{name}}」",
     "sent": "送出",
     "received": "收到",
-    "failed": "失败"
+    "failed": "失败",
+    "filterSentAria": "筛选送出流水，再次点击取消",
+    "filterReceivedAria": "筛选收到流水，再次点击取消",
+    "emptySent": "无送出记录",
+    "emptyReceived": "无收到记录"
   },
   "data": {
     "exportTitle": "导出账本",

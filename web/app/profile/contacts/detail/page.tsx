@@ -1,11 +1,11 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
+import { ContactDetailSummaryFilters } from '@/components/contacts/ContactDetailSummaryFilters';
 import { PageBackLink } from '@/components/ui/BackLink';
-import { Amount } from '@/components/ui/Amount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
@@ -14,9 +14,21 @@ import { Notebook } from '@/components/ui/Notebook';
 import { TransactionRow } from '@/components/transactions/TransactionRow';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
 import { useLoadMoreAnimateIds } from '@/hooks/useLoadMoreAnimateIds';
-import { deleteContact, fetchContactDetail, fetchTransactions, type ContactDetail } from '@/lib/api';
+import {
+  ApiError,
+  deleteContact,
+  fetchContactDetail,
+  fetchTransactions,
+  type ContactDetail,
+} from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
-import { safeReturnTo } from '@/lib/url';
+import { scrollToTop } from '@/lib/scroll';
+import {
+  buildContactDetailHref,
+  parseTransactionTypeFromQuery,
+  safeReturnTo,
+  type TransactionTypeFilter,
+} from '@/lib/url';
 
 function DetailInner() {
   const { t } = useTranslation();
@@ -24,12 +36,20 @@ function DetailInner() {
   const params = useSearchParams();
   const id = params.get('id');
   const returnTo = params.get('returnTo');
+  const urlType = params.get('type');
   const backHref = safeReturnTo(returnTo, '/profile/contacts/');
   const contactId = id ? Number(id) : null;
   const [c, setC] = useState<ContactDetail | null>(null);
   const [error, setError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<TransactionTypeFilter>(() =>
+    parseTransactionTypeFromQuery(params)
+  );
+
+  useEffect(() => {
+    setTypeFilter(parseTransactionTypeFromQuery(params));
+  }, [urlType, params]);
 
   useEffect(() => {
     if (!id) return;
@@ -38,18 +58,78 @@ function DetailInner() {
       .catch((e) => setError(formatApiError(e, t('common.loadFailed'))));
   }, [id, t]);
 
+  const filtersRef = useRef({ contactId, typeFilter });
+  filtersRef.current = { contactId, typeFilter };
+  const reloadAbortRef = useRef<AbortController | null>(null);
+
+  const fetchOnce = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
+    const f = filtersRef.current;
+    return fetchTransactions({
+      contactId: f.contactId!,
+      cursor,
+      limit: 10,
+      ...(f.typeFilter ? { type: f.typeFilter } : {}),
+      signal,
+    });
+  }, []);
+
   const fetchPage = useCallback(
-    (cursor: string | null) =>
-      fetchTransactions({ contactId: contactId!, cursor, limit: 10 }),
-    [contactId]
+    (cursor: string | null) => fetchOnce(cursor),
+    [fetchOnce]
   );
 
   const list = useCursorPagination({
-    enabled: contactId != null,
+    enabled: false,
     fetchPage,
     getItemKey: (tx) => tx.id,
     onError: (e) => formatApiError(e, t('common.loadFailed')),
   });
+
+  const { reset, applyPage, setLoading, setError: setListError } = list;
+
+  const reload = useCallback(async () => {
+    reloadAbortRef.current?.abort();
+    const ac = new AbortController();
+    reloadAbortRef.current = ac;
+
+    reset();
+    setLoading(true);
+    setListError('');
+    try {
+      const data = await fetchOnce(null, ac.signal);
+      if (reloadAbortRef.current !== ac) return;
+      applyPage(data);
+    } catch (e) {
+      if (reloadAbortRef.current !== ac) return;
+      if (e instanceof ApiError && e.code === 'ABORTED') return;
+      setListError(formatApiError(e, t('common.loadFailed')));
+    } finally {
+      if (reloadAbortRef.current === ac) {
+        setLoading(false);
+      }
+    }
+  }, [reset, applyPage, setLoading, setListError, fetchOnce, t]);
+
+  useEffect(() => {
+    if (contactId == null) return;
+    void reload();
+  }, [contactId, typeFilter, reload]);
+
+  const handleTypeFilterChange = useCallback(
+    (type: 'expense' | 'income') => {
+      const next: TransactionTypeFilter = typeFilter === type ? null : type;
+      setTypeFilter(next);
+      scrollToTop(false);
+      router.replace(
+        buildContactDetailHref({
+          contactId: contactId!,
+          returnTo: returnTo ?? undefined,
+          type: next ?? undefined,
+        })
+      );
+    },
+    [typeFilter, contactId, returnTo, router]
+  );
 
   const animateIds = useLoadMoreAnimateIds(
     list.items,
@@ -59,6 +139,12 @@ function DetailInner() {
   );
 
   const unused = c != null && !c.last_transaction;
+
+  const emptyMessage = useMemo(() => {
+    if (typeFilter === 'expense') return t('contacts.emptySent');
+    if (typeFilter === 'income') return t('contacts.emptyReceived');
+    return t('transactions.empty');
+  }, [typeFilter, t]);
 
   const confirmRemove = async () => {
     if (!c || !id || deleting) return;
@@ -76,11 +162,6 @@ function DetailInner() {
 
   if (!c) return <LoadingFallback />;
 
-  const stats = [
-    { label: t('contacts.sent'), value: <Amount cents={c.social_expense} type="expense" className="text-sm" /> },
-    { label: t('contacts.received'), value: <Amount cents={c.social_income} type="income" className="text-sm" /> },
-  ];
-
   const statGrid = 'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center';
   const amountSlot = 'min-w-[6.5rem] text-right shrink-0';
 
@@ -95,22 +176,19 @@ function DetailInner() {
           </span>
         </div>
       </div>
-      <div className={`notebook mb-4 ${statGrid} py-2`}>
-        <div className="flex items-baseline justify-between gap-2 min-w-0 pl-4 pr-3">
-          <span className="stat-label shrink-0">{stats[0].label}</span>
-          <span className={amountSlot}>{stats[0].value}</span>
-        </div>
-        <div className="w-px h-8 bg-line/80 mx-2 self-center shrink-0" aria-hidden />
-        <div className="flex items-baseline justify-between gap-2 min-w-0 pl-3 pr-4">
-          <span className="stat-label shrink-0">{stats[1].label}</span>
-          <span className={amountSlot}>{stats[1].value}</span>
-        </div>
+      <div className="mb-4">
+        <ContactDetailSummaryFilters
+          sentCents={c.social_expense}
+          receivedCents={c.social_income}
+          typeFilter={typeFilter}
+          onTypeFilterChange={handleTypeFilterChange}
+        />
       </div>
 
       {list.loading ? (
         <ListSkeleton />
       ) : list.items.length === 0 ? (
-        <EmptyNotebook message={t('transactions.empty')} />
+        <EmptyNotebook message={emptyMessage} />
       ) : (
         <Notebook>
           {list.items.map((tx) => (

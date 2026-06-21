@@ -173,7 +173,11 @@
     "deleteAria": "Supprimer le contact « {{name}} »",
     "sent": "Envoyé",
     "received": "Reçu",
-    "failed": "Échec"
+    "failed": "Échec",
+    "filterSentAria": "Filtrer les envois, appuyez à nouveau pour annuler",
+    "filterReceivedAria": "Filtrer les reçus, appuyez à nouveau pour annuler",
+    "emptySent": "Aucune transaction envoyée",
+    "emptyReceived": "Aucune transaction reçue"
   },
   "data": {
     "exportTitle": "Exporter le livre de comptes",

@@ -58,5 +58,12 @@ module.exports = {
     },
   },
   plugins: [],
-  safelist: ['text-income', 'text-expense'],
+  safelist: [
+    'text-income',
+    'text-expense',
+    'ring-expense/50',
+    'bg-expense/15',
+    'ring-income/50',
+    'bg-income/15',
+  ],
 };

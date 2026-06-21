@@ -173,7 +173,11 @@
     "deleteAria": "Elimina contatto \"{{name}}\"",
     "sent": "Inviato",
     "received": "Ricevuto",
-    "failed": "Non riuscito"
+    "failed": "Non riuscito",
+    "filterSentAria": "Filtra inviati, tocca di nuovo per annullare",
+    "filterReceivedAria": "Filtra ricevuti, tocca di nuovo per annullare",
+    "emptySent": "Nessuna transazione inviata",
+    "emptyReceived": "Nessuna transazione ricevuta"
   },
   "data": {
     "exportTitle": "Esporta registro",

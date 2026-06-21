@@ -173,7 +173,11 @@
     "deleteAria": "Eliminar contacto \"{{name}}\"",
     "sent": "Enviado",
     "received": "Recibido",
-    "failed": "Error"
+    "failed": "Error",
+    "filterSentAria": "Filtrar enviados, toca de nuevo para quitar",
+    "filterReceivedAria": "Filtrar recibidos, toca de nuevo para quitar",
+    "emptySent": "Sin transacciones enviadas",
+    "emptyReceived": "Sin transacciones recibidas"
   },
   "data": {
     "exportTitle": "Exportar libro de cuentas",

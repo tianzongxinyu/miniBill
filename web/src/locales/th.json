@@ -173,7 +173,11 @@
     "deleteAria": "ลบผู้ติดต่อ \"{{name}}\"",
     "sent": "ส่งแล้ว",
     "received": "รับแล้ว",
-    "failed": "ล้มเหลว"
+    "failed": "ล้มเหลว",
+    "filterSentAria": "กรองรายการส่ง แตะอีกครั้งเพื่อยกเลิก",
+    "filterReceivedAria": "กรองรายการรับ แตะอีกครั้งเพื่อยกเลิก",
+    "emptySent": "ไม่มีรายการส่ง",
+    "emptyReceived": "ไม่มีรายการรับ"
   },
   "data": {
     "exportTitle": "ส่งออกสมุดบัญชี",

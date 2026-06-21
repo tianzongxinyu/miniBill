@@ -173,7 +173,11 @@
     "deleteAria": "Xóa liên hệ \"{{name}}\"",
     "sent": "Đã gửi",
     "received": "Đã nhận",
-    "failed": "Thất bại"
+    "failed": "Thất bại",
+    "filterSentAria": "Lọc giao dịch đã gửi, chạm lại để bỏ lọc",
+    "filterReceivedAria": "Lọc giao dịch đã nhận, chạm lại để bỏ lọc",
+    "emptySent": "Không có giao dịch đã gửi",
+    "emptyReceived": "Không có giao dịch đã nhận"
   },
   "data": {
     "exportTitle": "Xuất sổ cái",

@@ -173,7 +173,11 @@
     "deleteAria": "Delete \"{{name}}\"",
     "sent": "Sent",
     "received": "Received",
-    "failed": "Failed"
+    "failed": "Failed",
+    "filterSentAria": "Filter sent transactions, tap again to clear",
+    "filterReceivedAria": "Filter received transactions, tap again to clear",
+    "emptySent": "No sent transactions",
+    "emptyReceived": "No received transactions"
   },
   "data": {
     "exportTitle": "Export ledger",

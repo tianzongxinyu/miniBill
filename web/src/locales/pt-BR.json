@@ -173,7 +173,11 @@
     "deleteAria": "Excluir contato \"{{name}}\"",
     "sent": "Enviado",
     "received": "Recebido",
-    "failed": "Falhou"
+    "failed": "Falhou",
+    "filterSentAria": "Filtrar enviados, toque novamente para limpar",
+    "filterReceivedAria": "Filtrar recebidos, toque novamente para limpar",
+    "emptySent": "Nenhuma transação enviada",
+    "emptyReceived": "Nenhuma transação recebida"
   },
   "data": {
     "exportTitle": "Exportar livro-caixa",

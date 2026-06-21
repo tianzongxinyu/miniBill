@@ -173,7 +173,11 @@
     "deleteAria": "Contact \"{{name}}\" verwijderen",
     "sent": "Verzonden",
     "received": "Ontvangen",
-    "failed": "Mislukt"
+    "failed": "Mislukt",
+    "filterSentAria": "Filter verzonden, tik opnieuw om te wissen",
+    "filterReceivedAria": "Filter ontvangen, tik opnieuw om te wissen",
+    "emptySent": "Geen verzonden transacties",
+    "emptyReceived": "Geen ontvangen transacties"
   },
   "data": {
     "exportTitle": "Kasboek exporteren",

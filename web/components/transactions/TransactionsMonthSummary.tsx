@@ -48,6 +48,13 @@ export function TransactionsMonthSummary({
 
   return (
     <div className="transactions-month-summary">
+      {onTypeFilterChange && (
+        <TransactionsSummaryFilters
+          summary={summary}
+          typeFilter={typeFilter}
+          onTypeFilterChange={onTypeFilterChange}
+        />
+      )}
       <article
         className="bill-card bill-card-summary"
         aria-label={t('transactions.monthSummaryAria', {
@@ -62,13 +69,6 @@ export function TransactionsMonthSummary({
           editable={editable}
         />
       </article>
-      {onTypeFilterChange && (
-        <TransactionsSummaryFilters
-          summary={summary}
-          typeFilter={typeFilter}
-          onTypeFilterChange={onTypeFilterChange}
-        />
-      )}
     </div>
   );
 }

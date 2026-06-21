@@ -3,41 +3,40 @@
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/ui/Amount';
 import { StatFilterButton } from '@/components/ui/StatFilterButton';
-import { totalExpenseCents } from '@/lib/totalExpense';
-import type { MonthBillItem } from '@/lib/api';
 import type { TransactionTypeFilter } from '@/lib/url';
 
-export function TransactionsSummaryFilters({
-  summary,
+export function ContactDetailSummaryFilters({
+  sentCents,
+  receivedCents,
   typeFilter,
   onTypeFilterChange,
 }: {
-  summary: MonthBillItem;
+  sentCents: number;
+  receivedCents: number;
   typeFilter: TransactionTypeFilter;
   onTypeFilterChange: (type: 'expense' | 'income') => void;
 }) {
   const { t } = useTranslation();
-  const expense = totalExpenseCents(summary.total_expense, summary.daily_expense);
 
   return (
     <div className="transactions-month-summary-columns transactions-month-summary-filters">
       <StatFilterButton
-        label={t('stats.totalExpense')}
+        label={t('contacts.sent')}
         filterType="expense"
         active={typeFilter === 'expense'}
-        ariaLabel={t('transactions.filterExpenseAria')}
+        ariaLabel={t('contacts.filterSentAria')}
         onClick={() => onTypeFilterChange('expense')}
       >
-        <Amount cents={expense} type="expense" className="text-sm" />
+        <Amount cents={sentCents} type="expense" className="text-sm" />
       </StatFilterButton>
       <StatFilterButton
-        label={t('stats.totalIncome')}
+        label={t('contacts.received')}
         filterType="income"
         active={typeFilter === 'income'}
-        ariaLabel={t('transactions.filterIncomeAria')}
+        ariaLabel={t('contacts.filterReceivedAria')}
         onClick={() => onTypeFilterChange('income')}
       >
-        <Amount cents={summary.total_income} type="income" className="text-sm" />
+        <Amount cents={receivedCents} type="income" className="text-sm" />
       </StatFilterButton>
     </div>
   );

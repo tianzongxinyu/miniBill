@@ -173,7 +173,11 @@
     "deleteAria": "Kontakt „{{name}}“ löschen",
     "sent": "Gesendet",
     "received": "Empfangen",
-    "failed": "Fehlgeschlagen"
+    "failed": "Fehlgeschlagen",
+    "filterSentAria": "Gesendete filtern, erneut tippen zum Aufheben",
+    "filterReceivedAria": "Empfangene filtern, erneut tippen zum Aufheben",
+    "emptySent": "Keine gesendeten Transaktionen",
+    "emptyReceived": "Keine empfangenen Transaktionen"
   },
   "data": {
     "exportTitle": "Kontenbuch exportieren",

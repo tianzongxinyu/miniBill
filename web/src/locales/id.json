@@ -173,7 +173,11 @@
     "deleteAria": "Hapus kontak \"{{name}}\"",
     "sent": "Dikirim",
     "received": "Diterima",
-    "failed": "Gagal"
+    "failed": "Gagal",
+    "filterSentAria": "Filter transaksi terkirim, ketuk lagi untuk hapus",
+    "filterReceivedAria": "Filter transaksi diterima, ketuk lagi untuk hapus",
+    "emptySent": "Tidak ada transaksi terkirim",
+    "emptyReceived": "Tidak ada transaksi diterima"
   },
   "data": {
     "exportTitle": "Ekspor buku besar",

@@ -173,7 +173,11 @@
     "deleteAria": "削除「{{name}}」",
     "sent": "送金",
     "received": "受取",
-    "failed": "失敗"
+    "failed": "失敗",
+    "filterSentAria": "送った取引で絞り込み、もう一度タップで解除",
+    "filterReceivedAria": "受け取った取引で絞り込み、もう一度タップで解除",
+    "emptySent": "送った取引はありません",
+    "emptyReceived": "受け取った取引はありません"
   },
   "data": {
     "exportTitle": "帳簿をエクスポート",

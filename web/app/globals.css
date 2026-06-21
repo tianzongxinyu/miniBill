@@ -9,10 +9,19 @@
   --color-accent-soft: #E8F4F1;
   --radius-card: 1.5rem;
   --radius-control: 1rem;
+  --control-border: color-mix(in srgb, var(--color-accent) 32%, #e8eeec);
 }
 
 body {
   @apply bg-canvas text-ink antialiased;
+}
+
+@layer base {
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='hidden']):not([type='image']):not([type='range']):not([type='color']):not([type='file']),
+  select,
+  textarea {
+    border-color: var(--control-border);
+  }
 }
 
 @media (max-width: 1023px) {
@@ -131,9 +140,10 @@ body {
   }
 
   .field {
-    @apply w-full bg-surface border border-line rounded-2xl px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/60;
+    @apply w-full bg-surface border rounded-2xl px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/60;
+    border-color: var(--control-border);
     @apply transition-all duration-200 ease-out;
-    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent/40;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent/45;
   }
 
   .field-sm {
@@ -142,6 +152,7 @@ body {
 
   .btn-primary {
     @apply inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-4 py-2.5 rounded-2xl;
+    @apply border border-accent ring-1 ring-inset ring-white/20;
     @apply transition-all duration-200 ease-out;
     @apply hover:bg-accent/90;
     @apply active:scale-[0.98];
@@ -153,8 +164,9 @@ body {
   }
 
   .btn-segment {
-    @apply flex-1 py-2.5 rounded-2xl border border-line text-sm font-medium text-muted;
-    @apply transition-all duration-200 ease-out hover:border-accent/30;
+    @apply flex-1 py-2.5 rounded-2xl border text-sm font-medium text-muted;
+    border-color: var(--control-border);
+    @apply transition-all duration-200 ease-out hover:border-accent/45;
   }
 
   .btn-segment-active {
@@ -167,8 +179,9 @@ body {
   }
 
   .page-back-link {
-    @apply flex w-full items-center justify-center mt-6 py-3 rounded-2xl border border-line text-sm font-medium text-muted;
-    @apply transition-all duration-200 ease-out hover:border-accent/30 hover:text-ink;
+    @apply flex w-full items-center justify-center mt-6 py-3 rounded-2xl border text-sm font-medium text-muted;
+    border-color: var(--control-border);
+    @apply transition-all duration-200 ease-out hover:border-accent/45 hover:text-ink;
     @apply active:scale-[0.98];
   }
 
@@ -193,8 +206,9 @@ body {
   }
 
   .tag-pill {
-    @apply px-3 py-1 rounded-full text-xs border border-line text-muted bg-surface;
-    @apply transition-all duration-200 ease-out hover:border-accent/30;
+    @apply px-3 py-1 rounded-full text-xs border text-muted bg-surface;
+    border-color: var(--control-border);
+    @apply transition-all duration-200 ease-out hover:border-accent/45;
   }
 
   /* 彩色标签：不设 bg/text，由 TagChip inline style 控制 */
@@ -285,31 +299,25 @@ body {
   }
 
   .transactions-month-summary-filters {
-    @apply mt-1.5;
+    @apply mb-1.5;
   }
 
   .transactions-month-summary-filters .bill-stat-filter-btn {
     @apply flex flex-col items-end gap-0 w-full py-2 px-3 flex-none text-right;
-    @apply rounded-3xl border-0 ring-1 ring-inset ring-line/70 bg-accent-soft/30 cursor-pointer;
+    @apply rounded-3xl border-0 ring-1 ring-inset bg-accent-soft/30 cursor-pointer;
+    --tw-ring-color: var(--control-border);
     @apply transition-[background-color,box-shadow] duration-150;
-    @apply focus:outline-none focus-visible:ring-line/70;
+    @apply focus:outline-none focus-visible:ring-accent/45;
   }
 
   .transactions-month-summary-filters .bill-stat-filter-btn:not(.is-active):hover {
-    @apply bg-accent-soft/45 ring-line/70;
+    @apply bg-accent-soft/45 ring-accent/45;
   }
 
   .transactions-month-summary-filters .bill-stat-filter-btn-expense:not(.is-active),
   .transactions-month-summary-filters .bill-stat-filter-btn-income:not(.is-active) {
-    @apply ring-line/70 bg-accent-soft/30;
-  }
-
-  .transactions-month-summary-filters .bill-stat-filter-btn-expense.is-active {
-    @apply ring-income/50 bg-income/15;
-  }
-
-  .transactions-month-summary-filters .bill-stat-filter-btn-income.is-active {
-    @apply ring-expense/50 bg-expense/15;
+    @apply bg-accent-soft/30;
+    --tw-ring-color: var(--control-border);
   }
 
   .bill-card-header {
@@ -441,9 +449,10 @@ body {
   }
 
   .fab-button-secondary {
-    @apply bg-accent-soft text-accent border border-accent/20;
+    @apply bg-accent-soft text-accent border;
+    border-color: var(--control-border);
     @apply shadow-panel ring-0;
-    @apply hover:bg-accent-soft/80 hover:border-accent/30;
+    @apply hover:bg-accent-soft/80 hover:border-accent/45;
     @apply active:scale-[0.98];
   }
 
@@ -478,7 +487,8 @@ body {
   }
 
   .form-hero-type {
-    @apply flex gap-1.5 p-1 rounded-2xl bg-accent-soft/50 border border-line/50 mb-3;
+    @apply flex gap-1.5 p-1 rounded-2xl bg-accent-soft/50 border mb-3;
+    border-color: var(--control-border);
   }
 
   .form-hero-type .btn-segment {
@@ -534,9 +544,10 @@ body {
   }
 
   .form-details .month-picker-field {
-    @apply flex w-full items-center gap-3 rounded-2xl border border-line bg-accent-soft/30 px-3.5 py-2.5;
+    @apply flex w-full items-center gap-3 rounded-2xl border bg-accent-soft/30 px-3.5 py-2.5;
+    border-color: var(--control-border);
     @apply transition-all duration-200 ease-out cursor-pointer text-left;
-    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply hover:bg-accent-soft/50 hover:border-accent/45;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
   }
 
@@ -595,9 +606,10 @@ body {
   }
 
   .form-note-field {
-    @apply w-full resize-none rounded-2xl border-0 bg-accent-soft/30 px-3 py-2.5 text-sm text-ink;
+    @apply w-full resize-none rounded-2xl border bg-accent-soft/30 px-3 py-2.5 text-sm text-ink;
+    border-color: var(--control-border);
     @apply transition-all duration-200 ease-out;
-    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:bg-surface;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/25 focus:bg-surface focus:border-accent/45;
   }
 
   .form-submit {
@@ -701,8 +713,9 @@ body {
   }
 
   .confirm-cancel {
-    @apply py-2.5 px-4 rounded-2xl border border-line text-sm font-medium text-muted bg-surface;
-    @apply transition-all duration-200 hover:bg-accent-soft/50 hover:text-ink hover:border-accent/20;
+    @apply py-2.5 px-4 rounded-2xl border text-sm font-medium text-muted bg-surface;
+    border-color: var(--control-border);
+    @apply transition-all duration-200 hover:bg-accent-soft/50 hover:text-ink hover:border-accent/45;
     @apply active:scale-[0.98];
   }
 
@@ -714,7 +727,8 @@ body {
   }
 
   .form-details .date-picker-field {
-    @apply border-0 bg-accent-soft/30 px-3 py-2;
+    @apply border bg-accent-soft/30 px-3 py-2;
+    border-color: var(--control-border);
   }
 
   .form-details .date-picker-field-open {
@@ -722,7 +736,8 @@ body {
   }
 
   .form-details .combobox-panel {
-    @apply border-0 bg-accent-soft/30 px-3 py-2;
+    @apply border bg-accent-soft/30 px-3 py-2;
+    border-color: var(--control-border);
   }
 
   .form-details .combobox-panel-focused {
@@ -734,9 +749,10 @@ body {
   }
 
   .date-picker-field {
-    @apply relative flex items-center gap-3 w-full rounded-2xl border border-line bg-accent-soft/30 px-3.5 py-2.5;
+    @apply relative flex items-center gap-3 w-full rounded-2xl border bg-accent-soft/30 px-3.5 py-2.5;
+    border-color: var(--control-border);
     @apply transition-all duration-200 ease-out cursor-pointer text-left;
-    @apply hover:bg-accent-soft/50 hover:border-accent/20;
+    @apply hover:bg-accent-soft/50 hover:border-accent/45;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
   }
 
@@ -852,9 +868,10 @@ body {
   }
 
   .month-picker-field {
-    @apply inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-line bg-surface/80;
+    @apply inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl border bg-surface/80;
+    border-color: var(--control-border);
     @apply text-sm text-ink transition-all duration-150;
-    @apply hover:border-accent/30 hover:bg-surface;
+    @apply hover:border-accent/45 hover:bg-surface;
   }
 
   .month-picker-field-block {
@@ -912,7 +929,8 @@ body {
   }
 
   .month-picker-month-current {
-    @apply border-line font-medium;
+    @apply font-medium;
+    border-color: var(--control-border);
   }
 
   .month-picker-month-disabled {
@@ -924,9 +942,10 @@ body {
   }
 
   .time-unit-picker-field {
-    @apply flex w-full items-center justify-between gap-2 py-2.5 px-3.5 rounded-2xl border border-line bg-surface/80;
+    @apply flex w-full items-center justify-between gap-2 py-2.5 px-3.5 rounded-2xl border bg-surface/80;
+    border-color: var(--control-border);
     @apply text-sm text-ink transition-all duration-150;
-    @apply hover:border-accent/30 hover:bg-surface;
+    @apply hover:border-accent/45 hover:bg-surface;
   }
 
   .time-unit-picker-disabled .time-unit-picker-field {
@@ -1009,7 +1028,7 @@ body {
 
   .transactions-toolbar .month-picker-field {
     @apply px-2 gap-1 w-auto py-2.5 transition-all duration-200 ease-out;
-    @apply hover:border-accent/30 hover:bg-accent-soft/50;
+    @apply hover:border-accent/45 hover:bg-accent-soft/50;
   }
 
   .transactions-toolbar .month-picker-field-value {
@@ -1030,7 +1049,8 @@ body {
   }
 
   .combobox-panel {
-    @apply rounded-2xl border border-line bg-accent-soft/30 px-3 py-2.5;
+    @apply rounded-2xl border bg-accent-soft/30 px-3 py-2.5;
+    border-color: var(--control-border);
     @apply transition-all duration-200 ease-out;
   }
 

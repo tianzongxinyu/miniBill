@@ -173,7 +173,11 @@
     "deleteAria": "Usuń kontakt \"{{name}}\"",
     "sent": "Wysłano",
     "received": "Otrzymano",
-    "failed": "Niepowodzenie"
+    "failed": "Niepowodzenie",
+    "filterSentAria": "Filtruj wysłane, dotknij ponownie, aby wyczyścić",
+    "filterReceivedAria": "Filtruj otrzymane, dotknij ponownie, aby wyczyścić",
+    "emptySent": "Brak wysłanych transakcji",
+    "emptyReceived": "Brak otrzymanych transakcji"
   },
   "data": {
     "exportTitle": "Eksportuj księgę",

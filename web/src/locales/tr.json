@@ -173,7 +173,11 @@
     "deleteAria": "\"{{name}}\" kişisini sil",
     "sent": "Gönderildi",
     "received": "Alındı",
-    "failed": "Başarısız"
+    "failed": "Başarısız",
+    "filterSentAria": "Gönderilenleri filtrele, kaldırmak için tekrar dokun",
+    "filterReceivedAria": "Alınanları filtrele, kaldırmak için tekrar dokun",
+    "emptySent": "Gönderilen işlem yok",
+    "emptyReceived": "Alınan işlem yok"
   },
   "data": {
     "exportTitle": "Defteri dışa aktar",

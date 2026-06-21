@@ -173,7 +173,11 @@
     "deleteAria": "연락처 「{{name}}」 삭제",
     "sent": "보냄",
     "received": "받음",
-    "failed": "실패"
+    "failed": "실패",
+    "filterSentAria": "보낸 거래만 보기, 다시 탭하면 해제",
+    "filterReceivedAria": "받은 거래만 보기, 다시 탭하면 해제",
+    "emptySent": "보낸 거래 없음",
+    "emptyReceived": "받은 거래 없음"
   },
   "data": {
     "exportTitle": "장부 내보내기",

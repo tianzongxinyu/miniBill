@@ -96,10 +96,24 @@ export function parseDateParam(raw: string | null): string | null {
   return iso;
 }
 
+export type ContactDetailHrefOptions = {
+  contactId: number;
+  returnTo?: string;
+  type?: 'expense' | 'income';
+};
+
+export function buildContactDetailHref(opts: ContactDetailHrefOptions): string {
+  const params = new URLSearchParams();
+  params.set('id', String(opts.contactId));
+  if (opts.returnTo) params.set('returnTo', opts.returnTo);
+  if (opts.type === 'expense' || opts.type === 'income') {
+    params.set('type', opts.type);
+  }
+  return `/profile/contacts/detail/?${params.toString()}`;
+}
+
 export function contactDetailHref(contactId: number, returnTo?: string): string {
-  const base = `/profile/contacts/detail/?id=${contactId}`;
-  if (!returnTo) return base;
-  return `${base}&returnTo=${encodeURIComponent(returnTo)}`;
+  return buildContactDetailHref({ contactId, returnTo });
 }
 
 export function transactionEditHref(txId: number, returnTo?: string): string {
