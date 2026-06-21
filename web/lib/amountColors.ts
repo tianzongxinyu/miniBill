@@ -53,6 +53,23 @@ export function filterActiveClassesForType(
   return 'ring-income/50 bg-income/15';
 }
 
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const n = parseInt(hex.slice(1), 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+/** 筛选按钮激活态样式，与 chartStrokeForType / Amount 文字色一致 */
+export function filterActiveStyleForType(
+  type: 'income' | 'expense',
+  scheme: AmountColorScheme
+): { backgroundColor: string; boxShadow: string } {
+  const { r, g, b } = hexToRgb(chartStrokeForType(type, scheme));
+  return {
+    backgroundColor: `rgba(${r}, ${g}, ${b}, 0.15)`,
+    boxShadow: `inset 0 0 0 1px rgba(${r}, ${g}, ${b}, 0.5)`,
+  };
+}
+
 export function amountClassForSign(cents: number, scheme: AmountColorScheme): string {
   return classForDirection(cents >= 0 ? 'up' : 'down', scheme, 'text');
 }

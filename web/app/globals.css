@@ -304,20 +304,18 @@ body {
 
   .transactions-month-summary-filters .bill-stat-filter-btn {
     @apply flex flex-col items-end gap-0 w-full py-2 px-3 flex-none text-right;
-    @apply rounded-3xl border-0 ring-1 ring-inset bg-accent-soft/30 cursor-pointer;
-    --tw-ring-color: var(--control-border);
+    @apply rounded-3xl border-0 ring-1 ring-inset cursor-pointer;
     @apply transition-[background-color,box-shadow] duration-150;
     @apply focus:outline-none focus-visible:ring-accent/45;
   }
 
-  .transactions-month-summary-filters .bill-stat-filter-btn:not(.is-active):hover {
-    @apply bg-accent-soft/45 ring-accent/45;
-  }
-
-  .transactions-month-summary-filters .bill-stat-filter-btn-expense:not(.is-active),
-  .transactions-month-summary-filters .bill-stat-filter-btn-income:not(.is-active) {
+  .transactions-month-summary-filters .bill-stat-filter-btn:not(.is-active) {
     @apply bg-accent-soft/30;
     --tw-ring-color: var(--control-border);
+  }
+
+  .transactions-month-summary-filters .bill-stat-filter-btn:not(.is-active):hover {
+    @apply bg-accent-soft/45 ring-accent/45;
   }
 
   .bill-card-header {

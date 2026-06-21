@@ -1,8 +1,8 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useSettings } from '@/components/SettingsProvider';
-import { filterActiveClassesForType } from '@/lib/amountColors';
+import { filterActiveStyleForType } from '@/lib/amountColors';
 
 export function StatFilterButton({
   label,
@@ -20,12 +20,15 @@ export function StatFilterButton({
   children: ReactNode;
 }) {
   const { scheme } = useSettings();
-  const activeClasses = active ? filterActiveClassesForType(filterType, scheme) : '';
+  const activeStyle: CSSProperties | undefined = active
+    ? filterActiveStyleForType(filterType, scheme)
+    : undefined;
 
   return (
     <button
       type="button"
-      className={`bill-stat-filter-btn bill-stat-filter-btn-${filterType}${active ? ' is-active' : ''} ${activeClasses}`}
+      className={`bill-stat-filter-btn bill-stat-filter-btn-${filterType}${active ? ' is-active ring-0' : ''}`}
+      style={activeStyle}
       aria-label={ariaLabel}
       aria-pressed={active}
       onClick={(e) => {
