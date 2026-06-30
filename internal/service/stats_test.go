@@ -108,8 +108,31 @@ func TestMonthBillDailyExpense(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if july.IsCurrent && july.DailyExpense != nil {
-		t.Fatal("current month should not include daily_expense")
+	if !july.IsCurrent {
+		t.Fatal("expected july to be current month")
+	}
+	if july.Balance != nil || july.DailyExpense != nil {
+		t.Fatalf("current month without balance: balance=%v daily=%v", july.Balance, july.DailyExpense)
+	}
+
+	_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026,7,85000)`)
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (10000,'income','2026-07-05')`)
+	if err := stats.RecalcStatMonth(db, 2026, 7); err != nil {
+		t.Fatal(err)
+	}
+	july, err = stats.MonthBill(db, 2026, 7)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if july.Balance == nil || *july.Balance != 85000 {
+		t.Fatalf("july balance = %v, want 85000", july.Balance)
+	}
+	if july.DailyExpense == nil || *july.DailyExpense != 5000 {
+		t.Fatalf("july daily_expense = %v, want 5000", july.DailyExpense)
+	}
+	wantNet := int64(5000) // 85000 - 80000
+	if july.NetIncome == nil || *july.NetIncome != wantNet {
+		t.Fatalf("july net_income = %v, want %d", july.NetIncome, wantNet)
 	}
 }
 
@@ -136,14 +159,14 @@ func TestMonthBillsFirstPage(t *testing.T) {
 	if !page.Items[0].IsCurrent {
 		t.Fatal("first item should be current month")
 	}
-	if page.Items[0].Balance != nil {
-		t.Fatal("current month should not include balance")
+	if page.Items[0].Balance == nil || *page.Items[0].Balance != 600000 {
+		t.Fatalf("current month balance = %v, want 600000", page.Items[0].Balance)
 	}
 	if page.Items[0].NetIncome == nil {
 		t.Fatal("current month should include net_income")
 	}
-	if *page.Items[0].NetIncome != 30000 {
-		t.Fatalf("current month net_income = %d, want 30000", *page.Items[0].NetIncome)
+	if *page.Items[0].NetIncome != 100000 {
+		t.Fatalf("current month net_income = %d, want 100000", *page.Items[0].NetIncome)
 	}
 	if page.Items[1].NetIncome == nil {
 		t.Fatal("past month should include net_income")

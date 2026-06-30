@@ -425,6 +425,12 @@ export type TransactionsPage = {
   has_more: boolean;
 };
 
+/** 流水页按月份浏览：单次拉取上限（与后端 listByCursorPage cap 一致） */
+export const TRANSACTIONS_MONTH_LIMIT = 9999;
+
+/** 流水页搜索模式：游标分页每页条数 */
+export const TRANSACTIONS_SEARCH_PAGE_SIZE = 10;
+
 export async function fetchTransactions(opts: {
   year?: number;
   month?: number;

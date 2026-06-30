@@ -250,7 +250,9 @@ func (s *StatsService) buildMonthBillItem(db *sql.DB, year, month int, isCurrent
 			return MonthBillItem{}, err
 		}
 		item.TotalIncome, item.TotalExpense = p.TotalIncome, p.TotalExpense
-		net := monthNetIncome(item.TotalIncome, item.TotalExpense, nil, nil)
+		item.Balance = p.RegisteredBalance
+		item.DailyExpense = p.DailyExpense
+		net := monthNetIncome(item.TotalIncome, item.TotalExpense, p.StartBalance, item.Balance)
 		item.NetIncome = &net
 		return item, nil
 	}

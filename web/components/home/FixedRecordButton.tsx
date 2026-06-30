@@ -33,30 +33,34 @@ export function FixedRecordButton() {
     <>
       <div className="fab-wrap pointer-events-none invisible" aria-hidden>
         <div className="fab-inner">
-          <div className="fab-glow" />
-          <span className="fab-button">
-            <PlusIcon />
-            <span>{t('add.createTitle')}</span>
-          </span>
-          <span className="fab-button fab-button-secondary">
-            <BalanceIcon />
-            <span>{t('balance.registerButton')}</span>
-          </span>
+          <div className="fab-buttons">
+            <div className="fab-glow" />
+            <span className="fab-button">
+              <PlusIcon />
+              <span>{t('add.createTitle')}</span>
+            </span>
+            <span className="fab-button fab-button-secondary">
+              <BalanceIcon />
+              <span>{t('balance.registerButton')}</span>
+            </span>
+          </div>
         </div>
       </div>
       {mounted &&
         createPortal(
           <div className="fab-wrap">
             <div className="fab-inner">
-              <div className="fab-glow" aria-hidden />
-              <Link href="/add/?returnTo=/" className="fab-button">
-                <PlusIcon />
-                <span>{t('add.createTitle')}</span>
-              </Link>
-              <Link href="/balance/?returnTo=/" className="fab-button fab-button-secondary">
-                <BalanceIcon />
-                <span>{t('balance.registerButton')}</span>
-              </Link>
+              <div className="fab-buttons">
+                <div className="fab-glow" aria-hidden />
+                <Link href="/add/?returnTo=/" className="fab-button">
+                  <PlusIcon />
+                  <span>{t('add.createTitle')}</span>
+                </Link>
+                <Link href="/balance/?returnTo=/" className="fab-button fab-button-secondary">
+                  <BalanceIcon />
+                  <span>{t('balance.registerButton')}</span>
+                </Link>
+              </div>
             </div>
           </div>,
           document.body

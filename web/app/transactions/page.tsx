@@ -196,12 +196,13 @@ function TransactionsContent() {
         </Notebook>
       )}
 
-      {list.hasMore && <div ref={list.sentinelRef} className="h-4" aria-hidden />}
+      {searchActive && list.hasMore && (
+        <div ref={list.sentinelRef} className="h-4" aria-hidden />
+      )}
 
       {!searchActive && (
         <TransactionsFooter
-          loadingMore={list.loadingMore}
-          monthFullyLoaded={list.isFullyLoaded}
+          monthFullyLoaded={!list.loading}
           year={year}
           month={month}
           earliest={earliest}

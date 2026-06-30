@@ -55,6 +55,51 @@ func TestDailyExpenseSystemTxOnBalanceUpsert(t *testing.T) {
 	}
 }
 
+func TestCurrentMonthBalanceUpsertDailyExpense(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 7, 15, 0, 0, 0, 0, time.UTC)
+	})
+	bal := NewBalanceService(stats)
+
+	_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026,6,80000)`)
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (10000,'income','2026-07-05')`)
+
+	if _, err := bal.Upsert(db, 2026, 7, 85000, ""); err != nil {
+		t.Fatal(err)
+	}
+
+	var txDate string
+	err := db.QueryRow(`
+		SELECT transaction_date FROM transactions
+		WHERE is_system = 1 AND transaction_date >= '2026-07-01' AND transaction_date < '2026-08-01'`,
+	).Scan(&txDate)
+	if err != nil {
+		t.Fatalf("system tx: %v", err)
+	}
+	if txDate != domain.LastDayOfMonth(2026, 7) {
+		t.Fatalf("system tx date = %q, want %q", txDate, domain.LastDayOfMonth(2026, 7))
+	}
+
+	var daily sql.NullInt64
+	_ = db.QueryRow(`SELECT daily_expense FROM stat_monthly WHERE year=2026 AND month=7`).Scan(&daily)
+	if !daily.Valid || daily.Int64 != 5000 {
+		t.Fatalf("daily_expense = %v, want 5000", daily)
+	}
+
+	item, err := stats.MonthBill(db, 2026, 7)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if item.Balance == nil || *item.Balance != 85000 {
+		t.Fatalf("balance = %v, want 85000", item.Balance)
+	}
+	if item.DailyExpense == nil || *item.DailyExpense != 5000 {
+		t.Fatalf("daily_expense = %v, want 5000", item.DailyExpense)
+	}
+}
+
 func TestTransactionUpdateRecalcsDailyWithoutChangingBalance(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()

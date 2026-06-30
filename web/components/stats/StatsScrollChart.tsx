@@ -843,6 +843,7 @@ export function StatsScrollChart({
           dataKey="net"
           stroke={NET_INCOME_CHART_STROKE}
           strokeWidth={1.5}
+          strokeDasharray="4 4"
           fill={`url(#${netGradientId})`}
           dot={false}
           activeDot={false}
@@ -882,6 +883,7 @@ export function StatsScrollChart({
           dataKey="balance"
           stroke={BALANCE_CHART_STROKE}
           strokeWidth={1.5}
+          strokeDasharray="4 4"
           fill={`url(#${balanceGradientId})`}
           dot={false}
           activeDot={false}

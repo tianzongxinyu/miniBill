@@ -13,7 +13,6 @@ function PlusIcon() {
 }
 
 export function TransactionsFooter({
-  loadingMore,
   monthFullyLoaded,
   year,
   month,
@@ -22,7 +21,6 @@ export function TransactionsFooter({
   addHref,
   onMonthChange,
 }: {
-  loadingMore: boolean;
   monthFullyLoaded: boolean;
   year: number;
   month: number;
@@ -32,14 +30,6 @@ export function TransactionsFooter({
   onMonthChange: (ym: YearMonth) => void;
 }) {
   const { t } = useTranslation();
-
-  if (loadingMore) {
-    return (
-      <div className="bill-list-footer">
-        <span className="bill-list-footer-text">{t('common.loading')}</span>
-      </div>
-    );
-  }
 
   if (!monthFullyLoaded) return null;
 

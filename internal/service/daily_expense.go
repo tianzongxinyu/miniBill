@@ -163,15 +163,11 @@ func (s *StatsService) syncAfterTransaction(db *sql.DB, dates ...string) error {
 }
 
 func (s *StatsService) syncAfterBalance(db *sql.DB, year, month int) error {
-	current := s.currentYearMonth()
-	ym := domain.YearMonth{Year: year, Month: month}
-	if ym != current {
-		if err := s.syncDailyExpenseForMonth(db, year, month); err != nil {
-			return err
-		}
+	if err := s.syncDailyExpenseForMonth(db, year, month); err != nil {
+		return err
 	}
-	next := domain.NextMonth(ym)
-	if next != current {
+	next := domain.NextMonth(domain.YearMonth{Year: year, Month: month})
+	if next != s.currentYearMonth() {
 		return s.syncDailyExpenseForMonth(db, next.Year, next.Month)
 	}
 	return nil

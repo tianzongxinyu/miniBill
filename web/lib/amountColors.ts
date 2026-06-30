@@ -65,8 +65,21 @@ export function filterActiveStyleForType(
 ): { backgroundColor: string; boxShadow: string } {
   const { r, g, b } = hexToRgb(chartStrokeForType(type, scheme));
   return {
-    backgroundColor: `rgba(${r}, ${g}, ${b}, 0.15)`,
+    backgroundColor: `rgba(${r}, ${g}, ${b}, 0.22)`,
     boxShadow: `inset 0 0 0 1px rgba(${r}, ${g}, ${b}, 0.5)`,
+  };
+}
+
+/** 筛选按钮未选中态样式，语义色更浅 */
+export function filterInactiveStyleForType(
+  type: 'income' | 'expense',
+  scheme: AmountColorScheme
+): { backgroundColor: string; boxShadow: string; ['--filter-btn-hover-bg']: string } {
+  const { r, g, b } = hexToRgb(chartStrokeForType(type, scheme));
+  return {
+    backgroundColor: `rgba(${r}, ${g}, ${b}, 0.05)`,
+    boxShadow: `inset 0 0 0 1px rgba(${r}, ${g}, ${b}, 0.28)`,
+    '--filter-btn-hover-bg': `rgba(${r}, ${g}, ${b}, 0.09)`,
   };
 }
 

@@ -37,8 +37,8 @@ export function StatsChartLegend({
     : [
         { key: 'expense', label: t('stats.totalExpense'), color: expenseStroke },
         { key: 'income', label: t('stats.totalIncome'), color: incomeStroke },
-        { key: 'net', label: t('stats.netIncome'), color: NET_INCOME_CHART_STROKE },
-        { key: 'balance', label: t('stats.balance'), color: BALANCE_CHART_STROKE },
+        { key: 'net', label: t('stats.netIncome'), color: NET_INCOME_CHART_STROKE, dashed: true },
+        { key: 'balance', label: t('stats.balance'), color: BALANCE_CHART_STROKE, dashed: true },
       ];
 
   return (

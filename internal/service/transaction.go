@@ -137,8 +137,8 @@ func (s *TransactionService) listByCursorPage(db *sql.DB, f ListFilter, limit in
 	if limit <= 0 {
 		limit = 10
 	}
-	if limit > 50 {
-		limit = 50
+	if limit > 9999 {
+		limit = 9999
 	}
 	if !f.HasSearch() && (f.Year <= 0 || f.Month <= 0) {
 		return nil, fmt.Errorf("%w: year and month required", ErrValidation)
