@@ -517,6 +517,56 @@ func TestYearStatCurrentLive(t *testing.T) {
 	}
 }
 
+func TestMonthSeriesAnchorsAtLatestWithData(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 6, 15, 0, 0, 0, 0, time.UTC)
+	})
+
+	for m := 1; m <= 3; m++ {
+		_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (10000,'income',?)`, fmt.Sprintf("2026-%02d-05", m))
+	}
+
+	page, err := stats.MonthSeries(db, nil, nil, 1, StatsFilter{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(page.Items) != 1 {
+		t.Fatalf("items = %d, want 1", len(page.Items))
+	}
+	if page.Items[0].Year != 2026 || page.Items[0].Month != 3 {
+		t.Fatalf("newest = %d-%d, want 2026-3", page.Items[0].Year, page.Items[0].Month)
+	}
+	if !page.HasMoreNewer {
+		t.Fatal("expected has_more_newer before current month")
+	}
+}
+
+func TestYearSeriesAnchorsAtLatestWithData(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 6, 15, 0, 0, 0, 0, time.UTC)
+	})
+
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (10000,'income','2024-03-01')`)
+
+	page, err := stats.YearSeries(db, nil, nil, 1, StatsFilter{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(page.Items) != 1 {
+		t.Fatalf("items = %d, want 1", len(page.Items))
+	}
+	if page.Items[0].Year != 2024 {
+		t.Fatalf("newest year = %d, want 2024", page.Items[0].Year)
+	}
+	if !page.HasMoreNewer {
+		t.Fatal("expected has_more_newer before current year")
+	}
+}
+
 func TestRecalcAfterTransactionIncludesCurrentMonth(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()

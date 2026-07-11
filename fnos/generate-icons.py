@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Generate fnOS fpk icons from web/public/icon.png (#f5f8fd fill, transparent rounded corners)."""
+"""Sync fnOS icons from web/public/icon.png (resize only, preserve source artwork)."""
 
 from __future__ import annotations
 
 import subprocess
 import sys
 from pathlib import Path
-
-BG_RGB = (0xF5, 0xF8, 0xFD)
 
 
 def ensure_pillow() -> None:
@@ -20,52 +18,41 @@ def ensure_pillow() -> None:
         )
 
 
-def flatten_opaque(src_path: Path):
+def load_master(src_path: Path):
     from PIL import Image
 
+    ensure_pillow()
     img = Image.open(src_path).convert("RGBA")
-    out = Image.new("RGB", img.size, BG_RGB)
-    out.paste(img, mask=img.split()[3])
-    return out
+    width, height = img.size
+    side = max(width, height)
+    if width == height == side:
+        return img
 
-
-def with_rounded_corners(img):
-    from PIL import Image, ImageDraw
-
-    rgb = img.convert("RGB")
-    w, h = rgb.size
-    radius = max(1, int(min(w, h) * 0.223))
-    mask = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
-    out = Image.new("RGBA", (w, h))
-    out.paste(rgb, mask=mask)
-    out.putalpha(mask)
-    return out
+    canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    canvas.paste(img, ((side - width) // 2, (side - height) // 2), img)
+    return canvas
 
 
 def write_icon(src_path: Path, dst: Path, size: int) -> None:
-    ensure_pillow()
     from PIL import Image
 
+    ensure_pillow()
     dst.parent.mkdir(parents=True, exist_ok=True)
-    img = with_rounded_corners(flatten_opaque(src_path))
-    if img.size != (size, size):
-        img = img.resize((size, size), Image.Resampling.LANCZOS)
-    img.save(dst, format="PNG")
+    master = load_master(src_path)
+    if master.size != (size, size):
+        master = master.resize((size, size), Image.Resampling.LANCZOS)
+    master.save(dst, format="PNG")
 
 
 def main() -> None:
     root = Path(__file__).resolve().parent
-    repo = root.parent
-    src = repo / "web" / "public" / "icon.png"
+    src = root.parent / "web" / "public" / "icon.png"
 
     if not src.is_file():
         raise SystemExit(f"Missing icon source: {src}")
 
-    ensure_pillow()
-    fixed = with_rounded_corners(flatten_opaque(src))
-    fixed.save(src, format="PNG")
-    print(f"Updated {src} (RGBA, rounded corners, transparent outside)")
+    master = load_master(src)
+    print(f"Using {src} ({master.size[0]}x{master.size[1]}, RGBA)")
 
     targets = [
         (root / "ICON.PNG", 256),

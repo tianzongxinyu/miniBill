@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { StatsSearchFilter, StatsSeriesPage } from '@/lib/api';
+import { maxScrollLeft } from '@/lib/statsChartScrollSync';
 
 type SeriesFetchOpts = {
   limit: number;
@@ -60,7 +61,20 @@ export function useStatsSeriesScroll<T>({
   const scrollToEnd = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollLeft = el.scrollWidth - el.clientWidth;
+
+    const apply = () => {
+      el.scrollLeft = maxScrollLeft(el.scrollWidth, el.clientWidth);
+    };
+
+    const tryScroll = (attemptsLeft: number) => {
+      requestAnimationFrame(() => {
+        apply();
+        if (el.scrollLeft > 0 || el.scrollWidth <= el.clientWidth + 1) return;
+        if (attemptsLeft > 0) tryScroll(attemptsLeft - 1);
+      });
+    };
+
+    requestAnimationFrame(() => tryScroll(3));
   }, [scrollRef]);
 
   const loadInitial = useCallback(async () => {
@@ -89,8 +103,26 @@ export function useStatsSeriesScroll<T>({
   useEffect(() => {
     if (!shouldScrollEndRef.current) return;
     shouldScrollEndRef.current = false;
-    requestAnimationFrame(scrollToEnd);
-  }, [items, scrollToEnd]);
+
+    const el = scrollRef.current;
+    if (!el) {
+      scrollToEnd();
+      return;
+    }
+
+    scrollToEnd();
+
+    let observer: ResizeObserver | null = null;
+    if (el.scrollWidth <= el.clientWidth + 1) {
+      observer = new ResizeObserver(() => {
+        el.scrollLeft = maxScrollLeft(el.scrollWidth, el.clientWidth);
+        if (el.scrollWidth > el.clientWidth + 1) observer?.disconnect();
+      });
+      observer.observe(el);
+    }
+
+    return () => observer?.disconnect();
+  }, [items, scrollToEnd, scrollRef]);
 
   const loadOlder = useCallback(async () => {
     if (!enabled || loadingOlderRef.current || !hasMoreOlder || items.length === 0) return;

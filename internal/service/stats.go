@@ -189,6 +189,45 @@ func (s *StatsService) EarliestMonth(db *sql.DB) (*domain.YearMonth, error) {
 	return &domain.YearMonth{Year: v / 100, Month: v % 100}, nil
 }
 
+func (s *StatsService) LatestMonth(db *sql.DB) (*domain.YearMonth, error) {
+	var maxYM sql.NullInt64
+	err := db.QueryRow(`
+		SELECT MAX(ym) FROM (
+			SELECT year * 100 + month AS ym FROM stat_monthly
+			UNION ALL SELECT year * 100 + month FROM monthly_balances
+			UNION ALL SELECT CAST(strftime('%Y', transaction_date) AS INTEGER) * 100
+			            + CAST(strftime('%m', transaction_date) AS INTEGER) FROM transactions
+		)`).Scan(&maxYM)
+	if err != nil {
+		return nil, err
+	}
+	if !maxYM.Valid || maxYM.Int64 <= 0 {
+		return nil, nil
+	}
+	v := int(maxYM.Int64)
+	return &domain.YearMonth{Year: v / 100, Month: v % 100}, nil
+}
+
+func seriesAnchorMonth(current domain.YearMonth, latest *domain.YearMonth) domain.YearMonth {
+	if latest == nil {
+		return current
+	}
+	if compareYM(*latest, current) < 0 {
+		return *latest
+	}
+	return current
+}
+
+func seriesAnchorYear(currentYear int, latest *domain.YearMonth) int {
+	if latest == nil {
+		return currentYear
+	}
+	if latest.Year < currentYear {
+		return latest.Year
+	}
+	return currentYear
+}
+
 func (s *StatsService) MonthBills(db *sql.DB, cursor *domain.YearMonth, limit int) (*MonthBillsPage, error) {
 	if limit <= 0 {
 		limit = 5
@@ -739,6 +778,11 @@ func (s *StatsService) MonthSeries(
 	}
 
 	start := current
+	if cursor == nil && after == nil && !filter.HasFilter() {
+		if latest, err := s.LatestMonth(db); err == nil {
+			start = seriesAnchorMonth(current, latest)
+		}
+	}
 	if cursor != nil {
 		start = domain.PrevMonth(*cursor)
 	}
@@ -848,6 +892,11 @@ func (s *StatsService) YearSeries(
 	}
 
 	startYear := currentYear
+	if cursor == nil && after == nil && !filter.HasFilter() {
+		if latest, err := s.LatestMonth(db); err == nil {
+			startYear = seriesAnchorYear(currentYear, latest)
+		}
+	}
 	if cursor != nil {
 		startYear = *cursor - 1
 	}

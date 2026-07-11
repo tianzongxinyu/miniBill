@@ -37,9 +37,9 @@ Base URL: `/api`
 | GET | `/stats/month-bills` | 首页月度账单卡片（游标分页） |
 | GET | `/stats/month-bill` | 单月账单摘要 |
 | GET | `/stats/monthly?year=` | 按月统计（可选 `tag_ids` 多选，AND 匹配） |
-| GET | `/stats/month-series` | 按月序列（默认最近 12 月；`cursor`/`after` 为 `YYYY-MM`；可选 `tag_ids`） |
+| GET | `/stats/month-series` | 按月序列（无游标且无筛选时右端锚定最后有数据月，不超过今天；默认 12 点；`cursor`/`after` 为 `YYYY-MM`；可选 `tag_ids`） |
 | GET | `/stats/yearly` | 按年列表（可选 `tag_ids`） |
-| GET | `/stats/year-series` | 按年序列（默认最近 10 年；`cursor`/`after` 为 `YYYY`；可选 `tag_ids`） |
+| GET | `/stats/year-series` | 按年序列（无游标且无筛选时右端锚定最后有数据年，不超过今年；默认 10 点；`cursor`/`after` 为 `YYYY`；可选 `tag_ids`） |
 | GET | `/stats/yearly/:year` | 单年 |
 | GET/PUT | `/settings` | 设置 |
 | GET | `/ledger/export` | CSV 导出（`text/csv`，UTF-8 BOM，`Content-Disposition: attachment`） |
