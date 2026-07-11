@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Generate fnOS fpk icons from web/public/icon.png (with transparent corners)."""
+"""Generate fnOS fpk icons from web/public/icon.png (#f5f8fd fill, transparent rounded corners)."""
 
 from __future__ import annotations
 
 import subprocess
 import sys
 from pathlib import Path
+
+BG_RGB = (0xF5, 0xF8, 0xFD)
 
 
 def ensure_pillow() -> None:
@@ -18,17 +20,27 @@ def ensure_pillow() -> None:
         )
 
 
-def with_transparent_corners(src_path: Path):
-    from PIL import Image, ImageDraw
+def flatten_opaque(src_path: Path):
+    from PIL import Image
 
     img = Image.open(src_path).convert("RGBA")
-    w, h = img.size
-    # 与 iOS 应用图标相近的圆角比例，裁掉四角白底
+    out = Image.new("RGB", img.size, BG_RGB)
+    out.paste(img, mask=img.split()[3])
+    return out
+
+
+def with_rounded_corners(img):
+    from PIL import Image, ImageDraw
+
+    rgb = img.convert("RGB")
+    w, h = rgb.size
     radius = max(1, int(min(w, h) * 0.223))
     mask = Image.new("L", (w, h), 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
-    img.putalpha(mask)
-    return img
+    out = Image.new("RGBA", (w, h))
+    out.paste(rgb, mask=mask)
+    out.putalpha(mask)
+    return out
 
 
 def write_icon(src_path: Path, dst: Path, size: int) -> None:
@@ -36,7 +48,7 @@ def write_icon(src_path: Path, dst: Path, size: int) -> None:
     from PIL import Image
 
     dst.parent.mkdir(parents=True, exist_ok=True)
-    img = with_transparent_corners(src_path)
+    img = with_rounded_corners(flatten_opaque(src_path))
     if img.size != (size, size):
         img = img.resize((size, size), Image.Resampling.LANCZOS)
     img.save(dst, format="PNG")
@@ -50,11 +62,10 @@ def main() -> None:
     if not src.is_file():
         raise SystemExit(f"Missing icon source: {src}")
 
-    # 回写源图，Web / PWA 同样去掉四角白底
     ensure_pillow()
-    fixed = with_transparent_corners(src)
+    fixed = with_rounded_corners(flatten_opaque(src))
     fixed.save(src, format="PNG")
-    print(f"Updated {src} (RGBA, transparent corners)")
+    print(f"Updated {src} (RGBA, rounded corners, transparent outside)")
 
     targets = [
         (root / "ICON.PNG", 256),
