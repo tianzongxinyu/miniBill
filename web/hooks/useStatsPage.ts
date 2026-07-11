@@ -17,7 +17,20 @@ export const monthSeriesKey = (m: MonthSeriesPoint) =>
 
 export const yearSeriesKey = (y: YearSeriesPoint) => String(y.year);
 
-export function useStatsPage(scrollRef?: RefObject<HTMLDivElement | null>) {
+export const STATS_SERIES_CONFIG = {
+  month: { limit: 12, pointWidth: 56 },
+  year: { limit: 10, pointWidth: 64 },
+} as const;
+
+type UseStatsPageOptions = {
+  autoFillViewport?: boolean;
+  getPointWidth?: () => number;
+};
+
+export function useStatsPage(
+  scrollRef?: RefObject<HTMLDivElement | null>,
+  options?: UseStatsPageOptions
+) {
   const [mode, setMode] = useState<'month' | 'year'>('month');
   const {
     noteQuery,
@@ -55,8 +68,10 @@ export function useStatsPage(scrollRef?: RefObject<HTMLDivElement | null>) {
 
   const monthSeries = useStatsSeriesScroll({
     enabled: mode === 'month',
-    defaultLimit: 12,
-    pointWidth: 56,
+    defaultLimit: STATS_SERIES_CONFIG.month.limit,
+    pointWidth: STATS_SERIES_CONFIG.month.pointWidth,
+    getPointWidth: options?.getPointWidth,
+    autoFillViewport: options?.autoFillViewport,
     searchFilter,
     fetchPage: monthFetch,
     getItemKey: monthSeriesKey,
@@ -65,8 +80,10 @@ export function useStatsPage(scrollRef?: RefObject<HTMLDivElement | null>) {
 
   const yearSeries = useStatsSeriesScroll({
     enabled: mode === 'year',
-    defaultLimit: 10,
-    pointWidth: 64,
+    defaultLimit: STATS_SERIES_CONFIG.year.limit,
+    pointWidth: STATS_SERIES_CONFIG.year.pointWidth,
+    getPointWidth: options?.getPointWidth,
+    autoFillViewport: options?.autoFillViewport,
     searchFilter,
     fetchPage: yearFetch,
     getItemKey: yearSeriesKey,

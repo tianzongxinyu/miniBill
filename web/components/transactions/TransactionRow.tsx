@@ -17,7 +17,15 @@ function tagItemsFor(tx: Transaction): TransactionTagItem[] {
   return (tx.tags ?? []).map((name) => ({ id: 0, name, color_bg: '', color_fg: '' }));
 }
 
-function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
+function RowBody({
+  tx,
+  returnTo,
+  onTagClick,
+}: {
+  tx: Transaction;
+  returnTo?: string;
+  onTagClick?: (tagId: number) => void;
+}) {
   const { t } = useTranslation();
   const { formatISODate } = useFormatDate();
   const isDailySystem = tx.is_system;
@@ -33,7 +41,20 @@ function RowBody({ tx, returnTo }: { tx: Transaction; returnTo?: string }) {
           {hasMeta ? (
             <div className="flex flex-wrap items-center gap-1.5">
               {items.map((tag) => (
-                <TagChip key={tag.id ? tag.id : tag.name} name={tag.name} colorBg={tag.color_bg} />
+                <TagChip
+                  key={tag.id ? tag.id : tag.name}
+                  name={tag.name}
+                  colorBg={tag.color_bg}
+                  onClick={
+                    onTagClick && tag.id > 0
+                      ? (e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          onTagClick(tag.id);
+                        }
+                      : undefined
+                  }
+                />
               ))}
               {tx.contact_id && tx.contact_name && (
                 <Link
@@ -70,10 +91,12 @@ function TransactionRowInner({
   tx,
   animate,
   returnTo,
+  onTagClick,
 }: {
   tx: Transaction;
   animate?: boolean;
   returnTo?: string;
+  onTagClick?: (tagId: number) => void;
 }) {
   const router = useRouter();
   const className = animate ? 'notebook-row animate-fade-in-up' : 'notebook-row';
@@ -81,7 +104,7 @@ function TransactionRowInner({
   if (tx.is_system) {
     return (
       <div className={className}>
-        <RowBody tx={tx} returnTo={returnTo} />
+        <RowBody tx={tx} returnTo={returnTo} onTagClick={onTagClick} />
       </div>
     );
   }
@@ -105,7 +128,7 @@ function TransactionRowInner({
       }}
       className={`${className} block cursor-pointer`}
     >
-      <RowBody tx={tx} returnTo={returnTo} />
+      <RowBody tx={tx} returnTo={returnTo} onTagClick={onTagClick} />
     </div>
   );
 }

@@ -12,6 +12,11 @@ import {
   isFullscreenCssRotated,
   shouldUsePortraitFallback,
 } from '@/lib/statsChartFullscreen';
+import {
+  computeFullscreenSlotWidth,
+  mapScrollFromAnchor,
+  type ScrollAnchor,
+} from '@/lib/statsChartScrollSync';
 import type { StatsChartRow } from '@/lib/statsChartData';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
 
@@ -22,8 +27,9 @@ function scrollUsesVerticalAxis(scrollEl: HTMLElement): boolean {
 type StatsChartFullscreenProps = {
   open: boolean;
   onClose: () => void;
-  initialScrollLeft: number;
-  onScrollLeftChange: (scrollLeft: number) => void;
+  scrollAnchor: ScrollAnchor;
+  defaultLimit: number;
+  onSlotWidthChange: (slotWidth: number) => void;
   scrollRef: RefObject<HTMLDivElement | null>;
   onScroll: () => void;
   mode: 'month' | 'year';
@@ -41,8 +47,9 @@ type StatsChartFullscreenProps = {
 export function StatsChartFullscreen({
   open,
   onClose,
-  initialScrollLeft,
-  onScrollLeftChange,
+  scrollAnchor,
+  defaultLimit,
+  onSlotWidthChange,
   scrollRef,
   onScroll,
   mode,
@@ -61,8 +68,7 @@ export function StatsChartFullscreen({
   const [chartHeight, setChartHeight] = useState(252);
   const [portraitFallback, setPortraitFallback] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const restoredScrollRef = useRef(false);
-  const trackedScrollLeftRef = useRef(initialScrollLeft);
+  const trackedScrollLeftRef = useRef(0);
 
   const syncTrackedScrollLeft = useCallback(() => {
     const el = scrollRef.current;
@@ -94,14 +100,12 @@ export function StatsChartFullscreen({
 
   const handleClose = useCallback(() => {
     syncTrackedScrollLeft();
-    onScrollLeftChange(trackedScrollLeftRef.current);
     void exitChartFullscreen();
     onClose();
-  }, [onClose, onScrollLeftChange, syncTrackedScrollLeft]);
+  }, [onClose, syncTrackedScrollLeft]);
 
   useEffect(() => {
     if (!open) {
-      restoredScrollRef.current = false;
       setPortraitFallback(false);
       return;
     }
@@ -159,20 +163,61 @@ export function StatsChartFullscreen({
 
   useEffect(() => {
     if (!open) return;
-    trackedScrollLeftRef.current = initialScrollLeft;
-  }, [open, initialScrollLeft]);
+
+    let el: HTMLDivElement | null = null;
+    let raf = 0;
+    let observer: ResizeObserver | null = null;
+
+    const measure = () => {
+      const target = scrollRef.current;
+      if (!target) return;
+      onSlotWidthChange(computeFullscreenSlotWidth(target.clientWidth, defaultLimit));
+    };
+
+    const bind = () => {
+      el = scrollRef.current;
+      if (!el) {
+        raf = requestAnimationFrame(bind);
+        return;
+      }
+      observer?.disconnect();
+      observer = new ResizeObserver(() => measure());
+      observer.observe(el);
+      measure();
+    };
+
+    bind();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer?.disconnect();
+    };
+  }, [open, defaultLimit, onSlotWidthChange, scrollRef, portraitFallback]);
 
   useEffect(() => {
-    if (!open || restoredScrollRef.current) return;
-    const el = scrollRef.current;
-    if (!el) return;
+    if (!open || rows.length === 0 || pointWidth <= 0 || scrollWidth <= 0) return;
 
-    restoredScrollRef.current = true;
-    requestAnimationFrame(() => {
-      el.scrollLeft = initialScrollLeft;
-      trackedScrollLeftRef.current = initialScrollLeft;
+    let raf = 0;
+    const apply = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const nextScroll = mapScrollFromAnchor(
+        scrollAnchor,
+        el.clientWidth,
+        pointWidth,
+        rows.length,
+        scrollWidth
+      );
+      el.scrollLeft = nextScroll;
+      trackedScrollLeftRef.current = nextScroll;
+    };
+
+    raf = requestAnimationFrame(() => {
+      requestAnimationFrame(apply);
     });
-  }, [open, initialScrollLeft, scrollRef]);
+
+    return () => cancelAnimationFrame(raf);
+  }, [open, scrollAnchor, pointWidth, scrollWidth, rows.length, scrollRef, portraitFallback]);
 
   useEffect(() => {
     if (!open || !isCoarseMobile()) return;

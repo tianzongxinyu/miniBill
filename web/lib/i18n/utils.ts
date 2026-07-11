@@ -102,16 +102,14 @@ export const loadLocale = async (locale: string): Promise<Locale> => {
   await i18n.changeLanguage(validLocale);
   if (typeof document !== 'undefined') {
     document.documentElement.lang = toIntlLocale(validLocale);
+    document.title = i18n.t('app.name');
   }
   return validLocale;
 };
 
 /** Apply locale early during initial page load to prevent language flash. */
 export const applyLocaleEarly = (): void => {
-  const stored = getStoredLocale();
-  const locale =
-    stored ??
-    (typeof navigator !== 'undefined' ? findNearestMatchedLanguage(navigator.language) : 'en');
+  const locale = getStoredLocale() ?? 'zh-Hans';
   void loadLocale(locale);
 };
 

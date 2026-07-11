@@ -113,6 +113,14 @@ function TransactionsContent() {
     setMonth(ym.month);
   }, []);
 
+  const handleTagClick = useCallback(
+    (tagId: number) => {
+      setSelectedTagIds((prev) => (prev.includes(tagId) ? prev : [...prev, tagId]));
+      scrollToTop(false);
+    },
+    [setSelectedTagIds]
+  );
+
   const maxMonth = getCurrentYearMonth();
 
   const animateIds = useLoadMoreAnimateIds(
@@ -191,6 +199,7 @@ function TransactionsContent() {
               tx={tx}
               animate={animateIds.has(tx.id)}
               returnTo={transactionsHref}
+              onTagClick={handleTagClick}
             />
           ))}
         </Notebook>

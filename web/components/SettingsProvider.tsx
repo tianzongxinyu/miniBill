@@ -7,7 +7,7 @@ import {
   updateSettings as putSettings,
   type Settings,
 } from '@/lib/api';
-import { loadLocale, takeExplicitLocale, type Locale } from '@/lib/i18n/utils';
+import { getStoredLocale, loadLocale, takeExplicitLocale, type Locale } from '@/lib/i18n/utils';
 import { useAuth } from '@/components/AuthProvider';
 
 type SettingsCtx = {
@@ -34,7 +34,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) {
-      setSettings(defaultSettings);
+      const stored = getStoredLocale();
+      setSettings({ ...defaultSettings, locale: stored ?? defaultSettings.locale });
       setLoading(false);
       return;
     }

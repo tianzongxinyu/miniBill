@@ -55,10 +55,10 @@ export function LocaleSelect({
 
   const select = (locale: Locale) => {
     if (disabled) return;
+    if (markExplicitOnChange) markLocaleExplicit(locale);
     if (onChange) {
       onChange(locale);
     } else {
-      if (markExplicitOnChange) markLocaleExplicit(locale);
       void loadLocale(locale);
     }
     close();

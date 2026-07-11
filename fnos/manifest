@@ -1,7 +1,7 @@
 appname               = minibill
 version               = 1.0.7
 display_name          = 轻账单
-desc                  = 自托管多用户个人记账，数据存 NAS 本地 SQLite。支持收支流水、标签联系人、月年统计、CSV 导入导出与定时 zip 备份，手机可装 PWA。
+desc                  = 轻账单是运行在 NAS 上的自托管多用户记账 Web 应用，账本保存在本地 SQLite，不上传云端。<br><br><b>抓大放小</b>：重点记录大额收支与月度余额，零碎开销不必逐笔记。登记月初/月末实际余额后，系统自动对照流水，估算「日常支出」并计入总支出，省心又贴近真实花销。<br><br>还支持收支流水（标签、联系人、搜索）、月/年统计图表、CSV 导入导出、可配置定时 zip 备份。<br><br><a href="https://club.fnnas.com/forum.php?mod=viewthread&tid=65924">飞牛论坛介绍与讨论</a><br><a href="https://github.com/tianzongxinyu/miniBill">GitHub 开源仓库</a>
 arch                  = x86_64
 platform              = x86
 source                = thirdparty

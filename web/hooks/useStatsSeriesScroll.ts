@@ -14,6 +14,8 @@ type UseStatsSeriesScrollOptions<T> = {
   enabled: boolean;
   defaultLimit: number;
   pointWidth: number;
+  getPointWidth?: () => number;
+  autoFillViewport?: boolean;
   searchFilter: StatsSearchFilter;
   fetchPage: (opts: SeriesFetchOpts) => Promise<StatsSeriesPage<T>>;
   getItemKey: (item: T) => string;
@@ -24,6 +26,8 @@ export function useStatsSeriesScroll<T>({
   enabled,
   defaultLimit,
   pointWidth,
+  getPointWidth,
+  autoFillViewport = true,
   searchFilter,
   fetchPage,
   getItemKey,
@@ -44,6 +48,12 @@ export function useStatsSeriesScroll<T>({
   const scrollRafRef = useRef<number | null>(null);
   const shouldScrollEndRef = useRef(false);
   const prependWidthRef = useRef(0);
+  const getPointWidthRef = useRef(getPointWidth);
+  getPointWidthRef.current = getPointWidth;
+
+  const resolvePointWidth = useCallback(() => {
+    return getPointWidthRef.current?.() ?? pointWidth;
+  }, [pointWidth]);
 
   fetchPageRef.current = fetchPage;
 
@@ -93,7 +103,7 @@ export function useStatsSeriesScroll<T>({
         setHasMoreOlder(false);
         return;
       }
-      prependWidthRef.current = data.items.length * pointWidth;
+      prependWidthRef.current = data.items.length * resolvePointWidth();
       setItems((prev) => [...data.items, ...prev]);
       setHasMoreOlder(data.has_more_older);
       requestAnimationFrame(() => {
@@ -104,7 +114,7 @@ export function useStatsSeriesScroll<T>({
       loadingOlderRef.current = false;
       setLoadingOlder(false);
     }
-  }, [enabled, hasMoreOlder, items, defaultLimit, searchFilter, getItemKey, pointWidth, scrollRef]);
+  }, [enabled, hasMoreOlder, items, defaultLimit, searchFilter, getItemKey, resolvePointWidth, scrollRef]);
 
   const loadNewer = useCallback(async () => {
     if (!enabled || loadingNewerRef.current || !hasMoreNewer || items.length === 0) return;
@@ -127,7 +137,7 @@ export function useStatsSeriesScroll<T>({
 
   // Wide viewports may fit all loaded points — keep fetching until the chart overflows or data ends.
   useEffect(() => {
-    if (!enabled || loading || loadingOlderRef.current || loadingNewerRef.current) return;
+    if (!autoFillViewport || !enabled || loading || loadingOlderRef.current || loadingNewerRef.current) return;
     if (!hasMoreOlder && !hasMoreNewer) return;
 
     const raf = requestAnimationFrame(() => {
@@ -138,10 +148,10 @@ export function useStatsSeriesScroll<T>({
     });
 
     return () => cancelAnimationFrame(raf);
-  }, [enabled, loading, hasMoreOlder, hasMoreNewer, items, loadOlder, loadNewer, scrollRef]);
+  }, [autoFillViewport, enabled, loading, hasMoreOlder, hasMoreNewer, items, loadOlder, loadNewer, scrollRef]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!autoFillViewport || !enabled) return;
 
     let el = scrollRef.current;
     let raf = 0;
@@ -177,7 +187,7 @@ export function useStatsSeriesScroll<T>({
       cancelAnimationFrame(raf);
       observer?.disconnect();
     };
-  }, [enabled, loading, hasMoreOlder, hasMoreNewer, loadOlder, loadNewer, scrollRef, items]);
+  }, [autoFillViewport, enabled, loading, hasMoreOlder, hasMoreNewer, loadOlder, loadNewer, scrollRef, items]);
 
   const onScroll = useCallback(() => {
     if (scrollRafRef.current != null) return;

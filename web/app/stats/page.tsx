@@ -8,8 +8,7 @@ import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
 import { StatsScrollChart, statsChartWidth } from '@/lib/dynamicStatsChart';
 import { StatsSeriesTable } from '@/components/stats/StatsSeriesTable';
 import { StatsToolbar } from '@/components/stats/StatsToolbar';
-import { useFormatDate } from '@/hooks/useFormatDate';
-import { useStatsPage } from '@/hooks/useStatsPage';
+import { useStatsPage, STATS_SERIES_CONFIG } from '@/hooks/useStatsPage';
 import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import { buildStatsChartRows } from '@/lib/statsChartData';
 import { useSettings } from '@/components/SettingsProvider';
@@ -18,6 +17,13 @@ import {
   exitChartFullscreen,
   isCoarseMobile,
 } from '@/lib/statsChartFullscreen';
+import {
+  captureScrollAnchor,
+  mapScrollFromAnchor,
+  type ScrollAnchor,
+} from '@/lib/statsChartScrollSync';
+
+const DEFAULT_SCROLL_ANCHOR: ScrollAnchor = { centerIndex: 0, atEnd: true };
 
 function StatsContent() {
   const { t } = useTranslation();
@@ -25,9 +31,22 @@ function StatsContent() {
   const inlineScrollRef = useRef<HTMLDivElement>(null);
   const fullscreenScrollRef = useRef<HTMLDivElement>(null);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
+  const [fullscreenSlotWidth, setFullscreenSlotWidth] = useState<number>(
+    STATS_SERIES_CONFIG.month.pointWidth
+  );
+  const fullscreenSlotWidthRef = useRef(fullscreenSlotWidth);
+  const [scrollAnchor, setScrollAnchor] = useState<ScrollAnchor>(DEFAULT_SCROLL_ANCHOR);
   const pendingScrollLeftRef = useRef(0);
 
+  fullscreenSlotWidthRef.current = fullscreenSlotWidth;
+
   const scrollRef = fullscreenOpen ? fullscreenScrollRef : inlineScrollRef;
+  const modeRef = useRef<'month' | 'year'>('month');
+
+  const getPointWidth = useCallback(() => {
+    if (fullscreenOpen) return fullscreenSlotWidthRef.current;
+    return STATS_SERIES_CONFIG[modeRef.current].pointWidth;
+  }, [fullscreenOpen]);
 
   const {
     onMouseDown: onChartMouseDown,
@@ -53,14 +72,22 @@ function StatsContent() {
     monthSeries,
     yearSeries,
     active,
-  } = useStatsPage(scrollRef);
+  } = useStatsPage(scrollRef, {
+    autoFillViewport: !fullscreenOpen,
+    getPointWidth,
+  });
+
+  modeRef.current = mode;
 
   const chartRows = useMemo(
     () => buildStatsChartRows(mode, monthSeries.items, yearSeries.items, searchActive, locale),
     [mode, monthSeries.items, yearSeries.items, searchActive, locale]
   );
 
-  const scrollWidth = statsChartWidth(chartRows.length, active.pointWidth);
+  const seriesConfig = STATS_SERIES_CONFIG[mode];
+  const inlinePointWidth = seriesConfig.pointWidth;
+  const inlineScrollWidth = statsChartWidth(chartRows.length, inlinePointWidth);
+  const fullscreenScrollWidth = statsChartWidth(chartRows.length, fullscreenSlotWidth);
 
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(() => new Set());
 
@@ -77,31 +104,59 @@ function StatsContent() {
     });
   }, []);
 
+  const handleSlotWidthChange = useCallback((slotWidth: number) => {
+    setFullscreenSlotWidth(slotWidth);
+  }, []);
+
   const openFullscreen = useCallback(async () => {
     const inlineEl = inlineScrollRef.current;
-    let scrollLeft = inlineEl?.scrollLeft ?? 0;
-    if (
-      inlineEl &&
-      scrollLeft === 0 &&
-      inlineEl.scrollWidth > inlineEl.clientWidth + 1
-    ) {
-      scrollLeft = inlineEl.scrollWidth - inlineEl.clientWidth;
+    const itemCount = chartRows.length;
+    if (inlineEl && itemCount > 0) {
+      setScrollAnchor(
+        captureScrollAnchor(
+          inlineEl.scrollLeft,
+          inlineEl.clientWidth,
+          inlinePointWidth,
+          itemCount,
+          inlineScrollWidth
+        )
+      );
+    } else {
+      setScrollAnchor(DEFAULT_SCROLL_ANCHOR);
     }
-    pendingScrollLeftRef.current = scrollLeft;
     if (isCoarseMobile()) {
       await enterChartFullscreen();
     }
     setFullscreenOpen(true);
-  }, []);
+  }, [chartRows.length, inlinePointWidth, inlineScrollWidth]);
 
   const closeFullscreen = useCallback(() => {
+    const fsEl = fullscreenScrollRef.current;
+    const itemCount = chartRows.length;
+    const inlineEl = inlineScrollRef.current;
+
+    if (fsEl && itemCount > 0) {
+      const fsPointWidth = fullscreenSlotWidthRef.current;
+      const fsScrollWidth = statsChartWidth(itemCount, fsPointWidth);
+      const anchor = captureScrollAnchor(
+        fsEl.scrollLeft,
+        fsEl.clientWidth,
+        fsPointWidth,
+        itemCount,
+        fsScrollWidth
+      );
+      pendingScrollLeftRef.current = mapScrollFromAnchor(
+        anchor,
+        inlineEl?.clientWidth ?? fsEl.clientWidth,
+        inlinePointWidth,
+        itemCount,
+        inlineScrollWidth
+      );
+    }
+
     setFullscreenOpen(false);
     void exitChartFullscreen();
-  }, []);
-
-  const handleFullscreenScrollLeftChange = useCallback((scrollLeft: number) => {
-    pendingScrollLeftRef.current = scrollLeft;
-  }, []);
+  }, [chartRows.length, inlinePointWidth, inlineScrollWidth]);
 
   useEffect(() => {
     if (fullscreenOpen) return;
@@ -110,7 +165,7 @@ function StatsContent() {
     requestAnimationFrame(() => {
       el.scrollLeft = pendingScrollLeftRef.current;
     });
-  }, [fullscreenOpen]);
+  }, [fullscreenOpen, inlineScrollWidth]);
 
   return (
     <div>
@@ -160,14 +215,14 @@ function StatsContent() {
           onPointerCancel={fullscreenOpen ? undefined : onPointerCancel}
           className="stats-chart-scroll overflow-x-auto min-h-[252px]"
         >
-          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner px-4 pt-4">
+          <div style={{ minWidth: inlineScrollWidth }} className="stats-chart-scroll-inner px-4 pt-4">
             <StatsScrollChart
               mode={mode}
               monthItems={monthSeries.items}
               yearItems={yearSeries.items}
               searchActive={searchActive}
               loading={active.loading}
-              pointWidth={active.pointWidth}
+              pointWidth={inlinePointWidth}
               rows={chartRows}
               hiddenSeries={hiddenSeries}
             />
@@ -183,8 +238,9 @@ function StatsContent() {
       <StatsChartFullscreen
         open={fullscreenOpen}
         onClose={closeFullscreen}
-        initialScrollLeft={pendingScrollLeftRef.current}
-        onScrollLeftChange={handleFullscreenScrollLeftChange}
+        scrollAnchor={scrollAnchor}
+        defaultLimit={seriesConfig.limit}
+        onSlotWidthChange={handleSlotWidthChange}
         scrollRef={fullscreenScrollRef}
         onScroll={active.onScroll}
         mode={mode}
@@ -192,11 +248,11 @@ function StatsContent() {
         yearItems={yearSeries.items}
         searchActive={searchActive}
         loading={active.loading}
-        pointWidth={active.pointWidth}
+        pointWidth={fullscreenSlotWidth}
         rows={chartRows}
         hiddenSeries={hiddenSeries}
         onToggleSeries={toggleSeries}
-        scrollWidth={scrollWidth}
+        scrollWidth={fullscreenScrollWidth}
       />
 
       <StatsSeriesTable

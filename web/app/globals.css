@@ -1024,7 +1024,7 @@ body {
 
   .transactions-toolbar .combobox-panel,
   .stats-toolbar .combobox-panel {
-    @apply flex items-center;
+    @apply flex items-center w-full min-w-0 overflow-hidden;
   }
 
   .transactions-toolbar .month-picker-field {
@@ -1050,7 +1050,7 @@ body {
   }
 
   .combobox-panel {
-    @apply rounded-2xl border bg-accent-soft/30 px-3 py-2.5;
+    @apply rounded-2xl border bg-accent-soft/30 px-3 py-2.5 w-full min-w-0;
     border-color: var(--control-border);
     @apply transition-all duration-200 ease-out;
   }
@@ -1060,11 +1060,11 @@ body {
   }
 
   .combobox-panel-body {
-    @apply flex items-start gap-1.5;
+    @apply flex flex-1 min-w-0 w-full items-start gap-1;
   }
 
   .combobox-clear {
-    @apply shrink-0 mt-0.5 p-1 rounded-lg text-muted transition-colors duration-150;
+    @apply shrink-0 self-start mt-1.5 p-1 rounded-lg text-muted transition-colors duration-150;
     @apply hover:text-accent hover:bg-accent-soft;
   }
 
