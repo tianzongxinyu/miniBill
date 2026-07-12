@@ -22,10 +22,10 @@ export type StatsChartRow = {
 export type StatsSeriesKey = 'income' | 'expense' | 'net' | 'balance';
 
 /** 余额序列在右轴上最多占据的比例（顶部留白） */
-export const BALANCE_AXIS_FILL = 0.8;
+const BALANCE_AXIS_FILL = 0.8;
 
 /** 收入/支出/净收入在左轴上最多占据的比例（顶部留白） */
-export const LEFT_AXIS_FILL = 0.7;
+const LEFT_AXIS_FILL = 0.7;
 
 export function isSeriesVisible(hiddenSeries: Set<string>, key: StatsSeriesKey) {
   return !hiddenSeries.has(key);

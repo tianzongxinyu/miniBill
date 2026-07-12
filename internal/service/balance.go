@@ -2,7 +2,6 @@ package service
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Balance struct {
@@ -15,11 +14,10 @@ type Balance struct {
 
 type BalanceService struct {
 	stats *StatsService
-	now   func() time.Time
 }
 
 func NewBalanceService(stats *StatsService) *BalanceService {
-	return &BalanceService{stats: stats, now: time.Now}
+	return &BalanceService{stats: stats}
 }
 
 func (s *BalanceService) List(db *sql.DB) ([]Balance, error) {

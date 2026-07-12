@@ -8,4 +8,4 @@ export const StatsScrollChart = dynamic(
   { ssr: false, loading: () => <ChartSkeleton height={252} /> }
 );
 
-export { statsChartWidth } from '@/components/stats/StatsScrollChart';
+export { statsChartWidth } from '@/lib/statsChartScrollSync';

@@ -81,3 +81,7 @@ export function mapScrollFromAnchor(
     toScrollWidth
   );
 }
+
+export function statsChartWidth(rowCount: number, pointWidth: number) {
+  return Math.max(rowCount * pointWidth, 320);
+}

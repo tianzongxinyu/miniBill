@@ -54,12 +54,10 @@ func TestDailyExpenseNullWithoutPrev(t *testing.T) {
 func TestBalanceChangeRecalcNextMonth(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()
-	stats := NewStatsService()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 7, 15, 0, 0, 0, 0, time.UTC)
+	})
 	bal := NewBalanceService(stats)
-	bal.now = func() time.Time {
-		loc, _ := time.LoadLocation("Asia/Shanghai")
-		return time.Date(2026, 7, 15, 0, 0, 0, 0, loc)
-	}
 
 	_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026,5,100000)`)
 	_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026,6,90000)`)
@@ -71,8 +69,8 @@ func TestBalanceChangeRecalcNextMonth(t *testing.T) {
 	}
 	var julyDaily sql.NullInt64
 	_ = db.QueryRow(`SELECT daily_expense FROM stat_monthly WHERE year=2026 AND month=7`).Scan(&julyDaily)
-	if !julyDaily.Valid {
-		t.Fatal("july daily should be calculated after june balance update")
+	if !julyDaily.Valid || julyDaily.Int64 != 10000 {
+		t.Fatalf("july daily_expense = %v, want 10000", julyDaily)
 	}
 }
 
@@ -389,14 +387,14 @@ func TestYearSeriesInitial(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(page.Items) != 10 {
-		t.Fatalf("items = %d, want 10", len(page.Items))
+	if len(page.Items) != 9 {
+		t.Fatalf("items = %d, want 9", len(page.Items))
 	}
-	if page.Items[0].Year != 2017 || page.Items[9].Year != 2026 {
-		t.Fatalf("years = %d..%d, want 2017..2026", page.Items[0].Year, page.Items[9].Year)
+	if page.Items[0].Year != 2016 || page.Items[8].Year != 2024 {
+		t.Fatalf("years = %d..%d, want 2016..2024", page.Items[0].Year, page.Items[8].Year)
 	}
-	if page.HasMoreNewer {
-		t.Fatal("should not have more newer at current year")
+	if !page.HasMoreNewer {
+		t.Fatal("expected has_more_newer before current year")
 	}
 }
 

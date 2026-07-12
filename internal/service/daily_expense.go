@@ -167,8 +167,5 @@ func (s *StatsService) syncAfterBalance(db *sql.DB, year, month int) error {
 		return err
 	}
 	next := domain.NextMonth(domain.YearMonth{Year: year, Month: month})
-	if next != s.currentYearMonth() {
-		return s.syncDailyExpenseForMonth(db, next.Year, next.Month)
-	}
-	return nil
+	return s.syncDailyExpenseForMonth(db, next.Year, next.Month)
 }

@@ -12,10 +12,10 @@ import {
 import { useOnLedgerChanged } from '@/lib/ledgerEvents';
 import { fetchMonthSeriesPoint } from '@/lib/monthSeries';
 
-export const monthSeriesKey = (m: MonthSeriesPoint) =>
+const monthSeriesKey = (m: MonthSeriesPoint) =>
   `${m.year}-${String(m.month).padStart(2, '0')}`;
 
-export const yearSeriesKey = (y: YearSeriesPoint) => String(y.year);
+const yearSeriesKey = (y: YearSeriesPoint) => String(y.year);
 
 export const STATS_SERIES_CONFIG = {
   month: { limit: 12, pointWidth: 28 },
