@@ -18,8 +18,8 @@ export const monthSeriesKey = (m: MonthSeriesPoint) =>
 export const yearSeriesKey = (y: YearSeriesPoint) => String(y.year);
 
 export const STATS_SERIES_CONFIG = {
-  month: { limit: 12, pointWidth: 56 },
-  year: { limit: 10, pointWidth: 64 },
+  month: { limit: 12, pointWidth: 28 },
+  year: { limit: 10, pointWidth: 32 },
 } as const;
 
 type UseStatsPageOptions = {

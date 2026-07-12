@@ -783,7 +783,7 @@ export function StatsScrollChart({
         type="category"
         scale="point"
         interval={tapToInspect ? 0 : 'preserveStartEnd'}
-        minTickGap={tapToInspect ? 24 : 32}
+        minTickGap={tapToInspect ? 12 : 16}
         tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
         axisLine={false}
         tickLine={false}

@@ -1,7 +1,7 @@
 appname               = minibill
-version               = 1.0.7
+version               = 1.0.5
 display_name          = 轻账单
-desc                  = 轻账单是运行在 NAS 上的自托管多用户记账 Web 应用，账本保存在本地 SQLite，不上传云端。<br><br><b>抓大放小</b>：重点记录大额收支与月度余额，零碎开销不必逐笔记。登记月初/月末实际余额后，系统自动对照流水，估算「日常支出」并计入总支出，省心又贴近真实花销。<br><br>还支持收支流水（标签、联系人、搜索）、月/年统计图表、CSV 导入导出、可配置定时 zip 备份。<br><br><a href="https://club.fnnas.com/forum.php?mod=viewthread&tid=65924">飞牛论坛介绍与讨论</a><br><a href="https://github.com/tianzongxinyu/miniBill">GitHub 开源仓库</a>
+desc                  = 轻账单是专为飞牛 NAS 设计的自托管多用户记账 Web 应用。账本数据保存在本机 SQLite，不上传云端；每位用户独立账本，适合家庭共用一台 NAS 各自记账。<br><br><b>抓大放小，省心记账</b><br>重点记录大额收支与月度余额，零碎开销不必逐笔记。登记月初/月末实际余额后，系统自动对照流水，估算「日常支出」并计入总支出，更贴近真实花销。<br><br><b>主要功能</b><br>· 收支流水：标签、联系人、备注，按月浏览与搜索<br>· 月度余额：对照流水自动推算日常支出<br>· 统计分析：月/年图表，按标签、联系人、备注筛选<br>· 数据迁移：CSV 导出导入，可配置目录定时 zip 备份<br>· 多用户：支持开放注册或管理员创建账号<br><br><a href="https://club.fnnas.com/forum.php?mod=viewthread&tid=65924">飞牛论坛介绍与讨论</a><br><a href="https://github.com/tianzongxinyu/miniBill">GitHub 开源仓库</a>
 arch                  = x86_64
 platform              = x86
 source                = thirdparty

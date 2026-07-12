@@ -42,7 +42,7 @@ export function scrollLeftForCenterIndex(
 export function computeFullscreenSlotWidth(
   clientWidth: number,
   defaultLimit: number,
-  minWidth = 32,
+  minWidth = 16,
   horizontalPadding = 32
 ): number {
   const inner = Math.max(0, clientWidth - horizontalPadding);
