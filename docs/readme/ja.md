@@ -92,13 +92,13 @@ cd web && npm install && npm run dev
 
 ```bash
 # x86 NAS（デフォルト）
-./scripts/build-fpk.sh 1.0.3
+./scripts/build-fpk.sh
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.3 arm
+./scripts/build-fpk.sh arm
 
 # x86 と ARM を同時構築
-./scripts/build-fpk.sh 1.0.3 all
+./scripts/build-fpk.sh all
 ```
 
 成果物は `dist/minibill_<version>_<platform>.fpk` に出力されます。

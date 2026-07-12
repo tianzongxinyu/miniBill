@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type Balance struct {
@@ -49,7 +50,7 @@ func (s *BalanceService) Get(db *sql.DB, year, month int) (*Balance, error) {
 
 func (s *BalanceService) Upsert(db *sql.DB, year, month int, balance int64, note string) (*Balance, error) {
 	if balance < 0 {
-		return nil, ErrValidation
+		return nil, fmt.Errorf("%w: balance_negative", ErrValidation)
 	}
 	_, err := db.Exec(`
 		INSERT INTO monthly_balances (year, month, balance, note, updated_at) VALUES (?,?,?,?,datetime('now'))

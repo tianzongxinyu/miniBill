@@ -83,7 +83,13 @@ function TransactionsContent() {
     typeFilter,
   });
 
-  const monthSummary = useTransactionsMonthSummary({ year, month, enabled: !searchActive });
+  const monthSummary = useTransactionsMonthSummary({
+    year,
+    month,
+    enabled: !searchActive,
+    transactions: list.items,
+    mergeTotalsFromTransactions: !searchActive && !typeFilter,
+  });
 
   const syncTransactionsUrl = useCallback(
     (ym: YearMonth, type: TransactionTypeFilter) => {

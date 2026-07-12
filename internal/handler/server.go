@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,6 +25,7 @@ import (
 
 type Server struct {
 	cfg           config.Config
+	version       string
 	system        *systemdb.Store
 	userFactory   *userdb.Factory
 	authSvc       *auth.Service
@@ -41,12 +43,17 @@ type Server struct {
 }
 
 func NewServer(cfg config.Config, system *systemdb.Store, factory *userdb.Factory, authSvc *auth.Service) *Server {
+	return NewServerWithVersion(cfg, system, factory, authSvc, "")
+}
+
+func NewServerWithVersion(cfg config.Config, system *systemdb.Store, factory *userdb.Factory, authSvc *auth.Service, version string) *Server {
 	statsSvc := service.NewStatsService()
 	txSvc := service.NewTransactionService(statsSvc)
 	metaStore := cache.NewLedgerMetaStore(0)
 	ledgerCSVSvc := service.NewLedgerCSVService(txSvc, statsSvc, metaStore)
 	return &Server{
 		cfg:           cfg,
+		version:       version,
 		system:        system,
 		userFactory:   factory,
 		authSvc:       authSvc,
@@ -76,10 +83,15 @@ func (s *Server) Router() *gin.Engine {
 
 	api := r.Group("/api")
 	api.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		body := gin.H{"status": "ok"}
+		if s.version != "" {
+			body["version"] = s.version
+		}
+		c.JSON(http.StatusOK, body)
 	})
 
 	authGroup := api.Group("/auth")
+	authGroup.Use(middleware.AuthRateLimit())
 	authGroup.POST("/register", s.register)
 	authGroup.POST("/login", s.login)
 	authGroup.POST("/logout", s.logout)
@@ -241,7 +253,8 @@ func serviceErr(c *gin.Context, err error) bool {
 		JSONValidation(c, i18n.T(locale, "error.contact_in_use"))
 		return true
 	}
-	c.JSON(http.StatusInternalServerError, apierr.Body{Error: "INTERNAL", Message: err.Error()})
+	log.Printf("internal error: %v", err)
+	c.JSON(http.StatusInternalServerError, apierr.Body{Error: "INTERNAL", Message: i18n.T(locale, "error.internal")})
 	return true
 }
 

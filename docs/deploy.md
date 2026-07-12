@@ -33,8 +33,8 @@ docker build -t yourname/minibill:latest .
 docker login
 docker push yourname/minibill:latest
 # 建议同时推送版本号 tag，便于回滚
-# docker tag yourname/minibill:latest yourname/minibill:1.0.3
-# docker push yourname/minibill:1.0.3
+# docker tag yourname/minibill:latest yourname/minibill:1.0.5
+# docker push yourname/minibill:1.0.5
 ```
 
 **多架构**（NAS / ARM 等）：
@@ -77,6 +77,7 @@ docker compose -f docker-compose.prod.yml up -d
 | MIGRATIONS_SYSTEM | 系统库迁移目录 | ./migrations/system |
 | MIGRATIONS_LEDGER | 账本库迁移目录 | ./migrations/ledger |
 | GIN_MODE | Gin 模式（`release` 关闭访问日志） | release |
+| SECURE_COOKIES | 生产 HTTPS 反代时设为 `true`，Cookie 带 Secure 标志 | false |
 | TZ | 时区 | Asia/Shanghai |
 
 ## 数据目录
@@ -118,10 +119,10 @@ go run ./cmd/create-user -username admin -password yourpass
 
 ```bash
 # x86 NAS（默认）
-./scripts/build-fpk.sh 1.0.3
+./scripts/build-fpk.sh 1.0.5
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.3 arm
+./scripts/build-fpk.sh 1.0.5 arm
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包）。

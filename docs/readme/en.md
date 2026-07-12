@@ -92,13 +92,13 @@ Run from the project root:
 
 ```bash
 # x86 NAS (default)
-./scripts/build-fpk.sh 1.0.3
+./scripts/build-fpk.sh
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.3 arm
+./scripts/build-fpk.sh arm
 
 # Build both x86 and ARM
-./scripts/build-fpk.sh 1.0.3 all
+./scripts/build-fpk.sh all
 ```
 
 Output is at `dist/minibill_<version>_<platform>.fpk`.
@@ -125,6 +125,7 @@ See the [Deployment Guide](../deploy.md) for more details.
 
 - [API](../api.md)
 - [Deployment](../deploy.md)
+- [Release checklist](../release.md)
 
 ## Tech Stack
 

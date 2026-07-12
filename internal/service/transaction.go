@@ -431,7 +431,14 @@ func (s *TransactionService) Create(db *sql.DB, in CreateTransactionInput) (*Tra
 	if err := bumpTagsUsage(db, in.TagIDs, 1); err != nil {
 		return nil, err
 	}
-	if err := s.stats.RecalcAfterTransaction(db, in.TransactionDate); err != nil {
+	ym, err := domain.MonthOfDate(in.TransactionDate)
+	if err != nil {
+		return nil, err
+	}
+	deltas := map[domain.YearMonth]StatMonthDelta{
+		ym: statDeltaAdd(in.Type, in.Amount),
+	}
+	if err := s.stats.RecalcAfterTransactionChange(db, deltas, in.TransactionDate); err != nil {
 		return nil, err
 	}
 	tx, err := s.Get(db, id)
@@ -481,7 +488,22 @@ func (s *TransactionService) Update(db *sql.DB, id int64, in CreateTransactionIn
 	if in.TransactionDate != old.TransactionDate {
 		dates = append(dates, in.TransactionDate)
 	}
-	if err := s.stats.RecalcAfterTransaction(db, dates...); err != nil {
+	oldYM, err := domain.MonthOfDate(old.TransactionDate)
+	if err != nil {
+		return nil, err
+	}
+	newYM, err := domain.MonthOfDate(in.TransactionDate)
+	if err != nil {
+		return nil, err
+	}
+	deltas := map[domain.YearMonth]StatMonthDelta{}
+	if oldYM == newYM {
+		deltas[oldYM] = mergeStatDelta(statDeltaSubtract(old.Type, old.Amount), statDeltaAdd(in.Type, in.Amount))
+	} else {
+		deltas[oldYM] = statDeltaSubtract(old.Type, old.Amount)
+		deltas[newYM] = statDeltaAdd(in.Type, in.Amount)
+	}
+	if err := s.stats.RecalcAfterTransactionChange(db, deltas, dates...); err != nil {
 		return nil, err
 	}
 	tx, err := s.Get(db, id)
@@ -513,7 +535,14 @@ func (s *TransactionService) Delete(db *sql.DB, id int64) error {
 	if err != nil {
 		return err
 	}
-	return s.stats.RecalcAfterTransaction(db, tx.TransactionDate)
+	ym, err := domain.MonthOfDate(tx.TransactionDate)
+	if err != nil {
+		return err
+	}
+	deltas := map[domain.YearMonth]StatMonthDelta{
+		ym: statDeltaSubtract(tx.Type, tx.Amount),
+	}
+	return s.stats.RecalcAfterTransactionChange(db, deltas, tx.TransactionDate)
 }
 
 func (s *TransactionService) validate(db *sql.DB, in CreateTransactionInput) error {

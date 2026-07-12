@@ -44,6 +44,10 @@ func (s *StatsService) RecalcAfterTransaction(db *sql.DB, dates ...string) error
 	return s.syncAfterTransaction(db, dates...)
 }
 
+func (s *StatsService) RecalcAfterTransactionChange(db *sql.DB, deltas map[domain.YearMonth]StatMonthDelta, dates ...string) error {
+	return s.syncAfterTransactionWithDeltas(db, deltas, dates...)
+}
+
 func (s *StatsService) RecalcAfterBalance(db *sql.DB, year, month int) error {
 	return s.syncAfterBalance(db, year, month)
 }
@@ -228,6 +232,78 @@ func seriesAnchorYear(currentYear int, latest *domain.YearMonth) int {
 	return currentYear
 }
 
+func yearMonthKey(year, month int) string {
+	return fmt.Sprintf("%04d-%02d", year, month)
+}
+
+type statMonthlySnapshot struct {
+	income  int64
+	expense int64
+	daily   sql.NullInt64
+}
+
+func (s *StatsService) loadStatMonthlySnapshots(db *sql.DB, months []domain.YearMonth) (map[string]statMonthlySnapshot, error) {
+	out := make(map[string]statMonthlySnapshot, len(months))
+	if len(months) == 0 {
+		return out, nil
+	}
+	var sb strings.Builder
+	sb.WriteString(`SELECT year, month, total_income, total_expense, daily_expense FROM stat_monthly WHERE `)
+	args := make([]any, 0, len(months)*2)
+	for i, ym := range months {
+		if i > 0 {
+			sb.WriteString(" OR ")
+		}
+		sb.WriteString("(year = ? AND month = ?)")
+		args = append(args, ym.Year, ym.Month)
+	}
+	rows, err := db.Query(sb.String(), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var ym domain.YearMonth
+		var snap statMonthlySnapshot
+		if err := rows.Scan(&ym.Year, &ym.Month, &snap.income, &snap.expense, &snap.daily); err != nil {
+			return nil, err
+		}
+		out[yearMonthKey(ym.Year, ym.Month)] = snap
+	}
+	return out, rows.Err()
+}
+
+func (s *StatsService) loadBalanceSnapshots(db *sql.DB, months []domain.YearMonth) (map[string]int64, error) {
+	out := make(map[string]int64, len(months))
+	if len(months) == 0 {
+		return out, nil
+	}
+	var sb strings.Builder
+	sb.WriteString(`SELECT year, month, balance FROM monthly_balances WHERE `)
+	args := make([]any, 0, len(months)*2)
+	for i, ym := range months {
+		if i > 0 {
+			sb.WriteString(" OR ")
+		}
+		sb.WriteString("(year = ? AND month = ?)")
+		args = append(args, ym.Year, ym.Month)
+	}
+	rows, err := db.Query(sb.String(), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var ym domain.YearMonth
+		var bal int64
+		if err := rows.Scan(&ym.Year, &ym.Month, &bal); err != nil {
+			return nil, err
+		}
+		out[yearMonthKey(ym.Year, ym.Month)] = bal
+	}
+	return out, rows.Err()
+}
+
 func (s *StatsService) MonthBills(db *sql.DB, cursor *domain.YearMonth, limit int) (*MonthBillsPage, error) {
 	if limit <= 0 {
 		limit = 5
@@ -251,20 +327,44 @@ func (s *StatsService) MonthBills(db *sql.DB, cursor *domain.YearMonth, limit in
 	}
 
 	page := &MonthBillsPage{Items: []MonthBillItem{}}
+	monthList := make([]domain.YearMonth, 0, limit)
 	ym := start
-	for len(page.Items) < limit {
+	for len(monthList) < limit {
 		if earliest != nil && compareYM(ym, *earliest) < 0 {
 			break
 		}
-		item, err := s.buildMonthBillItem(db, ym.Year, ym.Month, ym == current)
-		if err != nil {
-			return nil, err
-		}
-		page.Items = append(page.Items, item)
+		monthList = append(monthList, ym)
 		if earliest != nil && ym == *earliest {
 			break
 		}
 		ym = domain.PrevMonth(ym)
+	}
+
+	for _, m := range monthList {
+		isCurrent := m.Year == current.Year && m.Month == current.Month
+		if !isCurrent {
+			if err := s.ensureStatMonthIfMissing(db, m.Year, m.Month); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	statMap, err := s.loadStatMonthlySnapshots(db, monthList)
+	if err != nil {
+		return nil, err
+	}
+	balMap, err := s.loadBalanceSnapshots(db, monthList)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, m := range monthList {
+		isCurrent := m.Year == current.Year && m.Month == current.Month
+		item, err := s.buildMonthBillItemCached(db, m.Year, m.Month, isCurrent, statMap, balMap)
+		if err != nil {
+			return nil, err
+		}
+		page.Items = append(page.Items, item)
 	}
 
 	if len(page.Items) == 0 {
@@ -333,6 +433,39 @@ func (s *StatsService) buildMonthBillItem(db *sql.DB, year, month int, isCurrent
 			startBal = &sb
 		} else if err != sql.ErrNoRows {
 			return MonthBillItem{}, err
+		}
+	}
+	net := monthNetIncome(item.TotalIncome, item.TotalExpense, startBal, item.Balance)
+	item.NetIncome = &net
+	return item, nil
+}
+
+func (s *StatsService) buildMonthBillItemCached(
+	db *sql.DB,
+	year, month int,
+	isCurrent bool,
+	statMap map[string]statMonthlySnapshot,
+	balMap map[string]int64,
+) (MonthBillItem, error) {
+	if isCurrent {
+		return s.buildMonthBillItem(db, year, month, true)
+	}
+	key := yearMonthKey(year, month)
+	item := MonthBillItem{Year: year, Month: month, IsCurrent: false}
+	if snap, ok := statMap[key]; ok {
+		item.TotalIncome, item.TotalExpense = snap.income, snap.expense
+		if snap.daily.Valid {
+			item.DailyExpense = &snap.daily.Int64
+		}
+	}
+	if bal, ok := balMap[key]; ok {
+		item.Balance = &bal
+	}
+	var startBal *int64
+	if item.Balance != nil {
+		prev := domain.PrevMonth(domain.YearMonth{Year: year, Month: month})
+		if bal, ok := balMap[yearMonthKey(prev.Year, prev.Month)]; ok {
+			startBal = &bal
 		}
 	}
 	net := monthNetIncome(item.TotalIncome, item.TotalExpense, startBal, item.Balance)

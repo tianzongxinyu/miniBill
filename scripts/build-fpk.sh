@@ -14,7 +14,11 @@ DIST_DIR="$ROOT/dist"
 FNPACK="${ROOT}/.fnos-shared/fnpack"
 FNPACK_VERSION="1.2.1"
 
-VERSION="${1:-1.0.0}"
+VERSION="${1:-}"
+if [ -z "$VERSION" ] && [ -f "$ROOT/VERSION" ]; then
+    VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+fi
+VERSION="${VERSION:-1.0.0}"
 PLATFORM_ARG="${2:-all}"
 
 RED='\033[0;31m'
@@ -211,7 +215,7 @@ stage_binary() {
     mkdir -p "${work_dir}/app/bin" "${work_dir}/app/web" "${work_dir}/app/migrations"
     (
         cd "$ROOT"
-        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -o "${work_dir}/app/bin/minibill" ./cmd/server
+        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${version}" -o "${work_dir}/app/bin/minibill" ./cmd/server
     )
 
     rm -rf "${work_dir}/app/web/out" "${work_dir}/app/migrations/system" "${work_dir}/app/migrations/ledger"

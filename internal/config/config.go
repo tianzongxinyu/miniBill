@@ -16,6 +16,7 @@ type Config struct {
 	BackupDir         string
 	Port              string
 	AllowRegistration bool
+	SecureCookies     bool
 	JWTExpireDays     int
 	StaticDir         string
 	MigrationsSystem  string
@@ -28,11 +29,13 @@ func Load() Config {
 		expireDays = 30
 	}
 	allowReg := getEnv("ALLOW_REGISTRATION", "true") == "true"
+	secureCookies := getEnv("SECURE_COOKIES", "false") == "true"
 	return Config{
 		DataDir:           getEnv("DATA_DIR", "./data"),
 		BackupDir:         getEnv("BACKUP_DIR", ""),
 		Port:              getEnv("PORT", "8080"),
 		AllowRegistration: allowReg,
+		SecureCookies:     secureCookies,
 		JWTExpireDays:     expireDays,
 		StaticDir:         getEnv("STATIC_DIR", "./web/out"),
 		MigrationsSystem:  getEnv("MIGRATIONS_SYSTEM", "./migrations/system"),

@@ -2,15 +2,29 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/src/i18n';
-import { fetchMonthBill, getCurrentYearMonth, ApiError, type MonthBillItem, type YearMonth } from '@/lib/api';
+import {
+  fetchMonthBill,
+  getCurrentYearMonth,
+  ApiError,
+  type MonthBillItem,
+  type Transaction,
+  type YearMonth,
+} from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { useOnLedgerChanged, monthInDetail } from '@/lib/ledgerEvents';
+import { mergeMonthBillWithTransactionTotals } from '@/lib/transactionsSummary';
 
 export function useTransactionsMonthSummary({
   year,
   month,
   enabled = true,
-}: YearMonth & { enabled?: boolean }) {
+  transactions,
+  mergeTotalsFromTransactions = false,
+}: YearMonth & {
+  enabled?: boolean;
+  transactions?: Transaction[];
+  mergeTotalsFromTransactions?: boolean;
+}) {
   const current = getCurrentYearMonth();
   const isHistorical = enabled && (year !== current.year || month !== current.month);
 
@@ -25,7 +39,10 @@ export function useTransactionsMonthSummary({
     setError('');
 
     try {
-      const data = await fetchMonthBill(year, month);
+      let data = await fetchMonthBill(year, month);
+      if (mergeTotalsFromTransactions && transactions && transactions.length > 0) {
+        data = mergeMonthBillWithTransactionTotals(data, transactions);
+      }
       setSummary(data);
     } catch (err) {
       if (err instanceof ApiError && err.code === 'ABORTED') return;
@@ -34,7 +51,7 @@ export function useTransactionsMonthSummary({
     } finally {
       setLoading(false);
     }
-  }, [year, month, enabled]);
+  }, [year, month, enabled, mergeTotalsFromTransactions, transactions]);
 
   useEffect(() => {
     if (!enabled) {
@@ -43,27 +60,8 @@ export function useTransactionsMonthSummary({
       setLoading(false);
       return;
     }
-
-    const ac = new AbortController();
-    setLoading(true);
-    setError('');
-
-    fetchMonthBill(year, month, { signal: ac.signal })
-      .then((data) => {
-        if (!ac.signal.aborted) setSummary(data);
-      })
-      .catch((err) => {
-        if (ac.signal.aborted) return;
-        if (err instanceof ApiError && err.code === 'ABORTED') return;
-        setSummary(null);
-        setError(formatApiError(err, i18n.t('transactions.loadSummaryFailed')));
-      })
-      .finally(() => {
-        if (!ac.signal.aborted) setLoading(false);
-      });
-
-    return () => ac.abort();
-  }, [year, month, enabled]);
+    void reload();
+  }, [enabled, reload]);
 
   useOnLedgerChanged(
     useCallback(

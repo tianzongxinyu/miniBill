@@ -92,13 +92,13 @@ cd web && npm install && npm run dev
 
 ```bash
 # x86 NAS（默认）
-./scripts/build-fpk.sh 1.0.3
+./scripts/build-fpk.sh 1.0.5
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.3 arm
+./scripts/build-fpk.sh 1.0.5 arm
 
 # 同时构建 x86 与 ARM
-./scripts/build-fpk.sh 1.0.3 all
+./scripts/build-fpk.sh 1.0.5 all
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`。
@@ -125,6 +125,7 @@ cd web && npm install && npm run dev
 
 - [API](docs/api.md)
 - [部署](docs/deploy.md)
+- [发版清单](docs/release.md)
 
 ## 技术栈
 

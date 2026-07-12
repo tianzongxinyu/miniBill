@@ -21,7 +21,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+var version = "dev"
+
 func main() {
+	if v := strings.TrimSpace(os.Getenv("MINIBILL_VERSION")); v != "" {
+		version = v
+	}
 	cfg := config.Load()
 	if err := cfg.Validate(); err != nil {
 		log.Fatal(err)
@@ -37,7 +42,7 @@ func main() {
 	defer sys.Close()
 
 	authSvc := auth.NewService(sys.Cfg.JWTSecret, sys.Cfg.JWTExpireDuration())
-	srv := handler.NewServer(sys.Cfg, sys.Store, sys.Factory, authSvc)
+	srv := handler.NewServerWithVersion(sys.Cfg, sys.Store, sys.Factory, authSvc, version)
 	r := srv.Router()
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -70,7 +75,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("%s listening on :%s", "轻账单", cfg.Port)
+		log.Printf("%s %s listening on :%s", "轻账单", version, cfg.Port)
 		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}

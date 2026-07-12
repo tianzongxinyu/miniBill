@@ -95,13 +95,64 @@ func (s *StatsService) upsertSystemDailyTx(db *sql.DB, year, month int, amount i
 
 // syncDailyExpenseForMonth 在余额登记或流水变更后重算 stat_monthly，并维护 is_system=1 的日常支出系统流水（不可编辑/删除）。
 func (s *StatsService) syncDailyExpenseForMonth(db *sql.DB, year, month int) error {
+	return s.syncDailyExpenseForMonthWithDelta(db, year, month, StatMonthDelta{})
+}
+
+// StatMonthDelta is the net change to apply to stat_monthly totals when a row already exists.
+type StatMonthDelta struct {
+	IncomeDelta  int64
+	ExpenseDelta int64
+}
+
+func txStatAmounts(txType string, amount int64) (income, expense int64) {
+	if txType == "income" {
+		return amount, 0
+	}
+	return 0, amount
+}
+
+func statDeltaAdd(txType string, amount int64) StatMonthDelta {
+	inc, exp := txStatAmounts(txType, amount)
+	return StatMonthDelta{IncomeDelta: inc, ExpenseDelta: exp}
+}
+
+func statDeltaSubtract(txType string, amount int64) StatMonthDelta {
+	inc, exp := txStatAmounts(txType, amount)
+	return StatMonthDelta{IncomeDelta: -inc, ExpenseDelta: -exp}
+}
+
+func mergeStatDelta(a, b StatMonthDelta) StatMonthDelta {
+	return StatMonthDelta{
+		IncomeDelta:  a.IncomeDelta + b.IncomeDelta,
+		ExpenseDelta: a.ExpenseDelta + b.ExpenseDelta,
+	}
+}
+
+func (s *StatsService) syncDailyExpenseForMonthWithDelta(db *sql.DB, year, month int, delta StatMonthDelta) error {
 	start, end := monthRange(year, month)
 
-	totalIncome, totalExpense, err := s.sumRecordedRange(db, start, end)
-	if err != nil {
+	var totalIncome, totalExpense int64
+	err := db.QueryRow(
+		`SELECT total_income, total_expense FROM stat_monthly WHERE year = ? AND month = ?`,
+		year, month,
+	).Scan(&totalIncome, &totalExpense)
+	switch {
+	case err == sql.ErrNoRows:
+		totalIncome, totalExpense, err = s.sumRecordedRange(db, start, end)
+		if err != nil {
+			return err
+		}
+	case err != nil:
 		return err
+	default:
+		totalIncome += delta.IncomeDelta
+		totalExpense += delta.ExpenseDelta
 	}
 
+	return s.writeDailyExpenseForMonth(db, year, month, totalIncome, totalExpense)
+}
+
+func (s *StatsService) writeDailyExpenseForMonth(db *sql.DB, year, month int, totalIncome, totalExpense int64) error {
 	registeredBalance, err := loadMonthlyBalance(db, year, month)
 	if err != nil {
 		return err
@@ -145,17 +196,24 @@ func (s *StatsService) syncDailyExpenseForMonth(db *sql.DB, year, month int) err
 }
 
 func (s *StatsService) syncAfterTransaction(db *sql.DB, dates ...string) error {
+	return s.syncAfterTransactionWithDeltas(db, nil, dates...)
+}
+
+func (s *StatsService) syncAfterTransactionWithDeltas(db *sql.DB, deltas map[domain.YearMonth]StatMonthDelta, dates ...string) error {
 	seen := map[domain.YearMonth]bool{}
 	for _, d := range dates {
 		ym, err := domain.MonthOfDate(d)
 		if err != nil {
 			return err
 		}
-		if seen[ym] {
-			continue
-		}
 		seen[ym] = true
-		if err := s.syncDailyExpenseForMonth(db, ym.Year, ym.Month); err != nil {
+	}
+	for ym := range deltas {
+		seen[ym] = true
+	}
+	for ym := range seen {
+		delta := deltas[ym]
+		if err := s.syncDailyExpenseForMonthWithDelta(db, ym.Year, ym.Month, delta); err != nil {
 			return err
 		}
 	}

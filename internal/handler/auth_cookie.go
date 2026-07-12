@@ -24,12 +24,12 @@ func setAuthCookie(c *gin.Context, token string, remember bool, cfg config.Confi
 		authCookieMaxAge(remember, cfg),
 		"/",
 		"",
-		false,
+		cfg.SecureCookies,
 		true,
 	)
 }
 
-func clearAuthCookie(c *gin.Context) {
+func clearAuthCookie(c *gin.Context, cfg config.Config) {
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie(middleware.TokenCookieName, "", -1, "/", "", false, true)
+	c.SetCookie(middleware.TokenCookieName, "", -1, "/", "", cfg.SecureCookies, true)
 }

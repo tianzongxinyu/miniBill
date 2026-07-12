@@ -159,7 +159,7 @@ func (s *Server) session(c *gin.Context) {
 }
 
 func (s *Server) logout(c *gin.Context) {
-	clearAuthCookie(c)
+	clearAuthCookie(c, s.cfg)
 	c.Status(http.StatusNoContent)
 }
 

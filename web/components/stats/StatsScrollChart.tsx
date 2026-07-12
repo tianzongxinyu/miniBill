@@ -4,8 +4,6 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
 import {
-  amountClassForSign,
-  amountClassForType,
   BALANCE_CHART_FILL_BOTTOM,
   BALANCE_CHART_FILL_TOP,
   BALANCE_CHART_STROKE,
@@ -13,13 +11,7 @@ import {
   NET_INCOME_CHART_FILL_BOTTOM,
   NET_INCOME_CHART_FILL_TOP,
   NET_INCOME_CHART_STROKE,
-  type AmountColorScheme,
 } from '@/lib/amountColors';
-import {
-  formatBalanceMoney,
-  formatSignedMoney,
-  formatTypedMoney,
-} from '@/lib/formatMoney';
 import {
   axisTickValues,
   buildStatsChartRows,
@@ -39,6 +31,15 @@ import {
 } from 'recharts';
 import type { MonthSeriesPoint, YearSeriesPoint } from '@/lib/api';
 import { isFullscreenCssRotated } from '@/lib/statsChartFullscreen';
+import {
+  CHART_MARGIN,
+  CHART_MARGIN_FULLSCREEN,
+  computeTapInspectTooltipStyle,
+  pickCategoryAtPointer,
+  tooltipAnchorX,
+  type CategoryPick,
+} from '@/lib/statsChartTapInspect';
+import { StatsChartTooltip, type StatsChartTooltipPayload } from '@/components/stats/StatsChartTooltip';
 
 type StatsScrollChartProps = {
   mode: 'month' | 'year';
@@ -61,77 +62,13 @@ const SERIES_LABEL_KEYS: Record<string, string> = {
   balance: 'stats.balance',
 };
 
-function formatTooltipValue(
-  dataKey: string,
-  yuan: number,
-  scheme: AmountColorScheme,
-  locale: string
-) {
-  const cents = Math.round(yuan * 100);
-  switch (dataKey) {
-    case 'income':
-      return { text: formatTypedMoney(cents, 'income', locale), className: amountClassForType('income', scheme) };
-    case 'expense':
-      return { text: formatTypedMoney(cents, 'expense', locale), className: amountClassForType('expense', scheme) };
-    case 'net':
-      return { text: formatSignedMoney(cents, locale), className: amountClassForSign(cents, scheme) };
-    case 'balance':
-      return { text: formatBalanceMoney(cents, locale), className: 'text-ink font-medium' };
-    default:
-      return { text: formatSignedMoney(cents, locale), className: 'text-ink' };
-  }
-}
-
-type TooltipPayload = ReadonlyArray<{
-  dataKey?: string | number;
-  value?: number | string;
-  color?: string;
-}>;
-
-function StatsChartTooltip({
-  active,
-  payload,
-  label,
-  scheme,
-  locale,
-  seriesLabels,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload;
-  label?: string | number;
-  scheme: AmountColorScheme;
-  locale: string;
-  seriesLabels: Record<string, string>;
-}) {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="rounded-2xl border border-line/80 bg-surface px-3 py-2 text-xs shadow-panel">
-      <p className="text-muted mb-1.5">{label}</p>
-      <ul className="space-y-1">
-        {payload.map((entry) => {
-          const key = String(entry.dataKey ?? '');
-          const yuan = Number(entry.value ?? 0);
-          const { text, className } = formatTooltipValue(key, yuan, scheme, locale);
-          return (
-            <li key={key} className="flex items-center justify-between gap-4 tabular-nums">
-              <span className="text-muted">{seriesLabels[key] ?? key}</span>
-              <span className={className}>{text}</span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
 type SeriesRow = ReturnType<typeof chartRowToSeries>;
 
 function buildTooltipPayload(
   row: SeriesRow,
   searchActive: boolean,
   hiddenSeries: Set<string>
-): TooltipPayload {
+): StatsChartTooltipPayload {
   const keys = searchActive
     ? (['expense', 'income'] as const)
     : (['expense', 'income', 'net', 'balance'] as const);
@@ -172,29 +109,8 @@ function XAxisTick({
   );
 }
 
-const CHART_MARGIN = { top: 8, right: 8, left: 16, bottom: 16 };
-const CHART_MARGIN_FULLSCREEN = { top: 8, right: 8, left: 16, bottom: 28 };
-const Y_AXIS_WIDTH = 8;
 const SCROLL_CLEAR_THRESHOLD = 12;
 const PICK_DEBOUNCE_MS = 450;
-/** Chart-space gap so tap tooltip sits beside the reference line, not on it. */
-const TOOLTIP_LINE_GAP = 14;
-const TOOLTIP_EDGE_PAD = 8;
-
-function computeTapInspectTooltipStyle(
-  tooltipLeft: number,
-  tooltipWidth: number,
-  chartWidth: number
-): { left: number; top: number; transform: string } {
-  const gap = TOOLTIP_LINE_GAP;
-  const fitsRight = tooltipLeft + gap + tooltipWidth <= chartWidth - TOOLTIP_EDGE_PAD;
-  const fitsLeft = tooltipLeft - gap - tooltipWidth >= TOOLTIP_EDGE_PAD;
-
-  if (fitsRight || !fitsLeft) {
-    return { left: tooltipLeft + gap, top: 8, transform: 'none' };
-  }
-  return { left: tooltipLeft - gap, top: 8, transform: 'translateX(-100%)' };
-}
 
 function isCoarsePointer(): boolean {
   if (typeof window === 'undefined') return false;
@@ -211,241 +127,6 @@ type ChartPointerState = {
   activeLabel?: string | number;
   activeCoordinate?: { x?: number; y?: number };
 };
-
-type CategoryPick = {
-  index: number;
-  tooltipLeft: number;
-};
-
-function categoryCenterX(
-  index: number,
-  chartWidth: number,
-  dataLength: number,
-  pointWidth: number,
-  searchActive: boolean,
-  tapToInspect: boolean
-): number {
-  const margin = tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN;
-  const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
-  const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
-  const halfPoint = pointWidth / 2;
-  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
-  if (dataLength <= 1) return plotStart;
-  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
-  return plotStart + index * step;
-}
-
-function queryCategoryTickNodes(shellEl: HTMLElement): Element[] {
-  const byAttr = shellEl.querySelectorAll('[data-category-name]');
-  if (byAttr.length > 0) return Array.from(byAttr);
-
-  return Array.from(
-    shellEl.querySelectorAll('.recharts-xAxis .recharts-cartesian-axis-tick text, .recharts-xAxis text')
-  );
-}
-
-function readTickName(node: Element): string | null {
-  const fromAttr = node.getAttribute('data-category-name');
-  if (fromAttr) return fromAttr;
-  const text = node.textContent?.trim();
-  return text || null;
-}
-
-function readTickSvgX(node: Element): number | null {
-  const fromAttr = node.getAttribute('data-category-x') ?? node.getAttribute('x');
-  if (fromAttr == null) return null;
-  const tickX = Number(fromAttr);
-  return Number.isFinite(tickX) ? tickX : null;
-}
-
-function localXFromSvgCtm(clientX: number, clientY: number, shellEl: HTMLElement): number | null {
-  const svg = shellEl.querySelector('svg');
-  if (!(svg instanceof SVGSVGElement)) return null;
-  const pt = svg.createSVGPoint();
-  pt.x = clientX;
-  pt.y = clientY;
-  const ctm = svg.getScreenCTM();
-  if (!ctm) return null;
-  return pt.matrixTransform(ctm.inverse()).x;
-}
-
-function chartXToScreenY(chartX: number, shellEl: HTMLElement): number | null {
-  const svg = shellEl.querySelector('svg');
-  if (!(svg instanceof SVGSVGElement)) return null;
-  const pt = svg.createSVGPoint();
-  pt.x = chartX;
-  pt.y = 0;
-  const ctm = svg.getScreenCTM();
-  if (!ctm) return null;
-  return pt.matrixTransform(ctm).y;
-}
-
-function pickIndexFromPlotFormula(
-  localX: number,
-  chartWidth: number,
-  dataLength: number,
-  pointWidth: number,
-  searchActive: boolean
-): number {
-  const margin = CHART_MARGIN_FULLSCREEN;
-  const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
-  const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
-  const halfPoint = pointWidth / 2;
-  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
-
-  if (dataLength <= 1) return 0;
-  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
-  const idx = Math.round((localX - plotStart) / step);
-  return Math.max(0, Math.min(dataLength - 1, idx));
-}
-
-type SlotPickAxis = 'x' | 'y';
-
-function pickNearestSlot(
-  clientX: number,
-  clientY: number,
-  shellEl: HTMLElement,
-  axis: SlotPickAxis,
-  chartWidth: number,
-  dataLength: number,
-  pointWidth: number,
-  searchActive: boolean
-): number {
-  const shellRect = shellEl.getBoundingClientRect();
-  let bestIndex = 0;
-  let bestDist = Infinity;
-
-  for (let i = 0; i < dataLength; i++) {
-    const slotX = categoryCenterX(i, chartWidth, dataLength, pointWidth, searchActive, true);
-    let dist: number;
-    if (axis === 'x') {
-      dist = Math.abs(clientX - (shellRect.left + slotX));
-    } else {
-      const screenY = chartXToScreenY(slotX, shellEl);
-      if (screenY == null) continue;
-      dist = Math.abs(clientY - screenY);
-    }
-    if (dist < bestDist) {
-      bestDist = dist;
-      bestIndex = i;
-    }
-  }
-
-  if (bestDist === Infinity && axis === 'y') {
-    const localX = localXFromSvgCtm(clientX, clientY, shellEl);
-    if (localX != null) {
-      return pickIndexFromPlotFormula(localX, chartWidth, dataLength, pointWidth, searchActive);
-    }
-  }
-
-  return bestIndex;
-}
-
-function pickRotatedCategoryFromTicks(
-  clientY: number,
-  shellEl: HTMLElement,
-  categoryNames: readonly string[]
-): number | null {
-  const ticks = queryCategoryTickNodes(shellEl);
-  if (ticks.length === 0) return null;
-
-  let bestName: string | null = null;
-  let bestDist = Infinity;
-
-  for (const node of ticks) {
-    const name = readTickName(node);
-    if (!name || categoryNames.indexOf(name) < 0) continue;
-    const rect = node.getBoundingClientRect();
-    const dist = Math.abs(clientY - (rect.top + rect.height / 2));
-    if (dist < bestDist) {
-      bestDist = dist;
-      bestName = name;
-    }
-  }
-
-  if (bestName == null) return null;
-  const index = categoryNames.indexOf(bestName);
-  return index >= 0 ? index : null;
-}
-
-function tooltipAnchorX(
-  index: number,
-  shellEl: HTMLElement,
-  categoryNames: readonly string[],
-  chartWidth: number,
-  dataLength: number,
-  pointWidth: number,
-  searchActive: boolean
-): number {
-  const name = categoryNames[index];
-
-  if (isFullscreenCssRotated(shellEl)) {
-    const tickNode = queryCategoryTickNodes(shellEl).find((node) => readTickName(node) === name);
-    return (
-      (tickNode ? readTickSvgX(tickNode) : null) ??
-      categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true)
-    );
-  }
-
-  const shellRect = shellEl.getBoundingClientRect();
-  for (const node of queryCategoryTickNodes(shellEl)) {
-    if (readTickName(node) !== name) continue;
-    const rect = node.getBoundingClientRect();
-    return rect.left + rect.width / 2 - shellRect.left;
-  }
-
-  return categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true);
-}
-
-function pickCategoryAtPointer(
-  clientX: number,
-  clientY: number,
-  shellEl: HTMLElement,
-  chartWidth: number,
-  categoryNames: readonly string[],
-  pointWidth: number,
-  searchActive: boolean,
-  tapToInspect: boolean
-): CategoryPick | null {
-  const dataLength = categoryNames.length;
-  if (!tapToInspect || dataLength === 0) return null;
-
-  const index = isFullscreenCssRotated(shellEl)
-    ? (pickRotatedCategoryFromTicks(clientY, shellEl, categoryNames) ??
-      pickNearestSlot(
-        clientX,
-        clientY,
-        shellEl,
-        'y',
-        chartWidth,
-        dataLength,
-        pointWidth,
-        searchActive
-      ))
-    : pickNearestSlot(
-        clientX,
-        clientY,
-        shellEl,
-        'x',
-        chartWidth,
-        dataLength,
-        pointWidth,
-        searchActive
-      );
-
-  return {
-    index,
-    tooltipLeft: tooltipAnchorX(
-      index,
-      shellEl,
-      categoryNames,
-      chartWidth,
-      dataLength,
-      pointWidth,
-      searchActive
-    ),
-  };
-}
 
 export function StatsScrollChart({
   mode,
@@ -518,7 +199,7 @@ export function StatsScrollChart({
   const rightTicks = useMemo(() => axisTickValues(rightDomain, 4), [rightDomain]);
 
   const renderTooltip = useCallback(
-    (props: { active?: boolean; payload?: TooltipPayload; label?: string | number }) => (
+    (props: { active?: boolean; payload?: StatsChartTooltipPayload; label?: string | number }) => (
       <StatsChartTooltip
         active={props.active}
         payload={props.payload}
@@ -557,7 +238,8 @@ export function StatsScrollChart({
         categoryNames,
         pointWidth,
         searchActive,
-        tapToInspect
+        tapToInspect,
+        isFullscreenCssRotated(shell)
       );
       if (pick == null) return;
       commitPick(pick);
@@ -583,7 +265,8 @@ export function StatsScrollChart({
               chartWidth,
               chartData.length,
               pointWidth,
-              searchActive
+              searchActive,
+              isFullscreenCssRotated(shell)
             ),
           });
           return;
