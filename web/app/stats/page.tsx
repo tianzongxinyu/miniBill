@@ -37,6 +37,7 @@ function StatsContent() {
   const fullscreenSlotWidthRef = useRef(fullscreenSlotWidth);
   const [scrollAnchor, setScrollAnchor] = useState<ScrollAnchor>(DEFAULT_SCROLL_ANCHOR);
   const pendingScrollLeftRef = useRef(0);
+  const restoreInlineScrollRef = useRef(false);
 
   fullscreenSlotWidthRef.current = fullscreenSlotWidth;
 
@@ -154,18 +155,20 @@ function StatsContent() {
       );
     }
 
+    restoreInlineScrollRef.current = true;
     setFullscreenOpen(false);
     void exitChartFullscreen();
   }, [chartRows.length, inlinePointWidth, inlineScrollWidth]);
 
   useEffect(() => {
-    if (fullscreenOpen) return;
+    if (fullscreenOpen || !restoreInlineScrollRef.current) return;
+    restoreInlineScrollRef.current = false;
     const el = inlineScrollRef.current;
     if (!el) return;
     requestAnimationFrame(() => {
       el.scrollLeft = pendingScrollLeftRef.current;
     });
-  }, [fullscreenOpen, inlineScrollWidth]);
+  }, [fullscreenOpen]);
 
   return (
     <div>
