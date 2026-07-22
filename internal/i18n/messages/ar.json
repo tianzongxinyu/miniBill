@@ -50,10 +50,10 @@
   "validation.balance_negative": "لا يمكن أن يكون الرصيد سالبًا",
   "validation.color_bg_only": "يمكن تحديث color_bg فقط",
   "validation.csv_columns": "الصف يحتوي على أعمدة قليلة جدًا",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "اربط أعمدة التاريخ والتدفق والمبلغ",
+  "validation.csv_mapping_index": "فهرس العمود خارج النطاق",
+  "validation.csv_mapping_column": "اسم العمود المرتبط غير موجود",
+  "validation.csv_too_large": "ملف CSV كبير جدًا",
   "validation.csv_row_limit": "تم تجاوز حد صفوف CSV",
   "validation.daily_expense_tag": "لا يمكن استخدام وسم النظام \"المصروف اليومي\"",
   "validation.date_after_today": "لا يمكن أن يكون التاريخ بعد اليوم",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "لا يمكن أن يكون اسم الوسم فارغًا",
   "validation.tx_date_format": "يجب أن يكون تاريخ المعاملة YYYY-MM-DD",
   "validation.year_month_required": "السنة والشهر مطلوبان",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "الرصيد الافتتاحي مطلوب لاستنتاج الأرصدة الشهرية"
 }

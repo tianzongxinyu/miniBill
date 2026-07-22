@@ -50,10 +50,10 @@
   "validation.balance_negative": "Saldo tidak boleh negatif",
   "validation.color_bg_only": "Hanya color_bg yang dapat diperbarui",
   "validation.csv_columns": "Baris memiliki terlalu sedikit kolom",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Petakan kolom tanggal, aliran, dan jumlah",
+  "validation.csv_mapping_index": "Indeks kolom di luar jangkauan",
+  "validation.csv_mapping_column": "Nama kolom yang dipetakan tidak ditemukan",
+  "validation.csv_too_large": "File CSV terlalu besar",
   "validation.csv_row_limit": "Batas baris CSV terlampaui",
   "validation.daily_expense_tag": "Tidak dapat menggunakan tag sistem \"Pengeluaran harian\"",
   "validation.date_after_today": "Tanggal tidak boleh setelah hari ini",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Nama tag tidak boleh kosong",
   "validation.tx_date_format": "Tanggal transaksi harus YYYY-MM-DD",
   "validation.year_month_required": "Tahun dan bulan wajib diisi",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Saldo awal diperlukan untuk menghitung saldo bulanan"
 }

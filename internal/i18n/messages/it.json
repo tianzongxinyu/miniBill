@@ -50,10 +50,10 @@
   "validation.balance_negative": "Il saldo non può essere negativo",
   "validation.color_bg_only": "È possibile aggiornare solo color_bg",
   "validation.csv_columns": "La riga ha troppe poche colonne",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Mappa le colonne data, flusso e importo",
+  "validation.csv_mapping_index": "Indice colonna fuori intervallo",
+  "validation.csv_mapping_column": "Nome colonna mappato non trovato",
+  "validation.csv_too_large": "File CSV troppo grande",
   "validation.csv_row_limit": "Limite righe CSV superato",
   "validation.daily_expense_tag": "Non è possibile usare l'etichetta di sistema \"Spesa giornaliera\"",
   "validation.date_after_today": "La data non può essere successiva a oggi",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Il nome dell'etichetta non può essere vuoto",
   "validation.tx_date_format": "La data della transazione deve essere nel formato AAAA-MM-GG",
   "validation.year_month_required": "Anno e mese obbligatori",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Saldo iniziale richiesto per derivare i saldi mensili"
 }

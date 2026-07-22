@@ -50,10 +50,10 @@
   "validation.balance_negative": "शेष ऋणात्मक नहीं हो सकता",
   "validation.color_bg_only": "केवल color_bg अपडेट किया जा सकता है",
   "validation.csv_columns": "पंक्ति में बहुत कम कॉलम हैं",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "तारीख, प्रवाह और राशि कॉलम मैप करें",
+  "validation.csv_mapping_index": "कॉलम इंडेक्स सीमा से बाहर",
+  "validation.csv_mapping_column": "मैप किया गया कॉलम नाम नहीं मिला",
+  "validation.csv_too_large": "CSV फ़ाइल बहुत बड़ी है",
   "validation.csv_row_limit": "CSV पंक्ति सीमा पार हो गई",
   "validation.daily_expense_tag": "सिस्टम टैग \"दैनिक खर्च\" उपयोग नहीं किया जा सकता",
   "validation.date_after_today": "तारीख आज के बाद नहीं हो सकती",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "टैग नाम खाली नहीं हो सकता",
   "validation.tx_date_format": "लेनदेन की तारीख YYYY-MM-DD होनी चाहिए",
   "validation.year_month_required": "वर्ष और महीना आवश्यक हैं",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "मासिक शेष निकालने के लिए शुरुआती शेष आवश्यक है"
 }

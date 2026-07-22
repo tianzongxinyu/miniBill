@@ -50,10 +50,10 @@
   "validation.balance_negative": "Saldo kan niet negatief zijn",
   "validation.color_bg_only": "Alleen color_bg kan worden bijgewerkt",
   "validation.csv_columns": "Rij heeft te weinig kolommen",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Wijs datum-, stroom- en bedragkolommen toe",
+  "validation.csv_mapping_index": "Kolomindex buiten bereik",
+  "validation.csv_mapping_column": "Toegewezen kolomnaam niet gevonden",
+  "validation.csv_too_large": "CSV-bestand is te groot",
   "validation.csv_row_limit": "CSV-rijlimiet overschreden",
   "validation.daily_expense_tag": "Systeemtag \"Dagelijkse uitgaven\" kan niet worden gebruikt",
   "validation.date_after_today": "Datum mag niet na vandaag liggen",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Tagnaam mag niet leeg zijn",
   "validation.tx_date_format": "Transactiedatum moet JJJJ-MM-DD zijn",
   "validation.year_month_required": "Jaar en maand zijn verplicht",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Openingsaldo vereist om maandsaldi af te leiden"
 }

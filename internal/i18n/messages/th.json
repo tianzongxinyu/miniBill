@@ -50,10 +50,10 @@
   "validation.balance_negative": "ยอดคงเหลือต้องไม่ติดลบ",
   "validation.color_bg_only": "อัปเดตได้เฉพาะ color_bg",
   "validation.csv_columns": "แถวมีคอลัมน์น้อยเกินไป",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "กรุณาจับคู่คอลัมน์วันที่ ประเภท และจำนวนเงิน",
+  "validation.csv_mapping_index": "ดัชนีคอลัมน์นอกช่วง",
+  "validation.csv_mapping_column": "ไม่พบชื่อคอลัมน์ที่จับคู่",
+  "validation.csv_too_large": "ไฟล์ CSV ใหญ่เกินไป",
   "validation.csv_row_limit": "เกินขีดจำกัดแถว CSV",
   "validation.daily_expense_tag": "ไม่สามารถใช้แท็กระบบ \"ค่าใช้จ่ายรายวัน\" ได้",
   "validation.date_after_today": "วันที่ต้องไม่เกินวันนี้",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "ชื่อแท็กต้องไม่ว่าง",
   "validation.tx_date_format": "วันที่รายการต้องเป็น YYYY-MM-DD",
   "validation.year_month_required": "ต้องระบุปีและเดือน",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "ต้องมียอดเปิดเพื่อคำนวณยอดคงเหลือรายเดือน"
 }

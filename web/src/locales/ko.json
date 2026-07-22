@@ -259,13 +259,13 @@
       "note": "메모",
       "balance": "잔액"
     },
-    "csvDeriveBalances": "Derive monthly balances",
-    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
-    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
-    "csvOpeningBalance": "Opening balance",
-    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
-    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
-    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
+    "csvDeriveBalances": "월별 잔액 추산",
+    "csvDeriveBalancesHint": "모든 지출이 기록되었다고 가정합니다(일상 지출=0).",
+    "csvDeriveFromRunning": "각 월 마지막 잔액을 월말 잔액으로 사용합니다. 기초 잔액 입력이 필요 없습니다.",
+    "csvOpeningBalance": "기초 잔액",
+    "csvOpeningBalanceHint": "가장 이른 거래 월 이전 월말의 현금입니다.",
+    "csvOpeningRequired": "기초 잔액을 입력하거나 잔액 열을 매핑하세요.",
+    "importSummaryDerivedBalances": "월별 잔액 {{count}}건 추산"
   },
   "backup": {
     "weekdaySun": "일",

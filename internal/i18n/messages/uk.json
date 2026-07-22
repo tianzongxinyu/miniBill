@@ -50,10 +50,10 @@
   "validation.balance_negative": "Баланс не може бути від'ємним",
   "validation.color_bg_only": "Можна оновлювати лише color_bg",
   "validation.csv_columns": "У рядку замало стовпців",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Зіставте стовпці дати, типу й суми",
+  "validation.csv_mapping_index": "Індекс стовпця поза діапазоном",
+  "validation.csv_mapping_column": "Зіставлену назву стовпця не знайдено",
+  "validation.csv_too_large": "Файл CSV занадто великий",
   "validation.csv_row_limit": "Перевищено ліміт рядків CSV",
   "validation.daily_expense_tag": "Неможливо використати системний тег \"Щоденні витрати\"",
   "validation.date_after_today": "Дата не може бути пізнішою за сьогодні",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Назва тега не може бути порожньою",
   "validation.tx_date_format": "Дата транзакції має бути YYYY-MM-DD",
   "validation.year_month_required": "Потрібні рік і місяць",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Для розрахунку місячних залишків потрібен початковий залишок"
 }

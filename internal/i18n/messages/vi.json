@@ -50,10 +50,10 @@
   "validation.balance_negative": "Số dư không thể âm",
   "validation.color_bg_only": "Chỉ có thể cập nhật color_bg",
   "validation.csv_columns": "Dòng có quá ít cột",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Hãy ánh xạ cột ngày, luồng và số tiền",
+  "validation.csv_mapping_index": "Chỉ số cột ngoài phạm vi",
+  "validation.csv_mapping_column": "Không tìm thấy tên cột đã ánh xạ",
+  "validation.csv_too_large": "File CSV quá lớn",
   "validation.csv_row_limit": "Vượt quá giới hạn dòng CSV",
   "validation.daily_expense_tag": "Không thể dùng thẻ hệ thống \"Chi tiêu hàng ngày\"",
   "validation.date_after_today": "Ngày không thể sau hôm nay",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Tên thẻ không thể để trống",
   "validation.tx_date_format": "Ngày giao dịch phải là YYYY-MM-DD",
   "validation.year_month_required": "Yêu cầu có năm và tháng",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Cần số dư đầu kỳ để suy ra số dư tháng"
 }

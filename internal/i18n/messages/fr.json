@@ -50,10 +50,10 @@
   "validation.balance_negative": "Le solde ne peut pas être négatif",
   "validation.color_bg_only": "Seul color_bg peut être mis à jour",
   "validation.csv_columns": "La ligne a trop peu de colonnes",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Associez les colonnes date, flux et montant",
+  "validation.csv_mapping_index": "Index de colonne hors plage",
+  "validation.csv_mapping_column": "Nom de colonne associé introuvable",
+  "validation.csv_too_large": "Le fichier CSV est trop volumineux",
   "validation.csv_row_limit": "Limite de lignes CSV dépassée",
   "validation.daily_expense_tag": "Impossible d'utiliser le tag système « Dépense quotidienne »",
   "validation.date_after_today": "La date ne peut pas être postérieure à aujourd'hui",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Le nom du tag ne peut pas être vide",
   "validation.tx_date_format": "La date de la transaction doit être YYYY-MM-DD",
   "validation.year_month_required": "L'année et le mois sont requis",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Solde d’ouverture requis pour déduire les soldes mensuels"
 }

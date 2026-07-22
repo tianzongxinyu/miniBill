@@ -50,10 +50,10 @@
   "validation.balance_negative": "Баланс не может быть отрицательным",
   "validation.color_bg_only": "Можно обновить только color_bg",
   "validation.csv_columns": "В строке слишком мало столбцов",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Сопоставьте столбцы даты, типа и суммы",
+  "validation.csv_mapping_index": "Индекс столбца вне диапазона",
+  "validation.csv_mapping_column": "Сопоставленное имя столбца не найдено",
+  "validation.csv_too_large": "CSV-файл слишком большой",
   "validation.csv_row_limit": "Превышен лимит строк CSV",
   "validation.daily_expense_tag": "Нельзя использовать системный тег «Ежедневные расходы»",
   "validation.date_after_today": "Дата не может быть позже сегодняшней",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Название тега не может быть пустым",
   "validation.tx_date_format": "Дата транзакции должна быть в формате ГГГГ-ММ-ДД",
   "validation.year_month_required": "Год и месяц обязательны",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Для расчёта месячных остатков нужен начальный остаток"
 }

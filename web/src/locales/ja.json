@@ -259,13 +259,13 @@
       "note": "メモ",
       "balance": "残高"
     },
-    "csvDeriveBalances": "Derive monthly balances",
-    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
-    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
-    "csvOpeningBalance": "Opening balance",
-    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
-    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
-    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
+    "csvDeriveBalances": "月次残高を推計",
+    "csvDeriveBalancesHint": "明細がすべて記録済みと仮定します（日常支出は 0）。",
+    "csvDeriveFromRunning": "各月の最後の残高を月末残高に使います。期首入力は不要です。",
+    "csvOpeningBalance": "期首残高",
+    "csvOpeningBalanceHint": "最も早い取引月の前月末時点の現金です。",
+    "csvOpeningRequired": "期首残高を入力するか、残高列を対応付けてください。",
+    "importSummaryDerivedBalances": "月次残高を {{count}} 件推計"
   },
   "backup": {
     "weekdaySun": "日",

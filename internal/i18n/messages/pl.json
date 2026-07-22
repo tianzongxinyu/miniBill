@@ -50,10 +50,10 @@
   "validation.balance_negative": "Saldo nie może być ujemne",
   "validation.color_bg_only": "Można aktualizować tylko color_bg",
   "validation.csv_columns": "Wiersz ma zbyt mało kolumn",
-  "validation.csv_mapping_required": "Map date, flow, and amount columns",
-  "validation.csv_mapping_index": "Column index out of range",
-  "validation.csv_mapping_column": "Mapped column name not found",
-  "validation.csv_too_large": "CSV file is too large",
+  "validation.csv_mapping_required": "Zmapuj kolumny daty, przepływu i kwoty",
+  "validation.csv_mapping_index": "Indeks kolumny poza zakresem",
+  "validation.csv_mapping_column": "Nie znaleziono zmapowanej nazwy kolumny",
+  "validation.csv_too_large": "Plik CSV jest za duży",
   "validation.csv_row_limit": "Przekroczono limit wierszy CSV",
   "validation.daily_expense_tag": "Nie można użyć tagu systemowego \"Codzienny wydatek\"",
   "validation.date_after_today": "Data nie może być późniejsza niż dzisiaj",
@@ -71,5 +71,5 @@
   "validation.tag_name_empty": "Nazwa tagu nie może być pusta",
   "validation.tx_date_format": "Data transakcji musi być YYYY-MM-DD",
   "validation.year_month_required": "Rok i miesiąc są wymagane",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Do wyliczenia sald miesięcznych wymagane jest saldo otwarcia"
 }
