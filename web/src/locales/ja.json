@@ -38,7 +38,8 @@
     "saveFailed": "保存に失敗しました",
     "deleteFailed": "削除に失敗しました",
     "removeItem": "{{name}}を削除",
-    "removeContact": "連絡先{{name}}を削除"
+    "removeContact": "連絡先{{name}}を削除",
+    "selectYear": "年を選択"
   },
   "nav": {
     "home": "ホーム",
@@ -48,7 +49,8 @@
     "logout": "ログアウト",
     "expandSidebar": "展開",
     "collapseSidebar": "折畳",
-    "collapseSidebarLabel": "折畳"
+    "collapseSidebarLabel": "折畳",
+    "annual": "年次報告"
   },
   "auth": {
     "welcomeBack": "おかえりなさい",
@@ -83,7 +85,30 @@
     "releaseRefresh": "離して更新",
     "refreshing": "更新中",
     "emptyTitle": "まだ明細がありません",
-    "emptyHint": "取引追加で月次表示"
+    "emptyHint": "取引追加で月次表示",
+    "registerBalanceHint": "{{month}}の残高未登録",
+    "registerBalanceHintDetail": "登録すると日常支出を推計できます",
+    "trendTitle": "直近半年",
+    "viewStats": "統計を見る",
+    "trendEmpty": "数か月分のデータで推移が見えます",
+    "lastMonthExpense": "先月の支出",
+    "thisMonthExpense": "今月の支出",
+    "expenseChange": "先月比",
+    "thisMonth": "今月",
+    "recentContacts": "最近の連絡先",
+    "recentTitle": "今月の明細",
+    "recentAll": "すべて",
+    "recentEmpty": "今月の取引はありません",
+    "pastTitle": "過去の月",
+    "hotTags": "よく使うタグ",
+    "hotContacts": "よく使う連絡先",
+    "hotTagAll": "すべて",
+    "hotTagExpense": "支出",
+    "hotTagIncome": "収入",
+    "hotTagIncomeShort": "収",
+    "hotTagExpenseShort": "支",
+    "trendHalfYear": "半年",
+    "trendOneYear": "1年"
   },
   "transactions": {
     "empty": "取引がありません",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "月次残高 {{count}} 件",
     "importSummarySkippedDaily": "日次支出行 {{count}} 件をスキップ",
     "importSummaryCreatedTags": "タグ {{count}} 件を作成",
-    "importSummaryCreatedContacts": "連絡先 {{count}} 件を作成"
+    "importSummaryCreatedContacts": "連絡先 {{count}} 件を作成",
+    "importDescriptionMapped": "列を対応付けて取り込み。履歴保持と重複スキップ可。不足タグ/連絡先は自動作成。",
+    "csvMapTitle": "CSV 列の対応",
+    "csvMapSubtitle": "「{{filename}}」のプレビュー。対応を確認して取り込み。",
+    "csvMapFields": "列の対応",
+    "csvFieldIgnore": "無視",
+    "csvEmptyHeader": "（空）",
+    "csvKeepHistory": "既存の履歴を保持",
+    "csvKeepHistoryHint": "同日・タグ・メモ・金額が一致する行はスキップ。オフにすると先に帳簿をクリアします。",
+    "csvMapRequired": "日付・収支・金額の対応が必要です。",
+    "csvParseFailed": "CSV を解析できません",
+    "importSummarySkippedDuplicates": "重複 {{count}} 件をスキップ",
+    "csvField": {
+      "date": "日付",
+      "flow": "収支",
+      "amount": "金額",
+      "tags": "タグ",
+      "contact": "連絡先",
+      "note": "メモ",
+      "balance": "残高"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "日",
@@ -371,5 +423,41 @@
     "flowIncome": "収入",
     "flowExpense": "支出",
     "balanceMarker": "月次残高"
+  },
+  "annualReport": {
+    "nav": "年次報告",
+    "title": "{{year}}年の年次レポート",
+    "subtitle": "本年の記録を自動でまとめたレポートです。",
+    "prototypeBadge": "プロトタイプ · 仮データ",
+    "prevYear": "前年",
+    "nextYear": "翌年",
+    "sectionSummary": "年間合計",
+    "sectionByTag": "タグ別",
+    "sectionTopTx": "高額 Top 5",
+    "sectionTopContacts": "連絡先 Top 5",
+    "sectionCompare": "前年比較",
+    "sectionInsights": "まとめ",
+    "dailyExpense": "日常支出",
+    "startBalance": "年初残高",
+    "endBalance": "年末残高",
+    "untagged": "未分類",
+    "txCount": "{{count}} 件",
+    "noNote": "（メモなし）",
+    "noCompare": "比較できる前年データがありません。",
+    "noContacts": "本年は連絡先に紐づく取引がありません。",
+    "compareWith": "{{year}}年との比較",
+    "compareDelta": "増減",
+    "insights": {
+      "net_positive": "本年の純収入はプラスでした（{{amount}}）。",
+      "net_negative": "本年は支出が収入を上回りました（{{amount}}）。",
+      "yoy_income_up": "収入は{{prev_year}}年比で{{pct}}%増加しました。",
+      "yoy_income_down": "収入は{{prev_year}}年比で{{pct}}%減少しました。",
+      "top_expense_tag": "支出が最も多いタグ：{{tag}}（{{amount}}）。",
+      "largest_tx": "最大の一筆：{{amount}}（{{date}}）。",
+      "expense_over_income": "総支出が総収入を上回りました。"
+    },
+    "expandTags": "すべて表示（{{count}}）",
+    "collapseTags": "閉じる",
+    "axisBroken": "軸を省略表示"
   }
 }

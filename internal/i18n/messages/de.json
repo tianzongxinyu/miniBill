@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Datei kann nicht gelesen werden",
   "error.csv_too_large": "CSV-Datei ist zu groß",
   "error.csv_upload_required": "Bitte CSV-Datei hochladen",
+  "error.csv_mapping_invalid": "Ungültige CSV-Spaltenzuordnung",
   "error.cursor_after_exclusive": "cursor und after schließen sich gegenseitig aus",
   "error.cursor_yyyy": "cursor muss YYYY sein",
   "error.cursor_yyyy_mm": "cursor muss YYYY-MM sein",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Saldo darf nicht negativ sein",
   "validation.color_bg_only": "Nur color_bg kann aktualisiert werden",
   "validation.csv_columns": "Zeile hat zu wenige Spalten",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV-Zeilenlimit überschritten",
   "validation.daily_expense_tag": "System-Tag „Tagesausgabe“ kann nicht verwendet werden",
   "validation.date_after_today": "Datum darf nicht nach heute liegen",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Keine Felder zum Aktualisieren",
   "validation.tag_name_empty": "Tag-Name darf nicht leer sein",
   "validation.tx_date_format": "Transaktionsdatum muss YYYY-MM-DD sein",
-  "validation.year_month_required": "Jahr und Monat sind erforderlich"
+  "validation.year_month_required": "Jahr und Monat sind erforderlich",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

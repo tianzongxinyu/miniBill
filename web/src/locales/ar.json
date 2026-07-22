@@ -38,7 +38,8 @@
     "saveFailed": "فشل الحفظ",
     "deleteFailed": "فشل الحذف",
     "removeItem": "إزالة {{name}}",
-    "removeContact": "إزالة جهة الاتصال {{name}}"
+    "removeContact": "إزالة جهة الاتصال {{name}}",
+    "selectYear": "اختر السنة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -48,7 +49,8 @@
     "logout": "تسجيل الخروج",
     "expandSidebar": "توسيع",
     "collapseSidebar": "طي",
-    "collapseSidebarLabel": "طي"
+    "collapseSidebarLabel": "طي",
+    "annual": "التقرير السنوي"
   },
   "auth": {
     "welcomeBack": "مرحبًا بعودتك",
@@ -83,7 +85,30 @@
     "releaseRefresh": "أفلت للتحديث",
     "refreshing": "جارٍ التحديث",
     "emptyTitle": "لا توجد فواتير بعد",
-    "emptyHint": "أضف معاملة وستظهر الملخصات الشهرية هنا"
+    "emptyHint": "أضف معاملة وستظهر الملخصات الشهرية هنا",
+    "registerBalanceHint": "لم يُسجَّل رصيد {{month}}",
+    "registerBalanceHintDetail": "سجّل الرصيد لتقدير الإنفاق اليومي",
+    "trendTitle": "نصف السنة الماضية",
+    "viewStats": "الإحصاءات",
+    "trendEmpty": "أضف بيانات عدة أشهر لرؤية الاتجاه",
+    "lastMonthExpense": "إنفاق الشهر الماضي",
+    "thisMonthExpense": "إنفاق هذا الشهر",
+    "expenseChange": "مقارنة بالشهر الماضي",
+    "thisMonth": "هذا الشهر",
+    "recentContacts": "جهات اتصال حديثة",
+    "recentTitle": "قيود هذا الشهر",
+    "recentAll": "الكل",
+    "recentEmpty": "لا قيود هذا الشهر",
+    "pastTitle": "الأشهر السابقة",
+    "hotTags": "الوسوم الأكثر",
+    "hotContacts": "جهات الاتصال الأكثر",
+    "hotTagAll": "الكل",
+    "hotTagExpense": "مصروف",
+    "hotTagIncome": "دخل",
+    "hotTagIncomeShort": "دخل",
+    "hotTagExpenseShort": "صرف",
+    "trendHalfYear": "نصف سنة",
+    "trendOneYear": "سنة"
   },
   "transactions": {
     "empty": "لا توجد معاملات",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} رصيد شهري",
     "importSummarySkippedDaily": "تم تخطي {{count}} صف مصروف يومي",
     "importSummaryCreatedTags": "تم إنشاء {{count}} وسم",
-    "importSummaryCreatedContacts": "تم إنشاء {{count}} جهة اتصال"
+    "importSummaryCreatedContacts": "تم إنشاء {{count}} جهة اتصال",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "أحد",
@@ -371,5 +423,41 @@
     "flowIncome": "دخل",
     "flowExpense": "مصروف",
     "balanceMarker": "الرصيد الشهري"
+  },
+  "annualReport": {
+    "nav": "التقرير السنوي",
+    "title": "التقرير السنوي {{year}}",
+    "subtitle": "ملخص تلقائي لدفترك لهذه السنة.",
+    "prototypeBadge": "نموذج أولي · بيانات تجريبية",
+    "prevYear": "السنة السابقة",
+    "nextYear": "السنة التالية",
+    "sectionSummary": "إجماليات السنة",
+    "sectionByTag": "حسب الوسم",
+    "sectionTopTx": "أكبر المبالغ (أعلى 5)",
+    "sectionTopContacts": "جهات الاتصال (أعلى 5)",
+    "sectionCompare": "مقارنة بالسنة السابقة",
+    "sectionInsights": "الملخص",
+    "dailyExpense": "المصروف اليومي",
+    "startBalance": "رصيد البداية",
+    "endBalance": "رصيد النهاية",
+    "untagged": "بدون وسم",
+    "txCount": "{{count}} عملية",
+    "noNote": "(بدون ملاحظة)",
+    "noCompare": "لا توجد بيانات للسنة السابقة للمقارنة.",
+    "noContacts": "لا توجد عمليات مرتبطة بجهات اتصال هذا العام.",
+    "compareWith": "مقارنة مع {{year}}",
+    "compareDelta": "التغيّر",
+    "insights": {
+      "net_positive": "صافي الدخل كان إيجابياً هذا العام ({{amount}}).",
+      "net_negative": "تجاوزت المصروفات الدخل ({{amount}}).",
+      "yoy_income_up": "ارتفع الدخل بنسبة {{pct}}% مقابل {{prev_year}}.",
+      "yoy_income_down": "انخفض الدخل بنسبة {{pct}}% مقابل {{prev_year}}.",
+      "top_expense_tag": "أكبر وسم للمصروف: {{tag}} ({{amount}}).",
+      "largest_tx": "أكبر عملية: {{amount}} في {{date}}.",
+      "expense_over_income": "إجمالي المصروف تجاوز إجمالي الدخل."
+    },
+    "expandTags": "عرض الكل ({{count}})",
+    "collapseTags": "عرض أقل",
+    "axisBroken": "محور مقطوع"
   }
 }

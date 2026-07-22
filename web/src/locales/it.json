@@ -38,7 +38,8 @@
     "saveFailed": "Salvataggio non riuscito",
     "deleteFailed": "Eliminazione non riuscita",
     "removeItem": "Rimuovi {{name}}",
-    "removeContact": "Rimuovi contatto {{name}}"
+    "removeContact": "Rimuovi contatto {{name}}",
+    "selectYear": "Seleziona anno"
   },
   "nav": {
     "home": "Pagina iniziale",
@@ -48,7 +49,8 @@
     "logout": "Esci",
     "expandSidebar": "Espandi",
     "collapseSidebar": "Comprimi",
-    "collapseSidebarLabel": "Comprimi"
+    "collapseSidebarLabel": "Comprimi",
+    "annual": "Annuale"
   },
   "auth": {
     "welcomeBack": "Bentornato",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Rilascia per aggiornare",
     "refreshing": "Aggiornamento",
     "emptyTitle": "Nessun movimento",
-    "emptyHint": "Aggiungi una transazione e qui appariranno i riepiloghi mensili"
+    "emptyHint": "Aggiungi una transazione e qui appariranno i riepiloghi mensili",
+    "registerBalanceHint": "Saldo di {{month}} non registrato",
+    "registerBalanceHintDetail": "Registralo per stimare la spesa giornaliera",
+    "trendTitle": "Ultimo semestre",
+    "viewStats": "Statistiche",
+    "trendEmpty": "Aggiungi alcuni mesi di dati per vedere l’andamento",
+    "lastMonthExpense": "Spesa mese scorso",
+    "thisMonthExpense": "Spesa questo mese",
+    "expenseChange": "vs mese scorso",
+    "thisMonth": "Questo mese",
+    "recentContacts": "Contatti recenti",
+    "recentTitle": "Movimenti di questo mese",
+    "recentAll": "Tutti",
+    "recentEmpty": "Nessun movimento questo mese",
+    "pastTitle": "Mesi precedenti",
+    "hotTags": "Tag popolari",
+    "hotContacts": "Contatti popolari",
+    "hotTagAll": "Tutti",
+    "hotTagExpense": "Uscite",
+    "hotTagIncome": "Entrate",
+    "hotTagIncomeShort": "Ent.",
+    "hotTagExpenseShort": "Usc.",
+    "trendHalfYear": "Semestre",
+    "trendOneYear": "1 anno"
   },
   "transactions": {
     "empty": "Nessuna transazione",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} saldi mensili",
     "importSummarySkippedDaily": "{{count}} righe di spesa giornaliera saltate",
     "importSummaryCreatedTags": "{{count}} etichette create",
-    "importSummaryCreatedContacts": "{{count}} contatti creati"
+    "importSummaryCreatedContacts": "{{count}} contatti creati",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Dom",
@@ -371,5 +423,41 @@
     "flowIncome": "Entrata",
     "flowExpense": "Uscita",
     "balanceMarker": "Saldo mensile"
+  },
+  "annualReport": {
+    "nav": "Annuale",
+    "title": "Report annuale {{year}}",
+    "subtitle": "Riepilogo automatico del tuo libro contabile.",
+    "prototypeBadge": "Prototipo · dati di esempio",
+    "prevYear": "Anno precedente",
+    "nextYear": "Anno successivo",
+    "sectionSummary": "Totali annuali",
+    "sectionByTag": "Per tag",
+    "sectionTopTx": "Importi maggiori (Top 5)",
+    "sectionTopContacts": "Contatti (Top 5)",
+    "sectionCompare": "Vs anno scorso",
+    "sectionInsights": "Sintesi",
+    "dailyExpense": "Spesa quotidiana",
+    "startBalance": "Saldo iniziale",
+    "endBalance": "Saldo finale",
+    "untagged": "Senza tag",
+    "txCount": "{{count}} mov.",
+    "noNote": "(nessuna nota)",
+    "noCompare": "Nessun dato dell’anno precedente da confrontare.",
+    "noContacts": "Nessuna operazione collegata a contatti quest’anno.",
+    "compareWith": "Confronto con {{year}}",
+    "compareDelta": "Variazione",
+    "insights": {
+      "net_positive": "Il reddito netto è stato positivo ({{amount}}).",
+      "net_negative": "Le spese hanno superato le entrate ({{amount}}).",
+      "yoy_income_up": "Le entrate sono salite del {{pct}}% rispetto al {{prev_year}}.",
+      "yoy_income_down": "Le entrate sono scese del {{pct}}% rispetto al {{prev_year}}.",
+      "top_expense_tag": "Tag di spesa maggiore: {{tag}} ({{amount}}).",
+      "largest_tx": "Movimento più grande: {{amount}} il {{date}}.",
+      "expense_over_income": "La spesa totale ha superato l’entrata totale."
+    },
+    "expandTags": "Mostra tutto ({{count}})",
+    "collapseTags": "Mostra meno",
+    "axisBroken": "Asse interrotto"
   }
 }

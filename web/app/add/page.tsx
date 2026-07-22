@@ -159,6 +159,9 @@ function AddContent() {
   if (loading) {
     return (
       <div className="add-form">
+        <h1 className="form-page-title">
+          {isEdit ? t('add.editTitle') : t('add.createTitle')}
+        </h1>
         <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
@@ -167,6 +170,10 @@ function AddContent() {
 
   return (
     <form onSubmit={submit} className="add-form record-form">
+      <h1 className="form-page-title">
+        {isEdit ? t('add.editTitle') : t('add.createTitle')}
+      </h1>
+
       {error && <p className="form-alert-error">{error}</p>}
 
       <div className="form-hero">

@@ -37,6 +37,8 @@ type StatsChartFullscreenProps = {
   yearItems: YearSeriesPoint[];
   searchActive: boolean;
   loading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   pointWidth: number;
   rows: StatsChartRow[];
   hiddenSeries: Set<string>;
@@ -57,6 +59,8 @@ export function StatsChartFullscreen({
   yearItems,
   searchActive,
   loading,
+  error,
+  onRetry,
   pointWidth,
   rows,
   hiddenSeries,
@@ -306,18 +310,32 @@ export function StatsChartFullscreen({
           className={`stats-chart-scroll stats-chart-scroll-fullscreen stats-chart-scroll-tap-inspect h-full w-full min-w-0 overflow-x-auto overflow-y-hidden${portraitFallback ? ' stats-chart-scroll-rotated' : ''}`}
         >
           <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner stats-chart-scroll-inner-fullscreen px-4 pt-2 pb-3">
-            <StatsScrollChart
-              mode={mode}
-              monthItems={monthItems}
-              yearItems={yearItems}
-              searchActive={searchActive}
-              loading={loading}
-              pointWidth={pointWidth}
-              rows={rows}
-              hiddenSeries={hiddenSeries}
-              height={chartHeight}
-              tapToInspect
-            />
+            {error && rows.length === 0 && !loading ? (
+              <div
+                className="flex flex-col items-center justify-center gap-2 text-sm text-muted"
+                style={{ height: chartHeight }}
+              >
+                <p>{error}</p>
+                {onRetry && (
+                  <button type="button" className="btn-ghost text-sm" onClick={onRetry}>
+                    {t('common.refresh')}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <StatsScrollChart
+                mode={mode}
+                monthItems={monthItems}
+                yearItems={yearItems}
+                searchActive={searchActive}
+                loading={loading}
+                pointWidth={pointWidth}
+                rows={rows}
+                hiddenSeries={hiddenSeries}
+                height={chartHeight}
+                tapToInspect
+              />
+            )}
           </div>
         </div>
       </div>

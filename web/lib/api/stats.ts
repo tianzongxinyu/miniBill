@@ -1,6 +1,8 @@
 import { api, ApiError, type ApiOptions } from '@/lib/api/http';
+import type { AnnualReport } from '@/lib/annualReportTypes';
 import type {
   Balance,
+  HomeRankings,
   MonthBillItem,
   MonthBillsResponse,
   MonthSeriesPoint,
@@ -78,6 +80,35 @@ export async function fetchYearSeries(opts?: {
   searchFilter?: TransactionSearchFilter;
 }): Promise<StatsSeriesPage<YearSeriesPoint>> {
   return fetchStatsSeries<YearSeriesPoint>('/stats/year-series', { ...opts, limit: opts?.limit ?? 10 });
+}
+
+export async function fetchHomeRankings(opts?: {
+  months?: number;
+}): Promise<HomeRankings> {
+  const params = new URLSearchParams();
+  params.set('months', String(opts?.months ?? 6));
+  const data = await api<HomeRankings>(`/stats/home-rankings?${params}`);
+  const months = Array.isArray(data?.months) ? data.months : [];
+  const tags = (Array.isArray(data?.tags) ? data.tags : []).map((tag) => ({
+    ...tag,
+    points: Array.isArray(tag.points) ? tag.points : [],
+  }));
+  const contacts = (Array.isArray(data?.contacts) ? data.contacts : []).map((c) => ({
+    ...c,
+    points: Array.isArray(c.points) ? c.points : [],
+  }));
+  return { months, tags, contacts };
+}
+
+export async function fetchAnnualReport(year: number): Promise<AnnualReport> {
+  const params = new URLSearchParams();
+  params.set('year', String(year));
+  return api<AnnualReport>(`/stats/annual-report?${params}`);
+}
+
+export async function fetchAnnualDefaultYear(): Promise<number> {
+  const data = await api<{ year: number }>('/stats/annual-default-year');
+  return data.year;
 }
 
 export async function fetchMonthlyBalance(

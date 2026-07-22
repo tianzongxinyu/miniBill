@@ -20,6 +20,7 @@
   "error.csv_read_failed": "تعذّر قراءة الملف",
   "error.csv_too_large": "ملف CSV كبير جدًا",
   "error.csv_upload_required": "يرجى رفع ملف CSV",
+  "error.csv_mapping_invalid": "تعيين أعمدة CSV غير صالح",
   "error.cursor_after_exclusive": "cursor و after لا يمكن استخدامهما معًا",
   "error.cursor_yyyy": "يجب أن يكون المؤشر YYYY",
   "error.cursor_yyyy_mm": "يجب أن يكون المؤشر YYYY-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "لا يمكن أن يكون الرصيد سالبًا",
   "validation.color_bg_only": "يمكن تحديث color_bg فقط",
   "validation.csv_columns": "الصف يحتوي على أعمدة قليلة جدًا",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "تم تجاوز حد صفوف CSV",
   "validation.daily_expense_tag": "لا يمكن استخدام وسم النظام \"المصروف اليومي\"",
   "validation.date_after_today": "لا يمكن أن يكون التاريخ بعد اليوم",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "لا توجد حقول للتحديث",
   "validation.tag_name_empty": "لا يمكن أن يكون اسم الوسم فارغًا",
   "validation.tx_date_format": "يجب أن يكون تاريخ المعاملة YYYY-MM-DD",
-  "validation.year_month_required": "السنة والشهر مطلوبان"
+  "validation.year_month_required": "السنة والشهر مطلوبان",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

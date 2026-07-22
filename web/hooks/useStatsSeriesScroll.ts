@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { StatsSearchFilter, StatsSeriesPage } from '@/lib/api';
+import { formatApiError } from '@/lib/errors';
 import { maxScrollLeft } from '@/lib/statsChartScrollSync';
+import i18n from '@/src/i18n';
 
 type SeriesFetchOpts = {
   limit: number;
@@ -40,6 +42,7 @@ export function useStatsSeriesScroll<T>({
   const [loading, setLoading] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [loadingNewer, setLoadingNewer] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const internalScrollRef = useRef<HTMLDivElement>(null);
   const scrollRef = externalScrollRef ?? internalScrollRef;
@@ -50,13 +53,18 @@ export function useStatsSeriesScroll<T>({
   const shouldScrollEndRef = useRef(false);
   const prependWidthRef = useRef(0);
   const getPointWidthRef = useRef(getPointWidth);
+  const generationRef = useRef(0);
+  const searchFilterRef = useRef(searchFilter);
   getPointWidthRef.current = getPointWidth;
+  searchFilterRef.current = searchFilter;
 
   const resolvePointWidth = useCallback(() => {
     return getPointWidthRef.current?.() ?? pointWidth;
   }, [pointWidth]);
 
   fetchPageRef.current = fetchPage;
+
+  const clearError = useCallback(() => setError(null), []);
 
   const scrollToEnd = useCallback(() => {
     const el = scrollRef.current;
@@ -78,27 +86,48 @@ export function useStatsSeriesScroll<T>({
   }, [scrollRef]);
 
   const loadInitial = useCallback(async () => {
+    const generation = ++generationRef.current;
+    loadingOlderRef.current = false;
+    loadingNewerRef.current = false;
+    setLoadingOlder(false);
+    setLoadingNewer(false);
     setLoading(true);
+    setError(null);
     try {
-      const data = await fetchPageRef.current({ limit: defaultLimit, searchFilter });
+      const data = await fetchPageRef.current({
+        limit: defaultLimit,
+        searchFilter: searchFilterRef.current,
+      });
+      if (generation !== generationRef.current) return;
       setItems(data.items);
       setHasMoreOlder(data.has_more_older);
       setHasMoreNewer(data.has_more_newer);
       shouldScrollEndRef.current = true;
+      setError(null);
+    } catch (e) {
+      if (generation !== generationRef.current) return;
+      setError(formatApiError(e, i18n.t('common.loadFailed')));
+      // Keep previous items on reload failure so the chart does not blank out.
     } finally {
-      setLoading(false);
+      if (generation === generationRef.current) {
+        setLoading(false);
+      }
     }
-  }, [defaultLimit, searchFilter]);
+  }, [defaultLimit]);
 
   useEffect(() => {
     if (!enabled) {
+      generationRef.current += 1;
       setItems([]);
       setHasMoreOlder(false);
       setHasMoreNewer(false);
+      setError(null);
+      setLoading(false);
       return;
     }
-    loadInitial();
-  }, [enabled, loadInitial]);
+    setLoading(true);
+    void loadInitial();
+  }, [enabled, searchFilter, loadInitial]);
 
   useEffect(() => {
     if (!shouldScrollEndRef.current) return;
@@ -126,11 +155,17 @@ export function useStatsSeriesScroll<T>({
 
   const loadOlder = useCallback(async () => {
     if (!enabled || loadingOlderRef.current || !hasMoreOlder || items.length === 0) return;
+    const generation = generationRef.current;
     loadingOlderRef.current = true;
     setLoadingOlder(true);
     try {
       const cursor = getItemKey(items[0]);
-      const data = await fetchPageRef.current({ limit: defaultLimit, cursor, searchFilter });
+      const data = await fetchPageRef.current({
+        limit: defaultLimit,
+        cursor,
+        searchFilter: searchFilterRef.current,
+      });
+      if (generation !== generationRef.current) return;
       if (data.items.length === 0) {
         setHasMoreOlder(false);
         return;
@@ -138,34 +173,57 @@ export function useStatsSeriesScroll<T>({
       prependWidthRef.current = data.items.length * resolvePointWidth();
       setItems((prev) => [...data.items, ...prev]);
       setHasMoreOlder(data.has_more_older);
+      setError(null);
       requestAnimationFrame(() => {
+        if (generation !== generationRef.current) return;
         const el = scrollRef.current;
         if (el) el.scrollLeft += prependWidthRef.current;
       });
+    } catch (e) {
+      if (generation !== generationRef.current) return;
+      setError(formatApiError(e, i18n.t('common.loadFailed')));
     } finally {
-      loadingOlderRef.current = false;
-      setLoadingOlder(false);
+      if (generation === generationRef.current) {
+        loadingOlderRef.current = false;
+        setLoadingOlder(false);
+      } else {
+        loadingOlderRef.current = false;
+      }
     }
-  }, [enabled, hasMoreOlder, items, defaultLimit, searchFilter, getItemKey, resolvePointWidth, scrollRef]);
+  }, [enabled, hasMoreOlder, items, defaultLimit, getItemKey, resolvePointWidth, scrollRef]);
 
   const loadNewer = useCallback(async () => {
     if (!enabled || loadingNewerRef.current || !hasMoreNewer || items.length === 0) return;
+    const generation = generationRef.current;
     loadingNewerRef.current = true;
     setLoadingNewer(true);
     try {
       const after = getItemKey(items[items.length - 1]);
-      const data = await fetchPageRef.current({ limit: defaultLimit, after, searchFilter });
+      const data = await fetchPageRef.current({
+        limit: defaultLimit,
+        after,
+        searchFilter: searchFilterRef.current,
+      });
+      if (generation !== generationRef.current) return;
       if (data.items.length === 0) {
         setHasMoreNewer(false);
         return;
       }
       setItems((prev) => [...prev, ...data.items]);
       setHasMoreNewer(data.has_more_newer);
+      setError(null);
+    } catch (e) {
+      if (generation !== generationRef.current) return;
+      setError(formatApiError(e, i18n.t('common.loadFailed')));
     } finally {
-      loadingNewerRef.current = false;
-      setLoadingNewer(false);
+      if (generation === generationRef.current) {
+        loadingNewerRef.current = false;
+        setLoadingNewer(false);
+      } else {
+        loadingNewerRef.current = false;
+      }
     }
-  }, [enabled, hasMoreNewer, items, defaultLimit, searchFilter, getItemKey]);
+  }, [enabled, hasMoreNewer, items, defaultLimit, getItemKey]);
 
   // Wide viewports may fit all loaded points — keep fetching until the chart overflows or data ends.
   useEffect(() => {
@@ -174,7 +232,8 @@ export function useStatsSeriesScroll<T>({
 
     const raf = requestAnimationFrame(() => {
       const el = scrollRef.current;
-      if (!el || el.scrollWidth > el.clientWidth + 1) return;
+      if (!el || el.clientWidth === 0) return;
+      if (el.scrollWidth > el.clientWidth + 1) return;
       if (hasMoreOlder) void loadOlder();
       else if (hasMoreNewer) void loadNewer();
     });
@@ -194,6 +253,7 @@ export function useStatsSeriesScroll<T>({
       const target = scrollRef.current;
       if (!target || loading || loadingOlderRef.current || loadingNewerRef.current) return;
       if (!hasMoreOlder && !hasMoreNewer) return;
+      if (target.clientWidth === 0) return;
       if (target.scrollWidth > target.clientWidth + 1) return;
       if (hasMoreOlder) void loadOlder();
       else if (hasMoreNewer) void loadNewer();
@@ -238,9 +298,11 @@ export function useStatsSeriesScroll<T>({
       resolve: (year: number, month: number) => Promise<T | null>
     ) => {
       if (!enabled || months.length === 0) return;
+      const generation = generationRef.current;
       const updates = await Promise.all(
         months.map(({ year, month }) => resolve(year, month))
       );
+      if (generation !== generationRef.current) return;
       setItems((prev) => {
         const next = [...prev];
         for (const item of updates) {
@@ -262,6 +324,8 @@ export function useStatsSeriesScroll<T>({
     loadingNewer,
     hasMoreOlder,
     hasMoreNewer,
+    error,
+    clearError,
     scrollRef,
     onScroll,
     pointWidth,

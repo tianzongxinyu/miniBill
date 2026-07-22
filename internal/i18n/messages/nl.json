@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Kan bestand niet lezen",
   "error.csv_too_large": "CSV-bestand is te groot",
   "error.csv_upload_required": "Upload een CSV-bestand",
+  "error.csv_mapping_invalid": "Ongeldige CSV-kolomtoewijzing",
   "error.cursor_after_exclusive": "cursor en after sluiten elkaar uit",
   "error.cursor_yyyy": "Cursor moet JJJJ zijn",
   "error.cursor_yyyy_mm": "Cursor moet JJJJ-MM zijn",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Saldo kan niet negatief zijn",
   "validation.color_bg_only": "Alleen color_bg kan worden bijgewerkt",
   "validation.csv_columns": "Rij heeft te weinig kolommen",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV-rijlimiet overschreden",
   "validation.daily_expense_tag": "Systeemtag \"Dagelijkse uitgaven\" kan niet worden gebruikt",
   "validation.date_after_today": "Datum mag niet na vandaag liggen",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Geen velden om bij te werken",
   "validation.tag_name_empty": "Tagnaam mag niet leeg zijn",
   "validation.tx_date_format": "Transactiedatum moet JJJJ-MM-DD zijn",
-  "validation.year_month_required": "Jaar en maand zijn verplicht"
+  "validation.year_month_required": "Jaar en maand zijn verplicht",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

@@ -10,6 +10,7 @@ import type {
   ContactDetail,
   EditableDateRange,
   LedgerImportResult,
+  LedgerCsvImportMapping,
   SaveTransactionInput,
   Settings,
   Tag,
@@ -248,9 +249,29 @@ export async function exportLedgerCSV(): Promise<void> {
   downloadBlob(blob, filename);
 }
 
-export async function importLedgerCSV(file: File): Promise<LedgerImportResult> {
+export async function importLedgerCSV(
+  file: File,
+  opts?: {
+    mapping?: LedgerCsvImportMapping;
+    keepHistory?: boolean;
+    deriveBalances?: boolean;
+    openingBalance?: string;
+  }
+): Promise<LedgerImportResult> {
   const form = new FormData();
   form.append('file', file);
+  if (opts?.mapping) {
+    form.append('mapping', JSON.stringify(opts.mapping));
+  }
+  if (opts?.keepHistory) {
+    form.append('keep_history', 'true');
+  }
+  if (opts?.deriveBalances) {
+    form.append('derive_balances', 'true');
+    if (opts.openingBalance != null && opts.openingBalance !== '') {
+      form.append('opening_balance', opts.openingBalance);
+    }
+  }
 
   const res = await apiRaw('/ledger/import', { method: 'POST', body: form });
   return (await res.json()) as LedgerImportResult;

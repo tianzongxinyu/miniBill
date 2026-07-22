@@ -41,6 +41,8 @@ import {
 } from '@/lib/statsChartTapInspect';
 import { StatsChartTooltip, type StatsChartTooltipPayload } from '@/components/stats/StatsChartTooltip';
 
+type ChartMargin = { top: number; right: number; left: number; bottom: number };
+
 type StatsScrollChartProps = {
   mode: 'month' | 'year';
   monthItems: MonthSeriesPoint[];
@@ -51,6 +53,10 @@ type StatsScrollChartProps = {
   rows: StatsChartRow[];
   hiddenSeries: Set<string>;
   height?: number;
+  /** 覆盖默认 ComposedChart margin（首页迷你图可收紧） */
+  margin?: ChartMargin;
+  /** 覆盖 XAxis category padding（默认 pointWidth/2）；首页可传较小值贴边 */
+  categoryPadding?: number;
   /** 全屏模式：点击时间轴或图表区域固定显示数据 */
   tapToInspect?: boolean;
 };
@@ -138,6 +144,8 @@ export function StatsScrollChart({
   rows: rowsProp,
   hiddenSeries,
   height = 252,
+  margin: marginProp,
+  categoryPadding,
   tapToInspect = false,
 }: StatsScrollChartProps) {
   const { t } = useTranslation();
@@ -191,6 +199,7 @@ export function StatsScrollChart({
 
   const chartWidth = Math.max(chartData.length * pointWidth, 320);
   const halfPoint = pointWidth / 2;
+  const xPad = categoryPadding ?? halfPoint;
   const { left: yDomain, right: rightDomain } = useMemo(
     () => chartAxisDomains(rows, hiddenSeries, searchActive),
     [rows, hiddenSeries, searchActive]
@@ -407,7 +416,8 @@ export function StatsScrollChart({
     [tapToInspect]
   );
 
-  const chartMargin = tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN;
+  const chartMargin =
+    marginProp ?? (tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN);
   const axisTickLine = { stroke: '#e8eeec' };
 
   if (loading && chartData.length === 0) {
@@ -470,7 +480,7 @@ export function StatsScrollChart({
         tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
         axisLine={false}
         tickLine={false}
-        padding={{ left: halfPoint, right: halfPoint }}
+        padding={{ left: xPad, right: xPad }}
       />
       <YAxis
         yAxisId="left"

@@ -177,9 +177,21 @@ export type BackupFilesPage = {
 export type LedgerImportResult = {
   imported_transactions: number;
   imported_balances: number;
+  derived_balances: number;
   skipped_daily_expense: number;
+  skipped_duplicates: number;
   created_tags: number;
   created_contacts: number;
+};
+
+export type LedgerCsvImportMapping = {
+  date?: string;
+  flow?: string;
+  amount?: string;
+  tags?: string;
+  contact?: string;
+  note?: string;
+  balance?: string;
 };
 
 export type EditableDateRange = { min_date: string; max_date: string };
@@ -188,4 +200,30 @@ export type TagUpdate = {
   enabled?: boolean;
   color_bg?: string;
   color_fg?: string;
+};
+
+export type HomeRankingPoint = {
+  year: number;
+  month: number;
+  total_income: number;
+  total_expense: number;
+};
+
+export type HomeRankingTag = {
+  id: number;
+  name: string;
+  color_bg: string;
+  points: HomeRankingPoint[];
+};
+
+export type HomeRankingContact = {
+  id: number;
+  name: string;
+  points: HomeRankingPoint[];
+};
+
+export type HomeRankings = {
+  months: Array<{ year: number; month: number }>;
+  tags: HomeRankingTag[];
+  contacts: HomeRankingContact[];
 };

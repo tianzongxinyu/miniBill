@@ -574,6 +574,17 @@ func (s *Server) monthSeries(c *gin.Context) {
 	})
 }
 
+func (s *Server) homeRankings(c *gin.Context) {
+	months, _ := strconv.Atoi(c.DefaultQuery("months", "6"))
+	s.withLedger(c, func(db *sql.DB) {
+		r, err := s.statsSvc.HomeRankings(db, months)
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, r)
+	})
+}
+
 func (s *Server) yearlyStats(c *gin.Context) {
 	s.withLedger(c, func(db *sql.DB) {
 		items, err := s.statsSvc.YearlyStats(db, parseStatsFilter(c))
@@ -630,6 +641,31 @@ func (s *Server) yearStat(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, item)
+	})
+}
+
+func (s *Server) annualReport(c *gin.Context) {
+	year, err := strconv.Atoi(c.Query("year"))
+	if err != nil || year < 2000 || year > 2100 {
+		JSONValidation(c, "year must be YYYY between 2000 and 2100")
+		return
+	}
+	s.withLedger(c, func(db *sql.DB) {
+		report, err := s.statsSvc.AnnualReport(db, year)
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, report)
+	})
+}
+
+func (s *Server) annualDefaultYear(c *gin.Context) {
+	s.withLedger(c, func(db *sql.DB) {
+		year, err := s.statsSvc.DefaultAnnualReportYear(db)
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"year": year})
 	})
 }
 

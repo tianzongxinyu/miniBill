@@ -38,7 +38,8 @@
     "saveFailed": "Gagal menyimpan",
     "deleteFailed": "Gagal menghapus",
     "removeItem": "Hapus {{name}}",
-    "removeContact": "Hapus kontak {{name}}"
+    "removeContact": "Hapus kontak {{name}}",
+    "selectYear": "Pilih tahun"
   },
   "nav": {
     "home": "Beranda",
@@ -48,7 +49,8 @@
     "logout": "Keluar",
     "expandSidebar": "Buka",
     "collapseSidebar": "Tutup",
-    "collapseSidebarLabel": "Tutup"
+    "collapseSidebarLabel": "Tutup",
+    "annual": "Tahunan"
   },
   "auth": {
     "welcomeBack": "Selamat datang kembali",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Lepas untuk segarkan",
     "refreshing": "Menyegarkan",
     "emptyTitle": "Belum ada tagihan",
-    "emptyHint": "Tambahkan transaksi dan ringkasan bulanan akan muncul di sini"
+    "emptyHint": "Tambahkan transaksi dan ringkasan bulanan akan muncul di sini",
+    "registerBalanceHint": "Saldo {{month}} belum dicatat",
+    "registerBalanceHintDetail": "Catat untuk memperkirakan pengeluaran harian",
+    "trendTitle": "Setengah tahun terakhir",
+    "viewStats": "Statistik",
+    "trendEmpty": "Tambah data beberapa bulan untuk melihat tren",
+    "lastMonthExpense": "Pengeluaran bulan lalu",
+    "thisMonthExpense": "Pengeluaran bulan ini",
+    "expenseChange": "vs bulan lalu",
+    "thisMonth": "Bulan ini",
+    "recentContacts": "Kontak terbaru",
+    "recentTitle": "Transaksi bulan ini",
+    "recentAll": "Semua",
+    "recentEmpty": "Belum ada transaksi bulan ini",
+    "pastTitle": "Bulan sebelumnya",
+    "hotTags": "Tag populer",
+    "hotContacts": "Kontak populer",
+    "hotTagAll": "Semua",
+    "hotTagExpense": "Keluar",
+    "hotTagIncome": "Masuk",
+    "hotTagIncomeShort": "Masuk",
+    "hotTagExpenseShort": "Keluar",
+    "trendHalfYear": "Setengah tahun",
+    "trendOneYear": "1 tahun"
   },
   "transactions": {
     "empty": "Tidak ada transaksi",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} saldo bulanan",
     "importSummarySkippedDaily": "melewati {{count}} baris pengeluaran harian",
     "importSummaryCreatedTags": "membuat {{count}} tag",
-    "importSummaryCreatedContacts": "membuat {{count}} kontak"
+    "importSummaryCreatedContacts": "membuat {{count}} kontak",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Min",
@@ -371,5 +423,41 @@
     "flowIncome": "Pemasukan",
     "flowExpense": "Pengeluaran",
     "balanceMarker": "Saldo bulanan"
+  },
+  "annualReport": {
+    "nav": "Tahunan",
+    "title": "Laporan tahunan {{year}}",
+    "subtitle": "Ringkasan otomatis buku Anda untuk tahun ini.",
+    "prototypeBadge": "Prototipe · data contoh",
+    "prevYear": "Tahun sebelumnya",
+    "nextYear": "Tahun berikutnya",
+    "sectionSummary": "Total tahunan",
+    "sectionByTag": "Per tag",
+    "sectionTopTx": "Jumlah terbesar (Top 5)",
+    "sectionTopContacts": "Kontak (Top 5)",
+    "sectionCompare": "Vs tahun lalu",
+    "sectionInsights": "Ringkasan",
+    "dailyExpense": "Pengeluaran harian",
+    "startBalance": "Saldo awal",
+    "endBalance": "Saldo akhir",
+    "untagged": "Tanpa tag",
+    "txCount": "{{count}} trx",
+    "noNote": "(tanpa catatan)",
+    "noCompare": "Tidak ada data tahun sebelumnya untuk dibandingkan.",
+    "noContacts": "Tidak ada transaksi terkait kontak tahun ini.",
+    "compareWith": "Dibandingkan dengan {{year}}",
+    "compareDelta": "Perubahan",
+    "insights": {
+      "net_positive": "Pendapatan bersih positif tahun ini ({{amount}}).",
+      "net_negative": "Pengeluaran melebihi pendapatan ({{amount}}).",
+      "yoy_income_up": "Pendapatan naik {{pct}}% vs {{prev_year}}.",
+      "yoy_income_down": "Pendapatan turun {{pct}}% vs {{prev_year}}.",
+      "top_expense_tag": "Tag pengeluaran terbesar: {{tag}} ({{amount}}).",
+      "largest_tx": "Transaksi terbesar: {{amount}} pada {{date}}.",
+      "expense_over_income": "Total pengeluaran melebihi total pendapatan."
+    },
+    "expandTags": "Tampilkan semua ({{count}})",
+    "collapseTags": "Sembunyikan",
+    "axisBroken": "Sumbu dipotong"
   }
 }

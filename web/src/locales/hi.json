@@ -38,7 +38,8 @@
     "saveFailed": "सहेजना विफल",
     "deleteFailed": "हटाना विफल",
     "removeItem": "{{name}} हटाएँ",
-    "removeContact": "संपर्क {{name}} हटाएँ"
+    "removeContact": "संपर्क {{name}} हटाएँ",
+    "selectYear": "वर्ष चुनें"
   },
   "nav": {
     "home": "होम",
@@ -48,7 +49,8 @@
     "logout": "साइन आउट",
     "expandSidebar": "खोलें",
     "collapseSidebar": "बंद",
-    "collapseSidebarLabel": "बंद"
+    "collapseSidebarLabel": "बंद",
+    "annual": "वार्षिक"
   },
   "auth": {
     "welcomeBack": "वापसी पर स्वागत है",
@@ -83,7 +85,30 @@
     "releaseRefresh": "रीफ़्रेश के लिए छोड़ें",
     "refreshing": "रीफ़्रेश हो रहा है",
     "emptyTitle": "अभी कोई बिल नहीं",
-    "emptyHint": "लेनदेन जोड़ें और मासिक सारांश यहाँ दिखाई देंगे"
+    "emptyHint": "लेनदेन जोड़ें और मासिक सारांश यहाँ दिखाई देंगे",
+    "registerBalanceHint": "{{month}} का शेष पंजीकृत नहीं",
+    "registerBalanceHintDetail": "दैनिक खर्च अनुमान के लिए पंजीकृत करें",
+    "trendTitle": "पिछला आधा साल",
+    "viewStats": "आँकड़े",
+    "trendEmpty": "रुझान देखने के लिए कुछ महीनों का डेटा जोड़ें",
+    "lastMonthExpense": "पिछले महीने का खर्च",
+    "thisMonthExpense": "इस महीने का खर्च",
+    "expenseChange": "पिछले महीने से",
+    "thisMonth": "इस महीने",
+    "recentContacts": "हाल के संपर्क",
+    "recentTitle": "इस महीने का लेजर",
+    "recentAll": "सभी",
+    "recentEmpty": "इस महीने कोई लेनदेन नहीं",
+    "pastTitle": "पिछले महीने",
+    "hotTags": "लोकप्रिय टैग",
+    "hotContacts": "लोकप्रिय संपर्क",
+    "hotTagAll": "सभी",
+    "hotTagExpense": "खर्च",
+    "hotTagIncome": "आय",
+    "hotTagIncomeShort": "आय",
+    "hotTagExpenseShort": "खर्च",
+    "trendHalfYear": "आधा साल",
+    "trendOneYear": "1 साल"
   },
   "transactions": {
     "empty": "कोई लेनदेन नहीं",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} मासिक शेष",
     "importSummarySkippedDaily": "{{count}} दैनिक खर्च पंक्तियाँ छोड़ी गईं",
     "importSummaryCreatedTags": "{{count}} टैग बनाए",
-    "importSummaryCreatedContacts": "{{count}} संपर्क बनाए"
+    "importSummaryCreatedContacts": "{{count}} संपर्क बनाए",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "र",
@@ -371,5 +423,41 @@
     "flowIncome": "आय",
     "flowExpense": "व्यय",
     "balanceMarker": "मासिक शेष"
+  },
+  "annualReport": {
+    "nav": "वार्षिक",
+    "title": "{{year}} वार्षिक रिपोर्ट",
+    "subtitle": "इस वर्ष की बही का स्वचालित सारांश।",
+    "prototypeBadge": "प्रोटोटाइप · नमूना डेटा",
+    "prevYear": "पिछला वर्ष",
+    "nextYear": "अगला वर्ष",
+    "sectionSummary": "वार्षिक योग",
+    "sectionByTag": "टैग के अनुसार",
+    "sectionTopTx": "सबसे बड़ी राशियाँ (शीर्ष 5)",
+    "sectionTopContacts": "संपर्क (शीर्ष 5)",
+    "sectionCompare": "पिछले वर्ष से तुलना",
+    "sectionInsights": "सारांश",
+    "dailyExpense": "दैनिक खर्च",
+    "startBalance": "प्रारंभिक शेष",
+    "endBalance": "अंतिम शेष",
+    "untagged": "बिना टैग",
+    "txCount": "{{count}} लेन-देन",
+    "noNote": "(कोई नोट नहीं)",
+    "noCompare": "तुलना के लिए पिछले वर्ष का डेटा नहीं है।",
+    "noContacts": "इस वर्ष संपर्क से जुड़ा कोई लेन-देन नहीं है।",
+    "compareWith": "{{year}} से तुलना",
+    "compareDelta": "परिवर्तन",
+    "insights": {
+      "net_positive": "इस वर्ष शुद्ध आय धनात्मक रही ({{amount}})।",
+      "net_negative": "खर्च आय से अधिक रहा ({{amount}})।",
+      "yoy_income_up": "आय {{prev_year}} की तुलना में {{pct}}% बढ़ी।",
+      "yoy_income_down": "आय {{prev_year}} की तुलना में {{pct}}% घटी।",
+      "top_expense_tag": "सबसे बड़ा खर्च टैग: {{tag}} ({{amount}})।",
+      "largest_tx": "सबसे बड़ा लेन-देन: {{amount}} ({{date}})।",
+      "expense_over_income": "कुल खर्च कुल आय से अधिक रहा।"
+    },
+    "expandTags": "सभी दिखाएँ ({{count}})",
+    "collapseTags": "कम दिखाएँ",
+    "axisBroken": "अक्ष खंडित"
   }
 }

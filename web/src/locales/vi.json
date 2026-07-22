@@ -38,7 +38,8 @@
     "saveFailed": "Lưu thất bại",
     "deleteFailed": "Xóa thất bại",
     "removeItem": "Xóa {{name}}",
-    "removeContact": "Xóa liên hệ {{name}}"
+    "removeContact": "Xóa liên hệ {{name}}",
+    "selectYear": "Chọn năm"
   },
   "nav": {
     "home": "Trang chủ",
@@ -48,7 +49,8 @@
     "logout": "Đăng xuất",
     "expandSidebar": "Mở rộng",
     "collapseSidebar": "Thu gọn",
-    "collapseSidebarLabel": "Thu gọn"
+    "collapseSidebarLabel": "Thu gọn",
+    "annual": "Báo cáo năm"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Thả để làm mới",
     "refreshing": "Đang làm mới",
     "emptyTitle": "Chưa có hóa đơn",
-    "emptyHint": "Thêm giao dịch và tóm tắt tháng sẽ hiện ở đây"
+    "emptyHint": "Thêm giao dịch và tóm tắt tháng sẽ hiện ở đây",
+    "registerBalanceHint": "Chưa ghi số dư {{month}}",
+    "registerBalanceHintDetail": "Ghi lại để ước tính chi tiêu hàng ngày",
+    "trendTitle": "Nửa năm gần đây",
+    "viewStats": "Thống kê",
+    "trendEmpty": "Thêm vài tháng dữ liệu để xem xu hướng",
+    "lastMonthExpense": "Chi tháng trước",
+    "thisMonthExpense": "Chi tháng này",
+    "expenseChange": "so với tháng trước",
+    "thisMonth": "Tháng này",
+    "recentContacts": "Liên hệ gần đây",
+    "recentTitle": "Giao dịch tháng này",
+    "recentAll": "Tất cả",
+    "recentEmpty": "Tháng này chưa có giao dịch",
+    "pastTitle": "Các tháng trước",
+    "hotTags": "Thẻ phổ biến",
+    "hotContacts": "Liên hệ phổ biến",
+    "hotTagAll": "Tất cả",
+    "hotTagExpense": "Chi",
+    "hotTagIncome": "Thu",
+    "hotTagIncomeShort": "Thu",
+    "hotTagExpenseShort": "Chi",
+    "trendHalfYear": "Nửa năm",
+    "trendOneYear": "1 năm"
   },
   "transactions": {
     "empty": "Không có giao dịch",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} số dư tháng",
     "importSummarySkippedDaily": "bỏ qua {{count}} dòng chi tiêu hàng ngày",
     "importSummaryCreatedTags": "tạo {{count}} thẻ",
-    "importSummaryCreatedContacts": "tạo {{count}} liên hệ"
+    "importSummaryCreatedContacts": "tạo {{count}} liên hệ",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "CN",
@@ -371,5 +423,41 @@
     "flowIncome": "Thu nhập",
     "flowExpense": "Chi tiêu",
     "balanceMarker": "Số dư tháng"
+  },
+  "annualReport": {
+    "nav": "Báo cáo năm",
+    "title": "Báo cáo năm {{year}}",
+    "subtitle": "Tóm tắt tự động sổ sách của bạn trong năm.",
+    "prototypeBadge": "Nguyên mẫu · dữ liệu mẫu",
+    "prevYear": "Năm trước",
+    "nextYear": "Năm sau",
+    "sectionSummary": "Tổng năm",
+    "sectionByTag": "Theo thẻ",
+    "sectionTopTx": "Số tiền lớn (Top 5)",
+    "sectionTopContacts": "Liên hệ (Top 5)",
+    "sectionCompare": "So với năm trước",
+    "sectionInsights": "Tóm tắt",
+    "dailyExpense": "Chi tiêu hàng ngày",
+    "startBalance": "Số dư đầu năm",
+    "endBalance": "Số dư cuối năm",
+    "untagged": "Chưa gắn thẻ",
+    "txCount": "{{count}} GD",
+    "noNote": "(không ghi chú)",
+    "noCompare": "Không có dữ liệu năm trước để so sánh.",
+    "noContacts": "Không có giao dịch gắn liên hệ trong năm nay.",
+    "compareWith": "So với {{year}}",
+    "compareDelta": "Thay đổi",
+    "insights": {
+      "net_positive": "Thu nhập ròng năm nay dương ({{amount}}).",
+      "net_negative": "Chi tiêu vượt thu nhập ({{amount}}).",
+      "yoy_income_up": "Thu nhập tăng {{pct}}% so với {{prev_year}}.",
+      "yoy_income_down": "Thu nhập giảm {{pct}}% so với {{prev_year}}.",
+      "top_expense_tag": "Thẻ chi tiêu lớn nhất: {{tag}} ({{amount}}).",
+      "largest_tx": "Giao dịch lớn nhất: {{amount}} ngày {{date}}.",
+      "expense_over_income": "Tổng chi vượt tổng thu trong năm."
+    },
+    "expandTags": "Hiện tất cả ({{count}})",
+    "collapseTags": "Thu gọn",
+    "axisBroken": "Đã cắt trục"
   }
 }

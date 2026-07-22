@@ -184,6 +184,19 @@ function StatsContent() {
         onModeChange={setMode}
       />
 
+      {active.error && (
+        <div className="notebook mb-3 flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm border-expense/20 bg-expense/[0.03]">
+          <p className="text-expense">{active.error}</p>
+          <button
+            type="button"
+            className="btn-ghost text-sm shrink-0"
+            onClick={() => void active.reload()}
+          >
+            {t('common.refresh')}
+          </button>
+        </div>
+      )}
+
       <div className="notebook mb-3 overflow-hidden relative">
         <button
           type="button"
@@ -219,16 +232,32 @@ function StatsContent() {
           className="stats-chart-scroll overflow-x-auto min-h-[252px]"
         >
           <div style={{ minWidth: inlineScrollWidth }} className="stats-chart-scroll-inner px-4 pt-4">
-            <StatsScrollChart
-              mode={mode}
-              monthItems={monthSeries.items}
-              yearItems={yearSeries.items}
-              searchActive={searchActive}
-              loading={active.loading}
-              pointWidth={inlinePointWidth}
-              rows={chartRows}
-              hiddenSeries={hiddenSeries}
-            />
+            {active.error && active.items.length === 0 && !active.loading ? (
+              <div
+                className="flex flex-col items-center justify-center gap-2 text-sm text-muted"
+                style={{ height: 252 }}
+              >
+                <p>{t('common.cannotLoad')}</p>
+                <button
+                  type="button"
+                  className="btn-ghost text-sm"
+                  onClick={() => void active.reload()}
+                >
+                  {t('common.refresh')}
+                </button>
+              </div>
+            ) : (
+              <StatsScrollChart
+                mode={mode}
+                monthItems={monthSeries.items}
+                yearItems={yearSeries.items}
+                searchActive={searchActive}
+                loading={active.loading}
+                pointWidth={inlinePointWidth}
+                rows={chartRows}
+                hiddenSeries={hiddenSeries}
+              />
+            )}
           </div>
         </div>
         <StatsChartLegend
@@ -251,6 +280,8 @@ function StatsContent() {
         yearItems={yearSeries.items}
         searchActive={searchActive}
         loading={active.loading}
+        error={active.error}
+        onRetry={() => void active.reload()}
         pointWidth={fullscreenSlotWidth}
         rows={chartRows}
         hiddenSeries={hiddenSeries}

@@ -38,7 +38,8 @@
     "saveFailed": "Не удалось сохранить",
     "deleteFailed": "Не удалось удалить",
     "removeItem": "Удалить {{name}}",
-    "removeContact": "Удалить контакт {{name}}"
+    "removeContact": "Удалить контакт {{name}}",
+    "selectYear": "Выбрать год"
   },
   "nav": {
     "home": "Главная",
@@ -48,7 +49,8 @@
     "logout": "Выйти",
     "expandSidebar": "Развернуть",
     "collapseSidebar": "Свернуть",
-    "collapseSidebarLabel": "Свернуть"
+    "collapseSidebarLabel": "Свернуть",
+    "annual": "Годовой"
   },
   "auth": {
     "welcomeBack": "С возвращением",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Отпустите для обновления",
     "refreshing": "Обновление",
     "emptyTitle": "Записей пока нет",
-    "emptyHint": "Добавьте транзакцию — здесь появятся месячные сводки"
+    "emptyHint": "Добавьте транзакцию — здесь появятся месячные сводки",
+    "registerBalanceHint": "Баланс {{month}} не зарегистрирован",
+    "registerBalanceHintDetail": "Зарегистрируйте, чтобы оценить ежедневные траты",
+    "trendTitle": "Последние полгода",
+    "viewStats": "Статистика",
+    "trendEmpty": "Добавьте данные за несколько месяцев, чтобы увидеть тренд",
+    "lastMonthExpense": "Расход прошлого месяца",
+    "thisMonthExpense": "Расход этого месяца",
+    "expenseChange": "к прошлому месяцу",
+    "thisMonth": "Этот месяц",
+    "recentContacts": "Недавние контакты",
+    "recentTitle": "Операции этого месяца",
+    "recentAll": "Все",
+    "recentEmpty": "Нет операций в этом месяце",
+    "pastTitle": "Прошлые месяцы",
+    "hotTags": "Популярные теги",
+    "hotContacts": "Популярные контакты",
+    "hotTagAll": "Все",
+    "hotTagExpense": "Расход",
+    "hotTagIncome": "Доход",
+    "hotTagIncomeShort": "Дох.",
+    "hotTagExpenseShort": "Рас.",
+    "trendHalfYear": "Полгода",
+    "trendOneYear": "1 год"
   },
   "transactions": {
     "empty": "Нет транзакций",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} месячных балансов",
     "importSummarySkippedDaily": "пропущено {{count}} строк ежедневных расходов",
     "importSummaryCreatedTags": "создано {{count}} тегов",
-    "importSummaryCreatedContacts": "создано {{count}} контактов"
+    "importSummaryCreatedContacts": "создано {{count}} контактов",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Вс",
@@ -371,5 +423,41 @@
     "flowIncome": "Доход",
     "flowExpense": "Расход",
     "balanceMarker": "Месячный баланс"
+  },
+  "annualReport": {
+    "nav": "Годовой",
+    "title": "Годовой отчёт {{year}}",
+    "subtitle": "Автоматическая сводка вашей книги за год.",
+    "prototypeBadge": "Прототип · тестовые данные",
+    "prevYear": "Предыдущий год",
+    "nextYear": "Следующий год",
+    "sectionSummary": "Итоги года",
+    "sectionByTag": "По тегам",
+    "sectionTopTx": "Крупные суммы (Топ 5)",
+    "sectionTopContacts": "Контакты (Топ 5)",
+    "sectionCompare": "К прошлому году",
+    "sectionInsights": "Выводы",
+    "dailyExpense": "Повседневные расходы",
+    "startBalance": "Остаток на начало",
+    "endBalance": "Остаток на конец",
+    "untagged": "Без тега",
+    "txCount": "{{count}} оп.",
+    "noNote": "(без заметки)",
+    "noCompare": "Нет данных прошлого года для сравнения.",
+    "noContacts": "Нет операций, связанных с контактами, в этом году.",
+    "compareWith": "Сравнение с {{year}}",
+    "compareDelta": "Изменение",
+    "insights": {
+      "net_positive": "Чистый доход за год положительный ({{amount}}).",
+      "net_negative": "Расходы превысили доходы ({{amount}}).",
+      "yoy_income_up": "Доходы выросли на {{pct}}% к {{prev_year}}.",
+      "yoy_income_down": "Доходы снизились на {{pct}}% к {{prev_year}}.",
+      "top_expense_tag": "Крупнейший тег расходов: {{tag}} ({{amount}}).",
+      "largest_tx": "Крупнейшая операция: {{amount}} от {{date}}.",
+      "expense_over_income": "Сумма расходов превысила сумму доходов."
+    },
+    "expandTags": "Показать все ({{count}})",
+    "collapseTags": "Свернуть",
+    "axisBroken": "Разрыв оси"
   }
 }

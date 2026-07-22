@@ -38,7 +38,8 @@
     "saveFailed": "저장 실패",
     "deleteFailed": "삭제 실패",
     "removeItem": "{{name}} 제거",
-    "removeContact": "연락처 {{name}} 제거"
+    "removeContact": "연락처 {{name}} 제거",
+    "selectYear": "연도 선택"
   },
   "nav": {
     "home": "홈",
@@ -48,7 +49,8 @@
     "logout": "로그아웃",
     "expandSidebar": "펼치기",
     "collapseSidebar": "접기",
-    "collapseSidebarLabel": "접기"
+    "collapseSidebarLabel": "접기",
+    "annual": "연간 보고서"
   },
   "auth": {
     "welcomeBack": "다시 오신 것을 환영합니다",
@@ -83,7 +85,30 @@
     "releaseRefresh": "놓아서 새로고침",
     "refreshing": "새로고침 중",
     "emptyTitle": "아직 내역이 없습니다",
-    "emptyHint": "거래 추가 시 월별 요약"
+    "emptyHint": "거래 추가 시 월별 요약",
+    "registerBalanceHint": "{{month}} 잔액 미등록",
+    "registerBalanceHintDetail": "등록하면 일상 지출을 추정할 수 있습니다",
+    "trendTitle": "최근 반년",
+    "viewStats": "통계 보기",
+    "trendEmpty": "몇 달치 데이터가 있으면 추세를 볼 수 있습니다",
+    "lastMonthExpense": "지난달 지출",
+    "thisMonthExpense": "이번 달 지출",
+    "expenseChange": "지난달 대비",
+    "thisMonth": "이번 달",
+    "recentContacts": "최근 연락처",
+    "recentTitle": "이번 달 내역",
+    "recentAll": "전체",
+    "recentEmpty": "이번 달 거래 없음",
+    "pastTitle": "지난 달",
+    "hotTags": "인기 태그",
+    "hotContacts": "인기 연락처",
+    "hotTagAll": "전체",
+    "hotTagExpense": "지출",
+    "hotTagIncome": "수입",
+    "hotTagIncomeShort": "수입",
+    "hotTagExpenseShort": "지출",
+    "trendHalfYear": "반년",
+    "trendOneYear": "1년"
   },
   "transactions": {
     "empty": "거래 없음",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "월별 잔액 {{count}}건",
     "importSummarySkippedDaily": "일일 지출 행 {{count}}건 건너뜀",
     "importSummaryCreatedTags": "태그 {{count}}개 생성",
-    "importSummaryCreatedContacts": "연락처 {{count}}개 생성"
+    "importSummaryCreatedContacts": "연락처 {{count}}개 생성",
+    "importDescriptionMapped": "열을 매핑한 뒤 가져오기. 기록 유지·중복 건너뛰기 가능. 없는 태그/연락처는 자동 생성.",
+    "csvMapTitle": "CSV 열 매핑",
+    "csvMapSubtitle": "「{{filename}}」미리보기. 매핑 확인 후 가져오기.",
+    "csvMapFields": "열 매핑",
+    "csvFieldIgnore": "무시",
+    "csvEmptyHeader": "(비어 있음)",
+    "csvKeepHistory": "기존 기록 유지",
+    "csvKeepHistoryHint": "같은 날짜·태그·메모·금액 행은 건너뜁니다. 해제 시 먼저 장부를 비웁니다.",
+    "csvMapRequired": "날짜, 입출금, 금액 매핑이 필요합니다.",
+    "csvParseFailed": "CSV를 파싱할 수 없습니다",
+    "importSummarySkippedDuplicates": "중복 {{count}}건 건너뜀",
+    "csvField": {
+      "date": "날짜",
+      "flow": "입출금",
+      "amount": "금액",
+      "tags": "태그",
+      "contact": "연락처",
+      "note": "메모",
+      "balance": "잔액"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "일",
@@ -371,5 +423,41 @@
     "flowIncome": "수입",
     "flowExpense": "지출",
     "balanceMarker": "월별 잔액"
+  },
+  "annualReport": {
+    "nav": "연간 보고서",
+    "title": "{{year}}년 연간 리포트",
+    "subtitle": "올해 기록을 자동으로 요약한 보고서입니다.",
+    "prototypeBadge": "프로토타입 · 샘플 데이터",
+    "prevYear": "이전 해",
+    "nextYear": "다음 해",
+    "sectionSummary": "연간 합계",
+    "sectionByTag": "태그별",
+    "sectionTopTx": "고액 Top 5",
+    "sectionTopContacts": "연락처 Top 5",
+    "sectionCompare": "전년 대비",
+    "sectionInsights": "요약",
+    "dailyExpense": "일상 지출",
+    "startBalance": "연초 잔액",
+    "endBalance": "연말 잔액",
+    "untagged": "미분류",
+    "txCount": "{{count}}건",
+    "noNote": "(메모 없음)",
+    "noCompare": "비교할 전년 데이터가 없습니다.",
+    "noContacts": "올해 연락처와 연결된 거래가 없습니다.",
+    "compareWith": "{{year}}년과 비교",
+    "compareDelta": "증감",
+    "insights": {
+      "net_positive": "올해 순수입이 플러스였습니다({{amount}}).",
+      "net_negative": "올해 지출이 수입을 초과했습니다({{amount}}).",
+      "yoy_income_up": "수입이 {{prev_year}}년 대비 {{pct}}% 증가했습니다.",
+      "yoy_income_down": "수입이 {{prev_year}}년 대비 {{pct}}% 감소했습니다.",
+      "top_expense_tag": "지출이 가장 큰 태그: {{tag}}({{amount}}).",
+      "largest_tx": "최대 거래: {{amount}} ({{date}}).",
+      "expense_over_income": "총지출이 총수입을 초과했습니다."
+    },
+    "expandTags": "전체 보기 ({{count}})",
+    "collapseTags": "접기",
+    "axisBroken": "축 생략 표시"
   }
 }

@@ -38,7 +38,8 @@
     "saveFailed": "บันทึกไม่สำเร็จ",
     "deleteFailed": "ลบไม่สำเร็จ",
     "removeItem": "ลบ {{name}}",
-    "removeContact": "ลบผู้ติดต่อ {{name}}"
+    "removeContact": "ลบผู้ติดต่อ {{name}}",
+    "selectYear": "เลือกปี"
   },
   "nav": {
     "home": "หน้าแรก",
@@ -48,7 +49,8 @@
     "logout": "ออกจากระบบ",
     "expandSidebar": "ขยาย",
     "collapseSidebar": "ยุบ",
-    "collapseSidebarLabel": "ยุบ"
+    "collapseSidebarLabel": "ยุบ",
+    "annual": "รายงานปี"
   },
   "auth": {
     "welcomeBack": "ยินดีต้อนรับกลับ",
@@ -83,7 +85,30 @@
     "releaseRefresh": "ปล่อยเพื่อรีเฟรช",
     "refreshing": "กำลังรีเฟรช",
     "emptyTitle": "ยังไม่มีบิล",
-    "emptyHint": "เพิ่มรายการแล้วสรุปรายเดือนจะแสดงที่นี่"
+    "emptyHint": "เพิ่มรายการแล้วสรุปรายเดือนจะแสดงที่นี่",
+    "registerBalanceHint": "ยังไม่ได้ลงทะเบียนยอด {{month}}",
+    "registerBalanceHintDetail": "ลงทะเบียนเพื่อประมาณการใช้จ่ายรายวัน",
+    "trendTitle": "ครึ่งปีที่ผ่านมา",
+    "viewStats": "สถิติ",
+    "trendEmpty": "เพิ่มข้อมูลหลายเดือนเพื่อดูแนวโน้ม",
+    "lastMonthExpense": "รายจ่ายเดือนก่อน",
+    "thisMonthExpense": "รายจ่ายเดือนนี้",
+    "expenseChange": "เทียบเดือนก่อน",
+    "thisMonth": "เดือนนี้",
+    "recentContacts": "ผู้ติดต่อล่าสุด",
+    "recentTitle": "รายการเดือนนี้",
+    "recentAll": "ทั้งหมด",
+    "recentEmpty": "ไม่มีรายการเดือนนี้",
+    "pastTitle": "เดือนที่ผ่านมา",
+    "hotTags": "แท็กยอดนิยม",
+    "hotContacts": "ผู้ติดต่อยอดนิยม",
+    "hotTagAll": "ทั้งหมด",
+    "hotTagExpense": "รายจ่าย",
+    "hotTagIncome": "รายรับ",
+    "hotTagIncomeShort": "รับ",
+    "hotTagExpenseShort": "จ่าย",
+    "trendHalfYear": "ครึ่งปี",
+    "trendOneYear": "1 ปี"
   },
   "transactions": {
     "empty": "ไม่มีรายการ",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} ยอดคงเหลือรายเดือน",
     "importSummarySkippedDaily": "ข้าม {{count}} แถวค่าใช้จ่ายรายวัน",
     "importSummaryCreatedTags": "สร้าง {{count}} แท็ก",
-    "importSummaryCreatedContacts": "สร้าง {{count}} ผู้ติดต่อ"
+    "importSummaryCreatedContacts": "สร้าง {{count}} ผู้ติดต่อ",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "อา",
@@ -371,5 +423,41 @@
     "flowIncome": "รายรับ",
     "flowExpense": "รายจ่าย",
     "balanceMarker": "ยอดคงเหลือรายเดือน"
+  },
+  "annualReport": {
+    "nav": "รายงานปี",
+    "title": "รายงานประจำปี {{year}}",
+    "subtitle": "สรุปสมุดบัญชีของคุณอัตโนมัติสำหรับปีนี้",
+    "prototypeBadge": "ต้นแบบ · ข้อมูลจำลอง",
+    "prevYear": "ปีก่อน",
+    "nextYear": "ปีถัดไป",
+    "sectionSummary": "ยอดรวมปี",
+    "sectionByTag": "ตามแท็ก",
+    "sectionTopTx": "ยอดใหญ่ Top 5",
+    "sectionTopContacts": "ผู้ติดต่อ Top 5",
+    "sectionCompare": "เทียบปีก่อน",
+    "sectionInsights": "สรุป",
+    "dailyExpense": "รายจ่ายประจำวัน",
+    "startBalance": "ยอดต้นปี",
+    "endBalance": "ยอดปลายปี",
+    "untagged": "ไม่มีแท็ก",
+    "txCount": "{{count}} รายการ",
+    "noNote": "(ไม่มีหมายเหตุ)",
+    "noCompare": "ไม่มีข้อมูลปีก่อนสำหรับเปรียบเทียบ",
+    "noContacts": "ปีนี้ไม่มีรายการที่เชื่อมกับผู้ติดต่อ",
+    "compareWith": "เปรียบเทียบกับ {{year}}",
+    "compareDelta": "เปลี่ยนแปลง",
+    "insights": {
+      "net_positive": "รายได้สุทธิเป็นบวกในปีนี้ ({{amount}})",
+      "net_negative": "รายจ่ายสูงกว่ารายได้ ({{amount}})",
+      "yoy_income_up": "รายได้เพิ่มขึ้น {{pct}}% เทียบ {{prev_year}}",
+      "yoy_income_down": "รายได้ลดลง {{pct}}% เทียบ {{prev_year}}",
+      "top_expense_tag": "แท็กรายจ่ายสูงสุด: {{tag}} ({{amount}})",
+      "largest_tx": "รายการใหญ่สุด: {{amount}} วันที่ {{date}}",
+      "expense_over_income": "รายจ่ายรวมสูงกว่ารายได้รวม"
+    },
+    "expandTags": "แสดงทั้งหมด ({{count}})",
+    "collapseTags": "ย่อ",
+    "axisBroken": "ตัดแกนแล้ว"
   }
 }

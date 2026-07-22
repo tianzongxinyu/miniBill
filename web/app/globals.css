@@ -418,6 +418,254 @@ body {
     @apply text-[11px] uppercase tracking-[0.12em] text-muted/70;
   }
 
+  /* —— 年度报告 —— */
+  .annual-report {
+    @apply space-y-3;
+  }
+
+  .annual-report-subtitle {
+    @apply text-[11px] text-muted leading-snug px-0.5 -mt-0.5 mb-0.5;
+  }
+
+  .annual-report-section {
+    @apply notebook p-0 overflow-hidden;
+    animation: scale-in 0.4s var(--ease-out-expo) both;
+    box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
+  }
+
+  .annual-report-section-title {
+    @apply flex items-center gap-2 px-4 pt-3 pb-2 text-[13px] font-medium text-ink;
+    @apply border-b border-line/50;
+  }
+
+  .annual-report-section-badge {
+    @apply text-[10px] font-normal text-muted bg-line/70 px-1.5 py-0.5 rounded-md;
+  }
+
+  .annual-report-section-body {
+    @apply px-4 py-3;
+  }
+
+  .annual-report-section-body-flush {
+    @apply px-0 py-0;
+  }
+
+  .annual-report-hero {
+    @apply bill-card bill-card-current px-4 py-4;
+    animation: scale-in 0.4s var(--ease-out-expo) both;
+  }
+
+  .annual-report-hero-split {
+    @apply grid grid-cols-2 gap-3;
+  }
+
+  .annual-report-hero-stat {
+    @apply min-w-0 text-center;
+  }
+
+  .annual-report-hero-stat-label {
+    @apply text-[11px] text-muted;
+  }
+
+  .annual-report-hero-stat-value {
+    @apply mt-1 text-[15px] font-semibold tabular-nums leading-tight;
+  }
+
+  .annual-report-hero-net {
+    @apply mt-3.5 pt-3.5 border-t border-line/50 flex items-baseline justify-between gap-3;
+  }
+
+  .annual-report-hero-net-label {
+    @apply text-[13px] text-muted shrink-0;
+  }
+
+  .annual-report-hero-net-value {
+    @apply text-xl font-semibold tabular-nums tracking-tight min-w-0 text-right;
+  }
+
+  .annual-report-hero-meta {
+    @apply mt-3 pt-2.5 border-t border-line/40 space-y-2;
+  }
+
+  .annual-report-kv {
+    @apply flex items-baseline justify-between gap-3;
+  }
+
+  .annual-report-kv-label {
+    @apply text-[12px] text-muted shrink-0;
+  }
+
+  .annual-report-kv-value {
+    @apply text-[13px] tabular-nums text-ink text-right min-w-0;
+  }
+
+  .annual-report-row {
+    @apply flex items-start gap-3 px-4 py-2.5;
+    @apply border-b border-line/40 last:border-b-0;
+  }
+
+  .annual-report-row-main {
+    @apply min-w-0 flex-1;
+  }
+
+  .annual-report-row-title {
+    @apply text-[13px] text-ink truncate leading-snug;
+  }
+
+  .annual-report-row-meta {
+    @apply mt-0.5 text-[11px] text-muted truncate leading-snug;
+  }
+
+  .annual-report-row-amount {
+    @apply shrink-0 text-right tabular-nums min-w-[5.5rem];
+  }
+
+  .annual-report-row-amount-primary {
+    @apply text-[13px] font-semibold leading-snug;
+  }
+
+  .annual-report-row-amount-secondary {
+    @apply block mt-0.5 text-[11px] leading-snug text-right;
+  }
+
+  .annual-report-tag-row {
+    @apply px-4 py-2.5 border-b border-line/40 last:border-b-0;
+    @apply grid grid-cols-[minmax(0,1fr)_minmax(4.5rem,5.5rem)] gap-x-3 gap-y-1.5 items-center;
+  }
+
+  .annual-report-tag-name {
+    @apply text-[13px] text-ink truncate min-w-0;
+  }
+
+  .annual-report-tag-count {
+    @apply text-muted ml-1.5 tabular-nums text-[11px];
+  }
+
+  .annual-report-tag-bar-track {
+    @apply relative h-1.5 rounded-full bg-line overflow-hidden col-span-2;
+  }
+
+  .annual-report-tag-bar-stack {
+    @apply flex h-full overflow-hidden rounded-full;
+    @apply transition-[width] duration-500 ease-out;
+  }
+
+  .annual-report-tag-bar-track-broken::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    left: 72%;
+    width: 7px;
+    margin-left: -3.5px;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      -55deg,
+      transparent,
+      transparent 1.5px,
+      #ffffff 1.5px,
+      #ffffff 3px
+    );
+    pointer-events: none;
+  }
+
+  .annual-report-tag-bar-fill {
+    @apply h-full shrink-0 bg-expense;
+  }
+
+  .annual-report-tag-bar-fill-income {
+    @apply h-full shrink-0 bg-income;
+  }
+
+  .annual-report-expand {
+    @apply w-full py-2.5 text-center text-[12px] text-accent;
+    @apply hover:bg-accent-soft/40 transition-colors;
+  }
+
+  .annual-report-rank {
+    @apply inline-flex items-center justify-center w-5 h-5 shrink-0 rounded-full mt-0.5;
+    @apply bg-accent-soft text-accent text-[10px] font-semibold tabular-nums;
+  }
+
+  .annual-report-insight-list {
+    @apply space-y-2;
+  }
+
+  .annual-report-insight {
+    @apply pl-3 py-2 pr-3 rounded-xl bg-accent-soft/45 border-l-2 border-accent/35;
+    @apply text-[13px] text-ink leading-relaxed;
+  }
+
+  .annual-report-chrome {
+    @apply w-full;
+  }
+
+  .annual-report-year-group {
+    @apply flex w-full items-center gap-0;
+  }
+
+  .annual-report-year-group > button:first-child,
+  .annual-report-year-group > button:last-child {
+    @apply px-2.5 py-2 text-lg leading-none text-muted/80 shrink-0;
+    @apply transition-colors duration-200 hover:text-accent;
+    @apply disabled:opacity-30 disabled:pointer-events-none;
+  }
+
+  .annual-report-year-label {
+    @apply flex-1 min-w-0 px-1 py-2 text-[17px] font-semibold text-ink tracking-tight;
+    @apply text-center truncate;
+    @apply transition-colors duration-200 hover:text-accent;
+  }
+
+  .annual-report-badge {
+    @apply text-[10px] px-2 py-0.5 rounded-full bg-accent-soft text-accent font-medium tracking-wide;
+  }
+
+  .annual-report-compare {
+    @apply space-y-1;
+  }
+
+  .annual-report-compare-hint {
+    @apply text-[11px] text-muted mb-2;
+  }
+
+  .annual-report-compare-row {
+    @apply grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2 items-baseline;
+    @apply px-0 py-2.5 border-b border-line/40 last:border-b-0;
+  }
+
+  .annual-report-compare-row-net {
+    @apply -mx-2 px-2 rounded-lg bg-accent-soft/35 border-b-0;
+  }
+
+  .annual-report-compare-label {
+    @apply text-[12px] text-muted;
+  }
+
+  .annual-report-compare-curr {
+    @apply min-w-0;
+  }
+
+  .annual-report-compare-value {
+    @apply text-[14px] font-semibold tabular-nums leading-snug;
+  }
+
+  .annual-report-compare-prev {
+    @apply block mt-0.5 text-[11px] text-muted tabular-nums;
+  }
+
+  .annual-report-compare-delta {
+    @apply text-right shrink-0;
+  }
+
+  .annual-report-compare-delta-amt {
+    @apply block text-[12px] font-medium tabular-nums leading-snug;
+  }
+
+  .annual-report-compare-delta-pct {
+    @apply block mt-0.5 text-[11px] text-muted tabular-nums;
+  }
+
   .fab-wrap {
     @apply fixed z-[60] inset-x-0 flex justify-center;
     @apply bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
@@ -430,7 +678,7 @@ body {
   }
 
   .fab-buttons {
-    @apply relative flex w-full items-stretch justify-center gap-2 px-3;
+    @apply relative flex w-full items-stretch justify-center gap-2;
   }
 
   .fab-glow {
@@ -459,24 +707,43 @@ body {
   }
 
   .transactions-footer {
-    @apply relative flex items-center justify-center min-h-12 mt-4 py-2;
+    @apply fixed z-[55] inset-x-0 flex justify-center;
+    @apply bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
+    @apply px-4 lg:px-8;
+    @apply lg:left-[var(--sidebar-width,16rem)] lg:right-0;
+    @apply lg:transition-[left] lg:duration-300 lg:ease-out;
+  }
+
+  .transactions-footer-inner {
+    @apply flex w-full max-w-3xl items-center justify-between gap-2 px-2 py-2;
+    @apply rounded-2xl border border-line/60 bg-black/[0.06] backdrop-blur-md shadow-panel;
   }
 
   .transactions-footer-nav {
-    @apply absolute top-1/2 -translate-y-1/2 btn-ghost px-2 py-2 text-sm;
+    @apply btn-ghost px-3 py-2 text-sm shrink-0 min-w-[4.5rem];
   }
 
   .transactions-footer-nav-prev {
-    @apply left-0;
+    @apply text-left;
   }
 
   .transactions-footer-nav-next {
-    @apply right-0;
+    @apply text-right;
+  }
+
+  .transactions-footer-nav-spacer {
+    @apply min-w-[4.5rem] shrink-0;
   }
 
   /* —— 记一笔 / 余额登记（与 PageTransition max-w-3xl 同宽，不再内层 max-w-lg）—— */
   .add-form {
     @apply w-full space-y-3 pb-20;
+  }
+
+  .form-page-title {
+    @apply text-xl font-semibold text-ink tracking-tight pl-3;
+    @apply border-l-[3px] border-accent;
+    animation: fade-in 0.3s var(--ease-out-expo) both;
   }
 
   .form-hero {

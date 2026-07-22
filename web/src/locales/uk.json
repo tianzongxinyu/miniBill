@@ -38,7 +38,8 @@
     "saveFailed": "Не вдалося зберегти",
     "deleteFailed": "Не вдалося видалити",
     "removeItem": "Видалити {{name}}",
-    "removeContact": "Видалити контакт {{name}}"
+    "removeContact": "Видалити контакт {{name}}",
+    "selectYear": "Обрати рік"
   },
   "nav": {
     "home": "Головна",
@@ -48,7 +49,8 @@
     "logout": "Вийти",
     "expandSidebar": "Розгорнути",
     "collapseSidebar": "Згорнути",
-    "collapseSidebarLabel": "Згорнути"
+    "collapseSidebarLabel": "Згорнути",
+    "annual": "Річний"
   },
   "auth": {
     "welcomeBack": "З поверненням",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Відпустіть, щоб оновити",
     "refreshing": "Оновлення",
     "emptyTitle": "Ще немає рахунків",
-    "emptyHint": "Додайте транзакцію — тут з'являться місячні підсумки"
+    "emptyHint": "Додайте транзакцію — тут з'являться місячні підсумки",
+    "registerBalanceHint": "Баланс {{month}} не зареєстровано",
+    "registerBalanceHintDetail": "Зареєструйте, щоб оцінити щоденні витрати",
+    "trendTitle": "Останні пів року",
+    "viewStats": "Статистика",
+    "trendEmpty": "Додайте дані за кілька місяців, щоб побачити тренд",
+    "lastMonthExpense": "Витрати минулого місяця",
+    "thisMonthExpense": "Витрати цього місяця",
+    "expenseChange": "до минулого місяця",
+    "thisMonth": "Цей місяць",
+    "recentContacts": "Нещодавні контакти",
+    "recentTitle": "Операції цього місяця",
+    "recentAll": "Усі",
+    "recentEmpty": "Немає операцій цього місяця",
+    "pastTitle": "Минулі місяці",
+    "hotTags": "Популярні теги",
+    "hotContacts": "Популярні контакти",
+    "hotTagAll": "Усі",
+    "hotTagExpense": "Витрати",
+    "hotTagIncome": "Дохід",
+    "hotTagIncomeShort": "Дох.",
+    "hotTagExpenseShort": "Вит.",
+    "trendHalfYear": "Пів року",
+    "trendOneYear": "1 рік"
   },
   "transactions": {
     "empty": "Немає транзакцій",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} місячних балансів",
     "importSummarySkippedDaily": "пропущено {{count}} рядків щоденних витрат",
     "importSummaryCreatedTags": "створено {{count}} тегів",
-    "importSummaryCreatedContacts": "створено {{count}} контактів"
+    "importSummaryCreatedContacts": "створено {{count}} контактів",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Нд",
@@ -371,5 +423,41 @@
     "flowIncome": "Дохід",
     "flowExpense": "Витрата",
     "balanceMarker": "Місячний баланс"
+  },
+  "annualReport": {
+    "nav": "Річний",
+    "title": "Річний звіт {{year}}",
+    "subtitle": "Автоматичне зведення вашої книги за рік.",
+    "prototypeBadge": "Прототип · тестові дані",
+    "prevYear": "Попередній рік",
+    "nextYear": "Наступний рік",
+    "sectionSummary": "Підсумки року",
+    "sectionByTag": "За тегами",
+    "sectionTopTx": "Великі суми (Топ 5)",
+    "sectionTopContacts": "Контакти (Топ 5)",
+    "sectionCompare": "До попереднього року",
+    "sectionInsights": "Висновки",
+    "dailyExpense": "Щоденні витрати",
+    "startBalance": "Залишок на початок",
+    "endBalance": "Залишок на кінець",
+    "untagged": "Без тега",
+    "txCount": "{{count}} оп.",
+    "noNote": "(без нотатки)",
+    "noCompare": "Немає даних попереднього року для порівняння.",
+    "noContacts": "Немає операцій, пов’язаних із контактами, цього року.",
+    "compareWith": "Порівняння з {{year}}",
+    "compareDelta": "Зміна",
+    "insights": {
+      "net_positive": "Чистий дохід за рік додатний ({{amount}}).",
+      "net_negative": "Витрати перевищили доходи ({{amount}}).",
+      "yoy_income_up": "Доходи зросли на {{pct}}% до {{prev_year}}.",
+      "yoy_income_down": "Доходи зменшились на {{pct}}% до {{prev_year}}.",
+      "top_expense_tag": "Найбільший тег витрат: {{tag}} ({{amount}}).",
+      "largest_tx": "Найбільша операція: {{amount}} від {{date}}.",
+      "expense_over_income": "Сума витрат перевищила суму доходів."
+    },
+    "expandTags": "Показати всі ({{count}})",
+    "collapseTags": "Згорнути",
+    "axisBroken": "Розрив осі"
   }
 }

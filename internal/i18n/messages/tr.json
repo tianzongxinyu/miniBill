@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Dosya okunamıyor",
   "error.csv_too_large": "CSV dosyası çok büyük",
   "error.csv_upload_required": "Lütfen bir CSV dosyası yükleyin",
+  "error.csv_mapping_invalid": "Geçersiz CSV sütun eşlemesi",
   "error.cursor_after_exclusive": "cursor ve after birlikte kullanılamaz",
   "error.cursor_yyyy": "cursor YYYY olmalı",
   "error.cursor_yyyy_mm": "cursor YYYY-MM olmalı",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Bakiye negatif olamaz",
   "validation.color_bg_only": "Yalnızca color_bg güncellenebilir",
   "validation.csv_columns": "Satırda çok az sütun var",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV satır sınırı aşıldı",
   "validation.daily_expense_tag": "Sistem etiketi \"Günlük gider\" kullanılamaz",
   "validation.date_after_today": "Tarih bugünden sonra olamaz",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Güncellenecek alan yok",
   "validation.tag_name_empty": "Etiket adı boş olamaz",
   "validation.tx_date_format": "İşlem tarihi YYYY-MM-DD olmalı",
-  "validation.year_month_required": "Yıl ve ay gerekli"
+  "validation.year_month_required": "Yıl ve ay gerekli",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { CsvImportMappingDialog } from '@/components/data/CsvImportMappingDialog';
+import type { CsvImportConfirmOpts } from '@/components/data/CsvImportMappingDialog';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -17,6 +19,11 @@ import {
   type BackupFilesPage,
   type LedgerImportResult,
 } from '@/lib/api';
+import {
+  mappingToApiPayload,
+  parseCsvImportPreview,
+  type CsvImportPreview,
+} from '@/lib/csvImportPreview';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import { formatApiError } from '@/lib/errors';
 
@@ -146,6 +153,7 @@ function DataContent() {
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [importPreview, setImportPreview] = useState<CsvImportPreview | null>(null);
   const [importing, setImporting] = useState(false);
 
   const [backupPage, setBackupPage] = useState<BackupFilesPage | null>(null);
@@ -162,6 +170,12 @@ function DataContent() {
       ];
       if (r.skipped_daily_expense > 0) {
         parts.push(t('data.importSummarySkippedDaily', { count: r.skipped_daily_expense }));
+      }
+      if (r.skipped_duplicates > 0) {
+        parts.push(t('data.importSummarySkippedDuplicates', { count: r.skipped_duplicates }));
+      }
+      if (r.derived_balances > 0) {
+        parts.push(t('data.importSummaryDerivedBalances', { count: r.derived_balances }));
       }
       if (r.created_tags > 0) {
         parts.push(t('data.importSummaryCreatedTags', { count: r.created_tags }));
@@ -208,28 +222,42 @@ function DataContent() {
     }
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
     setError('');
     setMsg('');
-    setPendingFile(file);
+    try {
+      const preview = await parseCsvImportPreview(file);
+      setPendingFile(file);
+      setImportPreview(preview);
+    } catch {
+      setError(t('data.csvParseFailed'));
+      setPendingFile(null);
+      setImportPreview(null);
+    }
   };
 
-  const onConfirmImport = async () => {
+  const onConfirmImport = async (opts: CsvImportConfirmOpts) => {
     if (!pendingFile) return;
     setImporting(true);
     setError('');
     setMsg('');
     try {
-      const result = await importLedgerCSV(pendingFile);
+      const result = await importLedgerCSV(pendingFile, {
+        mapping: mappingToApiPayload(opts.mapping),
+        keepHistory: opts.keepHistory,
+        deriveBalances: opts.deriveBalances,
+        openingBalance: opts.openingBalance,
+      });
       setMsg(t('data.importComplete', { summary: formatImportSummary(result) }));
+      setPendingFile(null);
+      setImportPreview(null);
     } catch (err) {
       setError(formatApiError(err, t('data.importFailed')));
     } finally {
       setImporting(false);
-      setPendingFile(null);
     }
   };
 
@@ -282,7 +310,7 @@ function DataContent() {
 
         <div className="border-t border-line pt-4 space-y-2">
           <h2 className="font-medium text-sm text-ink">{t('data.importTitle')}</h2>
-          <p className="text-xs text-muted">{t('data.importDescription')}</p>
+          <p className="text-xs text-muted">{t('data.importDescriptionMapped')}</p>
           <input
             ref={fileRef}
             type="file"
@@ -324,15 +352,17 @@ function DataContent() {
         onClose={() => setBackupPickerOpen(false)}
       />
 
-      <ConfirmDialog
-        open={pendingFile !== null}
-        title={t('data.confirmImportTitle')}
-        message={t('data.confirmImportMessage', { filename: pendingFile?.name ?? '' })}
-        confirmLabel={t('data.confirmImport')}
+      <CsvImportMappingDialog
+        open={pendingFile !== null && importPreview !== null}
+        filename={pendingFile?.name ?? ''}
+        preview={importPreview}
         confirming={importing}
-        onConfirm={() => void onConfirmImport()}
+        onConfirm={(opts) => void onConfirmImport(opts)}
         onClose={() => {
-          if (!importing) setPendingFile(null);
+          if (!importing) {
+            setPendingFile(null);
+            setImportPreview(null);
+          }
         }}
       />
 

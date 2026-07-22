@@ -73,13 +73,11 @@ func NewLedgerCSVService(txSvc *TransactionService, stats *StatsService, metaSto
 type ImportResult struct {
 	ImportedTransactions int `json:"imported_transactions"`
 	ImportedBalances     int `json:"imported_balances"`
+	DerivedBalances      int `json:"derived_balances"`
 	SkippedDailyExpense  int `json:"skipped_daily_expense"`
+	SkippedDuplicates    int `json:"skipped_duplicates"`
 	CreatedTags          int `json:"created_tags"`
 	CreatedContacts      int `json:"created_contacts"`
-}
-
-type csvRawRow struct {
-	cols []string
 }
 
 type parsedTx struct {
@@ -238,202 +236,6 @@ func flushWriter(w io.Writer) {
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()
 	}
-}
-
-func (s *LedgerCSVService) ImportReplace(db *sql.DB, userID int64, r io.Reader) (*ImportResult, error) {
-	cr := csv.NewReader(r)
-	cr.FieldsPerRecord = -1
-	header, err := cr.Read()
-	if err != nil {
-		return nil, fmt.Errorf("%w: invalid_csv_header", ErrValidation)
-	}
-	if err := validateCSVHeader(header); err != nil {
-		return nil, err
-	}
-
-	txBuckets := map[string][]csvRawRow{}
-	balanceByMonth := map[string]pendingBalance{}
-	result := &ImportResult{}
-	rowCount := 0
-
-	for {
-		record, err := cr.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("%w: %v", ErrValidation, err)
-		}
-		rowCount++
-		if rowCount > MaxLedgerCSVImportRows {
-			return nil, fmt.Errorf("%w: csv_row_limit", ErrValidation)
-		}
-		if len(record) < 6 {
-			return nil, fmt.Errorf("%w: csv_columns", ErrValidation)
-		}
-		for len(record) < 6 {
-			record = append(record, "")
-		}
-		row := csvRawRow{cols: record[:6]}
-		note := strings.TrimSpace(row.cols[5])
-		date := strings.TrimSpace(row.cols[0])
-
-		if note == balanceNoteMarker("zh-Hans") || note == balanceNoteMarker("en") {
-			if !isYearMonth(date) {
-				return nil, fmt.Errorf("%w: balance_date_format", ErrValidation)
-			}
-			ym, err := parseYearMonthKey(date)
-			if err != nil {
-				return nil, err
-			}
-			bal, err := parseYuanToCents(row.cols[2])
-			if err != nil {
-				return nil, err
-			}
-			if bal < 0 {
-				return nil, fmt.Errorf("%w: balance_negative", ErrValidation)
-			}
-			if _, exists := balanceByMonth[date]; exists {
-				return nil, fmt.Errorf("%w: duplicate_balance", ErrValidation)
-			}
-			balanceByMonth[date] = pendingBalance{year: ym.Year, month: ym.Month, balance: bal}
-			continue
-		}
-
-		if tagsFieldHasDailyExpense(row.cols[3]) {
-			result.SkippedDailyExpense++
-			continue
-		}
-
-		if !isFullDate(date) {
-			return nil, fmt.Errorf("%w: tx_date_format", ErrValidation)
-		}
-		monthKey := date[:7]
-		txBuckets[monthKey] = append(txBuckets[monthKey], row)
-	}
-
-	txSQL, err := db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = txSQL.Rollback() }()
-
-	if err := clearLedgerData(txSQL); err != nil {
-		return nil, err
-	}
-
-	meta := s.metaStore.ForUser(userID)
-	if err := meta.WarmTagsAndContacts(txSQL); err != nil {
-		return nil, err
-	}
-
-	monthKeys := sortedMapKeys(txBuckets)
-	recalcMonths := map[domain.YearMonth]bool{}
-
-	for _, monthKey := range monthKeys {
-		rawRows := txBuckets[monthKey]
-		parsed, err := s.parseMonthTxs(txSQL, rawRows, meta, result)
-		if err != nil {
-			return nil, err
-		}
-		if err := insertMonthTxs(txSQL, parsed); err != nil {
-			return nil, err
-		}
-		result.ImportedTransactions += len(parsed)
-		ym, _ := parseYearMonthKey(monthKey)
-		recalcMonths[ym] = true
-	}
-
-	balMonthKeys := sortedMapKeys(balanceByMonth)
-	for _, key := range balMonthKeys {
-		b := balanceByMonth[key]
-		_, err := txSQL.Exec(`
-			INSERT INTO monthly_balances (year, month, balance, note, updated_at)
-			VALUES (?, ?, ?, '', datetime('now'))`,
-			b.year, b.month, b.balance)
-		if err != nil {
-			return nil, err
-		}
-		result.ImportedBalances++
-		ym := domain.YearMonth{Year: b.year, Month: b.month}
-		recalcMonths[ym] = true
-		recalcMonths[domain.NextMonth(ym)] = true
-	}
-
-	if err := rebuildAllUsageCounts(txSQL); err != nil {
-		return nil, err
-	}
-
-	if err := txSQL.Commit(); err != nil {
-		return nil, err
-	}
-	if err := s.recalcMonthsOnDB(db, recalcMonths); err != nil {
-		return nil, err
-	}
-	s.metaStore.Invalidate(userID)
-	return result, nil
-}
-
-func (s *LedgerCSVService) parseMonthTxs(
-	tx *sql.Tx,
-	rawRows []csvRawRow,
-	meta *cache.LedgerMeta,
-	result *ImportResult,
-) ([]parsedTx, error) {
-	now := s.now()
-	out := make([]parsedTx, 0, len(rawRows))
-	for _, row := range rawRows {
-		date := strings.TrimSpace(row.cols[0])
-		flow := strings.TrimSpace(row.cols[1])
-		typ, err := parseCSVFlow(flow)
-		if err != nil {
-			return nil, err
-		}
-		amount, err := parseYuanToCents(row.cols[2])
-		if err != nil {
-			return nil, err
-		}
-		date = formatCSVDate(date)
-		tagNames := splitTagNames(row.cols[3])
-		contactName := strings.TrimSpace(row.cols[4])
-		note := row.cols[5]
-
-		var contactID *int64
-		if contactName != "" {
-			id, err := meta.ResolveContactID(tx, contactName, &result.CreatedContacts)
-			if err != nil {
-				return nil, err
-			}
-			contactID = id
-		}
-
-		tagIDs := make([]int64, 0, len(tagNames))
-		for _, name := range tagNames {
-			n := strings.TrimSpace(name)
-			if n == "" {
-				return nil, fmt.Errorf("%w: tag_name_empty", ErrValidation)
-			}
-			id, err := meta.ResolveTagID(tx, n, &result.CreatedTags)
-			if err != nil {
-				return nil, err
-			}
-			tagIDs = append(tagIDs, id)
-		}
-
-		if err := validateImportTx(date, typ, amount, now); err != nil {
-			return nil, err
-		}
-
-		out = append(out, parsedTx{
-			amount:    amount,
-			typ:       typ,
-			date:      date,
-			note:      note,
-			contactID: contactID,
-			tagIDs:    tagIDs,
-		})
-	}
-	return out, nil
 }
 
 func (s *LedgerCSVService) recalcMonthsOnDB(db *sql.DB, months map[domain.YearMonth]bool) error {
@@ -614,21 +416,17 @@ func parseYuanToCents(s string) (int64, error) {
 	return int64(math.Round(f * 100)), nil
 }
 
+// ParseYuanToCents parses a yuan amount string into cents (for multipart form helpers).
+func ParseYuanToCents(s string) (int64, error) {
+	return parseYuanToCents(s)
+}
+
 func isYearMonth(s string) bool {
 	s = strings.TrimSpace(s)
 	if len(s) != 7 || s[4] != '-' {
 		return false
 	}
 	_, err := time.Parse("2006-01", s)
-	return err == nil
-}
-
-func isFullDate(s string) bool {
-	s = strings.TrimSpace(s)
-	if len(s) != 10 {
-		return false
-	}
-	_, err := time.Parse("2006-01-02", s)
 	return err == nil
 }
 

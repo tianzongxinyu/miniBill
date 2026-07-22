@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Не вдалося прочитати файл",
   "error.csv_too_large": "Файл CSV занадто великий",
   "error.csv_upload_required": "Завантажте файл CSV",
+  "error.csv_mapping_invalid": "Невірне зіставлення стовпців CSV",
   "error.cursor_after_exclusive": "cursor і after не можна використовувати разом",
   "error.cursor_yyyy": "cursor має бути YYYY",
   "error.cursor_yyyy_mm": "cursor має бути YYYY-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Баланс не може бути від'ємним",
   "validation.color_bg_only": "Можна оновлювати лише color_bg",
   "validation.csv_columns": "У рядку замало стовпців",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "Перевищено ліміт рядків CSV",
   "validation.daily_expense_tag": "Неможливо використати системний тег \"Щоденні витрати\"",
   "validation.date_after_today": "Дата не може бути пізнішою за сьогодні",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Немає полів для оновлення",
   "validation.tag_name_empty": "Назва тега не може бути порожньою",
   "validation.tx_date_format": "Дата транзакції має бути YYYY-MM-DD",
-  "validation.year_month_required": "Потрібні рік і місяць"
+  "validation.year_month_required": "Потрібні рік і місяць",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

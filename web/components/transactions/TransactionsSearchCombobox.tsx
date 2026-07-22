@@ -69,6 +69,10 @@ export function TransactionsSearchCombobox({
   }, []);
 
   useEffect(() => {
+    void ensureCandidates();
+  }, [ensureCandidates]);
+
+  useEffect(() => {
     const refresh = () => {
       void ensureCandidates();
     };

@@ -20,10 +20,11 @@
   "error.csv_read_failed": "無法讀取文件",
   "error.csv_too_large": "CSV 文件過大",
   "error.csv_upload_required": "請上傳 CSV 文件",
+  "error.csv_mapping_invalid": "CSV 欄位對應無效",
   "error.cursor_after_exclusive": "cursor 與 after 不能同時使用",
   "error.cursor_yyyy": "游標須為 YYYY",
   "error.cursor_yyyy_mm": "游標須為 YYYY-MM",
-  "error.internal": "伺服器內部錯誤",
+  "error.internal": "服務器內部錯誤",
   "error.invalid_body": "請求體無效",
   "error.invalid_credentials": "用戶名或密碼錯誤",
   "error.invalid_id": "無效的 ID",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "餘額不能為負",
   "validation.color_bg_only": "僅支持修改 color_bg",
   "validation.csv_columns": "行字段不足",
+  "validation.csv_mapping_required": "請對應日期、流向與金額欄",
+  "validation.csv_mapping_index": "欄索引超出範圍",
+  "validation.csv_mapping_column": "找不到對應的欄名",
+  "validation.csv_too_large": "CSV 文件過大",
   "validation.csv_row_limit": "CSV 行數超過上限",
   "validation.daily_expense_tag": "不可使用系統標籤「日常支出」",
   "validation.date_after_today": "日期不能晚於今天",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "無更新字段",
   "validation.tag_name_empty": "標籤名不能為空",
   "validation.tx_date_format": "流水日期須為 YYYY-MM-DD",
-  "validation.year_month_required": "缺少年份和月份"
+  "validation.year_month_required": "缺少年份和月份",
+  "validation.opening_balance_required": "推算月度餘額須填寫期初"
 }

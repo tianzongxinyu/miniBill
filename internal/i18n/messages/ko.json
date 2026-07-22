@@ -20,6 +20,7 @@
   "error.csv_read_failed": "파일을 읽을 수 없습니다",
   "error.csv_too_large": "CSV 파일이 너무 큽니다",
   "error.csv_upload_required": "CSV 파일을 업로드하세요",
+  "error.csv_mapping_invalid": "CSV 열 매핑이 올바르지 않습니다",
   "error.cursor_after_exclusive": "cursor와 after는 동시에 사용할 수 없습니다",
   "error.cursor_yyyy": "커서는 YYYY 형식이어야 합니다",
   "error.cursor_yyyy_mm": "커서는 YYYY-MM 형식이어야 합니다",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "잔액은 음수일 수 없습니다",
   "validation.color_bg_only": "color_bg만 수정할 수 있습니다",
   "validation.csv_columns": "열 수가 부족합니다",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV 행 수 제한을 초과했습니다",
   "validation.daily_expense_tag": "시스템 태그 「일일 지출」은 사용할 수 없습니다",
   "validation.date_after_today": "날짜는 오늘 이후일 수 없습니다",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "수정할 항목이 없습니다",
   "validation.tag_name_empty": "태그 이름을 비울 수 없습니다",
   "validation.tx_date_format": "거래 날짜는 YYYY-MM-DD 형식이어야 합니다",
-  "validation.year_month_required": "연도와 월은 필수입니다"
+  "validation.year_month_required": "연도와 월은 필수입니다",
+  "validation.opening_balance_required": "월별 잔액 추산에 기초 잔액이 필요합니다"
 }

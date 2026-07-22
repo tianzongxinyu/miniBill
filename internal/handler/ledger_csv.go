@@ -3,10 +3,12 @@ package handler
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -52,10 +54,34 @@ func (s *Server) importLedgerCSV(c *gin.Context) {
 	}
 	defer f.Close()
 
+	opts := service.CSVImportOpts{}
+	if v := strings.TrimSpace(c.PostForm("keep_history")); v == "1" || strings.EqualFold(v, "true") {
+		opts.KeepHistory = true
+	}
+	if v := strings.TrimSpace(c.PostForm("derive_balances")); v == "1" || strings.EqualFold(v, "true") {
+		opts.DeriveBalances = true
+	}
+	if raw := strings.TrimSpace(c.PostForm("mapping")); raw != "" {
+		if err := json.Unmarshal([]byte(raw), &opts.Mapping); err != nil {
+			JSONValidation(c, i18n.T(localeFromHeader(c), "error.csv_mapping_invalid"))
+			return
+		}
+	}
+	if opts.DeriveBalances {
+		if ob := strings.TrimSpace(c.PostForm("opening_balance")); ob != "" {
+			cents, err := service.ParseYuanToCents(ob)
+			if err != nil {
+				JSONValidation(c, i18n.T(localeFromHeader(c), "validation.invalid_amount"))
+				return
+			}
+			opts.OpeningBalance = &cents
+		}
+	}
+
 	s.withLedger(c, func(db *sql.DB) {
 		userID := middleware.GetUserID(c)
 		limited := io.LimitReader(f, service.MaxLedgerCSVImportBytes)
-		result, err := s.ledgerCSVSvc.ImportReplace(db, userID, limited)
+		result, err := s.ledgerCSVSvc.ImportCSV(db, userID, limited, opts)
 		if serviceErr(c, err) {
 			return
 		}

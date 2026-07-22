@@ -40,28 +40,34 @@ export function TransactionsFooter({
 
   return (
     <div className="transactions-footer">
-      {canPrev ? (
-        <button
-          type="button"
-          className="transactions-footer-nav transactions-footer-nav-prev"
-          onClick={() => onMonthChange(prev)}
-        >
-          {t('transactions.prevMonth')}
-        </button>
-      ) : null}
-      <Link href={addHref} className="fab-button fab-button-compact">
-        <PlusIcon />
-        <span>{t('transactions.addOne')}</span>
-      </Link>
-      {canNext ? (
-        <button
-          type="button"
-          className="transactions-footer-nav transactions-footer-nav-next"
-          onClick={() => onMonthChange(next)}
-        >
-          {t('transactions.nextMonth')}
-        </button>
-      ) : null}
+      <div className="transactions-footer-inner">
+        {canPrev ? (
+          <button
+            type="button"
+            className="transactions-footer-nav transactions-footer-nav-prev"
+            onClick={() => onMonthChange(prev)}
+          >
+            {t('transactions.prevMonth')}
+          </button>
+        ) : (
+          <span className="transactions-footer-nav-spacer" aria-hidden />
+        )}
+        <Link href={addHref} className="fab-button fab-button-compact">
+          <PlusIcon />
+          <span>{t('transactions.addOne')}</span>
+        </Link>
+        {canNext ? (
+          <button
+            type="button"
+            className="transactions-footer-nav transactions-footer-nav-next"
+            onClick={() => onMonthChange(next)}
+          >
+            {t('transactions.nextMonth')}
+          </button>
+        ) : (
+          <span className="transactions-footer-nav-spacer" aria-hidden />
+        )}
+      </div>
     </div>
   );
 }

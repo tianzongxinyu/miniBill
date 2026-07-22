@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
-const NAV_ORDER = ['/', '/transactions/', '/stats/', '/profile/'];
+const NAV_ORDER = ['/', '/transactions/', '/stats/', '/stats/annual/', '/profile/'];
 
 function navIndex(pathname: string): number {
   if (pathname === '/') return 0;

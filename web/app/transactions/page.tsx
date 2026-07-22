@@ -162,7 +162,7 @@ function TransactionsContent() {
   );
 
   return (
-    <div className="pb-16">
+    <div className="pb-28 lg:pb-24">
       <TransactionsToolbar
         note={noteQuery}
         onNoteChange={setNoteQuery}

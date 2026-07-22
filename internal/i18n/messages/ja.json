@@ -20,6 +20,7 @@
   "error.csv_read_failed": "ファイルを読み取れません",
   "error.csv_too_large": "CSV ファイルが大きすぎます",
   "error.csv_upload_required": "CSV ファイルをアップロードしてください",
+  "error.csv_mapping_invalid": "CSV の列マッピングが無効です",
   "error.cursor_after_exclusive": "cursor と after は同時に指定できません",
   "error.cursor_yyyy": "カーソルは YYYY 形式である必要があります",
   "error.cursor_yyyy_mm": "カーソルは YYYY-MM 形式である必要があります",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "残高はマイナスにできません",
   "validation.color_bg_only": "color_bg のみ更新できます",
   "validation.csv_columns": "列数が不足しています",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV の行数上限を超えました",
   "validation.daily_expense_tag": "システムタグ「日次支出」は使用できません",
   "validation.date_after_today": "日付は今日より後にできません",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "更新する項目がありません",
   "validation.tag_name_empty": "タグ名を空にできません",
   "validation.tx_date_format": "取引日は YYYY-MM-DD 形式である必要があります",
-  "validation.year_month_required": "年と月は必須です"
+  "validation.year_month_required": "年と月は必須です",
+  "validation.opening_balance_required": "月次残高の推計には期首残高が必要です"
 }

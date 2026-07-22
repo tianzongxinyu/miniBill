@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Impossibile leggere il file",
   "error.csv_too_large": "File CSV troppo grande",
   "error.csv_upload_required": "Carica un file CSV",
+  "error.csv_mapping_invalid": "Mappatura colonne CSV non valida",
   "error.cursor_after_exclusive": "cursor e after sono mutuamente esclusivi",
   "error.cursor_yyyy": "Il cursore deve essere nel formato AAAA",
   "error.cursor_yyyy_mm": "Il cursore deve essere nel formato AAAA-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Il saldo non può essere negativo",
   "validation.color_bg_only": "È possibile aggiornare solo color_bg",
   "validation.csv_columns": "La riga ha troppe poche colonne",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "Limite righe CSV superato",
   "validation.daily_expense_tag": "Non è possibile usare l'etichetta di sistema \"Spesa giornaliera\"",
   "validation.date_after_today": "La data non può essere successiva a oggi",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Nessun campo da aggiornare",
   "validation.tag_name_empty": "Il nome dell'etichetta non può essere vuoto",
   "validation.tx_date_format": "La data della transazione deve essere nel formato AAAA-MM-GG",
-  "validation.year_month_required": "Anno e mese obbligatori"
+  "validation.year_month_required": "Anno e mese obbligatori",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

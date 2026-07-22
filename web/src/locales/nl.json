@@ -38,7 +38,8 @@
     "saveFailed": "Opslaan mislukt",
     "deleteFailed": "Verwijderen mislukt",
     "removeItem": "{{name}} verwijderen",
-    "removeContact": "Contact {{name}} verwijderen"
+    "removeContact": "Contact {{name}} verwijderen",
+    "selectYear": "Jaar kiezen"
   },
   "nav": {
     "home": "Start",
@@ -48,7 +49,8 @@
     "logout": "Uitloggen",
     "expandSidebar": "Uitklappen",
     "collapseSidebar": "Inklappen",
-    "collapseSidebarLabel": "Inklappen"
+    "collapseSidebarLabel": "Inklappen",
+    "annual": "Jaarrapport"
   },
   "auth": {
     "welcomeBack": "Welkom terug",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Loslaten om te vernieuwen",
     "refreshing": "Vernieuwen",
     "emptyTitle": "Nog geen boekingen",
-    "emptyHint": "Voeg een transactie toe en maandelijkse overzichten verschijnen hier"
+    "emptyHint": "Voeg een transactie toe en maandelijkse overzichten verschijnen hier",
+    "registerBalanceHint": "Saldo {{month}} niet geregistreerd",
+    "registerBalanceHintDetail": "Registreer om dagelijkse uitgaven te schatten",
+    "trendTitle": "Afgelopen halfjaar",
+    "viewStats": "Statistieken",
+    "trendEmpty": "Voeg enkele maanden data toe om trends te zien",
+    "lastMonthExpense": "Uitgaven vorige maand",
+    "thisMonthExpense": "Uitgaven deze maand",
+    "expenseChange": "t.o.v. vorige maand",
+    "thisMonth": "Deze maand",
+    "recentContacts": "Recente contacten",
+    "recentTitle": "Boekingen deze maand",
+    "recentAll": "Alles",
+    "recentEmpty": "Geen boekingen deze maand",
+    "pastTitle": "Eerdere maanden",
+    "hotTags": "Populaire tags",
+    "hotContacts": "Populaire contacten",
+    "hotTagAll": "Alles",
+    "hotTagExpense": "Uit",
+    "hotTagIncome": "In",
+    "hotTagIncomeShort": "In",
+    "hotTagExpenseShort": "Uit",
+    "trendHalfYear": "Halfjaar",
+    "trendOneYear": "1 jaar"
   },
   "transactions": {
     "empty": "Geen transacties",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} maandsaldi",
     "importSummarySkippedDaily": "{{count}} dagelijkse uitgavenrijen overgeslagen",
     "importSummaryCreatedTags": "{{count}} tags aangemaakt",
-    "importSummaryCreatedContacts": "{{count}} contacten aangemaakt"
+    "importSummaryCreatedContacts": "{{count}} contacten aangemaakt",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Zo",
@@ -371,5 +423,41 @@
     "flowIncome": "Inkomsten",
     "flowExpense": "Uitgaven",
     "balanceMarker": "Maandsaldo"
+  },
+  "annualReport": {
+    "nav": "Jaarrapport",
+    "title": "Jaarverslag {{year}}",
+    "subtitle": "Automatische samenvatting van je boekjaar.",
+    "prototypeBadge": "Prototype · voorbeelddata",
+    "prevYear": "Vorig jaar",
+    "nextYear": "Volgend jaar",
+    "sectionSummary": "Jaartotalen",
+    "sectionByTag": "Per tag",
+    "sectionTopTx": "Grootste bedragen (Top 5)",
+    "sectionTopContacts": "Contacten (Top 5)",
+    "sectionCompare": "Vs vorig jaar",
+    "sectionInsights": "Samenvatting",
+    "dailyExpense": "Dagelijkse uitgaven",
+    "startBalance": "Beginsaldo",
+    "endBalance": "Eindsaldo",
+    "untagged": "Zonder tag",
+    "txCount": "{{count}} trans.",
+    "noNote": "(geen notitie)",
+    "noCompare": "Geen gegevens van vorig jaar om te vergelijken.",
+    "noContacts": "Geen contactgebonden transacties dit jaar.",
+    "compareWith": "Vergeleken met {{year}}",
+    "compareDelta": "Verschil",
+    "insights": {
+      "net_positive": "Het netto-inkomen was positief ({{amount}}).",
+      "net_negative": "De uitgaven overtroffen de inkomsten ({{amount}}).",
+      "yoy_income_up": "Inkomsten stegen {{pct}}% t.o.v. {{prev_year}}.",
+      "yoy_income_down": "Inkomsten daalden {{pct}}% t.o.v. {{prev_year}}.",
+      "top_expense_tag": "Grootste uitgavetag: {{tag}} ({{amount}}).",
+      "largest_tx": "Grootste transactie: {{amount}} op {{date}}.",
+      "expense_over_income": "Totale uitgaven overtroffen totale inkomsten."
+    },
+    "expandTags": "Alles tonen ({{count}})",
+    "collapseTags": "Minder tonen",
+    "axisBroken": "As onderbroken"
   }
 }

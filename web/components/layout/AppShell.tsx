@@ -19,7 +19,12 @@ function readSidebarCollapsed(): boolean {
 
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(href.replace(/\/$/, ''));
+  // /stats/ must not match /stats/annual/
+  if (href === '/stats/') {
+    return pathname === '/stats' || pathname === '/stats/';
+  }
+  const base = href.replace(/\/$/, '');
+  return pathname === href || pathname === base || pathname.startsWith(base + '/');
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -33,6 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       { href: '/', label: t('nav.home'), icon: HomeIcon },
       { href: '/transactions/', label: t('nav.transactions'), icon: ListIcon },
       { href: '/stats/', label: t('nav.stats'), icon: ChartIcon },
+      { href: '/stats/annual/', label: t('nav.annual'), icon: AnnualIcon },
       { href: '/profile/', label: t('nav.profile'), icon: UserIcon },
     ],
     [t]
@@ -147,7 +153,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 text-[10px] px-4 py-1.5 rounded-2xl transition-all duration-200 ${
+              className={`flex flex-col items-center gap-0.5 text-[10px] px-2 sm:px-3 py-1.5 rounded-2xl transition-all duration-200 ${
                 active
                   ? 'text-accent font-medium bg-accent-soft'
                   : 'text-muted hover:text-accent/70'
@@ -205,6 +211,16 @@ function ChartIcon({ active }: IconProps) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={`shrink-0 transition-colors duration-200 ${iconClass(active)}`}>
       <path d="M4 20V10M10 20V4M16 20v-8M22 20H2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function AnnualIcon({ active }: IconProps) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={`shrink-0 transition-colors duration-200 ${iconClass(active)}`}>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M8 3v4M16 3v4M4 10h16" strokeLinecap="round" />
+      <path d="M9 14h2M13 14h2M9 17h6" strokeLinecap="round" />
     </svg>
   );
 }

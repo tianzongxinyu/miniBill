@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Cannot read file",
   "error.csv_too_large": "CSV file is too large",
   "error.csv_upload_required": "Please upload a CSV file",
+  "error.csv_mapping_invalid": "Invalid CSV column mapping",
   "error.cursor_after_exclusive": "cursor and after are mutually exclusive",
   "error.cursor_yyyy": "Cursor must be YYYY",
   "error.cursor_yyyy_mm": "Cursor must be YYYY-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Balance cannot be negative",
   "validation.color_bg_only": "Only color_bg can be updated",
   "validation.csv_columns": "Row has too few columns",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "CSV row limit exceeded",
   "validation.daily_expense_tag": "Cannot use system tag \"Daily expense\"",
   "validation.date_after_today": "Date cannot be after today",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "No fields to update",
   "validation.tag_name_empty": "Tag name cannot be empty",
   "validation.tx_date_format": "Transaction date must be YYYY-MM-DD",
-  "validation.year_month_required": "Year and month are required"
+  "validation.year_month_required": "Year and month are required",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }

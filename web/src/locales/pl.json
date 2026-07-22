@@ -38,7 +38,8 @@
     "saveFailed": "Zapis nie powiódł się",
     "deleteFailed": "Usuwanie nie powiodło się",
     "removeItem": "Usuń {{name}}",
-    "removeContact": "Usuń kontakt {{name}}"
+    "removeContact": "Usuń kontakt {{name}}",
+    "selectYear": "Wybierz rok"
   },
   "nav": {
     "home": "Strona główna",
@@ -48,7 +49,8 @@
     "logout": "Wyloguj",
     "expandSidebar": "Rozwiń",
     "collapseSidebar": "Zwiń",
-    "collapseSidebarLabel": "Zwiń"
+    "collapseSidebarLabel": "Zwiń",
+    "annual": "Roczny"
   },
   "auth": {
     "welcomeBack": "Witaj ponownie",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Puść, aby odświeżyć",
     "refreshing": "Odświeżanie",
     "emptyTitle": "Brak rachunków",
-    "emptyHint": "Dodaj transakcję, a miesięczne podsumowania pojawią się tutaj"
+    "emptyHint": "Dodaj transakcję, a miesięczne podsumowania pojawią się tutaj",
+    "registerBalanceHint": "Saldo {{month}} niezarejestrowane",
+    "registerBalanceHintDetail": "Zarejestruj, aby oszacować codzienne wydatki",
+    "trendTitle": "Ostatnie półrocze",
+    "viewStats": "Statystyki",
+    "trendEmpty": "Dodaj dane z kilku miesięcy, by zobaczyć trend",
+    "lastMonthExpense": "Wydatki w zeszłym miesiącu",
+    "thisMonthExpense": "Wydatki w tym miesiącu",
+    "expenseChange": "względem zeszłego miesiąca",
+    "thisMonth": "Ten miesiąc",
+    "recentContacts": "Ostatnie kontakty",
+    "recentTitle": "Zapisy w tym miesiącu",
+    "recentAll": "Wszystkie",
+    "recentEmpty": "Brak zapisów w tym miesiącu",
+    "pastTitle": "Poprzednie miesiące",
+    "hotTags": "Popularne tagi",
+    "hotContacts": "Popularne kontakty",
+    "hotTagAll": "Wszystkie",
+    "hotTagExpense": "Wydatki",
+    "hotTagIncome": "Przychody",
+    "hotTagIncomeShort": "Przy.",
+    "hotTagExpenseShort": "Wyd.",
+    "trendHalfYear": "Półrocze",
+    "trendOneYear": "1 rok"
   },
   "transactions": {
     "empty": "Brak transakcji",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} miesięcznych sald",
     "importSummarySkippedDaily": "pominięto {{count}} wierszy codziennych wydatków",
     "importSummaryCreatedTags": "utworzono {{count}} tagów",
-    "importSummaryCreatedContacts": "utworzono {{count}} kontaktów"
+    "importSummaryCreatedContacts": "utworzono {{count}} kontaktów",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Nd",
@@ -371,5 +423,41 @@
     "flowIncome": "Przychód",
     "flowExpense": "Wydatek",
     "balanceMarker": "Saldo miesięczne"
+  },
+  "annualReport": {
+    "nav": "Roczny",
+    "title": "Raport roczny {{year}}",
+    "subtitle": "Automatyczne podsumowanie Twojej książki za rok.",
+    "prototypeBadge": "Prototyp · dane przykładowe",
+    "prevYear": "Poprzedni rok",
+    "nextYear": "Następny rok",
+    "sectionSummary": "Sumy roczne",
+    "sectionByTag": "Według tagu",
+    "sectionTopTx": "Największe kwoty (Top 5)",
+    "sectionTopContacts": "Kontakty (Top 5)",
+    "sectionCompare": "Vs poprzedni rok",
+    "sectionInsights": "Podsumowanie",
+    "dailyExpense": "Wydatki codzienne",
+    "startBalance": "Saldo początkowe",
+    "endBalance": "Saldo końcowe",
+    "untagged": "Bez tagu",
+    "txCount": "{{count}} oper.",
+    "noNote": "(brak notatki)",
+    "noCompare": "Brak danych z poprzedniego roku do porównania.",
+    "noContacts": "Brak operacji powiązanych z kontaktami w tym roku.",
+    "compareWith": "Porównanie z {{year}}",
+    "compareDelta": "Zmiana",
+    "insights": {
+      "net_positive": "Dochód netto był dodatni ({{amount}}).",
+      "net_negative": "Wydatki przekroczyły przychody ({{amount}}).",
+      "yoy_income_up": "Przychody wzrosły o {{pct}}% względem {{prev_year}}.",
+      "yoy_income_down": "Przychody spadły o {{pct}}% względem {{prev_year}}.",
+      "top_expense_tag": "Największy tag wydatków: {{tag}} ({{amount}}).",
+      "largest_tx": "Największa operacja: {{amount}} dnia {{date}}.",
+      "expense_over_income": "Suma wydatków przekroczyła sumę przychodów."
+    },
+    "expandTags": "Pokaż wszystkie ({{count}})",
+    "collapseTags": "Zwiń",
+    "axisBroken": "Przerwana oś"
   }
 }

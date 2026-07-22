@@ -38,7 +38,8 @@
     "saveFailed": "Kaydetme başarısız",
     "deleteFailed": "Silme başarısız",
     "removeItem": "{{name}} kaldır",
-    "removeContact": "Kişi {{name}} kaldır"
+    "removeContact": "Kişi {{name}} kaldır",
+    "selectYear": "Yıl seç"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -48,7 +49,8 @@
     "logout": "Çıkış",
     "expandSidebar": "Genişlet",
     "collapseSidebar": "Daralt",
-    "collapseSidebarLabel": "Daralt"
+    "collapseSidebarLabel": "Daralt",
+    "annual": "Yıllık"
   },
   "auth": {
     "welcomeBack": "Tekrar hoş geldiniz",
@@ -83,7 +85,30 @@
     "releaseRefresh": "Yenilemek için bırakın",
     "refreshing": "Yenileniyor",
     "emptyTitle": "Henüz fatura yok",
-    "emptyHint": "İşlem ekleyin, aylık özetler burada görünecek"
+    "emptyHint": "İşlem ekleyin, aylık özetler burada görünecek",
+    "registerBalanceHint": "{{month}} bakiyesi kaydedilmedi",
+    "registerBalanceHintDetail": "Günlük harcamayı tahmin için kaydedin",
+    "trendTitle": "Son yarım yıl",
+    "viewStats": "İstatistikler",
+    "trendEmpty": "Trend için birkaç aylık veri ekleyin",
+    "lastMonthExpense": "Geçen ay gideri",
+    "thisMonthExpense": "Bu ay gideri",
+    "expenseChange": "geçen aya göre",
+    "thisMonth": "Bu ay",
+    "recentContacts": "Son kişiler",
+    "recentTitle": "Bu ayın kayıtları",
+    "recentAll": "Tümü",
+    "recentEmpty": "Bu ay işlem yok",
+    "pastTitle": "Geçmiş aylar",
+    "hotTags": "Popüler etiketler",
+    "hotContacts": "Popüler kişiler",
+    "hotTagAll": "Tümü",
+    "hotTagExpense": "Gider",
+    "hotTagIncome": "Gelir",
+    "hotTagIncomeShort": "Gel.",
+    "hotTagExpenseShort": "Gid.",
+    "trendHalfYear": "Yarım yıl",
+    "trendOneYear": "1 yıl"
   },
   "transactions": {
     "empty": "İşlem yok",
@@ -213,7 +238,34 @@
     "importSummaryBalances": "{{count}} aylık bakiye",
     "importSummarySkippedDaily": "{{count}} günlük gider satırı atlandı",
     "importSummaryCreatedTags": "{{count}} etiket oluşturuldu",
-    "importSummaryCreatedContacts": "{{count}} kişi oluşturuldu"
+    "importSummaryCreatedContacts": "{{count}} kişi oluşturuldu",
+    "importDescriptionMapped": "Map columns, optionally keep existing history; creates missing tags/contacts.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapSubtitle": "Preview of \"{{filename}}\". Confirm mapping to import.",
+    "csvMapFields": "Column mapping",
+    "csvFieldIgnore": "Ignore",
+    "csvEmptyHeader": "(empty)",
+    "csvKeepHistory": "Keep existing history",
+    "csvKeepHistoryHint": "Skip rows that match the same day, tags, note, and amount. Uncheck to clear the ledger first.",
+    "csvMapRequired": "Date, flow, and amount are required.",
+    "csvParseFailed": "Could not parse CSV",
+    "importSummarySkippedDuplicates": "skipped {{count}} duplicates",
+    "csvField": {
+      "date": "Date",
+      "flow": "Flow",
+      "amount": "Amount",
+      "tags": "Tags",
+      "contact": "Contact",
+      "note": "Note",
+      "balance": "Running balance"
+    },
+    "csvDeriveBalances": "Derive monthly balances",
+    "csvDeriveBalancesHint": "Assumes all spending is recorded (daily expense = 0).",
+    "csvDeriveFromRunning": "Uses the last running balance of each month. No opening balance needed.",
+    "csvOpeningBalance": "Opening balance",
+    "csvOpeningBalanceHint": "Cash at the end of the month before the earliest transaction.",
+    "csvOpeningRequired": "Enter an opening balance, or map a running-balance column.",
+    "importSummaryDerivedBalances": "derived {{count}} monthly balances"
   },
   "backup": {
     "weekdaySun": "Paz",
@@ -371,5 +423,41 @@
     "flowIncome": "Gelir",
     "flowExpense": "Gider",
     "balanceMarker": "Aylık bakiye"
+  },
+  "annualReport": {
+    "nav": "Yıllık",
+    "title": "{{year}} yıllık rapor",
+    "subtitle": "Bu yılın kayıtlarının otomatik özeti.",
+    "prototypeBadge": "Prototip · örnek veri",
+    "prevYear": "Önceki yıl",
+    "nextYear": "Sonraki yıl",
+    "sectionSummary": "Yıllık toplamlar",
+    "sectionByTag": "Etikete göre",
+    "sectionTopTx": "En büyük tutarlar (İlk 5)",
+    "sectionTopContacts": "Kişiler (İlk 5)",
+    "sectionCompare": "Önceki yıla göre",
+    "sectionInsights": "Özet",
+    "dailyExpense": "Günlük harcama",
+    "startBalance": "Başlangıç bakiyesi",
+    "endBalance": "Yıl sonu bakiyesi",
+    "untagged": "Etiketsiz",
+    "txCount": "{{count}} işlem",
+    "noNote": "(not yok)",
+    "noCompare": "Karşılaştırılacak önceki yıl verisi yok.",
+    "noContacts": "Bu yıl kişiye bağlı işlem yok.",
+    "compareWith": "{{year}} ile karşılaştırma",
+    "compareDelta": "Değişim",
+    "insights": {
+      "net_positive": "Net gelir bu yıl pozitifti ({{amount}}).",
+      "net_negative": "Harcama geliri aştı ({{amount}}).",
+      "yoy_income_up": "Gelir {{prev_year}} yılına göre %{{pct}} arttı.",
+      "yoy_income_down": "Gelir {{prev_year}} yılına göre %{{pct}} azaldı.",
+      "top_expense_tag": "En büyük harcama etiketi: {{tag}} ({{amount}}).",
+      "largest_tx": "En büyük işlem: {{amount}} ({{date}}).",
+      "expense_over_income": "Toplam harcama toplam geliri aştı."
+    },
+    "expandTags": "Tümünü göster ({{count}})",
+    "collapseTags": "Daralt",
+    "axisBroken": "Eksen kırığı"
   }
 }

@@ -131,6 +131,9 @@ export function BalanceRegisterForm({
   if (!initialLoaded) {
     return (
       <div className="add-form">
+        <h1 className="form-page-title">
+          {t('balance.registerTitle')}
+        </h1>
         <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
@@ -149,6 +152,10 @@ export function BalanceRegisterForm({
   return (
     <>
       <form onSubmit={save} className="add-form">
+        <h1 className="form-page-title">
+          {t('balance.registerTitle')}
+        </h1>
+
         {error && <p className="form-alert-error">{error}</p>}
 
         <div className="form-hero">

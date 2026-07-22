@@ -20,6 +20,7 @@
   "error.csv_read_failed": "无法读取文件",
   "error.csv_too_large": "CSV 文件过大",
   "error.csv_upload_required": "请上传 CSV 文件",
+  "error.csv_mapping_invalid": "CSV 列映射无效",
   "error.cursor_after_exclusive": "cursor 与 after 不能同时使用",
   "error.cursor_yyyy": "游标须为 YYYY",
   "error.cursor_yyyy_mm": "游标须为 YYYY-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "余额不能为负",
   "validation.color_bg_only": "仅支持修改 color_bg",
   "validation.csv_columns": "行字段不足",
+  "validation.csv_mapping_required": "请映射日期、流向与金额列",
+  "validation.csv_mapping_index": "列索引超出范围",
+  "validation.csv_mapping_column": "找不到映射的列名",
+  "validation.csv_too_large": "CSV 文件过大",
   "validation.csv_row_limit": "CSV 行数超过上限",
   "validation.daily_expense_tag": "不可使用系统标签「日常支出」",
   "validation.date_after_today": "日期不能晚于今天",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "无更新字段",
   "validation.tag_name_empty": "标签名不能为空",
   "validation.tx_date_format": "流水日期须为 YYYY-MM-DD",
-  "validation.year_month_required": "缺少年份和月份"
+  "validation.year_month_required": "缺少年份和月份",
+  "validation.opening_balance_required": "推算月度余额须填写期初"
 }

@@ -20,6 +20,7 @@
   "error.csv_read_failed": "Không thể đọc file",
   "error.csv_too_large": "File CSV quá lớn",
   "error.csv_upload_required": "Vui lòng tải lên file CSV",
+  "error.csv_mapping_invalid": "Ánh xạ cột CSV không hợp lệ",
   "error.cursor_after_exclusive": "cursor và after không thể dùng cùng lúc",
   "error.cursor_yyyy": "cursor phải là YYYY",
   "error.cursor_yyyy_mm": "cursor phải là YYYY-MM",
@@ -49,6 +50,10 @@
   "validation.balance_negative": "Số dư không thể âm",
   "validation.color_bg_only": "Chỉ có thể cập nhật color_bg",
   "validation.csv_columns": "Dòng có quá ít cột",
+  "validation.csv_mapping_required": "Map date, flow, and amount columns",
+  "validation.csv_mapping_index": "Column index out of range",
+  "validation.csv_mapping_column": "Mapped column name not found",
+  "validation.csv_too_large": "CSV file is too large",
   "validation.csv_row_limit": "Vượt quá giới hạn dòng CSV",
   "validation.daily_expense_tag": "Không thể dùng thẻ hệ thống \"Chi tiêu hàng ngày\"",
   "validation.date_after_today": "Ngày không thể sau hôm nay",
@@ -65,5 +70,6 @@
   "validation.no_update_fields": "Không có trường để cập nhật",
   "validation.tag_name_empty": "Tên thẻ không thể để trống",
   "validation.tx_date_format": "Ngày giao dịch phải là YYYY-MM-DD",
-  "validation.year_month_required": "Yêu cầu có năm và tháng"
+  "validation.year_month_required": "Yêu cầu có năm và tháng",
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
 }
