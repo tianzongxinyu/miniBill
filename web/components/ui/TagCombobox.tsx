@@ -113,7 +113,7 @@ export function TagCombobox({
   );
 
   const candidates = useMemo(() => {
-    const selectable = tags.filter((t) => t.selectable !== false);
+    const selectable = tags.filter((t) => t.selectable !== false && t.enabled !== false);
     const unselected = selectable.filter((t) => !selectedIds.includes(t.id));
     const q = query.trim().toLowerCase();
     const filtered = !q
@@ -127,7 +127,8 @@ export function TagCombobox({
   }, [tags, selectedIds, query]);
 
   const canCreate =
-    trimmed.length > 0 && !tags.some((t) => t.name.toLowerCase() === trimmed.toLowerCase());
+    trimmed.length > 0 &&
+    !tags.some((t) => t.name.toLowerCase() === trimmed.toLowerCase() && t.enabled !== false);
 
   const showCandidates = focused && dropdownOpen && (candidates.length > 0 || canCreate);
 

@@ -181,7 +181,14 @@
       "applyPresetAria": "Terapkan warna kandidat",
       "customBg": "Latar kustom",
       "apply": "Terapkan"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Nama",
@@ -198,7 +205,9 @@
     "filterSentAria": "Filter transaksi terkirim, ketuk lagi untuk hapus",
     "filterReceivedAria": "Filter transaksi diterima, ketuk lagi untuk hapus",
     "emptySent": "Tidak ada transaksi terkirim",
-    "emptyReceived": "Tidak ada transaksi diterima"
+    "emptyReceived": "Tidak ada transaksi diterima",
+    "hideContact": "Sembunyikan \"{{name}}\"",
+    "showContact": "Tampilkan \"{{name}}\""
   },
   "data": {
     "exportTitle": "Ekspor buku besar",

@@ -34,7 +34,6 @@ export function MonthBillCurrentSplit({ item }: { item: MonthBillItem }) {
           <Amount cents={item.total_expense} type="expense" className="bill-stat-value" />
         </div>
       </div>
-      <div className="bill-card-split-divider" aria-hidden />
       <div className="bill-stat-item">
         <div className="bill-stat-label">{t('stats.totalIncome')}</div>
         <div className="bill-stat-value mt-1">
@@ -101,17 +100,14 @@ export function MonthBillPastStats({
     <div className="bill-card-columns bill-card-columns-compact">
       <div className="bill-card-col bill-card-col-past">
         <HomeStatStack label={t('stats.balance')}>{balanceCell}</HomeStatStack>
-        <div className="bill-stat-stack-rule" aria-hidden />
         <HomeStatStack label={t('stats.totalExpense')}>
           <Amount cents={expense} type="expense" className="text-sm" />
         </HomeStatStack>
       </div>
-      <div className="bill-card-split-divider bill-card-split-divider-full" aria-hidden />
       <div className="bill-card-col bill-card-col-past">
         <HomeStatStack label={t('stats.netIncome')}>
           <SignedAmount cents={net} className="text-sm" />
         </HomeStatStack>
-        <div className="bill-stat-stack-rule" aria-hidden />
         <HomeStatStack label={t('stats.totalIncome')}>
           <Amount cents={item.total_income} type="income" className="text-sm" />
         </HomeStatStack>

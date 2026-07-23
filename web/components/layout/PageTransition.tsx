@@ -34,7 +34,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     dir === 'right' ? 'page-slide-right' : dir === 'left' ? 'page-slide-left' : 'page-enter';
 
   return (
-    <div key={pathname} className={`${cls} max-w-3xl mx-auto px-4 py-4 lg:px-8 lg:py-6`}>
+    <div key={pathname} className={`${cls} max-w-3xl mx-auto px-2 pt-4 pb-2 lg:px-4 lg:pt-6 lg:pb-3`}>
       {children}
     </div>
   );

@@ -181,7 +181,14 @@
       "applyPresetAria": "सुझावित रंग लागू करें",
       "customBg": "कस्टम पृष्ठभूमि",
       "apply": "लागू करें"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "नाम",
@@ -198,7 +205,9 @@
     "filterSentAria": "भेजे गए लेनदेन फ़िल्टर करें, फिर से टैप करके हटाएँ",
     "filterReceivedAria": "प्राप्त लेनदेन फ़िल्टर करें, फिर से टैप करके हटाएँ",
     "emptySent": "कोई भेजा गया लेनदेन नहीं",
-    "emptyReceived": "कोई प्राप्त लेनदेन नहीं"
+    "emptyReceived": "कोई प्राप्त लेनदेन नहीं",
+    "hideContact": "\"{{name}}\" छिपाएँ",
+    "showContact": "\"{{name}}\" दिखाएँ"
   },
   "data": {
     "exportTitle": "लेजर निर्यात करें",

@@ -63,7 +63,7 @@ function SettingsContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {msg && <p className="text-income text-sm">{msg}</p>}
 
       <div className="notebook p-4 space-y-3">

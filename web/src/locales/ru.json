@@ -181,7 +181,14 @@
       "applyPresetAria": "Применить цвет из списка",
       "customBg": "Свой фон",
       "apply": "Применить"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Имя",
@@ -198,7 +205,9 @@
     "filterSentAria": "Фильтр отправленных, нажмите снова для сброса",
     "filterReceivedAria": "Фильтр полученных, нажмите снова для сброса",
     "emptySent": "Нет отправленных транзакций",
-    "emptyReceived": "Нет полученных транзакций"
+    "emptyReceived": "Нет полученных транзакций",
+    "hideContact": "Скрыть «{{name}}»",
+    "showContact": "Показать «{{name}}»"
   },
   "data": {
     "exportTitle": "Экспорт учётной книги",

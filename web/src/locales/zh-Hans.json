@@ -217,7 +217,14 @@
       "applyPresetAria": "应用候选背景色",
       "customBg": "自定义背景",
       "apply": "应用"
-    }
+    },
+    "expense": "支出",
+    "income": "收入",
+    "filterExpenseAria": "筛选支出流水，再次点击取消",
+    "filterIncomeAria": "筛选收入流水，再次点击取消",
+    "emptyExpense": "无支出记录",
+    "emptyIncome": "无收入记录",
+    "deleteTagButton": "删除"
   },
   "contacts": {
     "namePlaceholder": "姓名",
@@ -234,7 +241,9 @@
     "filterSentAria": "筛选送出流水，再次点击取消",
     "filterReceivedAria": "筛选收到流水，再次点击取消",
     "emptySent": "无送出记录",
-    "emptyReceived": "无收到记录"
+    "emptyReceived": "无收到记录",
+    "hideContact": "隐藏「{{name}}」",
+    "showContact": "显示「{{name}}」"
   },
   "data": {
     "exportTitle": "导出账本",

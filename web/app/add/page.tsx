@@ -45,6 +45,23 @@ function mergeTagsForEdit(allTags: Tag[], tx: Transaction): Tag[] {
   return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
 }
 
+function mergeContactsForEdit(allContacts: Contact[], tx: Transaction): Contact[] {
+  if (!tx.contact_id) return allContacts;
+  if (allContacts.some((c) => c.id === tx.contact_id)) return allContacts;
+  return [
+    ...allContacts,
+    {
+      id: tx.contact_id,
+      name: tx.contact_name || String(tx.contact_id),
+      nickname: '',
+      relation_group: '',
+      note: '',
+      phone: '',
+      enabled: false,
+    },
+  ];
+}
+
 function AddContent() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -105,7 +122,7 @@ function AddContent() {
         setOriginalDate(txData.transaction_date);
         setNote(txData.note);
         setTags(mergeTagsForEdit(meta.tags, txData));
-        setContacts(meta.contacts);
+        setContacts(mergeContactsForEdit(meta.contacts, txData));
         setSelectedTags(txData.tag_ids ?? []);
         setSelectedTagItems(txData.tag_items ?? []);
         setContactId(txData.contact_id ?? '');

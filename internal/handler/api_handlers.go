@@ -64,6 +64,24 @@ func (req tagUpdateReq) empty() bool {
 	return req.Enabled == nil && req.ColorBg == nil && req.ColorFg == nil
 }
 
+type contactUpdateReq struct {
+	Enabled       *bool   `json:"enabled"`
+	Name          *string `json:"name"`
+	Nickname      *string `json:"nickname"`
+	RelationGroup *string `json:"relation_group"`
+	Note          *string `json:"note"`
+	Phone         *string `json:"phone"`
+}
+
+func (req contactUpdateReq) empty() bool {
+	return req.Enabled == nil &&
+		req.Name == nil &&
+		req.Nickname == nil &&
+		req.RelationGroup == nil &&
+		req.Note == nil &&
+		req.Phone == nil
+}
+
 type balanceReq struct {
 	Balance int64  `json:"balance"`
 	Note    string `json:"note"`
@@ -215,6 +233,22 @@ func (s *Server) createTag(c *gin.Context) {
 	})
 }
 
+func (s *Server) getTag(c *gin.Context) {
+	id, ok := parseID(c, "id")
+	if !ok {
+		return
+	}
+	s.withLedger(c, func(db *sql.DB) {
+		sum, err := s.tagSvc.Get(db, id)
+		if serviceErr(c, err) {
+			return
+		}
+		localized := localizeTags([]service.Tag{sum.Tag}, localeFrom(c))
+		sum.Tag = localized[0]
+		c.JSON(http.StatusOK, sum)
+	})
+}
+
 func (s *Server) updateTag(c *gin.Context) {
 	id, ok := parseID(c, "id")
 	if !ok {
@@ -256,7 +290,8 @@ func (s *Server) deleteTag(c *gin.Context) {
 
 func (s *Server) listContacts(c *gin.Context) {
 	s.withLedger(c, func(db *sql.DB) {
-		list, err := s.contactSvc.List(db)
+		enabledOnly := c.Query("enabled") == "1"
+		list, err := s.contactSvc.List(db, enabledOnly)
 		if serviceErr(c, err) {
 			return
 		}
@@ -299,13 +334,20 @@ func (s *Server) updateContact(c *gin.Context) {
 	if !ok {
 		return
 	}
-	var req service.Contact
-	if err := c.ShouldBindJSON(&req); err != nil {
+	var req contactUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil || req.empty() {
 		JSONValidation(c, "invalid body")
 		return
 	}
 	s.withLedger(c, func(db *sql.DB) {
-		contact, err := s.contactSvc.Update(db, id, req)
+		contact, err := s.contactSvc.Update(db, id, service.ContactUpdateInput{
+			Enabled:       req.Enabled,
+			Name:          req.Name,
+			Nickname:      req.Nickname,
+			RelationGroup: req.RelationGroup,
+			Note:          req.Note,
+			Phone:         req.Phone,
+		})
 		if serviceErr(c, err) {
 			return
 		}

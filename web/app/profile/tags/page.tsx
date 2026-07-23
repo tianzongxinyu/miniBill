@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
@@ -19,6 +20,7 @@ import {
   type Tag,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
+import { buildTagDetailHref } from '@/lib/url';
 
 function TagsContent() {
   const { t } = useTranslation();
@@ -65,9 +67,9 @@ function TagsContent() {
   };
 
   return (
-    <div>
-      {error && <p className="text-expense text-sm mb-4">{error}</p>}
-      <form onSubmit={create} className="flex gap-2 mb-4">
+    <div className="page-detail-with-floating-back">
+      {error && <p className="text-expense text-sm mb-2">{error}</p>}
+      <form onSubmit={create} className="flex gap-2 mb-2">
         <input className="field flex-1" placeholder={t('tags.newPlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
         <button className="btn-primary shrink-0">{t('tags.add')}</button>
       </form>
@@ -75,12 +77,15 @@ function TagsContent() {
         {items.map((tag) => (
           <div key={tag.id} className="notebook-row">
             <div className="flex justify-between items-start gap-3">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              <Link
+                href={buildTagDetailHref({ tagId: tag.id, returnTo: '/profile/tags/' })}
+                className="flex items-center gap-1.5 min-w-0 flex-1"
+              >
                 <span className={!tag.enabled ? 'opacity-45' : undefined}>
                   <TagChip name={tag.name} colorBg={tag.color_bg} />
                 </span>
                 {tag.is_system && <span className="text-muted text-xs shrink-0">*</span>}
-              </div>
+              </Link>
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
@@ -133,7 +138,7 @@ function TagsContent() {
           if (!deleting) setDeleteTarget(null);
         }}
       />
-      <PageBackLink href="/profile/" />
+      <PageBackLink href="/profile/" floating />
     </div>
   );
 }

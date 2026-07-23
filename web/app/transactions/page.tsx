@@ -191,7 +191,7 @@ function TransactionsContent() {
         />
       )}
 
-      {list.error && <p className="text-expense text-sm mb-4">{list.error}</p>}
+      {list.error && <p className="text-expense text-sm mb-2">{list.error}</p>}
 
       {list.loading ? (
         <ListSkeleton />

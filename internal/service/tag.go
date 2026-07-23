@@ -23,6 +23,19 @@ type Tag struct {
 	UsageCount int64   `json:"usage_count"`
 }
 
+type TagSummary struct {
+	Tag
+	TotalExpense    int64 `json:"total_expense"`
+	TotalIncome     int64 `json:"total_income"`
+	NetAmount       int64 `json:"net_amount"`
+	LastTransaction *struct {
+		ID              int64  `json:"id"`
+		Amount          int64  `json:"amount"`
+		Type            string `json:"type"`
+		TransactionDate string `json:"transaction_date"`
+	} `json:"last_transaction"`
+}
+
 type TagService struct{}
 
 const tagSelectCols = `id, name, preset_key, is_system, enabled, color_bg, color_fg, usage_count`
@@ -62,7 +75,61 @@ func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
 	return list, nil
 }
 
+func (s *TagService) Get(db *sql.DB, id int64) (*TagSummary, error) {
+	t, err := scanTag(db.QueryRow(`SELECT `+tagSelectCols+` FROM tags WHERE id=?`, id))
+	if err != nil {
+		return nil, err
+	}
+	sum := &TagSummary{Tag: t}
+	if err := db.QueryRow(`
+		SELECT COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0),
+		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
+		FROM transactions t
+		JOIN transaction_tags tt ON tt.transaction_id = t.id
+		WHERE tt.tag_id = ?
+		  AND t.is_system = 0`,
+		id,
+	).Scan(&sum.TotalExpense, &sum.TotalIncome); err != nil {
+		return nil, err
+	}
+	sum.NetAmount = sum.TotalIncome - sum.TotalExpense
+
+	var txID int64
+	var amount int64
+	var txType, txDate string
+	err = db.QueryRow(`
+		SELECT t.id, t.amount, t.type, t.transaction_date
+		FROM transactions t
+		JOIN transaction_tags tt ON tt.transaction_id = t.id
+		WHERE tt.tag_id = ?
+		  AND t.is_system = 0
+		ORDER BY t.transaction_date DESC, t.id DESC
+		LIMIT 1`, id,
+	).Scan(&txID, &amount, &txType, &txDate)
+	if err == nil {
+		sum.LastTransaction = &struct {
+			ID              int64  `json:"id"`
+			Amount          int64  `json:"amount"`
+			Type            string `json:"type"`
+			TransactionDate string `json:"transaction_date"`
+		}{ID: txID, Amount: amount, Type: txType, TransactionDate: txDate}
+	} else if err != sql.ErrNoRows {
+		return nil, err
+	}
+	return sum, nil
+}
+
 func (s *TagService) Create(db *sql.DB, name string) (*Tag, error) {
+	existing, err := scanTag(db.QueryRow(
+		`SELECT `+tagSelectCols+` FROM tags WHERE LOWER(name) = LOWER(?) LIMIT 1`,
+		name,
+	))
+	if err == nil {
+		return &existing, nil
+	}
+	if err != sql.ErrNoRows {
+		return nil, err
+	}
 	bg, fg := domain.RandomTagColors()
 	res, err := db.Exec(`INSERT INTO tags (name, is_system, enabled, color_bg, color_fg) VALUES (?, 0, 1, ?, ?)`, name, bg, fg)
 	if err != nil {

@@ -181,7 +181,14 @@
       "applyPresetAria": "후보 배경색 적용",
       "customBg": "사용자 배경",
       "apply": "적용"
-    }
+    },
+    "expense": "지출",
+    "income": "수입",
+    "filterExpenseAria": "지출 필터, 다시 눌러 해제",
+    "filterIncomeAria": "수입 필터, 다시 눌러 해제",
+    "emptyExpense": "지출 없음",
+    "emptyIncome": "수입 없음",
+    "deleteTagButton": "삭제"
   },
   "contacts": {
     "namePlaceholder": "이름",
@@ -198,7 +205,9 @@
     "filterSentAria": "보낸 거래만 보기, 다시 탭하면 해제",
     "filterReceivedAria": "받은 거래만 보기, 다시 탭하면 해제",
     "emptySent": "보낸 거래 없음",
-    "emptyReceived": "받은 거래 없음"
+    "emptyReceived": "받은 거래 없음",
+    "hideContact": "\"{{name}}\" 숨기기",
+    "showContact": "\"{{name}}\" 표시"
   },
   "data": {
     "exportTitle": "장부 내보내기",

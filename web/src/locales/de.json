@@ -181,7 +181,14 @@
       "applyPresetAria": "Vorgabefarbe anwenden",
       "customBg": "Eigener Hintergrund",
       "apply": "Anwenden"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Name eingeben",
@@ -198,7 +205,9 @@
     "filterSentAria": "Gesendete filtern, erneut tippen zum Aufheben",
     "filterReceivedAria": "Empfangene filtern, erneut tippen zum Aufheben",
     "emptySent": "Keine gesendeten Transaktionen",
-    "emptyReceived": "Keine empfangenen Transaktionen"
+    "emptyReceived": "Keine empfangenen Transaktionen",
+    "hideContact": "\"{{name}}\" ausblenden",
+    "showContact": "\"{{name}}\" anzeigen"
   },
   "data": {
     "exportTitle": "Kontenbuch exportieren",

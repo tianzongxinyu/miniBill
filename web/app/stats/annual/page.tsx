@@ -114,7 +114,7 @@ function AnnualReportContent() {
   }
 
   return (
-    <div className="space-y-2 pb-8">
+    <div className="space-y-1 pb-8">
       <div ref={rootRef} className="annual-report-chrome">
         <div className="annual-report-year-group" role="group" aria-label={t('annualReport.title', { year })}>
           <button

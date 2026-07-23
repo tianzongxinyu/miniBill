@@ -181,7 +181,14 @@
       "applyPresetAria": "Appliquer la couleur proposée",
       "customBg": "Fond personnalisé",
       "apply": "Appliquer"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Nom",
@@ -198,7 +205,9 @@
     "filterSentAria": "Filtrer les envois, appuyez à nouveau pour annuler",
     "filterReceivedAria": "Filtrer les reçus, appuyez à nouveau pour annuler",
     "emptySent": "Aucune transaction envoyée",
-    "emptyReceived": "Aucune transaction reçue"
+    "emptyReceived": "Aucune transaction reçue",
+    "hideContact": "Masquer « {{name}} »",
+    "showContact": "Afficher « {{name}} »"
   },
   "data": {
     "exportTitle": "Exporter le livre de comptes",

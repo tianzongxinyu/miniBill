@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { CsvColumnMapping, CsvImportField, CsvImportPreview } from '@/lib/csvImportPreview';
 import { mappingReady } from '@/lib/csvImportPreview';
+import { SimpleSelect } from '@/components/ui/SimpleSelect';
 
 const FIELDS: CsvImportField[] = ['date', 'flow', 'amount', 'tags', 'contact', 'note', 'balance'];
 
@@ -65,6 +66,17 @@ export function CsvImportMappingDialog({
     };
   }, [open, confirming, onClose]);
 
+  const columnOptions = useMemo(() => {
+    if (!preview) return [];
+    return [
+      { value: '', label: t('data.csvFieldIgnore') },
+      ...preview.headers.map((h) => ({
+        value: h,
+        label: h || t('data.csvEmptyHeader'),
+      })),
+    ];
+  }, [preview, t]);
+
   if (!mounted || !open || !preview) return null;
 
   const hasRunningBalance = Boolean(mapping.balance);
@@ -96,7 +108,7 @@ export function CsvImportMappingDialog({
       }}
     >
       <div
-        className="confirm-panel max-w-lg w-full max-h-[min(90vh,640px)] overflow-y-auto"
+        className="confirm-panel csv-import-panel max-w-lg w-full max-h-[min(90vh,640px)] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="csv-import-map-title"
@@ -109,12 +121,15 @@ export function CsvImportMappingDialog({
           {t('data.csvMapSubtitle', { filename })}
         </p>
 
-        <div className="mt-3 overflow-x-auto rounded-xl border border-line/80">
+        <div className="csv-import-preview mt-4 overflow-x-auto rounded-2xl border border-line/80">
           <table className="w-full text-xs text-left">
-            <thead className="bg-black/[0.03]">
-              <tr>
-                {preview.headers.map((h) => (
-                  <th key={h} className="px-2 py-1.5 font-medium text-ink whitespace-nowrap">
+            <thead>
+              <tr className="bg-accent-soft/50">
+                {preview.headers.map((h, i) => (
+                  <th
+                    key={`${h}-${i}`}
+                    className="px-3 py-2 font-medium text-ink whitespace-nowrap"
+                  >
                     {h || '—'}
                   </th>
                 ))}
@@ -122,9 +137,15 @@ export function CsvImportMappingDialog({
             </thead>
             <tbody>
               {preview.sampleRows.map((row, ri) => (
-                <tr key={ri} className="border-t border-line/60">
+                <tr
+                  key={ri}
+                  className={`border-t border-line/50 ${ri % 2 === 1 ? 'bg-black/[0.02]' : ''}`}
+                >
                   {preview.headers.map((_, ci) => (
-                    <td key={ci} className="px-2 py-1 text-muted whitespace-nowrap max-w-[9rem] truncate">
+                    <td
+                      key={ci}
+                      className="px-3 py-1.5 text-muted whitespace-nowrap max-w-[9rem] truncate"
+                    >
                       {row[ci] ?? ''}
                     </td>
                   ))}
@@ -134,73 +155,81 @@ export function CsvImportMappingDialog({
           </table>
         </div>
 
-        <div className="mt-4 space-y-2">
-          <p className="text-xs font-medium text-ink">{t('data.csvMapFields')}</p>
-          {FIELDS.map((field) => {
-            const required = field === 'date' || field === 'flow' || field === 'amount';
-            return (
-              <label key={field} className="flex items-center gap-2 text-sm">
-                <span className="w-24 shrink-0 text-muted">
-                  {t(`data.csvField.${field}`)}
-                  {required ? ' *' : ''}
-                </span>
-                <select
-                  className="flex-1 rounded-lg border border-line bg-surface px-2 py-1.5 text-ink"
-                  value={mapping[field] ?? ''}
-                  disabled={confirming}
-                  onChange={(e) => setField(field, e.target.value)}
-                >
-                  <option value="">{t('data.csvFieldIgnore')}</option>
-                  {preview.headers.map((h) => (
-                    <option key={h} value={h}>
-                      {h || t('data.csvEmptyHeader')}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
+        <div className="mt-5">
+          <p className="text-sm font-semibold text-ink tracking-tight">{t('data.csvMapFields')}</p>
+          <div className="mt-3 space-y-2.5">
+            {FIELDS.map((field) => {
+              const required = field === 'date' || field === 'flow' || field === 'amount';
+              const label = t(`data.csvField.${field}`);
+              return (
+                <div key={field} className="flex items-center gap-3">
+                  <span className="w-20 shrink-0 text-xs font-medium text-ink">
+                    {label}
+                    {required ? <span className="text-accent ml-0.5">*</span> : null}
+                  </span>
+                  <SimpleSelect
+                    className="flex-1"
+                    size="compact"
+                    value={mapping[field] ?? ''}
+                    options={columnOptions}
+                    disabled={confirming}
+                    ariaLabel={label}
+                    onChange={(v) => setField(field, v)}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <label className="mt-4 flex items-start gap-2 text-sm text-ink cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={keepHistory}
-            disabled={confirming}
-            onChange={(e) => setKeepHistory(e.target.checked)}
-          />
-          <span>
-            <span className="font-medium">{t('data.csvKeepHistory')}</span>
-            <span className="block text-xs text-muted mt-0.5">{t('data.csvKeepHistoryHint')}</span>
-          </span>
-        </label>
+        <div className="mt-4 space-y-2.5">
+          <label className="csv-import-option flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-1 accent-[var(--color-accent)]"
+              checked={keepHistory}
+              disabled={confirming}
+              onChange={(e) => setKeepHistory(e.target.checked)}
+            />
+            <span>
+              <span className="text-sm font-medium text-ink">{t('data.csvKeepHistory')}</span>
+              <span className="block text-xs text-muted mt-0.5 leading-relaxed">
+                {t('data.csvKeepHistoryHint')}
+              </span>
+            </span>
+          </label>
 
-        <label className="mt-3 flex items-start gap-2 text-sm text-ink cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={deriveBalances}
-            disabled={confirming}
-            onChange={(e) => setDeriveBalances(e.target.checked)}
-          />
-          <span>
-            <span className="font-medium">{t('data.csvDeriveBalances')}</span>
-            <span className="block text-xs text-muted mt-0.5">{t('data.csvDeriveBalancesHint')}</span>
-          </span>
-        </label>
+          <label className="csv-import-option flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-1 accent-[var(--color-accent)]"
+              checked={deriveBalances}
+              disabled={confirming}
+              onChange={(e) => setDeriveBalances(e.target.checked)}
+            />
+            <span>
+              <span className="text-sm font-medium text-ink">{t('data.csvDeriveBalances')}</span>
+              <span className="block text-xs text-muted mt-0.5 leading-relaxed">
+                {t('data.csvDeriveBalancesHint')}
+              </span>
+            </span>
+          </label>
+        </div>
 
         {deriveBalances && hasRunningBalance && (
-          <p className="mt-2 text-xs text-muted">{t('data.csvDeriveFromRunning')}</p>
+          <p className="mt-2.5 text-xs text-muted">{t('data.csvDeriveFromRunning')}</p>
         )}
 
         {deriveBalances && !hasRunningBalance && (
-          <label className="mt-3 block space-y-1">
-            <span className="text-sm text-muted">{t('data.csvOpeningBalance')} *</span>
+          <label className="mt-3 block space-y-1.5">
+            <span className="text-sm text-muted">
+              {t('data.csvOpeningBalance')}
+              <span className="text-accent ml-0.5">*</span>
+            </span>
             <input
               type="text"
               inputMode="decimal"
-              className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-sm text-ink"
+              className="field"
               value={openingBalance}
               disabled={confirming}
               placeholder="0"
@@ -211,13 +240,13 @@ export function CsvImportMappingDialog({
         )}
 
         {!mappingReady(mapping) && (
-          <p className="mt-2 text-xs text-expense">{t('data.csvMapRequired')}</p>
+          <p className="mt-2.5 text-xs text-expense">{t('data.csvMapRequired')}</p>
         )}
         {deriveBalances && !hasRunningBalance && !openingBalance.trim() && (
-          <p className="mt-2 text-xs text-expense">{t('data.csvOpeningRequired')}</p>
+          <p className="mt-2.5 text-xs text-expense">{t('data.csvOpeningRequired')}</p>
         )}
 
-        <div className="confirm-actions mt-4">
+        <div className="confirm-actions mt-5">
           <button type="button" className="confirm-cancel" onClick={onClose} disabled={confirming}>
             {t('common.cancel')}
           </button>

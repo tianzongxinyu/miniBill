@@ -17,7 +17,7 @@ import { useOnLedgerChanged, patchMonthBills } from '@/lib/ledgerEvents';
 
 function HomeSkeleton() {
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-2 animate-fade-in">
       <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[200px]" />
       <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[88px]" />
       <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[48px]" />
@@ -84,7 +84,7 @@ function HomeContent() {
         </div>
       )}
       {error && (
-        <div className="notebook p-5 text-sm text-muted mb-6 border-expense/20 bg-expense/[0.03]">
+        <div className="notebook p-5 text-sm text-muted mb-3 border-expense/20 bg-expense/[0.03]">
           {error}
         </div>
       )}
@@ -97,7 +97,7 @@ function HomeContent() {
           <p className="text-xs text-muted/80 mt-1">{t('home.emptyHint')}</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {showEnrichment && current && <HomeThisMonthSummary item={current} />}
           {showEnrichment && <HomeMiniChart reloadKey={chartReloadKey} />}
           {showEnrichment && <HomeRecentContacts contacts={activityContacts} />}

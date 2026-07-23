@@ -52,4 +52,66 @@ func TestTagUpdateEnabled(t *testing.T) {
 	if updated.Enabled {
 		t.Fatal("expected disabled")
 	}
+
+	again, err := svc.Create(db, "开关")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if again.ID != created.ID {
+		t.Fatalf("create fallback id = %d want %d", again.ID, created.ID)
+	}
+	if again.Enabled {
+		t.Fatal("create fallback should keep disabled")
+	}
+}
+
+func TestTagGetSummary(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+
+	svc := &TagService{}
+	tag, err := svc.Create(db, "汇总测")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	insert := func(amount int64, typ, date string) {
+		t.Helper()
+		r, err := db.Exec(
+			`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (?,?,?,?)`,
+			amount, typ, date, "",
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		id, _ := r.LastInsertId()
+		if _, err := db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?,?)`, id, tag.ID); err != nil {
+			t.Fatal(err)
+		}
+	}
+	insert(30000, "expense", "2026-06-01")
+	insert(10000, "income", "2026-06-02")
+
+	sum, err := svc.Get(db, tag.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sum.TotalExpense != 30000 || sum.TotalIncome != 10000 || sum.NetAmount != -20000 {
+		t.Fatalf("totals = %+v", sum)
+	}
+	if sum.LastTransaction == nil || sum.LastTransaction.Type != "income" {
+		t.Fatalf("last = %+v", sum.LastTransaction)
+	}
+
+	unused, err := svc.Create(db, "未用")
+	if err != nil {
+		t.Fatal(err)
+	}
+	empty, err := svc.Get(db, unused.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if empty.LastTransaction != nil || empty.TotalExpense != 0 || empty.TotalIncome != 0 {
+		t.Fatalf("unused = %+v", empty)
+	}
 }

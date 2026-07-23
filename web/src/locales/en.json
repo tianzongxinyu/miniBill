@@ -217,7 +217,14 @@
       "applyPresetAria": "Apply preset color",
       "customBg": "Custom background",
       "apply": "Apply"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Name",
@@ -234,7 +241,9 @@
     "filterSentAria": "Filter sent transactions, tap again to clear",
     "filterReceivedAria": "Filter received transactions, tap again to clear",
     "emptySent": "No sent transactions",
-    "emptyReceived": "No received transactions"
+    "emptyReceived": "No received transactions",
+    "hideContact": "Hide \"{{name}}\"",
+    "showContact": "Show \"{{name}}\""
   },
   "data": {
     "exportTitle": "Export ledger",

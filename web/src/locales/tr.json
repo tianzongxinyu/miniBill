@@ -181,7 +181,14 @@
       "applyPresetAria": "Önerilen rengi uygula",
       "customBg": "Özel arka plan",
       "apply": "Uygula"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Ad",
@@ -198,7 +205,9 @@
     "filterSentAria": "Gönderilenleri filtrele, kaldırmak için tekrar dokun",
     "filterReceivedAria": "Alınanları filtrele, kaldırmak için tekrar dokun",
     "emptySent": "Gönderilen işlem yok",
-    "emptyReceived": "Alınan işlem yok"
+    "emptyReceived": "Alınan işlem yok",
+    "hideContact": "\"{{name}}\" gizle",
+    "showContact": "\"{{name}}\" göster"
   },
   "data": {
     "exportTitle": "Defteri dışa aktar",

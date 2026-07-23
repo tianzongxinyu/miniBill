@@ -19,6 +19,7 @@ export type Contact = {
   relation_group: string;
   note: string;
   phone: string;
+  enabled?: boolean;
   usage_count?: number;
 };
 
@@ -135,6 +136,24 @@ export type ContactDetail = {
   };
 };
 
+export type TagDetail = {
+  id: number;
+  name: string;
+  is_system: boolean;
+  enabled: boolean;
+  color_bg: string;
+  color_fg: string;
+  total_expense: number;
+  total_income: number;
+  net_amount: number;
+  last_transaction?: {
+    id: number;
+    amount: number;
+    type: 'income' | 'expense';
+    transaction_date: string;
+  };
+};
+
 export type AmountColorScheme = 'red_up' | 'green_up';
 
 export type Settings = {
@@ -200,6 +219,15 @@ export type TagUpdate = {
   enabled?: boolean;
   color_bg?: string;
   color_fg?: string;
+};
+
+export type ContactUpdate = {
+  enabled?: boolean;
+  name?: string;
+  nickname?: string;
+  relation_group?: string;
+  note?: string;
+  phone?: string;
 };
 
 export type HomeRankingPoint = {

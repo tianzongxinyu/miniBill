@@ -145,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </main>
 
-      <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md border-t border-line flex justify-around py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-50">
+      <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface/45 backdrop-blur-xl border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50">
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           const Icon = tab.icon;
@@ -153,7 +153,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 text-[10px] px-2 sm:px-3 py-1.5 rounded-2xl transition-all duration-200 ${
+              className={`flex flex-col items-center gap-0.5 text-[10px] px-4 sm:px-5 py-1 rounded-2xl transition-all duration-200 ${
                 active
                   ? 'text-accent font-medium bg-accent-soft'
                   : 'text-muted hover:text-accent/70'

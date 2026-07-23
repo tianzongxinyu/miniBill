@@ -181,7 +181,14 @@
       "applyPresetAria": "ใช้สีที่แนะนำ",
       "customBg": "พื้นหลังกำหนดเอง",
       "apply": "ใช้"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "ชื่อ",
@@ -198,7 +205,9 @@
     "filterSentAria": "กรองรายการส่ง แตะอีกครั้งเพื่อยกเลิก",
     "filterReceivedAria": "กรองรายการรับ แตะอีกครั้งเพื่อยกเลิก",
     "emptySent": "ไม่มีรายการส่ง",
-    "emptyReceived": "ไม่มีรายการรับ"
+    "emptyReceived": "ไม่มีรายการรับ",
+    "hideContact": "ซ่อน \"{{name}}\"",
+    "showContact": "แสดง \"{{name}}\""
   },
   "data": {
     "exportTitle": "ส่งออกสมุดบัญชี",

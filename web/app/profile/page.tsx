@@ -19,7 +19,7 @@ function ProfileContent() {
   return (
     <div>
       {user?.username && (
-        <div className="flex items-center gap-3 mb-4 min-w-0">
+        <div className="flex items-center gap-3 mb-2 min-w-0">
           <div
             className="w-10 h-10 shrink-0 rounded-full bg-accent-soft flex items-center justify-center text-sm font-medium text-accent uppercase"
             aria-hidden

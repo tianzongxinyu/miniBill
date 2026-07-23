@@ -82,7 +82,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   }, [onChange, resetQuery, inputRef]);
 
   const candidates = useMemo(() => {
-    const pool = value ? contacts.filter((c) => c.id !== value) : contacts;
+    const pool = contacts.filter((c) => c.enabled !== false && (!value || c.id !== value));
     const q = query.trim().toLowerCase();
     const filtered = !q
       ? pool
@@ -99,7 +99,8 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
   }, [contacts, query, value]);
 
   const canCreate =
-    trimmed.length > 0 && !contacts.some((c) => c.name.toLowerCase() === trimmed.toLowerCase());
+    trimmed.length > 0 &&
+    !contacts.some((c) => c.name.toLowerCase() === trimmed.toLowerCase() && c.enabled !== false);
 
   const showCandidates = focused && dropdownOpen && (candidates.length > 0 || canCreate);
 

@@ -181,7 +181,14 @@
       "applyPresetAria": "候補の背景色を適用",
       "customBg": "カスタム背景",
       "apply": "適用"
-    }
+    },
+    "expense": "支出",
+    "income": "収入",
+    "filterExpenseAria": "支出で絞り込み、再タップで解除",
+    "filterIncomeAria": "収入で絞り込み、再タップで解除",
+    "emptyExpense": "支出なし",
+    "emptyIncome": "収入なし",
+    "deleteTagButton": "削除"
   },
   "contacts": {
     "namePlaceholder": "名前",
@@ -198,7 +205,9 @@
     "filterSentAria": "送った取引で絞り込み、もう一度タップで解除",
     "filterReceivedAria": "受け取った取引で絞り込み、もう一度タップで解除",
     "emptySent": "送った取引はありません",
-    "emptyReceived": "受け取った取引はありません"
+    "emptyReceived": "受け取った取引はありません",
+    "hideContact": "「{{name}}」を非表示",
+    "showContact": "「{{name}}」を表示"
   },
   "data": {
     "exportTitle": "帳簿をエクスポート",

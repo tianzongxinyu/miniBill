@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
-import { ContactDetailSummaryFilters } from '@/components/contacts/ContactDetailSummaryFilters';
+import { TagDetailSummaryFilters } from '@/components/tags/TagDetailSummaryFilters';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { SignedAmount } from '@/components/ui/SignedAmount';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -16,15 +16,15 @@ import { useCursorPagination } from '@/hooks/useCursorPagination';
 import { useLoadMoreAnimateIds } from '@/hooks/useLoadMoreAnimateIds';
 import {
   ApiError,
-  deleteContact,
-  fetchContactDetail,
+  deleteTag,
+  fetchTagDetail,
   fetchTransactions,
-  type ContactDetail,
+  type TagDetail,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { scrollToTop } from '@/lib/scroll';
 import {
-  buildContactDetailHref,
+  buildTagDetailHref,
   parseTransactionTypeFromQuery,
   safeReturnTo,
   type TransactionTypeFilter,
@@ -37,9 +37,9 @@ function DetailInner() {
   const id = params.get('id');
   const returnTo = params.get('returnTo');
   const urlType = params.get('type');
-  const backHref = safeReturnTo(returnTo, '/profile/contacts/');
-  const contactId = id ? Number(id) : null;
-  const [c, setC] = useState<ContactDetail | null>(null);
+  const backHref = safeReturnTo(returnTo, '/profile/tags/');
+  const tagId = id ? Number(id) : null;
+  const [tag, setTag] = useState<TagDetail | null>(null);
   const [error, setError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -53,19 +53,19 @@ function DetailInner() {
 
   useEffect(() => {
     if (!id) return;
-    fetchContactDetail(Number(id))
-      .then(setC)
+    fetchTagDetail(Number(id))
+      .then(setTag)
       .catch((e) => setError(formatApiError(e, t('common.loadFailed'))));
   }, [id, t]);
 
-  const filtersRef = useRef({ contactId, typeFilter });
-  filtersRef.current = { contactId, typeFilter };
+  const filtersRef = useRef({ tagId, typeFilter });
+  filtersRef.current = { tagId, typeFilter };
   const reloadAbortRef = useRef<AbortController | null>(null);
 
   const fetchOnce = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
     const f = filtersRef.current;
     return fetchTransactions({
-      contactId: f.contactId!,
+      tagIds: [f.tagId!],
       cursor,
       limit: 10,
       ...(f.typeFilter ? { type: f.typeFilter } : {}),
@@ -111,9 +111,9 @@ function DetailInner() {
   }, [reset, applyPage, setLoading, setListError, fetchOnce, t]);
 
   useEffect(() => {
-    if (contactId == null) return;
+    if (tagId == null) return;
     void reload();
-  }, [contactId, typeFilter, reload]);
+  }, [tagId, typeFilter, reload]);
 
   const handleTypeFilterChange = useCallback(
     (type: 'expense' | 'income') => {
@@ -121,14 +121,14 @@ function DetailInner() {
       setTypeFilter(next);
       scrollToTop(false);
       router.replace(
-        buildContactDetailHref({
-          contactId: contactId!,
+        buildTagDetailHref({
+          tagId: tagId!,
           returnTo: returnTo ?? undefined,
           type: next ?? undefined,
         })
       );
     },
-    [typeFilter, contactId, returnTo, router]
+    [typeFilter, tagId, returnTo, router]
   );
 
   const animateIds = useLoadMoreAnimateIds(
@@ -138,21 +138,21 @@ function DetailInner() {
     (tx) => tx.id
   );
 
-  const unused = c != null && !c.last_transaction;
+  const unused = tag != null && !tag.last_transaction && !tag.is_system;
 
   const emptyMessage = useMemo(() => {
-    if (typeFilter === 'expense') return t('contacts.emptySent');
-    if (typeFilter === 'income') return t('contacts.emptyReceived');
+    if (typeFilter === 'expense') return t('tags.emptyExpense');
+    if (typeFilter === 'income') return t('tags.emptyIncome');
     return t('transactions.empty');
   }, [typeFilter, t]);
 
   const confirmRemove = async () => {
-    if (!c || !id || deleting) return;
+    if (!tag || !id || deleting) return;
     setDeleting(true);
     setError('');
     try {
-      await deleteContact(Number(id));
-      router.replace('/profile/contacts/');
+      await deleteTag(Number(id));
+      router.replace('/profile/tags/');
     } catch (err) {
       setError(formatApiError(err, t('common.deleteFailed')));
       setConfirmOpen(false);
@@ -160,7 +160,7 @@ function DetailInner() {
     }
   };
 
-  if (!c) return <LoadingFallback />;
+  if (!tag) return <LoadingFallback />;
 
   const statGrid = 'grid grid-cols-2 items-center';
   const amountSlot = 'min-w-[6.5rem] text-right shrink-0';
@@ -168,17 +168,24 @@ function DetailInner() {
   return (
     <div className="page-detail-with-floating-back">
       <div className={`${statGrid} mb-2 items-baseline`}>
-        <p className="text-base font-semibold text-ink min-w-0 px-4 truncate">{c.name}</p>
+        <p
+          className={`text-base font-semibold text-ink min-w-0 px-4 truncate ${
+            !tag.enabled ? 'opacity-45' : ''
+          }`}
+        >
+          {tag.name}
+          {tag.is_system ? <span className="text-muted text-xs font-normal"> *</span> : null}
+        </p>
         <div className="flex items-baseline justify-end min-w-0 pl-3 pr-4 text-sm">
           <span className={amountSlot}>
-            <SignedAmount cents={c.net_amount} className="text-sm" />
+            <SignedAmount cents={tag.net_amount} className="text-sm" />
           </span>
         </div>
       </div>
       <div className="mb-2">
-        <ContactDetailSummaryFilters
-          sentCents={c.social_expense}
-          receivedCents={c.social_income}
+        <TagDetailSummaryFilters
+          expenseCents={tag.total_expense}
+          incomeCents={tag.total_income}
           typeFilter={typeFilter}
           onTypeFilterChange={handleTypeFilterChange}
         />
@@ -210,13 +217,13 @@ function DetailInner() {
           disabled={deleting}
           className="btn-ghost px-0 text-expense text-sm mt-6"
         >
-          {t('contacts.deleteContact')}
+          {t('tags.deleteTagButton')}
         </button>
       )}
       <ConfirmDialog
         open={confirmOpen}
-        title={t('contacts.deleteTitle')}
-        message={t('contacts.deleteMessage', { name: c.name })}
+        title={t('tags.deleteTitle')}
+        message={t('tags.deleteMessage', { name: tag.name })}
         confirmLabel={t('common.delete')}
         confirming={deleting}
         onConfirm={() => void confirmRemove()}
@@ -229,7 +236,7 @@ function DetailInner() {
   );
 }
 
-export default function ContactDetailPage() {
+export default function TagDetailPage() {
   return (
     <RequireAuth>
       <Suspense fallback={<LoadingFallback />}>

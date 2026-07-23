@@ -106,6 +106,7 @@ func (s *Server) Router() *gin.Engine {
 	protected.GET("/meta/transaction-contacts", s.transactionContacts)
 	protected.GET("/tags", s.listTags)
 	protected.POST("/tags", s.createTag)
+	protected.GET("/tags/:id", s.getTag)
 	protected.PUT("/tags/:id", s.updateTag)
 	protected.DELETE("/tags/:id", s.deleteTag)
 	protected.GET("/contacts", s.listContacts)

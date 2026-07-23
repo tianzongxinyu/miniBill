@@ -125,7 +125,7 @@ function BackupContent() {
 
   if (loading || !cfg) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-3">
         <p className="text-sm text-muted">{loading ? t('common.loading') : error || t('common.cannotLoad')}</p>
         <PageBackLink href="/profile/" />
       </div>
@@ -137,7 +137,7 @@ function BackupContent() {
   const runDisabled = !dirReady || running || saving;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {msg && <p className="text-income text-sm">{msg}</p>}
       {error && <p className="text-expense text-sm">{error}</p>}
 

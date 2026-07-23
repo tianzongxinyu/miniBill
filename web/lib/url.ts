@@ -112,6 +112,22 @@ export function buildContactDetailHref(opts: ContactDetailHrefOptions): string {
   return `/profile/contacts/detail/?${params.toString()}`;
 }
 
+export type TagDetailHrefOptions = {
+  tagId: number;
+  returnTo?: string;
+  type?: 'expense' | 'income';
+};
+
+export function buildTagDetailHref(opts: TagDetailHrefOptions): string {
+  const params = new URLSearchParams();
+  params.set('id', String(opts.tagId));
+  if (opts.returnTo) params.set('returnTo', opts.returnTo);
+  if (opts.type === 'expense' || opts.type === 'income') {
+    params.set('type', opts.type);
+  }
+  return `/profile/tags/detail/?${params.toString()}`;
+}
+
 export function contactDetailHref(contactId: number, returnTo?: string): string {
   return buildContactDetailHref({ contactId, returnTo });
 }

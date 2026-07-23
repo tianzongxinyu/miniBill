@@ -181,7 +181,14 @@
       "applyPresetAria": "Applica colore suggerito",
       "customBg": "Sfondo personalizzato",
       "apply": "Applica"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -198,7 +205,9 @@
     "filterSentAria": "Filtra inviati, tocca di nuovo per annullare",
     "filterReceivedAria": "Filtra ricevuti, tocca di nuovo per annullare",
     "emptySent": "Nessuna transazione inviata",
-    "emptyReceived": "Nessuna transazione ricevuta"
+    "emptyReceived": "Nessuna transazione ricevuta",
+    "hideContact": "Nascondi \"{{name}}\"",
+    "showContact": "Mostra \"{{name}}\""
   },
   "data": {
     "exportTitle": "Esporta registro",

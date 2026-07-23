@@ -147,7 +147,7 @@ function ExpenseBar({
 }) {
   if (amount <= 0) {
     return (
-      <div className="relative flex h-5 min-w-0 flex-1 items-center justify-end">
+      <div className="relative flex h-4 min-w-0 flex-1 items-center justify-end">
         <div className="h-4 w-full rounded-l-full bg-line/25" aria-hidden />
       </div>
     );
@@ -165,10 +165,10 @@ function ExpenseBar({
   );
 
   return (
-    <div className="relative flex h-5 min-w-0 flex-1 items-center justify-end overflow-hidden">
+    <div className="relative flex h-4 min-w-0 flex-1 items-center justify-end overflow-hidden">
       <div className="relative flex h-4 w-full items-center justify-end overflow-hidden rounded-l-full bg-line/25">
         <div
-          className="relative flex h-full items-center justify-end overflow-hidden rounded-l-full px-2"
+          className="relative flex h-4 items-center justify-end overflow-hidden rounded-l-full px-2"
           style={{ width: barW, backgroundColor: barColor }}
         >
           {overlong ? <AxisBreakCut /> : null}
@@ -204,7 +204,7 @@ function IncomeBar({
 
   if (amount <= 0) {
     return (
-      <div className="flex h-5 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
+      <div className="flex h-4 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
         <div className="flex min-w-0 flex-1 items-center justify-start">
           <div className="h-4 w-full rounded-r-full bg-line/25" aria-hidden />
         </div>
@@ -220,11 +220,11 @@ function IncomeBar({
   const { barW, overlong } = cappedBarWidth(amount, visualMax, breakAxis, barTrackW, 4, 1);
 
   return (
-    <div className="flex h-5 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
+    <div className="flex h-4 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
       <div className="flex min-w-0 flex-1 items-center justify-start overflow-hidden">
         <div className="relative h-4 w-full overflow-hidden rounded-r-full bg-line/25">
           <div
-            className="relative h-full overflow-hidden rounded-r-full"
+            className="relative h-4 overflow-hidden rounded-r-full"
             style={{ width: Math.max(4, barW), backgroundColor: barColor }}
           >
             {overlong ? <AxisBreakCut /> : null}
@@ -313,7 +313,7 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
             </div>
             <div className={NAME_COL_CLASS}>
               <span
-                className={`inline-flex h-4 w-full items-center justify-center truncate px-0.5 text-[11px] leading-none text-ink ${
+                className={`flex h-4 w-full items-center justify-center truncate px-0.5 text-[11px] leading-none text-ink ${
                   i === 0 ? 'font-semibold' : 'font-medium'
                 }`}
                 style={{ backgroundColor: rankBg(i) }}

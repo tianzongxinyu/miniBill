@@ -181,7 +181,14 @@
       "applyPresetAria": "Voorgestelde kleur toepassen",
       "customBg": "Aangepaste achtergrond",
       "apply": "Toepassen"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Naam",
@@ -198,7 +205,9 @@
     "filterSentAria": "Filter verzonden, tik opnieuw om te wissen",
     "filterReceivedAria": "Filter ontvangen, tik opnieuw om te wissen",
     "emptySent": "Geen verzonden transacties",
-    "emptyReceived": "Geen ontvangen transacties"
+    "emptyReceived": "Geen ontvangen transacties",
+    "hideContact": "\"{{name}}\" verbergen",
+    "showContact": "\"{{name}}\" tonen"
   },
   "data": {
     "exportTitle": "Kasboek exporteren",

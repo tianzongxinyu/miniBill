@@ -25,7 +25,7 @@ export function fetchEnabledTagsCached(): Promise<Tag[]> {
 
 export function fetchContactsCached(): Promise<Contact[]> {
   if (!contactsPromise) {
-    contactsPromise = apiList<Contact>('/contacts').catch((err) => {
+    contactsPromise = apiList<Contact>('/contacts?enabled=1').catch((err) => {
       contactsPromise = null;
       throw err;
     });

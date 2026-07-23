@@ -8,12 +8,14 @@ import type {
   BackupInterval,
   Contact,
   ContactDetail,
+  ContactUpdate,
   EditableDateRange,
   LedgerImportResult,
   LedgerCsvImportMapping,
   SaveTransactionInput,
   Settings,
   Tag,
+  TagDetail,
   TagUpdate,
   Transaction,
   TransactionsPage,
@@ -122,7 +124,7 @@ export async function fetchTransactionFormMeta(): Promise<{
 }> {
   const [tags, contacts, editableRange] = await Promise.all([
     apiList<Tag>('/tags?enabled=1'),
-    apiList<Contact>('/contacts'),
+    apiList<Contact>('/contacts?enabled=1'),
     fetchEditableDateRange(),
   ]);
   return { tags, contacts, editableRange };
@@ -156,6 +158,10 @@ export async function fetchContactDetail(id: number): Promise<ContactDetail> {
   return api<ContactDetail>(`/contacts/${id}`);
 }
 
+export async function fetchTagDetail(id: number): Promise<TagDetail> {
+  return api<TagDetail>(`/tags/${id}`);
+}
+
 export async function createContact(name: string): Promise<Contact> {
   const contact = await api<Contact>('/contacts', {
     method: 'POST',
@@ -166,6 +172,15 @@ export async function createContact(name: string): Promise<Contact> {
       note: '',
       phone: '',
     }),
+  });
+  notifyLedgerMetaChanged();
+  return contact;
+}
+
+export async function updateContact(id: number, patch: ContactUpdate): Promise<Contact> {
+  const contact = await api<Contact>(`/contacts/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(patch),
   });
   notifyLedgerMetaChanged();
   return contact;

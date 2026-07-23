@@ -285,7 +285,7 @@ function DataContent() {
   const restoreDisabled = importing || restoring || backupLoading;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {msg && <p className="text-income text-sm">{msg}</p>}
       {error && <p className="text-expense text-sm">{error}</p>}
 

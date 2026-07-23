@@ -3,10 +3,19 @@
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
-export function PageBackLink({ href }: { href: string }) {
+export function PageBackLink({
+  href,
+  floating = false,
+}: {
+  href: string;
+  floating?: boolean;
+}) {
   const { t } = useTranslation();
   return (
-    <Link href={href} className="page-back-link">
+    <Link
+      href={href}
+      className={floating ? 'page-back-link page-back-link-floating' : 'page-back-link'}
+    >
       {t('common.back')}
     </Link>
   );

@@ -185,7 +185,7 @@ function StatsContent() {
       />
 
       {active.error && (
-        <div className="notebook mb-3 flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm border-expense/20 bg-expense/[0.03]">
+        <div className="notebook mb-1.5 flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm border-expense/20 bg-expense/[0.03]">
           <p className="text-expense">{active.error}</p>
           <button
             type="button"
@@ -197,7 +197,7 @@ function StatsContent() {
         </div>
       )}
 
-      <div className="notebook mb-3 overflow-hidden relative">
+      <div className="notebook mb-1.5 overflow-hidden relative">
         <button
           type="button"
           onClick={openFullscreen}

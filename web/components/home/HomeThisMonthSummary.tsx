@@ -35,7 +35,6 @@ export function HomeThisMonthSummary({ item }: { item: MonthBillItem }) {
               <Amount cents={expense} type="expense" className="text-sm" />
             </div>
           </div>
-          <div className="bill-card-split-divider bill-card-split-divider-full" aria-hidden />
           <div className="bill-stat-stack">
             <div className="bill-stat-stack-label">{t('stats.totalIncome')}</div>
             <div className="bill-stat-stack-value">

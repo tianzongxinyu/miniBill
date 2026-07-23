@@ -181,7 +181,14 @@
       "applyPresetAria": "Aplicar cor sugerida",
       "customBg": "Fundo personalizado",
       "apply": "Aplicar"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -198,7 +205,9 @@
     "filterSentAria": "Filtrar enviados, toque novamente para limpar",
     "filterReceivedAria": "Filtrar recebidos, toque novamente para limpar",
     "emptySent": "Nenhuma transação enviada",
-    "emptyReceived": "Nenhuma transação recebida"
+    "emptyReceived": "Nenhuma transação recebida",
+    "hideContact": "Ocultar \"{{name}}\"",
+    "showContact": "Mostrar \"{{name}}\""
   },
   "data": {
     "exportTitle": "Exportar livro-caixa",

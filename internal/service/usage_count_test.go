@@ -84,7 +84,7 @@ func TestUsageCountOnTransactionCRUD(t *testing.T) {
 		t.Fatalf("tags order: idxB=%d idxA=%d list=%+v", idxB, idxA, tags)
 	}
 
-	contacts, err := contactSvc.List(db)
+	contacts, err := contactSvc.List(db, false)
 	if err != nil {
 		t.Fatal(err)
 	}

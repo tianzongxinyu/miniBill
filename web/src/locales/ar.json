@@ -181,7 +181,14 @@
       "applyPresetAria": "تطبيق لون مقترح",
       "customBg": "خلفية مخصصة",
       "apply": "تطبيق"
-    }
+    },
+    "expense": "Out",
+    "income": "In",
+    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
+    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
+    "emptyExpense": "No outgoing records",
+    "emptyIncome": "No incoming records",
+    "deleteTagButton": "Delete"
   },
   "contacts": {
     "namePlaceholder": "الاسم",
@@ -198,7 +205,9 @@
     "filterSentAria": "تصفية المرسل، اضغط مرة أخرى للإلغاء",
     "filterReceivedAria": "تصفية المستلم، اضغط مرة أخرى للإلغاء",
     "emptySent": "لا توجد معاملات مرسلة",
-    "emptyReceived": "لا توجد معاملات مستلمة"
+    "emptyReceived": "لا توجد معاملات مستلمة",
+    "hideContact": "إخفاء \"{{name}}\"",
+    "showContact": "إظهار \"{{name}}\""
   },
   "data": {
     "exportTitle": "تصدير دفتر الحساب",
