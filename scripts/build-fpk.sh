@@ -77,8 +77,9 @@ ensure_fnpack() {
 }
 
 ensure_web_out() {
-    if [ -d "$ROOT/web/out" ] && [ -f "$ROOT/web/out/index.html" ]; then
-        return
+    if [ -d "$ROOT/web/out" ]; then
+        info "Removing existing web/out ..."
+        rm -rf "$ROOT/web/out"
     fi
     info "Building frontend (web/out) ..."
     (cd "$ROOT/web" && npm install && npm run build)

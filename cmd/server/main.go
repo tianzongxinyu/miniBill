@@ -62,9 +62,11 @@ func main() {
 				return
 			}
 			if file, ok := staticFileToServe(absStaticRoot, c.Request.URL.Path); ok {
+				setStaticCacheControl(c, file)
 				c.File(file)
 				return
 			}
+			setStaticCacheControl(c, indexHTML)
 			c.File(indexHTML)
 		})
 	}
@@ -88,6 +90,21 @@ func main() {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 	_ = httpSrv.Shutdown(shutdownCtx)
+}
+
+func setStaticCacheControl(c *gin.Context, filePath string) {
+	c.Header("Cache-Control", staticCacheControl(filePath))
+}
+
+// staticCacheControl returns Cache-Control for a static file path.
+// Hashed Next.js assets under _next/static may be cached long-term;
+// HTML and other unhashed assets must revalidate so upgrades show new UI.
+func staticCacheControl(filePath string) string {
+	slash := filepath.ToSlash(filePath)
+	if strings.Contains(slash, "/_next/static/") {
+		return "public, max-age=31536000, immutable"
+	}
+	return "no-cache"
 }
 
 func staticFileToServe(absRoot, urlPath string) (string, bool) {

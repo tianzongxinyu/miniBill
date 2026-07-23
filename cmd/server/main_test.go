@@ -51,6 +51,27 @@ func TestStaticFileToServe(t *testing.T) {
 	}
 }
 
+func TestStaticCacheControl(t *testing.T) {
+	tests := []struct {
+		path string
+		want string
+	}{
+		{"/app/web/out/index.html", "no-cache"},
+		{"/app/web/out/login/index.html", "no-cache"},
+		{"/app/web/out/_next/static/chunks/foo.js", "public, max-age=31536000, immutable"},
+		{"/app/web/out/_next/static/css/bar.css", "public, max-age=31536000, immutable"},
+		{"/app/web/out/icon.png", "no-cache"},
+		{"/app/web/out/manifest.webmanifest", "no-cache"},
+		{filepath.Join("out", "_next", "static", "chunks", "x.js"), "public, max-age=31536000, immutable"},
+	}
+	for _, tt := range tests {
+		got := staticCacheControl(tt.path)
+		if got != tt.want {
+			t.Fatalf("staticCacheControl(%q) = %q, want %q", tt.path, got, tt.want)
+		}
+	}
+}
+
 func TestSafeStaticFile(t *testing.T) {
 	root := t.TempDir()
 	absRoot, err := filepath.Abs(root)
