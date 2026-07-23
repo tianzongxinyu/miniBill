@@ -182,13 +182,13 @@
       "customBg": "Fond personnalisé",
       "apply": "Appliquer"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Sortie",
+    "income": "Entrée",
+    "filterExpenseAria": "Filtrer les sorties ; appuyez à nouveau pour annuler",
+    "filterIncomeAria": "Filtrer les entrées ; appuyez à nouveau pour annuler",
+    "emptyExpense": "Aucun enregistrement de sortie",
+    "emptyIncome": "Aucun enregistrement d’entrée",
+    "deleteTagButton": "Supprimer"
   },
   "contacts": {
     "namePlaceholder": "Nom",

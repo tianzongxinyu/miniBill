@@ -182,13 +182,13 @@
       "customBg": "Власний фон",
       "apply": "Застосувати"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Витрата",
+    "income": "Дохід",
+    "filterExpenseAria": "Фільтр витрат; натисніть знову для скидання",
+    "filterIncomeAria": "Фільтр доходів; натисніть знову для скидання",
+    "emptyExpense": "Немає записів про витрати",
+    "emptyIncome": "Немає записів про доходи",
+    "deleteTagButton": "Видалити"
   },
   "contacts": {
     "namePlaceholder": "Ім'я",

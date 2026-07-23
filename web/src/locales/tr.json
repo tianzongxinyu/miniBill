@@ -182,13 +182,13 @@
       "customBg": "Özel arka plan",
       "apply": "Uygula"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Çıkış",
+    "income": "Giriş",
+    "filterExpenseAria": "Giden işlemleri filtrele; kaldırmak için tekrar dokun",
+    "filterIncomeAria": "Gelen işlemleri filtrele; kaldırmak için tekrar dokun",
+    "emptyExpense": "Giden kayıt yok",
+    "emptyIncome": "Gelen kayıt yok",
+    "deleteTagButton": "Sil"
   },
   "contacts": {
     "namePlaceholder": "Ad",

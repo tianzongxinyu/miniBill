@@ -182,13 +182,13 @@
       "customBg": "Latar kustom",
       "apply": "Terapkan"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Keluar",
+    "income": "Masuk",
+    "filterExpenseAria": "Filter transaksi keluar; ketuk lagi untuk hapus",
+    "filterIncomeAria": "Filter transaksi masuk; ketuk lagi untuk hapus",
+    "emptyExpense": "Tidak ada catatan keluar",
+    "emptyIncome": "Tidak ada catatan masuk",
+    "deleteTagButton": "Hapus"
   },
   "contacts": {
     "namePlaceholder": "Nama",

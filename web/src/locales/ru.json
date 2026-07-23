@@ -182,13 +182,13 @@
       "customBg": "Свой фон",
       "apply": "Применить"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Расход",
+    "income": "Доход",
+    "filterExpenseAria": "Фильтр расходов; нажмите снова для сброса",
+    "filterIncomeAria": "Фильтр доходов; нажмите снова для сброса",
+    "emptyExpense": "Нет записей о расходах",
+    "emptyIncome": "Нет записей о доходах",
+    "deleteTagButton": "Удалить"
   },
   "contacts": {
     "namePlaceholder": "Имя",

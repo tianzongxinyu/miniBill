@@ -182,13 +182,13 @@
       "customBg": "พื้นหลังกำหนดเอง",
       "apply": "ใช้"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "จ่าย",
+    "income": "รับ",
+    "filterExpenseAria": "กรองรายการจ่าย แตะอีกครั้งเพื่อยกเลิก",
+    "filterIncomeAria": "กรองรายการรับ แตะอีกครั้งเพื่อยกเลิก",
+    "emptyExpense": "ไม่มีรายการจ่าย",
+    "emptyIncome": "ไม่มีรายการรับ",
+    "deleteTagButton": "ลบ"
   },
   "contacts": {
     "namePlaceholder": "ชื่อ",

@@ -182,13 +182,13 @@
       "customBg": "कस्टम पृष्ठभूमि",
       "apply": "लागू करें"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "खर्च",
+    "income": "आय",
+    "filterExpenseAria": "खर्च लेनदेन फ़िल्टर करें; फिर से टैप करके हटाएँ",
+    "filterIncomeAria": "आय लेनदेन फ़िल्टर करें; फिर से टैप करके हटाएँ",
+    "emptyExpense": "कोई खर्च रिकॉर्ड नहीं",
+    "emptyIncome": "कोई आय रिकॉर्ड नहीं",
+    "deleteTagButton": "हटाएँ"
   },
   "contacts": {
     "namePlaceholder": "नाम",

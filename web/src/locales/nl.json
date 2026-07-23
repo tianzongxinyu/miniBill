@@ -182,13 +182,13 @@
       "customBg": "Aangepaste achtergrond",
       "apply": "Toepassen"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Uit",
+    "income": "Binnen",
+    "filterExpenseAria": "Filter uitgaande transacties; tik opnieuw om te wissen",
+    "filterIncomeAria": "Filter inkomende transacties; tik opnieuw om te wissen",
+    "emptyExpense": "Geen uitgaande records",
+    "emptyIncome": "Geen inkomende records",
+    "deleteTagButton": "Verwijderen"
   },
   "contacts": {
     "namePlaceholder": "Naam",

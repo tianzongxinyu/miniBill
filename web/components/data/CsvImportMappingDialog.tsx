@@ -157,19 +157,21 @@ export function CsvImportMappingDialog({
 
         <div className="mt-5">
           <p className="text-sm font-semibold text-ink tracking-tight">{t('data.csvMapFields')}</p>
-          <div className="mt-3 space-y-2.5">
+          <div className="mt-3 rounded-2xl border border-line/80 divide-y divide-line/60 overflow-hidden">
             {FIELDS.map((field) => {
               const required = field === 'date' || field === 'flow' || field === 'amount';
               const label = t(`data.csvField.${field}`);
               return (
-                <div key={field} className="flex items-center gap-3">
-                  <span className="w-20 shrink-0 text-xs font-medium text-ink">
+                <div
+                  key={field}
+                  className="flex items-center gap-3 px-3 py-2.5 bg-surface"
+                >
+                  <span className="w-24 shrink-0 text-sm text-muted">
                     {label}
                     {required ? <span className="text-accent ml-0.5">*</span> : null}
                   </span>
                   <SimpleSelect
                     className="flex-1"
-                    size="compact"
                     value={mapping[field] ?? ''}
                     options={columnOptions}
                     disabled={confirming}

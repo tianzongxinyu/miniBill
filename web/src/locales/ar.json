@@ -182,13 +182,13 @@
       "customBg": "خلفية مخصصة",
       "apply": "تطبيق"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "صرف",
+    "income": "قبض",
+    "filterExpenseAria": "تصفية المعاملات الصادرة؛ اضغط مرة أخرى للإلغاء",
+    "filterIncomeAria": "تصفية المعاملات الواردة؛ اضغط مرة أخرى للإلغاء",
+    "emptyExpense": "لا توجد سجلات صادرة",
+    "emptyIncome": "لا توجد سجلات واردة",
+    "deleteTagButton": "حذف"
   },
   "contacts": {
     "namePlaceholder": "الاسم",

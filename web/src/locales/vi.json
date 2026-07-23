@@ -182,13 +182,13 @@
       "customBg": "Nền tùy chỉnh",
       "apply": "Áp dụng"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Chi",
+    "income": "Thu",
+    "filterExpenseAria": "Lọc giao dịch chi; chạm lại để bỏ lọc",
+    "filterIncomeAria": "Lọc giao dịch thu; chạm lại để bỏ lọc",
+    "emptyExpense": "Không có bản ghi chi",
+    "emptyIncome": "Không có bản ghi thu",
+    "deleteTagButton": "Xóa"
   },
   "contacts": {
     "namePlaceholder": "Tên",

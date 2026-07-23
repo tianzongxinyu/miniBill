@@ -1005,22 +1005,8 @@ body {
     @apply border-accent/35 bg-accent-soft/45;
   }
 
-  .csv-map-field {
-    @apply relative flex items-center justify-between gap-2 w-full rounded-xl border;
-    @apply bg-accent-soft/30 px-3 py-1.5 text-left text-[13px];
-    border-color: var(--control-border);
-    @apply transition-all duration-200 ease-out cursor-pointer;
-    @apply hover:bg-accent-soft/50 hover:border-accent/45;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25;
-    @apply disabled:opacity-50 disabled:pointer-events-none;
-  }
-
-  .csv-map-field-open {
-    @apply bg-surface border-accent/30 ring-2 ring-accent/25;
-  }
-
-  .csv-map-field-placeholder {
-    @apply text-muted font-normal;
+  .csv-import-panel .field {
+    @apply py-2 px-3;
   }
 
   .picker-floating-panel.simple-select-floating {
@@ -1029,10 +1015,6 @@ body {
 
   .picker-floating-panel-body.simple-select-panel-body {
     @apply p-2 lg:p-2;
-  }
-
-  .simple-select-panel-body .simple-select-option {
-    font-size: 13px;
   }
 
   .simple-select-panel-body .combobox-floating-close {

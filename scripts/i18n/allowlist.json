@@ -17,7 +17,8 @@
     "common.emDash": true,
     "common.endOfListDivider": true,
     "common.yearMonth": true,
-    "common.yearMonthDay": true
+    "common.yearMonthDay": true,
+    "home.hotTagUseCount": true
   },
   "valuePatterns": [
     "^YYYY-MM(-DD)?$",

@@ -182,13 +182,13 @@
       "customBg": "Eigener Hintergrund",
       "apply": "Anwenden"
     },
-    "expense": "Out",
-    "income": "In",
-    "filterExpenseAria": "Filter outgoing transactions; tap again to clear",
-    "filterIncomeAria": "Filter incoming transactions; tap again to clear",
-    "emptyExpense": "No outgoing records",
-    "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "expense": "Aus",
+    "income": "Ein",
+    "filterExpenseAria": "Ausgaben filtern; erneut tippen zum Aufheben",
+    "filterIncomeAria": "Einnahmen filtern; erneut tippen zum Aufheben",
+    "emptyExpense": "Keine Ausgaben-Einträge",
+    "emptyIncome": "Keine Einnahmen-Einträge",
+    "deleteTagButton": "Löschen"
   },
   "contacts": {
     "namePlaceholder": "Name eingeben",
