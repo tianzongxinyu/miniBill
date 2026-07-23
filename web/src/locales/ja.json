@@ -101,12 +101,8 @@
     "recentEmpty": "今月の取引はありません",
     "pastTitle": "過去の月",
     "hotTags": "よく使うタグ",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "よく使う連絡先",
-    "hotTagAll": "すべて",
-    "hotTagExpense": "支出",
-    "hotTagIncome": "収入",
-    "hotTagIncomeShort": "収",
-    "hotTagExpenseShort": "支",
     "trendHalfYear": "半年",
     "trendOneYear": "1年"
   },

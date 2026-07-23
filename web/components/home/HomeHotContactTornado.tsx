@@ -9,11 +9,10 @@ import { toIntlLocale } from '@/lib/i18n/intlLocale';
 
 const BREAK_RATIO = 2;
 const VISUAL_PAD = 1.2;
-const OVERLONG_CAP = 0.92;
 const RIGHT_AMOUNT_COL_MIN_PX = 40; // ~2.5rem
 const RIGHT_BAR_GAP_PX = 8;
 const BAR_PAD_X = 8;
-const NAME_COL_CLASS = 'w-[4.75rem] shrink-0 px-0 text-center';
+const NAME_COL_CLASS = 'w-[5.75rem] shrink-0 px-0 text-center';
 const RANK_BG_ALPHAS = [0.28, 0.22, 0.16, 0.11, 0.07] as const;
 
 function rankBg(rankIndex: number): string {
@@ -24,6 +23,7 @@ function rankBg(rankIndex: number): string {
 type TornadoRow = {
   id: number;
   name: string;
+  useCount: number;
   income: number;
   expense: number;
 };
@@ -42,7 +42,13 @@ function sumContact(c: HomeRankingContact): TornadoRow {
     income += p.total_income ?? 0;
     expense += p.total_expense ?? 0;
   }
-  return { id: c.id, name: c.name, income, expense };
+  return {
+    id: c.id,
+    name: c.name,
+    useCount: c.use_count ?? 0,
+    income,
+    expense,
+  };
 }
 
 function computeVisualMax(amounts: number[]): { visualMax: number; breakAxis: boolean } {
@@ -99,13 +105,15 @@ function cappedBarWidth(
   visualMax: number,
   breakAxis: boolean,
   trackW: number,
-  labelMinW: number
+  labelMinW: number,
+  fillCap = 1
 ): { barW: number; overlong: boolean } {
   const overlong = isOverlong(amount, visualMax, breakAxis);
   const labelFloor = Math.min(labelMinW, trackW);
+  const maxFill = trackW * fillCap;
   if (overlong) {
     return {
-      barW: Math.min(trackW, Math.max(trackW * OVERLONG_CAP, labelFloor)),
+      barW: Math.min(trackW, Math.max(maxFill, labelFloor)),
       overlong: true,
     };
   }
@@ -114,11 +122,11 @@ function cappedBarWidth(
   // Label push fills the track → treat as overlong when break domain is active
   if (breakAxis && barW >= trackW * 0.98 && amount >= visualMax) {
     return {
-      barW: Math.min(trackW, Math.max(trackW * OVERLONG_CAP, labelFloor)),
+      barW: Math.min(trackW, Math.max(maxFill, labelFloor)),
       overlong: true,
     };
   }
-  barW = Math.min(barW, trackW);
+  barW = Math.min(barW, maxFill);
   return { barW, overlong: false };
 }
 
@@ -139,8 +147,8 @@ function ExpenseBar({
 }) {
   if (amount <= 0) {
     return (
-      <div className="relative flex h-5 flex-1 items-center justify-end">
-        <div className="h-px w-[30%] bg-line/30" aria-hidden />
+      <div className="relative flex h-5 min-w-0 flex-1 items-center justify-end">
+        <div className="h-4 w-full rounded-l-full bg-line/25" aria-hidden />
       </div>
     );
   }
@@ -152,19 +160,22 @@ function ExpenseBar({
     visualMax,
     breakAxis,
     trackW,
-    measureLabelWidth(label)
+    measureLabelWidth(label),
+    1
   );
 
   return (
     <div className="relative flex h-5 min-w-0 flex-1 items-center justify-end overflow-hidden">
-      <div
-        className="relative flex h-4 items-center justify-end overflow-hidden rounded-l-full px-2"
-        style={{ width: barW, backgroundColor: barColor }}
-      >
-        {overlong ? <AxisBreakCut /> : null}
-        <span className="amount-num relative z-[1] shrink-0 text-right text-[11px] tabular-nums leading-none text-white drop-shadow-[0_0.5px_0_rgba(0,0,0,0.18)]">
-          {label}
-        </span>
+      <div className="relative flex h-4 w-full items-center justify-end overflow-hidden rounded-l-full bg-line/25">
+        <div
+          className="relative flex h-full items-center justify-end overflow-hidden rounded-l-full px-2"
+          style={{ width: barW, backgroundColor: barColor }}
+        >
+          {overlong ? <AxisBreakCut /> : null}
+          <span className="amount-num relative z-[1] shrink-0 text-right text-[11px] tabular-nums leading-none text-white drop-shadow-[0_0.5px_0_rgba(0,0,0,0.18)]">
+            {label}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -195,7 +206,7 @@ function IncomeBar({
     return (
       <div className="flex h-5 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
         <div className="flex min-w-0 flex-1 items-center justify-start">
-          <div className="h-px w-[30%] bg-line/30" aria-hidden />
+          <div className="h-4 w-full rounded-r-full bg-line/25" aria-hidden />
         </div>
         <div
           className="shrink-0 text-right text-[11px] tabular-nums leading-none"
@@ -206,16 +217,18 @@ function IncomeBar({
   }
 
   const label = formatTornadoAmount(amount, locale, '+');
-  const { barW, overlong } = cappedBarWidth(amount, visualMax, breakAxis, barTrackW, 4);
+  const { barW, overlong } = cappedBarWidth(amount, visualMax, breakAxis, barTrackW, 4, 1);
 
   return (
     <div className="flex h-5 min-w-0 flex-1 items-center" style={{ gap: RIGHT_BAR_GAP_PX }}>
       <div className="flex min-w-0 flex-1 items-center justify-start overflow-hidden">
-        <div
-          className="relative h-4 overflow-hidden rounded-r-full"
-          style={{ width: Math.max(4, barW), backgroundColor: barColor }}
-        >
-          {overlong ? <AxisBreakCut /> : null}
+        <div className="relative h-4 w-full overflow-hidden rounded-r-full bg-line/25">
+          <div
+            className="relative h-full overflow-hidden rounded-r-full"
+            style={{ width: Math.max(4, barW), backgroundColor: barColor }}
+          >
+            {overlong ? <AxisBreakCut /> : null}
+          </div>
         </div>
       </div>
       <span
@@ -287,7 +300,7 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
       </div>
       <div className="px-3 pb-3.5 space-y-2.5">
         {rows.map((row, i) => (
-          <div key={row.id} className="grid grid-cols-[1.05fr_auto_0.95fr] items-center gap-x-0">
+          <div key={row.id} className="grid grid-cols-[0.9fr_auto_1.1fr] items-center gap-x-0">
             <div ref={i === 0 ? leftRef : undefined} className="min-w-0">
               <ExpenseBar
                 amount={row.expense}
@@ -300,13 +313,16 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
             </div>
             <div className={NAME_COL_CLASS}>
               <span
-                className={`inline-flex h-4 w-full items-center justify-center truncate px-1 text-[11px] leading-none text-ink ${
+                className={`inline-flex h-4 w-full items-center justify-center truncate px-0.5 text-[11px] leading-none text-ink ${
                   i === 0 ? 'font-semibold' : 'font-medium'
                 }`}
                 style={{ backgroundColor: rankBg(i) }}
-                title={row.name}
+                title={`${row.name}${t('home.hotTagUseCount', { count: row.useCount })}`}
               >
-                {row.name}
+                <span className="truncate">{row.name}</span>
+                <span className="shrink-0 font-normal tabular-nums text-muted">
+                  {t('home.hotTagUseCount', { count: row.useCount })}
+                </span>
               </span>
             </div>
             <div ref={i === 0 ? rightRef : undefined} className="min-w-0">

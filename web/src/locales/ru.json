@@ -101,12 +101,8 @@
     "recentEmpty": "Нет операций в этом месяце",
     "pastTitle": "Прошлые месяцы",
     "hotTags": "Популярные теги",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Популярные контакты",
-    "hotTagAll": "Все",
-    "hotTagExpense": "Расход",
-    "hotTagIncome": "Доход",
-    "hotTagIncomeShort": "Дох.",
-    "hotTagExpenseShort": "Рас.",
     "trendHalfYear": "Полгода",
     "trendOneYear": "1 год"
   },

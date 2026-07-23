@@ -101,12 +101,8 @@
     "recentEmpty": "Nessun movimento questo mese",
     "pastTitle": "Mesi precedenti",
     "hotTags": "Tag popolari",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Contatti popolari",
-    "hotTagAll": "Tutti",
-    "hotTagExpense": "Uscite",
-    "hotTagIncome": "Entrate",
-    "hotTagIncomeShort": "Ent.",
-    "hotTagExpenseShort": "Usc.",
     "trendHalfYear": "Semestre",
     "trendOneYear": "1 anno"
   },

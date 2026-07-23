@@ -101,12 +101,8 @@
     "recentEmpty": "इस महीने कोई लेनदेन नहीं",
     "pastTitle": "पिछले महीने",
     "hotTags": "लोकप्रिय टैग",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "लोकप्रिय संपर्क",
-    "hotTagAll": "सभी",
-    "hotTagExpense": "खर्च",
-    "hotTagIncome": "आय",
-    "hotTagIncomeShort": "आय",
-    "hotTagExpenseShort": "खर्च",
     "trendHalfYear": "आधा साल",
     "trendOneYear": "1 साल"
   },

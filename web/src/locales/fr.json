@@ -101,12 +101,8 @@
     "recentEmpty": "Aucune écriture ce mois-ci",
     "pastTitle": "Mois précédents",
     "hotTags": "Tags populaires",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Contacts populaires",
-    "hotTagAll": "Tout",
-    "hotTagExpense": "Dép.",
-    "hotTagIncome": "Rec.",
-    "hotTagIncomeShort": "Rec.",
-    "hotTagExpenseShort": "Dép.",
     "trendHalfYear": "6 mois",
     "trendOneYear": "1 an"
   },

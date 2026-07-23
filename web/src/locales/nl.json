@@ -101,12 +101,8 @@
     "recentEmpty": "Geen boekingen deze maand",
     "pastTitle": "Eerdere maanden",
     "hotTags": "Populaire tags",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Populaire contacten",
-    "hotTagAll": "Alles",
-    "hotTagExpense": "Uit",
-    "hotTagIncome": "Ink.",
-    "hotTagIncomeShort": "Ink.",
-    "hotTagExpenseShort": "Uit",
     "trendHalfYear": "Halfjaar",
     "trendOneYear": "1 jaar"
   },

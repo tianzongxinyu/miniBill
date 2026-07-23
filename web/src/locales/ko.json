@@ -101,12 +101,8 @@
     "recentEmpty": "이번 달 거래 없음",
     "pastTitle": "지난 달",
     "hotTags": "인기 태그",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "인기 연락처",
-    "hotTagAll": "전체",
-    "hotTagExpense": "지출",
-    "hotTagIncome": "수입",
-    "hotTagIncomeShort": "수입",
-    "hotTagExpenseShort": "지출",
     "trendHalfYear": "반년",
     "trendOneYear": "1년"
   },

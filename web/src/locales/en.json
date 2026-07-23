@@ -101,12 +101,8 @@
     "recentEmpty": "No transactions this month",
     "pastTitle": "Past months",
     "hotTags": "Top tags",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Top contacts",
-    "hotTagAll": "All",
-    "hotTagExpense": "Out",
-    "hotTagIncome": "In",
-    "hotTagIncomeShort": "In",
-    "hotTagExpenseShort": "Out",
     "trendHalfYear": "Half year",
     "trendOneYear": "1 year"
   },

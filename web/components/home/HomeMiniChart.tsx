@@ -37,33 +37,42 @@ export function HomeMiniChart({ reloadKey = 0 }: { reloadKey?: number }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const loadSeries = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [page, ranks] = await Promise.all([
-        fetchMonthSeries({ limit: months }),
-        fetchHomeRankings({ months }).catch(() => null),
-      ]);
+      const page = await fetchMonthSeries({ limit: months });
       setItems(page.items);
-      setRankings(ranks);
     } catch (e) {
       setError(formatApiError(e, t('common.loadFailed')));
       setItems([]);
-      setRankings(null);
     } finally {
       setLoading(false);
     }
   }, [t, months]);
 
+  const loadRankings = useCallback(async () => {
+    try {
+      const ranks = await fetchHomeRankings({ months });
+      setRankings(ranks);
+    } catch {
+      setRankings(null);
+    }
+  }, [months]);
+
   useEffect(() => {
-    void load();
-  }, [load, reloadKey]);
+    void loadSeries();
+  }, [loadSeries, reloadKey]);
+
+  useEffect(() => {
+    void loadRankings();
+  }, [loadRankings, reloadKey]);
 
   useOnLedgerChanged(
     useCallback(() => {
-      void load();
-    }, [load])
+      void loadSeries();
+      void loadRankings();
+    }, [loadSeries, loadRankings])
   );
 
   const rows = useMemo(

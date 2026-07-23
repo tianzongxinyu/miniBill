@@ -101,12 +101,8 @@
     "recentEmpty": "Немає операцій цього місяця",
     "pastTitle": "Минулі місяці",
     "hotTags": "Популярні теги",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Популярні контакти",
-    "hotTagAll": "Усі",
-    "hotTagExpense": "Витрати",
-    "hotTagIncome": "Дохід",
-    "hotTagIncomeShort": "Дох.",
-    "hotTagExpenseShort": "Вит.",
     "trendHalfYear": "Пів року",
     "trendOneYear": "1 рік"
   },

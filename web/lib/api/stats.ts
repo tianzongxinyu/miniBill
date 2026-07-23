@@ -91,10 +91,13 @@ export async function fetchHomeRankings(opts?: {
   const months = Array.isArray(data?.months) ? data.months : [];
   const tags = (Array.isArray(data?.tags) ? data.tags : []).map((tag) => ({
     ...tag,
-    points: Array.isArray(tag.points) ? tag.points : [],
+    use_count: typeof tag.use_count === 'number' ? tag.use_count : 0,
+    total_income: typeof tag.total_income === 'number' ? tag.total_income : 0,
+    total_expense: typeof tag.total_expense === 'number' ? tag.total_expense : 0,
   }));
   const contacts = (Array.isArray(data?.contacts) ? data.contacts : []).map((c) => ({
     ...c,
+    use_count: typeof c.use_count === 'number' ? c.use_count : 0,
     points: Array.isArray(c.points) ? c.points : [],
   }));
   return { months, tags, contacts };

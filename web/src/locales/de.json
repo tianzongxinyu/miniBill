@@ -101,12 +101,8 @@
     "recentEmpty": "Keine Buchungen diesen Monat",
     "pastTitle": "Vergangene Monate",
     "hotTags": "Beliebte Tags",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Beliebte Kontakte",
-    "hotTagAll": "Alle",
-    "hotTagExpense": "Aus",
-    "hotTagIncome": "Ein",
-    "hotTagIncomeShort": "Ein",
-    "hotTagExpenseShort": "Aus",
     "trendHalfYear": "Halbjahr",
     "trendOneYear": "1 Jahr"
   },

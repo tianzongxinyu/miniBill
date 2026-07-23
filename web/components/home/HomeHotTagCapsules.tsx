@@ -1,23 +1,19 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
 import type { HomeRankingTag } from '@/lib/api';
-import { chartStrokeForType, textClassForSign, textClassForType } from '@/lib/amountColors';
+import { chartStrokeForType, textClassForSign } from '@/lib/amountColors';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
 
-type TagFilter = 'all' | 'expense' | 'income';
-
-type TagRow = {
-  id: number;
-  name: string;
-  colorBg: string;
-  income: number;
-  expense: number;
-};
-
 const BAR_FILL_OPACITY = 0.65;
+const BREAK_RATIO = 2;
+const VISUAL_PAD = 1.2;
+/** Overlong (broken-axis) bars fill most of the track, not 100%, so the cut is readable. */
+const OVERLONG_FILL = 0.92;
+const AMOUNT_COL_MIN_PX = 56;
+const AMOUNT_COL_MAX_PX = 120;
 
 function formatIntAmount(cents: number, locale: string, sign: '+' | '-' | ''): string {
   const body = new Intl.NumberFormat(toIntlLocale(locale), {
@@ -31,79 +27,93 @@ function formatNet(cents: number, locale: string): string {
   return formatIntAmount(cents, locale, cents > 0 ? '+' : '-');
 }
 
-function sumTag(tag: HomeRankingTag): TagRow {
-  let income = 0;
-  let expense = 0;
-  for (const p of tag.points ?? []) {
-    income += p.total_income ?? 0;
-    expense += p.total_expense ?? 0;
-  }
-  return {
-    id: tag.id,
-    name: tag.name,
-    colorBg: tag.color_bg || '#3E8E7E',
-    income,
-    expense,
-  };
+function formatIncomeExpenseLabel(income: number, expense: number, locale: string): string {
+  return `${formatIntAmount(income, locale, '+')} / ${formatIntAmount(expense, locale, '-')}`;
 }
 
-const FILTERS: TagFilter[] = ['all', 'expense', 'income'];
+function resolveAmountColWidth(labels: string[]): number {
+  let max = AMOUNT_COL_MIN_PX;
+  for (const label of labels) {
+    max = Math.max(max, Math.ceil(label.length * 7.2) + 4);
+  }
+  return Math.min(max, AMOUNT_COL_MAX_PX);
+}
 
-function DualRatioBar({
+function computeVisualMax(amounts: number[]): { visualMax: number; breakAxis: boolean } {
+  const nonzero = amounts.filter((a) => a > 0).sort((a, b) => b - a);
+  if (nonzero.length === 0) return { visualMax: 1, breakAxis: false };
+  const peak = nonzero[0]!;
+  const restPeak = nonzero[1] ?? 0;
+  if (restPeak > 0 && peak / restPeak >= BREAK_RATIO) {
+    return { visualMax: restPeak * VISUAL_PAD, breakAxis: true };
+  }
+  return { visualMax: peak, breakAxis: false };
+}
+
+function AxisBreakCut() {
+  return (
+    <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <span className="absolute left-[46%] top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface" />
+      <span className="absolute left-[54%] top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface" />
+    </span>
+  );
+}
+
+function ProportionalDualBar({
   income,
   expense,
+  visualMax,
+  breakAxis,
   incomeColor,
   expenseColor,
 }: {
   income: number;
   expense: number;
+  visualMax: number;
+  breakAxis: boolean;
   incomeColor: string;
   expenseColor: string;
 }) {
   const total = income + expense;
-  if (total <= 0) {
-    return <div className="h-1 w-full rounded-full bg-line/25" />;
+  if (total <= 0 || visualMax <= 0) {
+    return <div className="h-1.5 w-full rounded-full bg-line/25" />;
   }
+
+  const overlong = breakAxis && total > visualMax;
+  const fillPct = overlong
+    ? OVERLONG_FILL * 100
+    : Math.min(100, (total / visualMax) * 100);
   const expensePct = (expense / total) * 100;
   const incomePct = (income / total) * 100;
-  return (
-    <div className="flex h-1 w-full overflow-hidden rounded-full bg-line/25">
-      {expense > 0 ? (
-        <div
-          className="h-full min-w-[2px]"
-          style={{ width: `${expensePct}%`, backgroundColor: expenseColor, opacity: BAR_FILL_OPACITY }}
-        />
-      ) : null}
-      {income > 0 ? (
-        <div
-          className="h-full min-w-[2px]"
-          style={{ width: `${incomePct}%`, backgroundColor: incomeColor, opacity: BAR_FILL_OPACITY }}
-        />
-      ) : null}
-    </div>
-  );
-}
 
-function MonoBar({
-  amount,
-  max,
-  color,
-}: {
-  amount: number;
-  max: number;
-  color: string;
-}) {
-  const pct = max > 0 ? Math.min(100, (amount / max) * 100) : 0;
   return (
-    <div className="h-1 w-full overflow-hidden rounded-full bg-line/25">
+    <div className="h-1.5 w-full rounded-full bg-line/25">
       <div
-        className="h-full rounded-full transition-[width] duration-300 ease-out"
-        style={{
-          width: `${Math.max(pct, amount > 0 ? 4 : 0)}%`,
-          backgroundColor: color,
-          opacity: BAR_FILL_OPACITY,
-        }}
-      />
+        className="relative flex h-full min-w-[2px] overflow-hidden rounded-full"
+        style={{ width: `${Math.max(fillPct, total > 0 ? 4 : 0)}%` }}
+      >
+        {expense > 0 ? (
+          <div
+            className="h-full min-w-[2px]"
+            style={{
+              width: `${expensePct}%`,
+              backgroundColor: expenseColor,
+              opacity: BAR_FILL_OPACITY,
+            }}
+          />
+        ) : null}
+        {income > 0 ? (
+          <div
+            className="h-full min-w-[2px]"
+            style={{
+              width: `${incomePct}%`,
+              backgroundColor: incomeColor,
+              opacity: BAR_FILL_OPACITY,
+            }}
+          />
+        ) : null}
+        {overlong ? <AxisBreakCut /> : null}
+      </div>
     </div>
   );
 }
@@ -111,135 +121,74 @@ function MonoBar({
 export function HomeHotTagCapsules({ tags }: { tags: HomeRankingTag[] }) {
   const { t } = useTranslation();
   const { scheme, locale } = useSettings();
-  const [filter, setFilter] = useState<TagFilter>('all');
-
-  const rows = useMemo(() => {
-    return tags.map(sumTag).filter((r) => r.income > 0 || r.expense > 0);
-  }, [tags]);
-
-  const visible = useMemo(() => {
-    if (filter === 'all') {
-      return [...rows].sort((a, b) => b.income + b.expense - (a.income + a.expense));
-    }
-    if (filter === 'expense') {
-      return rows
-        .filter((r) => r.expense > 0)
-        .sort((a, b) => b.expense - a.expense);
-    }
-    return rows
-      .filter((r) => r.income > 0)
-      .sort((a, b) => b.income - a.income);
-  }, [rows, filter]);
-
-  const monoMax = useMemo(() => {
-    if (filter === 'expense') return Math.max(0, ...visible.map((r) => r.expense));
-    if (filter === 'income') return Math.max(0, ...visible.map((r) => r.income));
-    return 0;
-  }, [filter, visible]);
-
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
-  const segIndex = FILTERS.indexOf(filter);
 
-  const segLabels: Record<TagFilter, string> = {
-    all: t('home.hotTagAll'),
-    expense: t('home.hotTagExpense'),
-    income: t('home.hotTagIncome'),
-  };
+  const { visualMax, breakAxis } = useMemo(() => {
+    const totals = tags.map((tag) => (tag.total_income ?? 0) + (tag.total_expense ?? 0));
+    return computeVisualMax(totals);
+  }, [tags]);
 
-  if (rows.length === 0) return null;
+  const amountColWidth = useMemo(() => {
+    const labels = tags.map((tag) =>
+      formatIncomeExpenseLabel(tag.total_income ?? 0, tag.total_expense ?? 0, locale)
+    );
+    return resolveAmountColWidth(labels);
+  }, [tags, locale]);
+
+  if (tags.length === 0) return null;
 
   return (
     <div className="border-t border-line/40">
-      <div className="flex items-center justify-between gap-2 px-4 pt-2.5 pb-1.5">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted shrink-0">
+      <div className="px-4 pt-2.5 pb-1.5">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
           {t('home.hotTags')}
         </p>
-        <div
-          className="relative grid grid-cols-3 rounded-full border border-line/50 bg-accent-soft/40 p-0.5 backdrop-blur-sm"
-          role="tablist"
-          aria-label={t('home.hotTags')}
-        >
-          <span
-            className="pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[calc((100%-4px)/3)] rounded-full bg-surface/95 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={{ transform: `translateX(${segIndex * 100}%)` }}
-            aria-hidden
-          />
-          {FILTERS.map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={filter === key}
-              className={`relative z-[1] px-2 py-0.5 text-[10px] font-medium tabular-nums transition-colors duration-200 ${
-                filter === key ? 'text-ink' : 'text-muted/70'
-              }`}
-              onClick={() => setFilter(key)}
-            >
-              {segLabels[key]}
-            </button>
-          ))}
-        </div>
       </div>
-
-      <ul className="px-3 pb-3 space-y-2">
-        {visible.map((row) => {
-          const net = row.income - row.expense;
-          const mainCents =
-            filter === 'all' ? net : filter === 'expense' ? row.expense : row.income;
-          const mainLabel =
-            filter === 'all'
-              ? formatNet(net, locale)
-              : filter === 'expense'
-                ? formatIntAmount(row.expense, locale, '-')
-                : formatIntAmount(row.income, locale, '+');
-          const mainClass =
-            filter === 'all'
-              ? net === 0
-                ? 'text-muted'
-                : textClassForSign(net, scheme)
-              : filter === 'expense'
-                ? textClassForType('expense', scheme)
-                : textClassForType('income', scheme);
+      <ul className="divide-y divide-line/40 px-3 pb-3">
+        {tags.map((tag) => {
+          const income = tag.total_income ?? 0;
+          const expense = tag.total_expense ?? 0;
+          const net = income - expense;
+          const netClass =
+            net === 0 ? 'text-muted' : textClassForSign(net, scheme);
 
           return (
-            <li key={row.id} className="min-w-0">
+            <li key={tag.id} className="min-w-0 py-2">
               <div className="flex items-center gap-1.5 mb-1">
                 <span
                   className="h-1.5 w-1.5 shrink-0 rounded-full opacity-80"
-                  style={{ backgroundColor: row.colorBg }}
+                  style={{ backgroundColor: tag.color_bg || '#3E8E7E' }}
                   aria-hidden
                 />
                 <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-ink">
-                  {row.name}
+                  {tag.name}
+                  <span className="ml-0.5 font-normal tabular-nums text-muted">
+                    {t('home.hotTagUseCount', { count: tag.use_count })}
+                  </span>
                 </span>
-                <span className={`amount-num shrink-0 text-[11px] font-medium tabular-nums ${mainClass}`}>
-                  {mainLabel}
+                <span className={`amount-num shrink-0 text-[11px] font-medium tabular-nums ${netClass}`}>
+                  {formatNet(net, locale)}
                 </span>
               </div>
-              {filter === 'all' ? (
-                <div className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1">
-                    <DualRatioBar
-                      income={row.income}
-                      expense={row.expense}
-                      incomeColor={incomeColor}
-                      expenseColor={expenseColor}
-                    />
-                  </div>
-                  <p className="shrink-0 text-[10px] tabular-nums text-muted leading-none">
-                    {formatIntAmount(row.income, locale, '+')}
-                    {' / '}
-                    {formatIntAmount(row.expense, locale, '-')}
-                  </p>
+              <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <ProportionalDualBar
+                    income={income}
+                    expense={expense}
+                    visualMax={visualMax}
+                    breakAxis={breakAxis}
+                    incomeColor={incomeColor}
+                    expenseColor={expenseColor}
+                  />
                 </div>
-              ) : (
-                <MonoBar
-                  amount={mainCents}
-                  max={monoMax}
-                  color={filter === 'expense' ? expenseColor : incomeColor}
-                />
-              )}
+                <p
+                  className="shrink-0 text-right text-[10px] tabular-nums text-muted leading-none"
+                  style={{ width: amountColWidth }}
+                >
+                  {formatIncomeExpenseLabel(income, expense, locale)}
+                </p>
+              </div>
             </li>
           );
         })}

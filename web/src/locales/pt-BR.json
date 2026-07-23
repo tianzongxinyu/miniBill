@@ -101,12 +101,8 @@
     "recentEmpty": "Nenhum lançamento este mês",
     "pastTitle": "Meses anteriores",
     "hotTags": "Tags populares",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Contatos populares",
-    "hotTagAll": "Tudo",
-    "hotTagExpense": "Saída",
-    "hotTagIncome": "Entrada",
-    "hotTagIncomeShort": "Ent.",
-    "hotTagExpenseShort": "Saí.",
     "trendHalfYear": "Semestre",
     "trendOneYear": "1 ano"
   },

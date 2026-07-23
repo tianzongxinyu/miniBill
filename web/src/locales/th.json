@@ -101,12 +101,8 @@
     "recentEmpty": "ไม่มีรายการเดือนนี้",
     "pastTitle": "เดือนที่ผ่านมา",
     "hotTags": "แท็กยอดนิยม",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "ผู้ติดต่อยอดนิยม",
-    "hotTagAll": "ทั้งหมด",
-    "hotTagExpense": "รายจ่าย",
-    "hotTagIncome": "รายรับ",
-    "hotTagIncomeShort": "รับ",
-    "hotTagExpenseShort": "จ่าย",
     "trendHalfYear": "ครึ่งปี",
     "trendOneYear": "1 ปี"
   },

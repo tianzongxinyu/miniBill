@@ -101,12 +101,8 @@
     "recentEmpty": "本月暂无流水",
     "pastTitle": "往月账单",
     "hotTags": "热门标签",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "热门联系人",
-    "hotTagAll": "全部",
-    "hotTagExpense": "支出",
-    "hotTagIncome": "收入",
-    "hotTagIncomeShort": "收",
-    "hotTagExpenseShort": "支",
     "trendHalfYear": "近半年",
     "trendOneYear": "近一年"
   },

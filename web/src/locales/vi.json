@@ -101,12 +101,8 @@
     "recentEmpty": "Tháng này chưa có giao dịch",
     "pastTitle": "Các tháng trước",
     "hotTags": "Thẻ phổ biến",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Liên hệ phổ biến",
-    "hotTagAll": "Tất cả",
-    "hotTagExpense": "Chi",
-    "hotTagIncome": "Thu",
-    "hotTagIncomeShort": "Thu",
-    "hotTagExpenseShort": "Chi",
     "trendHalfYear": "Nửa năm",
     "trendOneYear": "1 năm"
   },

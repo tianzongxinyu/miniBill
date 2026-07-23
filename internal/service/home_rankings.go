@@ -20,16 +20,19 @@ type HomeRankingPoint struct {
 }
 
 type HomeRankingTag struct {
-	ID      int64              `json:"id"`
-	Name    string             `json:"name"`
-	ColorBg string             `json:"color_bg"`
-	Points  []HomeRankingPoint `json:"points"`
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	ColorBg      string `json:"color_bg"`
+	UseCount     int64  `json:"use_count"`
+	TotalIncome  int64  `json:"total_income"`
+	TotalExpense int64  `json:"total_expense"`
 }
 
 type HomeRankingContact struct {
-	ID     int64              `json:"id"`
-	Name   string             `json:"name"`
-	Points []HomeRankingPoint `json:"points"`
+	ID       int64              `json:"id"`
+	Name     string             `json:"name"`
+	UseCount int64              `json:"use_count"`
+	Points   []HomeRankingPoint `json:"points"`
 }
 
 type HomeRankings struct {
@@ -39,9 +42,12 @@ type HomeRankings struct {
 }
 
 type rankingSeed struct {
-	ID      int64
-	Name    string
-	ColorBg string
+	ID           int64
+	Name         string
+	ColorBg      string
+	UseCount     int64
+	TotalIncome  int64
+	TotalExpense int64
 }
 
 // rollingWindowMonths returns the last `months` calendar months including current, oldest first.
@@ -97,12 +103,9 @@ func (s *StatsService) HomeRankings(db *sql.DB, months int) (*HomeRankings, erro
 
 	tags := make([]HomeRankingTag, 0, len(tagSeeds))
 	for _, seed := range tagSeeds {
-		pts, err := s.homeTagMonthPoints(db, seed.ID, start, end, monthList)
-		if err != nil {
-			return nil, err
-		}
 		tags = append(tags, HomeRankingTag{
-			ID: seed.ID, Name: seed.Name, ColorBg: seed.ColorBg, Points: pts,
+			ID: seed.ID, Name: seed.Name, ColorBg: seed.ColorBg, UseCount: seed.UseCount,
+			TotalIncome: seed.TotalIncome, TotalExpense: seed.TotalExpense,
 		})
 	}
 
@@ -113,7 +116,7 @@ func (s *StatsService) HomeRankings(db *sql.DB, months int) (*HomeRankings, erro
 			return nil, err
 		}
 		contacts = append(contacts, HomeRankingContact{
-			ID: seed.ID, Name: seed.Name, Points: pts,
+			ID: seed.ID, Name: seed.Name, UseCount: seed.UseCount, Points: pts,
 		})
 	}
 
@@ -126,7 +129,9 @@ func (s *StatsService) HomeRankings(db *sql.DB, months int) (*HomeRankings, erro
 
 func (s *StatsService) homeTopTagSeeds(db *sql.DB, start, end string, limit int) ([]rankingSeed, error) {
 	rows, err := db.Query(`
-		SELECT g.id, g.name, g.color_bg
+		SELECT g.id, g.name, g.color_bg, COUNT(*) AS use_count,
+		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0),
+		       COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)
 		FROM transactions t
 		JOIN transaction_tags tt ON tt.transaction_id = t.id
 		JOIN tags g ON g.id = tt.tag_id
@@ -134,11 +139,8 @@ func (s *StatsService) homeTopTagSeeds(db *sql.DB, start, end string, limit int)
 		  AND t.is_system = 0
 		  AND (g.preset_key IS NULL OR g.preset_key != ?)
 		GROUP BY g.id
-		HAVING (COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
-		      + COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)) > 0
-		ORDER BY (COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
-		        + COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)) DESC,
-		         g.name ASC
+		HAVING COUNT(*) > 0
+		ORDER BY use_count DESC, g.name ASC
 		LIMIT ?`,
 		start, end, domain.DailyExpensePresetKey, limit,
 	)
@@ -150,7 +152,10 @@ func (s *StatsService) homeTopTagSeeds(db *sql.DB, start, end string, limit int)
 	out := make([]rankingSeed, 0, limit)
 	for rows.Next() {
 		var item rankingSeed
-		if err := rows.Scan(&item.ID, &item.Name, &item.ColorBg); err != nil {
+		if err := rows.Scan(
+			&item.ID, &item.Name, &item.ColorBg, &item.UseCount,
+			&item.TotalIncome, &item.TotalExpense,
+		); err != nil {
 			return nil, err
 		}
 		out = append(out, item)
@@ -160,17 +165,14 @@ func (s *StatsService) homeTopTagSeeds(db *sql.DB, start, end string, limit int)
 
 func (s *StatsService) homeTopContactSeeds(db *sql.DB, start, end string, limit int) ([]rankingSeed, error) {
 	rows, err := db.Query(`
-		SELECT c.id, c.name
+		SELECT c.id, c.name, COUNT(*) AS use_count
 		FROM transactions t
 		JOIN contacts c ON c.id = t.contact_id
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
 		GROUP BY c.id
-		HAVING (COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
-		      + COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)) > 0
-		ORDER BY (COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
-		        + COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)) DESC,
-		         c.name ASC
+		HAVING COUNT(*) > 0
+		ORDER BY use_count DESC, c.name ASC
 		LIMIT ?`,
 		start, end, limit,
 	)
@@ -182,35 +184,12 @@ func (s *StatsService) homeTopContactSeeds(db *sql.DB, start, end string, limit 
 	out := make([]rankingSeed, 0, limit)
 	for rows.Next() {
 		var item rankingSeed
-		if err := rows.Scan(&item.ID, &item.Name); err != nil {
+		if err := rows.Scan(&item.ID, &item.Name, &item.UseCount); err != nil {
 			return nil, err
 		}
 		out = append(out, item)
 	}
 	return out, rows.Err()
-}
-
-func (s *StatsService) homeTagMonthPoints(
-	db *sql.DB, tagID int64, start, end string, months []HomeRankingMonth,
-) ([]HomeRankingPoint, error) {
-	rows, err := db.Query(`
-		SELECT CAST(strftime('%Y', t.transaction_date) AS INTEGER),
-		       CAST(strftime('%m', t.transaction_date) AS INTEGER),
-		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0),
-		       COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)
-		FROM transactions t
-		JOIN transaction_tags tt ON tt.transaction_id = t.id
-		WHERE tt.tag_id = ?
-		  AND t.transaction_date >= ? AND t.transaction_date < ?
-		  AND t.is_system = 0
-		GROUP BY 1, 2`,
-		tagID, start, end,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	return fillMonthPoints(rows, months)
 }
 
 func (s *StatsService) homeContactMonthPoints(

@@ -213,12 +213,15 @@ export type HomeRankingTag = {
   id: number;
   name: string;
   color_bg: string;
-  points: HomeRankingPoint[];
+  use_count: number;
+  total_income: number;
+  total_expense: number;
 };
 
 export type HomeRankingContact = {
   id: number;
   name: string;
+  use_count: number;
   points: HomeRankingPoint[];
 };
 

@@ -101,12 +101,8 @@
     "recentEmpty": "لا قيود هذا الشهر",
     "pastTitle": "الأشهر السابقة",
     "hotTags": "الوسوم الأكثر",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "جهات الاتصال الأكثر",
-    "hotTagAll": "الكل",
-    "hotTagExpense": "مصروف",
-    "hotTagIncome": "دخل",
-    "hotTagIncomeShort": "دخل",
-    "hotTagExpenseShort": "صرف",
     "trendHalfYear": "نصف سنة",
     "trendOneYear": "سنة"
   },

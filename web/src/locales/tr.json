@@ -101,12 +101,8 @@
     "recentEmpty": "Bu ay işlem yok",
     "pastTitle": "Geçmiş aylar",
     "hotTags": "Popüler etiketler",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Popüler kişiler",
-    "hotTagAll": "Tümü",
-    "hotTagExpense": "Gider",
-    "hotTagIncome": "Gelir",
-    "hotTagIncomeShort": "Gel.",
-    "hotTagExpenseShort": "Gid.",
     "trendHalfYear": "Yarım yıl",
     "trendOneYear": "1 yıl"
   },

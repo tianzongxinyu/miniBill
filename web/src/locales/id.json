@@ -101,12 +101,8 @@
     "recentEmpty": "Belum ada transaksi bulan ini",
     "pastTitle": "Bulan sebelumnya",
     "hotTags": "Tag populer",
+    "hotTagUseCount": "({{count}})",
     "hotContacts": "Kontak populer",
-    "hotTagAll": "Semua",
-    "hotTagExpense": "Keluar",
-    "hotTagIncome": "Masuk",
-    "hotTagIncomeShort": "Masuk",
-    "hotTagExpenseShort": "Keluar",
     "trendHalfYear": "Setengah tahun",
     "trendOneYear": "1 tahun"
   },
