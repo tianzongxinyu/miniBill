@@ -33,8 +33,8 @@ docker build -t yourname/minibill:latest .
 docker login
 docker push yourname/minibill:latest
 # 建议同时推送版本号 tag，便于回滚
-# docker tag yourname/minibill:latest yourname/minibill:1.0.6
-# docker push yourname/minibill:1.0.6
+# docker tag yourname/minibill:latest yourname/minibill:1.0.7
+# docker push yourname/minibill:1.0.7
 ```
 
 **多架构**（NAS / ARM 等）：
@@ -147,10 +147,10 @@ DATA_DIR=/path/to/app/data /path/to/app/bin/reset-password -username alice -pass
 
 ```bash
 # x86 NAS（默认）
-./scripts/build-fpk.sh 1.0.6
+./scripts/build-fpk.sh 1.0.7
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.6 arm
+./scripts/build-fpk.sh 1.0.7 arm
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包）。
