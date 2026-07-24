@@ -145,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </main>
 
-      <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface/45 backdrop-blur-xl border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50">
+      <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50">
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           const Icon = tab.icon;

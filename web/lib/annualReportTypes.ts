@@ -23,7 +23,15 @@ export type AnnualReportTopTx = {
   type: 'income' | 'expense';
   transaction_date: string;
   note: string;
+  contact_id: number | null;
+  contact_name: string;
   tags: string[];
+  tag_items: Array<{
+    id: number;
+    name: string;
+    color_bg: string;
+    color_fg: string;
+  }>;
 };
 
 export type AnnualReportContactStat = {

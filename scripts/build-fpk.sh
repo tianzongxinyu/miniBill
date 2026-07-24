@@ -152,21 +152,6 @@ config_path.write_text(
                     }
                 ],
             },
-            {
-                "stepTitle": "自助注册",
-                "items": [
-                    {
-                        "type": "radio",
-                        "field": "wizard_allow_registration",
-                        "label": "是否开放自助注册",
-                        "initValue": "true",
-                        "options": [
-                            {"label": "开放注册", "value": "true"},
-                            {"label": "关闭注册", "value": "false"},
-                        ],
-                    }
-                ],
-            },
         ],
         ensure_ascii=False,
         indent=4,
@@ -217,6 +202,8 @@ stage_binary() {
     (
         cd "$ROOT"
         GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${version}" -o "${work_dir}/app/bin/minibill" ./cmd/server
+        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "${work_dir}/app/bin/create-user" ./cmd/create-user
+        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "${work_dir}/app/bin/reset-password" ./cmd/reset-password
     )
 
     rm -rf "${work_dir}/app/web/out" "${work_dir}/app/migrations/system" "${work_dir}/app/migrations/ledger"
@@ -224,7 +211,7 @@ stage_binary() {
     cp -a "$ROOT/migrations/system" "${work_dir}/app/migrations/system"
     cp -a "$ROOT/migrations/ledger" "${work_dir}/app/migrations/ledger"
 
-    chmod +x "${work_dir}/app/bin/minibill" "${work_dir}"/cmd/*
+    chmod +x "${work_dir}/app/bin/minibill" "${work_dir}/app/bin/create-user" "${work_dir}/app/bin/reset-password" "${work_dir}"/cmd/*
 }
 
 pack_fpk() {

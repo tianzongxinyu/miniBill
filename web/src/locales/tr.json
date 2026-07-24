@@ -78,7 +78,8 @@
     "heroBadges": "Kendi barındırmalı · Çok kullanıcılı · Açık kaynak",
     "usernameLength": "Kullanıcı adı 3–32 karakter olmalı",
     "usernameChars": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir",
-    "passwordLength": "Parola en az 6 karakter olmalı"
+    "passwordLength": "Parola en az 6 karakter olmalı",
+    "forgotPasswordHint": "Şifrenizi mi unuttunuz? Sunucu yöneticisinden sıfırlamasını isteyin."
   },
   "home": {
     "pullRefresh": "Yenilemek için çekin",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Gelen işlemleri filtrele; kaldırmak için tekrar dokun",
     "emptyExpense": "Giden kayıt yok",
     "emptyIncome": "Gelen kayıt yok",
-    "deleteTagButton": "Sil"
+    "deleteTagButton": "Sil",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Ad",
@@ -207,7 +211,10 @@
     "emptySent": "Gönderilen işlem yok",
     "emptyReceived": "Alınan işlem yok",
     "hideContact": "\"{{name}}\" gizle",
-    "showContact": "\"{{name}}\" göster"
+    "showContact": "\"{{name}}\" göster",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Defteri dışa aktar",
@@ -464,5 +471,10 @@
     "expandTags": "Tümünü göster ({{count}})",
     "collapseTags": "Daralt",
     "axisBroken": "Eksen kırığı"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

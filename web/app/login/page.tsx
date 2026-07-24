@@ -78,6 +78,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <p className="text-xs text-muted -mt-2">{t('auth.forgotPasswordHint')}</p>
         <button type="submit" className="btn-primary-block">
           {t('auth.login')}
         </button>

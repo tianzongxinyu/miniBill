@@ -1,12 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/ui/Amount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
+import { TagChip } from '@/components/ui/TagChip';
 import { formatPlainMoney } from '@/lib/formatMoney';
 import { useSettings } from '@/components/SettingsProvider';
-import type { AnnualReport, AnnualReportInsight } from '@/lib/annualReportTypes';
+import { chartStrokeForType } from '@/lib/amountColors';
+import { useFormatDate } from '@/hooks/useFormatDate';
+import { contactDetailHref } from '@/lib/url';
+import type { AnnualReport, AnnualReportInsight, AnnualReportTopTx } from '@/lib/annualReportTypes';
 
 const SECTION_DELAYS = ['0ms', '60ms', '120ms', '180ms', '240ms', '300ms'] as const;
 const TAG_PREVIEW_COUNT = 5;
@@ -128,6 +133,9 @@ function SummaryHero({ report }: { report: AnnualReport }) {
 
 function TagBars({ report }: { report: AnnualReport }) {
   const { t } = useTranslation();
+  const { scheme } = useSettings();
+  const expenseColor = chartStrokeForType('expense', scheme);
+  const incomeColor = chartStrokeForType('income', scheme);
   const [expanded, setExpanded] = useState(false);
   const tags = report.by_tag;
   const { maxSum, breakAt, broken } = tagAxisScale(tags);
@@ -195,13 +203,19 @@ function TagBars({ report }: { report: AnnualReport }) {
                     {row.total_expense > 0 && (
                       <div
                         className="annual-report-tag-bar-fill"
-                        style={{ width: `${expenseShare}%` }}
+                        style={{
+                          width: `${expenseShare}%`,
+                          backgroundColor: expenseColor,
+                        }}
                       />
                     )}
                     {row.total_income > 0 && (
                       <div
                         className="annual-report-tag-bar-fill-income"
-                        style={{ width: `${incomeShare}%` }}
+                        style={{
+                          width: `${incomeShare}%`,
+                          backgroundColor: incomeColor,
+                        }}
                       />
                     )}
                   </div>
@@ -228,6 +242,8 @@ function TagBars({ report }: { report: AnnualReport }) {
 
 function TopTxList({ report }: { report: AnnualReport }) {
   const { t } = useTranslation();
+  const { formatISODate } = useFormatDate();
+  const returnTo = `/stats/annual/?year=${report.year}`;
 
   return (
     <ol>
@@ -235,20 +251,53 @@ function TopTxList({ report }: { report: AnnualReport }) {
         <li key={tx.id} className="annual-report-row">
           <span className="annual-report-rank">{i + 1}</span>
           <div className="annual-report-row-main">
-            <div className="annual-report-row-title">
-              {tx.note || t('annualReport.noNote')}
+            <div className="annual-report-row-meta !mt-0">
+              <span className="tabular-nums">{formatISODate(tx.transaction_date)}</span>
             </div>
-            <div className="annual-report-row-meta">
-              <span className="tabular-nums">{tx.transaction_date}</span>
-              {tx.tags.length > 0 ? ` · ${tx.tags.join(' · ')}` : ''}
+            <div className="annual-report-row-title !mt-1">
+              <TopTxMeta tx={tx} returnTo={returnTo} />
             </div>
           </div>
           <div className="annual-report-row-amount">
             <Amount cents={tx.amount} type={tx.type} className="annual-report-row-amount-primary" />
+            {tx.note ? (
+              <div className="annual-report-row-amount-secondary text-muted truncate">
+                {tx.note}
+              </div>
+            ) : null}
           </div>
         </li>
       ))}
     </ol>
+  );
+}
+
+function TopTxMeta({ tx, returnTo }: { tx: AnnualReportTopTx; returnTo: string }) {
+  const { t } = useTranslation();
+  const items = tx.tag_items?.length
+    ? tx.tag_items
+    : (tx.tags ?? []).map((name) => ({ id: 0, name, color_bg: '', color_fg: '' }));
+  const hasContact = Boolean(tx.contact_id && tx.contact_name);
+  const hasMeta = items.length > 0 || hasContact;
+
+  if (!hasMeta) {
+    return <span className="text-ink">{t('common.emDash')}</span>;
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {items.map((tag) => (
+        <TagChip key={tag.id ? tag.id : tag.name} name={tag.name} colorBg={tag.color_bg} />
+      ))}
+      {hasContact && tx.contact_id != null ? (
+        <Link
+          href={contactDetailHref(tx.contact_id, returnTo)}
+          className="text-sm text-accent hover:underline shrink-0"
+        >
+          @{tx.contact_name}
+        </Link>
+      ) : null}
+    </div>
   );
 }
 

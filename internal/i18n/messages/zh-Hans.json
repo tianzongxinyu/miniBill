@@ -35,7 +35,7 @@
   "error.open_ledger": "无法打开账本",
   "error.rate_limited": "尝试次数过多，请稍后再试",
   "error.registration_closed": "注册已关闭",
-  "error.system_tag_forbidden": "系统预设标签不可删除",
+  "error.system_tag_forbidden": "系统预设标签不可修改",
   "error.system_tx_forbidden": "系统流水不可修改",
   "error.tag_in_use": "标签仍被流水引用",
   "error.tag_name_required": "标签名必填",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "标签名不能为空",
   "validation.tx_date_format": "流水日期须为 YYYY-MM-DD",
   "validation.year_month_required": "缺少年份和月份",
-  "validation.opening_balance_required": "推算月度余额须填写期初"
+  "validation.opening_balance_required": "推算月度余额须填写期初",
+  "validation.contact_name_required": "姓名不能为空",
+  "validation.contact_name_taken": "已存在同名联系人",
+  "validation.tag_name_taken": "已存在同名标签"
 }

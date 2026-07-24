@@ -7,7 +7,7 @@ import { useSettings } from '@/components/SettingsProvider';
 import { ChartSkeleton } from '@/components/ui/LoadingFallback';
 import { HomeHotTagCapsules } from '@/components/home/HomeHotTagCapsules';
 import { HomeHotContactTornado } from '@/components/home/HomeHotContactTornado';
-import { StatsScrollChart } from '@/lib/dynamicStatsChart';
+import { prefetchStatsChart, StatsScrollChart } from '@/lib/dynamicStatsChart';
 import {
   fetchHomeRankings,
   fetchMonthSeries,
@@ -17,6 +17,15 @@ import {
 import { formatApiError } from '@/lib/errors';
 import { useOnLedgerChanged } from '@/lib/ledgerEvents';
 import { buildStatsChartRows } from '@/lib/statsChartData';
+
+function scheduleIdle(cb: () => void): () => void {
+  if (typeof requestIdleCallback !== 'undefined') {
+    const id = requestIdleCallback(cb, { timeout: 2000 });
+    return () => cancelIdleCallback(id);
+  }
+  const id = setTimeout(cb, 200);
+  return () => clearTimeout(id);
+}
 
 type TrendMonths = 6 | 12;
 
@@ -61,11 +70,18 @@ export function HomeMiniChart({ reloadKey = 0 }: { reloadKey?: number }) {
   }, [months]);
 
   useEffect(() => {
+    prefetchStatsChart();
+  }, []);
+
+  useEffect(() => {
     void loadSeries();
   }, [loadSeries, reloadKey]);
 
+  // Rankings (tornado/tags) are below the fold — defer so series + recharts win the critical path.
   useEffect(() => {
-    void loadRankings();
+    return scheduleIdle(() => {
+      void loadRankings();
+    });
   }, [loadRankings, reloadKey]);
 
   useOnLedgerChanged(

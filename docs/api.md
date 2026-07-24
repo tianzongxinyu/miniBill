@@ -11,7 +11,7 @@ Base URL: `/api`
 | POST | `/auth/login` | 登录（可选 `remember`，见下） |
 | GET | `/auth/session` | 当前会话（需登录，返回 `{ token, user }`） |
 | POST | `/auth/logout` | 清除 Cookie（204） |
-| PUT | `/auth/password` | 修改密码（需登录） |
+| PUT | `/auth/password` | 修改密码（需登录；成功后吊销旧 JWT 并清除 Cookie，需重新登录） |
 
 `POST /auth/login` 请求体：`{ "username", "password", "remember"?: boolean }`。`remember` 省略或为 `true` 时签发 `JWT_EXPIRE_DAYS`（默认 30 天）令牌，写入 HttpOnly Cookie 与 `localStorage`；`remember: false` 时签发 24 小时令牌，Cookie 与 `sessionStorage` 有效期均为 24 小时。
 
@@ -36,10 +36,10 @@ Base URL: `/api`
 | GET | `/stats/dashboard` | 首页 |
 | GET | `/stats/month-bills` | 首页月度账单卡片（游标分页） |
 | GET | `/stats/month-bill` | 单月账单摘要 |
-| GET | `/stats/monthly?year=` | 按月统计（可选 `tag_ids` 多选，AND 匹配） |
-| GET | `/stats/month-series` | 按月序列（无游标且无筛选时右端锚定最后有数据月，不超过今天；默认 12 点；`cursor`/`after` 为 `YYYY-MM`；可选 `tag_ids`） |
-| GET | `/stats/yearly` | 按年列表（可选 `tag_ids`） |
-| GET | `/stats/year-series` | 按年序列（无游标且无筛选时右端锚定最后有数据年，不超过今年；默认 10 点；`cursor`/`after` 为 `YYYY`；可选 `tag_ids`） |
+| GET | `/stats/monthly?year=` | 按月统计（可选 `note`/`tag_ids`/`contact_id`；`tag_match=all|any` 作用于全部条件，默认 all） |
+| GET | `/stats/month-series` | 按月序列（无游标且无筛选时右端锚定最后有数据月，不超过今天；默认 12 点；`cursor`/`after` 为 `YYYY-MM`；可选 `tag_ids`、`tag_match`） |
+| GET | `/stats/yearly` | 按年列表（可选 `tag_ids`、`tag_match`） |
+| GET | `/stats/year-series` | 按年序列（无游标且无筛选时右端锚定最后有数据年，不超过今年；默认 10 点；`cursor`/`after` 为 `YYYY`；可选 `tag_ids`、`tag_match`） |
 | GET | `/stats/yearly/:year` | 单年 |
 | GET/PUT | `/settings` | 设置 |
 | GET | `/ledger/export` | CSV 导出（`text/csv`，UTF-8 BOM，`Content-Disposition: attachment`） |
@@ -145,8 +145,9 @@ Base URL: `/api`
 | `year`, `month` | 按月浏览时必填（搜索模式下忽略） |
 | `limit` | 每页条数，默认 10，最大 50 |
 | `cursor` | 上一页返回的 `next_cursor` |
-| `note` | 备注模糊搜索 |
-| `tag_ids` | 标签 ID，多选 AND 匹配（可重复传参） |
+| `note` | 备注模糊搜索（`LIKE %…%`，无前缀索引） |
+| `tag_ids` | 标签 ID，多选（可重复传参） |
+| `tag_match` | `all`（默认）备注、各标签、联系人全部满足；`any` 任一条件命中即可（多标签在 `any` 下为「含任一所选标签」） |
 | `contact_id` | 联系人 ID |
 | `type` | `income` 或 `expense` |
 

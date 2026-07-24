@@ -6,7 +6,7 @@ import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { LocaleSelect } from '@/components/ui/LocaleSelect';
 import { useSettings } from '@/components/SettingsProvider';
-import { api, type AmountColorScheme } from '@/lib/api';
+import { api, logoutAndRedirect, type AmountColorScheme } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import type { Locale } from '@/lib/i18n/utils';
 
@@ -18,19 +18,21 @@ function SettingsContent() {
   const [msg, setMsg] = useState('');
   const [savingScheme, setSavingScheme] = useState(false);
   const [savingLocale, setSavingLocale] = useState(false);
+  const [changingPwd, setChangingPwd] = useState(false);
 
   const changePwd = async (e: React.FormEvent) => {
     e.preventDefault();
+    setChangingPwd(true);
+    setMsg('');
     try {
       await api('/auth/password', {
         method: 'PUT',
         body: JSON.stringify({ old_password: oldPwd, new_password: newPwd }),
       });
-      setMsg(t('settings.passwordChanged'));
-      setOldPwd('');
-      setNewPwd('');
+      await logoutAndRedirect();
     } catch (err) {
       setMsg(formatApiError(err, t('settings.failed')));
+      setChangingPwd(false);
     }
   };
 
@@ -109,9 +111,9 @@ function SettingsContent() {
 
       <form onSubmit={changePwd} className="notebook p-4 space-y-3">
         <h2 className="font-medium text-sm text-ink">{t('settings.changePassword')}</h2>
-        <input type="password" placeholder={t('settings.oldPassword')} className="field" value={oldPwd} onChange={(e) => setOldPwd(e.target.value)} />
-        <input type="password" placeholder={t('settings.newPassword')} className="field" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} />
-        <button className="btn-primary">{t('settings.change')}</button>
+        <input type="password" placeholder={t('settings.oldPassword')} className="field" value={oldPwd} onChange={(e) => setOldPwd(e.target.value)} disabled={changingPwd} />
+        <input type="password" placeholder={t('settings.newPassword')} className="field" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} disabled={changingPwd} />
+        <button className="btn-primary" disabled={changingPwd}>{t('settings.change')}</button>
       </form>
       <PageBackLink href="/profile/" />
     </div>

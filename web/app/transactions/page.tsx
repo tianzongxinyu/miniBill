@@ -36,6 +36,7 @@ function TransactionsContent() {
   const urlNote = params.get('note');
   const urlTags = params.get('tags');
   const urlContact = params.get('contact');
+  const urlMatch = params.get('match');
   const urlType = params.get('type');
   const initial = parseYearMonthFromQuery(params);
   const [year, setYear] = useState(initial.year);
@@ -52,6 +53,10 @@ function TransactionsContent() {
     setSelectedTagIds,
     contactId,
     setContactId,
+    tagMatch,
+    setTagMatch,
+    apiTagMatch,
+    matchToggleVisible,
     searchActive,
     clearSearch,
     hydrateSearchFilters,
@@ -65,9 +70,9 @@ function TransactionsContent() {
   }, [urlYear, urlMonth, params]);
 
   useEffect(() => {
-    if (urlNote == null && urlTags == null && urlContact == null) return;
+    if (urlNote == null && urlTags == null && urlContact == null && urlMatch == null) return;
     hydrateSearchFilters(parseTransactionsFiltersFromQuery(params));
-  }, [urlNote, urlTags, urlContact, params, hydrateSearchFilters]);
+  }, [urlNote, urlTags, urlContact, urlMatch, params, hydrateSearchFilters]);
 
   useEffect(() => {
     setTypeFilter(parseTransactionTypeFromQuery(params));
@@ -79,6 +84,7 @@ function TransactionsContent() {
     note: debouncedNote,
     tagIds: selectedTagIds,
     contactId,
+    tagMatch: apiTagMatch,
     searchActive,
     typeFilter,
   });
@@ -144,9 +150,10 @@ function TransactionsContent() {
         note: searchActive ? debouncedNote : undefined,
         tagIds: searchActive ? selectedTagIds : undefined,
         contactId: searchActive ? contactId : undefined,
+        tagMatch: searchActive ? apiTagMatch : undefined,
         ...(typeFilter && !searchActive ? { type: typeFilter } : {}),
       }),
-    [year, month, searchActive, debouncedNote, selectedTagIds, contactId, typeFilter]
+    [year, month, searchActive, debouncedNote, selectedTagIds, contactId, apiTagMatch, typeFilter]
   );
 
   const emptyMessage = useMemo(() => {
@@ -170,6 +177,9 @@ function TransactionsContent() {
         onTagIdsChange={setSelectedTagIds}
         contactId={contactId}
         onContactIdChange={setContactId}
+        tagMatch={tagMatch}
+        onTagMatchChange={setTagMatch}
+        matchToggleVisible={matchToggleVisible}
         onClear={clearSearch}
         searchActive={searchActive}
         month={{ year, month }}

@@ -78,7 +78,8 @@
     "heroBadges": "Auto-hospedado · Multiusuário · Código aberto",
     "usernameLength": "O usuário deve ter de 3 a 32 caracteres",
     "usernameChars": "O usuário só pode conter letras, números e sublinhados",
-    "passwordLength": "A senha deve ter pelo menos 6 caracteres"
+    "passwordLength": "A senha deve ter pelo menos 6 caracteres",
+    "forgotPasswordHint": "Esqueceu a senha? Peça ao administrador do servidor para redefini-la."
   },
   "home": {
     "pullRefresh": "Puxe para atualizar",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Filtrar entradas; toque novamente para limpar",
     "emptyExpense": "Nenhum registro de saída",
     "emptyIncome": "Nenhum registro de entrada",
-    "deleteTagButton": "Excluir"
+    "deleteTagButton": "Excluir",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -207,7 +211,10 @@
     "emptySent": "Nenhuma transação enviada",
     "emptyReceived": "Nenhuma transação recebida",
     "hideContact": "Ocultar \"{{name}}\"",
-    "showContact": "Mostrar \"{{name}}\""
+    "showContact": "Mostrar \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Exportar livro-caixa",
@@ -464,5 +471,10 @@
     "expandTags": "Mostrar tudo ({{count}})",
     "collapseTags": "Mostrar menos",
     "axisBroken": "Eixo interrompido"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

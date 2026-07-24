@@ -78,7 +78,8 @@
     "heroBadges": "自託管 · 多用戶 · 開源",
     "usernameLength": "用戶名須 3～32 位",
     "usernameChars": "用戶名僅允許字母、數字、下劃線",
-    "passwordLength": "密碼至少 6 位"
+    "passwordLength": "密碼至少 6 位",
+    "forgotPasswordHint": "忘記密碼？請聯絡伺服器管理員重設。"
   },
   "home": {
     "pullRefresh": "下拉刷新",
@@ -224,7 +225,10 @@
     "filterIncomeAria": "篩選收入流水，再次點擊取消",
     "emptyExpense": "無支出記錄",
     "emptyIncome": "無收入記錄",
-    "deleteTagButton": "刪除"
+    "deleteTagButton": "刪除",
+    "editName": "編輯「{{name}}」",
+    "renameFailed": "改名失敗",
+    "nameTaken": "已存在同名標籤"
   },
   "contacts": {
     "namePlaceholder": "姓名",
@@ -243,7 +247,10 @@
     "emptySent": "無送出記錄",
     "emptyReceived": "無收到記錄",
     "hideContact": "隱藏「{{name}}」",
-    "showContact": "顯示「{{name}}」"
+    "showContact": "顯示「{{name}}」",
+    "editName": "編輯「{{name}}」",
+    "renameFailed": "改名失敗",
+    "nameTaken": "已存在同名聯絡人"
   },
   "data": {
     "exportTitle": "導出賬本",
@@ -464,5 +471,10 @@
     "flowIncome": "收入",
     "flowExpense": "支出",
     "balanceMarker": "月度餘額"
+  },
+  "filter": {
+    "tagMatchLabel": "標籤匹配",
+    "matchAnd": "並",
+    "matchOr": "或"
   }
 }

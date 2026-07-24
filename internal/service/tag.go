@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/minibill/minibill/internal/domain"
 )
@@ -143,6 +144,7 @@ type TagUpdateInput struct {
 	Enabled *bool
 	ColorBg *string
 	ColorFg *string
+	Name    *string
 }
 
 func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, error) {
@@ -153,11 +155,32 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 	if err != nil {
 		return nil, err
 	}
-	if in.Enabled == nil && in.ColorBg == nil && in.ColorFg == nil {
+	if in.Enabled == nil && in.ColorBg == nil && in.ColorFg == nil && in.Name == nil {
 		return nil, fmt.Errorf("%w: no_update_fields", ErrValidation)
 	}
 	if in.ColorFg != nil && in.ColorBg == nil {
 		return nil, fmt.Errorf("%w: color_bg_only", ErrValidation)
+	}
+	if in.Name != nil {
+		if t.IsSystem || (t.PresetKey != nil && *t.PresetKey != "") {
+			return nil, ErrSystemTag
+		}
+		name := strings.TrimSpace(*in.Name)
+		if name == "" {
+			return nil, fmt.Errorf("%w: tag_name_empty", ErrValidation)
+		}
+		var otherID int64
+		err := db.QueryRow(
+			`SELECT id FROM tags WHERE LOWER(name) = LOWER(?) AND id != ? LIMIT 1`,
+			name, id,
+		).Scan(&otherID)
+		if err == nil {
+			return nil, fmt.Errorf("%w: tag_name_taken", ErrValidation)
+		}
+		if err != sql.ErrNoRows {
+			return nil, err
+		}
+		t.Name = name
 	}
 	if in.ColorBg != nil {
 		if !domain.ValidateTagColorHex(*in.ColorBg) {
@@ -178,8 +201,8 @@ func (s *TagService) Update(db *sql.DB, id int64, in TagUpdateInput) (*Tag, erro
 		t.Enabled = *in.Enabled
 	}
 	_, err = db.Exec(
-		`UPDATE tags SET enabled=?, color_bg=?, color_fg=? WHERE id=?`,
-		en, t.ColorBg, t.ColorFg, id,
+		`UPDATE tags SET name=?, enabled=?, color_bg=?, color_fg=? WHERE id=?`,
+		t.Name, en, t.ColorBg, t.ColorFg, id,
 	)
 	if err != nil {
 		return nil, err

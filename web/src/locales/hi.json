@@ -78,7 +78,8 @@
     "heroBadges": "स्व-होस्टेड · बहु-उपयोगकर्ता · ओपन सोर्स",
     "usernameLength": "उपयोगकर्ता नाम 3–32 अक्षर का होना चाहिए",
     "usernameChars": "उपयोगकर्ता नाम में केवल अक्षर, संख्याएँ और अंडरस्कोर हो सकते हैं",
-    "passwordLength": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए"
+    "passwordLength": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए",
+    "forgotPasswordHint": "पासवर्ड भूल गए? सर्वर व्यवस्थापक से रीसेट करवाएँ।"
   },
   "home": {
     "pullRefresh": "रीफ़्रेश के लिए खींचें",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "आय लेनदेन फ़िल्टर करें; फिर से टैप करके हटाएँ",
     "emptyExpense": "कोई खर्च रिकॉर्ड नहीं",
     "emptyIncome": "कोई आय रिकॉर्ड नहीं",
-    "deleteTagButton": "हटाएँ"
+    "deleteTagButton": "हटाएँ",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "नाम",
@@ -207,7 +211,10 @@
     "emptySent": "कोई भेजा गया लेनदेन नहीं",
     "emptyReceived": "कोई प्राप्त लेनदेन नहीं",
     "hideContact": "\"{{name}}\" छिपाएँ",
-    "showContact": "\"{{name}}\" दिखाएँ"
+    "showContact": "\"{{name}}\" दिखाएँ",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "लेजर निर्यात करें",
@@ -464,5 +471,10 @@
     "expandTags": "सभी दिखाएँ ({{count}})",
     "collapseTags": "कम दिखाएँ",
     "axisBroken": "अक्ष खंडित"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

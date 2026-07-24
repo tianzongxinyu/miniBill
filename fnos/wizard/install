@@ -3,36 +3,16 @@
         "stepTitle": "轻账单 设置",
         "items": [
             {
-                "type": "tips",
-                "helpText": "在 NAS 上自托管的个人/家庭记账，数据仅存本机，不上传云端。\n\n· 抓大放小：大额收支 + 月度余额，零碎不必逐笔记\n· 余额推算：登记实际余额，自动估算日常支出\n· 收支流水：标签、联系人、按月浏览与搜索\n· 统计图表：月/年维度，多条件筛选\n· 备份迁移：CSV 导入导出，可配置定时 zip 备份\n\n安装请选择数据盘。JWT 签名密钥首次启动时自动生成，无需手动配置。\n\n论坛：https://club.fnnas.com/forum.php?mod=viewthread&tid=65924\nGitHub：https://github.com/tianzongxinyu/miniBill"
-            },
-            {
                 "type": "text",
                 "field": "wizard_port",
-                "label": "服务端口（默认 18080，避免与 8080 上其他服务冲突）",
+                "label": "服务端口",
                 "initValue": "18080"
             },
             {
                 "type": "text",
                 "field": "wizard_backup_dir",
-                "label": "备份目录（绝对路径，可选；需备份时在应用设置 → 运行设置 中填写）",
+                "label": "备份目录（绝对路径，留空不启用）",
                 "initValue": ""
-            },
-            {
-                "type": "radio",
-                "field": "wizard_allow_registration",
-                "label": "是否开放自助注册",
-                "initValue": "true",
-                "options": [
-                    {
-                        "label": "开放注册",
-                        "value": "true"
-                    },
-                    {
-                        "label": "关闭注册（需命令行创建用户）",
-                        "value": "false"
-                    }
-                ]
             }
         ]
     }

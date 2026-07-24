@@ -35,7 +35,7 @@
   "error.open_ledger": "लेजर खोला नहीं जा सका",
   "error.rate_limited": "बहुत अधिक प्रयास, कृपया बाद में पुनः प्रयास करें",
   "error.registration_closed": "पंजीकरण बंद है",
-  "error.system_tag_forbidden": "सिस्टम पूर्वनिर्धारित टैग हटाए नहीं जा सकते",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "सिस्टम लेनदेन संशोधित नहीं किए जा सकते",
   "error.tag_in_use": "टैग अभी भी लेनदेन में उपयोग में है",
   "error.tag_name_required": "टैग नाम आवश्यक है",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "टैग नाम खाली नहीं हो सकता",
   "validation.tx_date_format": "लेनदेन की तारीख YYYY-MM-DD होनी चाहिए",
   "validation.year_month_required": "वर्ष और महीना आवश्यक हैं",
-  "validation.opening_balance_required": "मासिक शेष निकालने के लिए शुरुआती शेष आवश्यक है"
+  "validation.opening_balance_required": "मासिक शेष निकालने के लिए शुरुआती शेष आवश्यक है",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

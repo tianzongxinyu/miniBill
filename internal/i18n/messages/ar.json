@@ -35,7 +35,7 @@
   "error.open_ledger": "تعذّر فتح دفتر الحساب",
   "error.rate_limited": "محاولات كثيرة جداً، يرجى المحاولة لاحقاً",
   "error.registration_closed": "التسجيل مغلق",
-  "error.system_tag_forbidden": "لا يمكن حذف وسوم النظام المسبقة",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "لا يمكن تعديل معاملات النظام",
   "error.tag_in_use": "الوسم لا يزال مستخدمًا في المعاملات",
   "error.tag_name_required": "اسم الوسم مطلوب",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "لا يمكن أن يكون اسم الوسم فارغًا",
   "validation.tx_date_format": "يجب أن يكون تاريخ المعاملة YYYY-MM-DD",
   "validation.year_month_required": "السنة والشهر مطلوبان",
-  "validation.opening_balance_required": "الرصيد الافتتاحي مطلوب لاستنتاج الأرصدة الشهرية"
+  "validation.opening_balance_required": "الرصيد الافتتاحي مطلوب لاستنتاج الأرصدة الشهرية",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

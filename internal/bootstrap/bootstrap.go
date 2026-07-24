@@ -68,3 +68,33 @@ func ProvisionUser(sys *System, username, password string) (*systemdb.User, erro
 	}
 	return user, nil
 }
+
+// ResetUserPassword sets a new password for an existing user (admin CLI).
+// Existing JWTs are invalidated via token_version bump in UpdatePassword.
+func ResetUserPassword(sys *System, username, password string) (*systemdb.User, error) {
+	if err := auth.ValidatePassword(password); err != nil {
+		return nil, err
+	}
+	user, err := sys.Store.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, fmt.Errorf("user not found")
+	}
+	hash, err := auth.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	if err := sys.Store.UpdatePassword(user.ID, hash); err != nil {
+		return nil, err
+	}
+	user, err = sys.Store.GetByID(user.ID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, fmt.Errorf("user not found")
+	}
+	return user, nil
+}

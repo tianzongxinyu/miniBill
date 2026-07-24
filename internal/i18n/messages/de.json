@@ -35,7 +35,7 @@
   "error.open_ledger": "Kontenbuch kann nicht geöffnet werden",
   "error.rate_limited": "Zu viele Versuche, bitte später erneut versuchen",
   "error.registration_closed": "Registrierung ist geschlossen",
-  "error.system_tag_forbidden": "System-Voreinstellungs-Tags können nicht gelöscht werden",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Systemtransaktionen können nicht geändert werden",
   "error.tag_in_use": "Tag wird noch von Transaktionen referenziert",
   "error.tag_name_required": "Tag-Name ist erforderlich",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Tag-Name darf nicht leer sein",
   "validation.tx_date_format": "Transaktionsdatum muss YYYY-MM-DD sein",
   "validation.year_month_required": "Jahr und Monat sind erforderlich",
-  "validation.opening_balance_required": "Anfangssaldo erforderlich, um Monatssalden abzuleiten"
+  "validation.opening_balance_required": "Anfangssaldo erforderlich, um Monatssalden abzuleiten",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

@@ -20,26 +20,5 @@
                 "initValue": ""
             }
         ]
-    },
-    {
-        "stepTitle": "自助注册",
-        "items": [
-            {
-                "type": "radio",
-                "field": "wizard_allow_registration",
-                "label": "是否开放自助注册",
-                "initValue": "true",
-                "options": [
-                    {
-                        "label": "开放注册",
-                        "value": "true"
-                    },
-                    {
-                        "label": "关闭注册",
-                        "value": "false"
-                    }
-                ]
-            }
-        ]
     }
 ]

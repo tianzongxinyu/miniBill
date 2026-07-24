@@ -9,8 +9,9 @@ import (
 )
 
 type Claims struct {
-	UserID   int64  `json:"user_id"`
-	Username string `json:"username"`
+	UserID       int64  `json:"user_id"`
+	Username     string `json:"username"`
+	TokenVersion int64  `json:"tv"`
 	jwt.RegisteredClaims
 }
 
@@ -32,23 +33,24 @@ func CheckPassword(hash, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
-func (s *Service) Sign(userID int64, username string) (string, error) {
-	return s.SignWithExpire(userID, username, s.expire)
+func (s *Service) Sign(userID int64, username string, tokenVersion int64) (string, error) {
+	return s.SignWithExpire(userID, username, tokenVersion, s.expire)
 }
 
-func (s *Service) SignWithExpire(userID int64, username string, expire time.Duration) (string, error) {
+func (s *Service) SignWithExpire(userID int64, username string, tokenVersion int64, expire time.Duration) (string, error) {
 	if expire <= 0 {
 		expire = s.expire
 	}
 	claims := Claims{
-		UserID:   userID,
-		Username: username,
+		UserID:       userID,
+		Username:     username,
+		TokenVersion: tokenVersion,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expire)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
 	return token.SignedString(s.secret)
 }
 

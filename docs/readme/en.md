@@ -109,11 +109,11 @@ The script: compiles Linux backend binary → copies frontend static assets and 
 
 1. Log in to FygoOS → **App Center** → **Manual Install**
 2. Upload the `.fpk` file matching your NAS architecture
-3. In the install wizard, set **service port** (default `18080`) and whether registration is open
+3. In the install wizard, set **service port** (default `18080`) and optional backup directory
 4. Choose a data disk for the data directory (not the system disk)
 5. After install, access via desktop icon or `http://<NAS-IP>:<port>` (JWT key auto-generated on first start)
 
-To change port / registration toggle / backup directory: App Center → MiniBill → **App Settings** → **Runtime Settings** → **Edit** → Save (app restarts automatically after save).
+To change port / backup directory: App Center → MiniBill → **App Settings** → **Runtime Settings** → **Edit** → Save (app restarts automatically after save).
 
 **Backup directory:** App Center → MiniBill → **App Settings** → **Runtime Settings** → **Edit**, enter an absolute path (e.g. `/vol1/1000/backups`); leave empty to disable backup. App restarts after save; then configure scheduled backup in the web app under **Profile → Backup Management**.
 

@@ -40,6 +40,7 @@ export async function fetchTransactions(opts: {
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
+  tagMatch?: 'all' | 'any';
   type?: 'expense' | 'income';
   cursor?: string | null;
   limit?: number;
@@ -60,6 +61,7 @@ export async function fetchTransactions(opts: {
       note: opts.note,
       tagIds: opts.tagIds,
       contactId: opts.contactId,
+      tagMatch: opts.tagMatch,
     });
   } else if (opts.year != null && opts.month != null) {
     params.set('year', String(opts.year));

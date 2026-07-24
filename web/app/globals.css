@@ -189,7 +189,7 @@ body {
   .page-back-link-floating {
     @apply fixed z-40 left-1/2 -translate-x-1/2 w-[min(100%-1.5rem,42rem)] mt-0;
     @apply bg-surface/45 backdrop-blur-xl shadow-panel;
-    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   @media (min-width: 1024px) {
@@ -285,7 +285,7 @@ body {
 
   /* —— 概览 bill cards —— */
   .bill-card {
-    @apply relative bg-surface border border-line/80 rounded-2xl px-4 py-3.5 shadow-panel overflow-hidden;
+    @apply relative bg-surface border border-line/80 rounded-2xl px-2 py-1.5 shadow-panel overflow-hidden;
     @apply transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(62,142,126,0.06)];
     animation: scale-in 0.4s var(--ease-out-expo) both;
   }
@@ -431,9 +431,8 @@ body {
   }
 
   .annual-report-section {
-    @apply notebook p-0 overflow-hidden;
+    @apply p-0 overflow-hidden;
     animation: scale-in 0.4s var(--ease-out-expo) both;
-    box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
   }
 
   .annual-report-section-title {
@@ -454,7 +453,7 @@ body {
   }
 
   .annual-report-hero {
-    @apply bill-card bill-card-current px-4 py-4;
+    @apply px-4 py-4;
     animation: scale-in 0.4s var(--ease-out-expo) both;
   }
 
@@ -604,19 +603,18 @@ body {
   }
 
   .annual-report-year-group {
-    @apply flex w-full items-center gap-0;
+    @apply flex w-full items-center justify-between;
   }
 
-  .annual-report-year-group > button:first-child,
-  .annual-report-year-group > button:last-child {
-    @apply px-2.5 py-2 text-lg leading-none text-muted/80 shrink-0;
-    @apply transition-colors duration-200 hover:text-accent;
+  .annual-report-year-nav {
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted;
+    @apply transition-colors duration-150 hover:bg-accent-soft hover:text-accent;
     @apply disabled:opacity-30 disabled:pointer-events-none;
   }
 
   .annual-report-year-label {
-    @apply flex-1 min-w-0 px-1 py-2 text-[17px] font-semibold text-ink tracking-tight;
-    @apply text-center truncate;
+    @apply flex-1 min-w-0 px-2 py-2 text-[17px] font-semibold text-ink tracking-tight;
+    @apply text-center;
     @apply transition-colors duration-200 hover:text-accent;
   }
 
@@ -671,7 +669,7 @@ body {
 
   .fab-wrap {
     @apply fixed z-[60] inset-x-0 flex justify-center;
-    @apply bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
+    @apply bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
     @apply lg:inset-x-auto lg:right-0 lg:left-[var(--sidebar-width,16rem)];
     @apply lg:transition-[left] lg:duration-300 lg:ease-out;
   }
@@ -690,7 +688,7 @@ body {
 
   .fab-button {
     @apply relative flex flex-1 items-center justify-center gap-2 min-w-0 py-3.5 rounded-2xl;
-    @apply bg-accent/55 text-white text-xs font-medium backdrop-blur-xl;
+    @apply bg-accent/80 text-white text-xs font-medium backdrop-blur-xl;
     @apply shadow-[0_4px_16px_rgba(62,142,126,0.25)] ring-1 ring-accent/20;
     @apply transition-all duration-200 ease-out;
     @apply hover:bg-accent/90;
@@ -711,7 +709,7 @@ body {
 
   .transactions-footer {
     @apply fixed z-[55] inset-x-0 flex justify-center;
-    @apply bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
+    @apply bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] lg:bottom-6;
     @apply px-2 lg:px-4;
     @apply lg:left-[var(--sidebar-width,16rem)] lg:right-0;
     @apply lg:transition-[left] lg:duration-300 lg:ease-out;
@@ -1304,11 +1302,20 @@ body {
 
   .transactions-toolbar,
   .stats-toolbar {
-    @apply flex items-center gap-3;
+    @apply flex items-center gap-1.5;
+  }
+
+  .toolbar-search {
+    @apply flex min-w-0 flex-1 items-center gap-1;
+  }
+
+  .toolbar-search-field {
+    @apply min-w-0 flex-1;
   }
 
   .transactions-toolbar > .combobox,
-  .stats-toolbar > .combobox {
+  .stats-toolbar > .combobox,
+  .toolbar-search-field > .combobox {
     @apply flex-1 min-w-0;
   }
 
@@ -1339,6 +1346,18 @@ body {
   .stats-toolbar-right .btn-segment,
   .stats-toolbar-right .btn-segment-active {
     @apply inline-flex flex-none items-center justify-center px-2.5 min-h-[3.25rem];
+  }
+
+  .tag-match-toggle {
+    @apply shrink-0 flex items-stretch gap-0.5 p-0.5 rounded-xl bg-accent-soft/50 border;
+    @apply h-[3.25rem] min-h-[3.25rem];
+    border-color: var(--control-border);
+  }
+
+  .tag-match-toggle .btn-segment,
+  .tag-match-toggle .btn-segment-active {
+    @apply rounded-lg px-2.5 text-[11px] self-stretch;
+    @apply inline-flex items-center justify-center min-h-0 h-auto;
   }
 
   .combobox {

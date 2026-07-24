@@ -78,7 +78,8 @@
     "heroBadges": "Tự lưu trữ · Đa người dùng · Mã nguồn mở",
     "usernameLength": "Tên người dùng phải có 3–32 ký tự",
     "usernameChars": "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới",
-    "passwordLength": "Mật khẩu phải có ít nhất 6 ký tự"
+    "passwordLength": "Mật khẩu phải có ít nhất 6 ký tự",
+    "forgotPasswordHint": "Quên mật khẩu? Hãy nhờ quản trị viên máy chủ đặt lại."
   },
   "home": {
     "pullRefresh": "Kéo để làm mới",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Lọc giao dịch thu; chạm lại để bỏ lọc",
     "emptyExpense": "Không có bản ghi chi",
     "emptyIncome": "Không có bản ghi thu",
-    "deleteTagButton": "Xóa"
+    "deleteTagButton": "Xóa",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Tên",
@@ -207,7 +211,10 @@
     "emptySent": "Không có giao dịch đã gửi",
     "emptyReceived": "Không có giao dịch đã nhận",
     "hideContact": "Ẩn \"{{name}}\"",
-    "showContact": "Hiện \"{{name}}\""
+    "showContact": "Hiện \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Xuất sổ cái",
@@ -464,5 +471,10 @@
     "expandTags": "Hiện tất cả ({{count}})",
     "collapseTags": "Thu gọn",
     "axisBroken": "Đã cắt trục"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

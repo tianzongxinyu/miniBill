@@ -35,7 +35,7 @@
   "error.open_ledger": "Impossible d'ouvrir le livre de comptes",
   "error.rate_limited": "Trop de tentatives, veuillez réessayer plus tard",
   "error.registration_closed": "L'inscription est fermée",
-  "error.system_tag_forbidden": "Les tags prédéfinis système ne peuvent pas être supprimés",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Les transactions système ne peuvent pas être modifiées",
   "error.tag_in_use": "Le tag est encore référencé par des transactions",
   "error.tag_name_required": "Le nom du tag est requis",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Le nom du tag ne peut pas être vide",
   "validation.tx_date_format": "La date de la transaction doit être YYYY-MM-DD",
   "validation.year_month_required": "L'année et le mois sont requis",
-  "validation.opening_balance_required": "Solde d’ouverture requis pour déduire les soldes mensuels"
+  "validation.opening_balance_required": "Solde d’ouverture requis pour déduire les soldes mensuels",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

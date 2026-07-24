@@ -35,7 +35,7 @@
   "error.open_ledger": "Không thể mở sổ cái",
   "error.rate_limited": "Quá nhiều lần thử, vui lòng thử lại sau",
   "error.registration_closed": "Đăng ký đã đóng",
-  "error.system_tag_forbidden": "Không thể xóa thẻ hệ thống đặt sẵn",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Không thể sửa giao dịch hệ thống",
   "error.tag_in_use": "Thẻ vẫn đang được giao dịch tham chiếu",
   "error.tag_name_required": "Yêu cầu tên thẻ",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Tên thẻ không thể để trống",
   "validation.tx_date_format": "Ngày giao dịch phải là YYYY-MM-DD",
   "validation.year_month_required": "Yêu cầu có năm và tháng",
-  "validation.opening_balance_required": "Cần số dư đầu kỳ để suy ra số dư tháng"
+  "validation.opening_balance_required": "Cần số dư đầu kỳ để suy ra số dư tháng",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

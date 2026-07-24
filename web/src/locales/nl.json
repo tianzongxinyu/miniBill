@@ -78,7 +78,8 @@
     "heroBadges": "Self-hosted · Meerdere gebruikers · Open source",
     "usernameLength": "Gebruikersnaam moet 3–32 tekens bevatten",
     "usernameChars": "Gebruikersnaam mag alleen letters, cijfers en underscores bevatten",
-    "passwordLength": "Wachtwoord moet minimaal 6 tekens bevatten"
+    "passwordLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "forgotPasswordHint": "Wachtwoord vergeten? Vraag de serverbeheerder om het te resetten."
   },
   "home": {
     "pullRefresh": "Trek om te vernieuwen",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Filter inkomende transacties; tik opnieuw om te wissen",
     "emptyExpense": "Geen uitgaande records",
     "emptyIncome": "Geen inkomende records",
-    "deleteTagButton": "Verwijderen"
+    "deleteTagButton": "Verwijderen",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Naam",
@@ -207,7 +211,10 @@
     "emptySent": "Geen verzonden transacties",
     "emptyReceived": "Geen ontvangen transacties",
     "hideContact": "\"{{name}}\" verbergen",
-    "showContact": "\"{{name}}\" tonen"
+    "showContact": "\"{{name}}\" tonen",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Kasboek exporteren",
@@ -464,5 +471,10 @@
     "expandTags": "Alles tonen ({{count}})",
     "collapseTags": "Minder tonen",
     "axisBroken": "As onderbroken"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

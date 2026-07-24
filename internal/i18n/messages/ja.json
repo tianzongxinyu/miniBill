@@ -35,7 +35,7 @@
   "error.open_ledger": "帳簿を開けません",
   "error.rate_limited": "試行回数が多すぎます。しばらくしてから再試行してください",
   "error.registration_closed": "新規登録は受け付けていません",
-  "error.system_tag_forbidden": "システムプリセットタグは削除できません",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "システム取引は変更できません",
   "error.tag_in_use": "タグは取引で参照されています",
   "error.tag_name_required": "タグ名は必須です",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "タグ名を空にできません",
   "validation.tx_date_format": "取引日は YYYY-MM-DD 形式である必要があります",
   "validation.year_month_required": "年と月は必須です",
-  "validation.opening_balance_required": "月次残高の推計には期首残高が必要です"
+  "validation.opening_balance_required": "月次残高の推計には期首残高が必要です",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

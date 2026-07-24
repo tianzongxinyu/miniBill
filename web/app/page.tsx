@@ -7,21 +7,18 @@ import { MonthBillCard } from '@/components/home/MonthBillCard';
 import { FixedRecordButton } from '@/components/home/FixedRecordButton';
 import { HomeMiniChart } from '@/components/home/HomeMiniChart';
 import { HomeThisMonthSummary } from '@/components/home/HomeThisMonthSummary';
-import { HomeRecentContacts } from '@/components/home/HomeRecentContacts';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
-import { useHomeMonthActivity } from '@/hooks/useHomeMonthActivity';
 import { fetchMonthBills, type MonthBillItem } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { useOnLedgerChanged, patchMonthBills } from '@/lib/ledgerEvents';
 
-function HomeSkeleton() {
+function HomeListSkeleton() {
   return (
-    <div className="space-y-2 animate-fade-in">
-      <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[200px]" />
-      <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[88px]" />
+    <>
       <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[48px]" />
-    </div>
+      <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[48px]" />
+    </>
   );
 }
 
@@ -36,15 +33,14 @@ function HomeContent() {
   const { items, setItems, loading, loadingMore, hasMore, error, sentinelRef, loadFirst } =
     useCursorPagination<MonthBillItem>({
       fetchPage,
+      gateUntilUserScrolls: true,
       onError: (e) => formatApiError(e, t('common.loadFailed')),
     });
 
-  const { contacts: activityContacts, reload: reloadActivity } = useHomeMonthActivity();
-
   const refresh = useCallback(async () => {
     setChartReloadKey((k) => k + 1);
-    await Promise.all([loadFirst(), reloadActivity()]);
-  }, [loadFirst, reloadActivity]);
+    await loadFirst();
+  }, [loadFirst]);
 
   useOnLedgerChanged(
     useCallback(
@@ -61,8 +57,7 @@ function HomeContent() {
 
   const current = useMemo(() => items.find((i) => i.is_current) ?? null, [items]);
   const past = useMemo(() => items.filter((i) => !i.is_current), [items]);
-
-  const showEnrichment = !loading && items.length > 0;
+  const isEmpty = !loading && items.length === 0;
 
   return (
     <div className="pb-28 lg:pb-24">
@@ -89,33 +84,41 @@ function HomeContent() {
         </div>
       )}
 
-      {loading ? (
-        <HomeSkeleton />
-      ) : items.length === 0 ? (
+      {isEmpty ? (
         <div className="bill-empty">
           <p className="text-sm text-muted">{t('home.emptyTitle')}</p>
           <p className="text-xs text-muted/80 mt-1">{t('home.emptyHint')}</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {showEnrichment && current && <HomeThisMonthSummary item={current} />}
-          {showEnrichment && <HomeMiniChart reloadKey={chartReloadKey} />}
-          {showEnrichment && <HomeRecentContacts contacts={activityContacts} />}
-
-          {past.length > 0 && (
-            <h2 className="text-xs font-medium text-muted uppercase tracking-wide px-0.5 pt-1">
-              {t('home.pastTitle')}
-            </h2>
+        <div className="space-y-2 animate-fade-in">
+          {loading ? (
+            <div className="bill-card loading-shimmer !border-0 !shadow-none min-h-[88px]" />
+          ) : (
+            current && <HomeThisMonthSummary item={current} />
           )}
-          {past.map((item, i) => (
-            <div
-              key={`${item.year}-${item.month}`}
-              className="animate-fade-in-up"
-              style={{ animationDelay: `${Math.min(i * 50, 250)}ms` }}
-            >
-              <MonthBillCard item={item} />
-            </div>
-          ))}
+
+          <HomeMiniChart reloadKey={chartReloadKey} />
+
+          {loading ? (
+            <HomeListSkeleton />
+          ) : (
+            <>
+              {past.length > 0 && (
+                <h2 className="text-xs font-medium text-muted uppercase tracking-wide px-0.5 pt-1">
+                  {t('home.pastTitle')}
+                </h2>
+              )}
+              {past.map((item, i) => (
+                <div
+                  key={`${item.year}-${item.month}`}
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${Math.min(i * 50, 250)}ms` }}
+                >
+                  <MonthBillCard item={item} />
+                </div>
+              ))}
+            </>
+          )}
         </div>
       )}
 

@@ -78,7 +78,8 @@
     "heroBadges": "Di-host sendiri · Multi-pengguna · Sumber terbuka",
     "usernameLength": "Nama pengguna harus 3–32 karakter",
     "usernameChars": "Nama pengguna hanya boleh berisi huruf, angka, dan garis bawah",
-    "passwordLength": "Kata sandi minimal 6 karakter"
+    "passwordLength": "Kata sandi minimal 6 karakter",
+    "forgotPasswordHint": "Lupa kata sandi? Minta admin server untuk meresetnya."
   },
   "home": {
     "pullRefresh": "Tarik untuk segarkan",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Filter transaksi masuk; ketuk lagi untuk hapus",
     "emptyExpense": "Tidak ada catatan keluar",
     "emptyIncome": "Tidak ada catatan masuk",
-    "deleteTagButton": "Hapus"
+    "deleteTagButton": "Hapus",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Nama",
@@ -207,7 +211,10 @@
     "emptySent": "Tidak ada transaksi terkirim",
     "emptyReceived": "Tidak ada transaksi diterima",
     "hideContact": "Sembunyikan \"{{name}}\"",
-    "showContact": "Tampilkan \"{{name}}\""
+    "showContact": "Tampilkan \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Ekspor buku besar",
@@ -464,5 +471,10 @@
     "expandTags": "Tampilkan semua ({{count}})",
     "collapseTags": "Sembunyikan",
     "axisBroken": "Sumbu dipotong"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

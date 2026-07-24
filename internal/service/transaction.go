@@ -87,6 +87,7 @@ type ListFilter struct {
 	Month     int
 	Type      string
 	TagIDs    []int64
+	TagMatch  string
 	ContactID *int64
 	NoteQuery string
 	Cursor    string
@@ -102,7 +103,7 @@ func (f ListFilter) HasSearch() bool {
 func (s *TransactionService) buildListWhere(f ListFilter) (whereSQL string, args []interface{}, err error) {
 	where := []string{"1=1"}
 	args = []interface{}{}
-	filterSQL, filterArgs := noteTagContactFilterSQL(f.NoteQuery, f.TagIDs, f.ContactID)
+	filterSQL, filterArgs := noteTagContactFilterSQL(f.NoteQuery, f.TagIDs, f.ContactID, f.TagMatch)
 	if filterSQL != "" {
 		where = append(where, filterSQL)
 		args = append(args, filterArgs...)

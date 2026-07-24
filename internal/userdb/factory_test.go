@@ -12,6 +12,27 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+func TestFactoryLedgerPathAcceptsSlashForm(t *testing.T) {
+	dir := t.TempDir()
+	f := userdb.NewFactory(dir, filepath.Join("..", "..", "migrations", "ledger"))
+
+	path, err := f.LedgerPath(1, "users/1/ledger.db")
+	if err != nil {
+		t.Fatalf("LedgerPath: %v", err)
+	}
+	want := filepath.Join(dir, "users", "1", "ledger.db")
+	if path != want {
+		t.Fatalf("path = %q, want %q", path, want)
+	}
+
+	if _, err := f.LedgerPath(1, "users/2/ledger.db"); err == nil {
+		t.Fatal("expected mismatch for wrong user id")
+	}
+	if _, err := f.LedgerPath(1, "../users/1/ledger.db"); err == nil {
+		t.Fatal("expected reject for ..")
+	}
+}
+
 func TestFactoryOpenCachesPerUser(t *testing.T) {
 	dir := t.TempDir()
 	f := userdb.NewFactory(dir, filepath.Join("..", "..", "migrations", "ledger"))

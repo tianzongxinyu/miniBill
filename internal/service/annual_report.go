@@ -25,12 +25,15 @@ type AnnualReportTagStat struct {
 }
 
 type AnnualReportTopTx struct {
-	ID              int64    `json:"id"`
-	Amount          int64    `json:"amount"`
-	Type            string   `json:"type"`
-	TransactionDate string   `json:"transaction_date"`
-	Note            string   `json:"note"`
-	Tags            []string `json:"tags"`
+	ID              int64                `json:"id"`
+	Amount          int64                `json:"amount"`
+	Type            string               `json:"type"`
+	TransactionDate string               `json:"transaction_date"`
+	Note            string               `json:"note"`
+	ContactID       *int64               `json:"contact_id"`
+	ContactName     string               `json:"contact_name"`
+	Tags            []string             `json:"tags"`
+	TagItems        []TransactionTagItem `json:"tag_items"`
 }
 
 type AnnualReportContactStat struct {
@@ -68,22 +71,14 @@ type AnnualReport struct {
 	Insights        []AnnualReportInsight     `json:"insights"`
 }
 
-// DefaultAnnualReportYear returns the previous calendar year, or the current year
-// when all 12 months have a registered monthly balance.
+// DefaultAnnualReportYear returns the current calendar year.
 func (s *StatsService) DefaultAnnualReportYear(db *sql.DB) (int, error) {
-	y := s.now().Year()
-	var n int
-	if err := db.QueryRow(`SELECT COUNT(*) FROM monthly_balances WHERE year = ?`, y).Scan(&n); err != nil {
-		return 0, err
-	}
-	if n >= 12 {
-		return y, nil
-	}
-	return y - 1, nil
+	_ = db
+	return s.now().Year(), nil
 }
 
 func (s *StatsService) AnnualReport(db *sql.DB, year int) (*AnnualReport, error) {
-	if year < 2000 || year > 2100 {
+	if year < 2000 || year > s.now().Year() {
 		return nil, ErrValidation
 	}
 
@@ -201,8 +196,9 @@ func (s *StatsService) annualByTag(db *sql.DB, year int) ([]AnnualReportTagStat,
 func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualReportTopTx, error) {
 	start, end := yearRange(year)
 	rows, err := db.Query(`
-		SELECT t.id, t.amount, t.type, t.transaction_date, t.note
+		SELECT t.id, t.amount, t.type, t.transaction_date, t.note, t.contact_id, COALESCE(c.name, '')
 		FROM transactions t
+		LEFT JOIN contacts c ON c.id = t.contact_id
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
 		ORDER BY t.amount DESC, t.transaction_date DESC, t.id DESC
@@ -216,10 +212,16 @@ func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualRepo
 	ids := make([]int64, 0, 5)
 	for rows.Next() {
 		var item AnnualReportTopTx
-		if err := rows.Scan(&item.ID, &item.Amount, &item.Type, &item.TransactionDate, &item.Note); err != nil {
+		var contactID sql.NullInt64
+		if err := rows.Scan(&item.ID, &item.Amount, &item.Type, &item.TransactionDate, &item.Note, &contactID, &item.ContactName); err != nil {
 			return nil, err
 		}
+		if contactID.Valid && contactID.Int64 > 0 {
+			id := contactID.Int64
+			item.ContactID = &id
+		}
 		item.Tags = []string{}
+		item.TagItems = []TransactionTagItem{}
 		out = append(out, item)
 		ids = append(ids, item.ID)
 	}
@@ -233,6 +235,7 @@ func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualRepo
 	}
 	for i := range out {
 		for _, tag := range tagMap[out[i].ID] {
+			out[i].TagItems = append(out[i].TagItems, tag)
 			out[i].Tags = append(out[i].Tags, tag.Name)
 		}
 	}
@@ -251,9 +254,7 @@ func (s *StatsService) annualTopContacts(db *sql.DB, year int) ([]AnnualReportCo
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
 		GROUP BY c.id
-		ORDER BY (COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
-		        + COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0)) DESC,
-		         c.name ASC
+		ORDER BY COUNT(*) DESC, c.name ASC
 		LIMIT 5`, start, end)
 	if err != nil {
 		return nil, err

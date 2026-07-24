@@ -78,7 +78,8 @@
     "heroBadges": "Самохостований · Багатокористувацький · Відкритий код",
     "usernameLength": "Ім'я користувача має містити 3–32 символи",
     "usernameChars": "Ім'я користувача може містити лише літери, цифри та підкреслення",
-    "passwordLength": "Пароль має містити щонайменше 6 символів"
+    "passwordLength": "Пароль має містити щонайменше 6 символів",
+    "forgotPasswordHint": "Забули пароль? Попросіть адміністратора сервера скинути його."
   },
   "home": {
     "pullRefresh": "Потягніть, щоб оновити",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Фільтр доходів; натисніть знову для скидання",
     "emptyExpense": "Немає записів про витрати",
     "emptyIncome": "Немає записів про доходи",
-    "deleteTagButton": "Видалити"
+    "deleteTagButton": "Видалити",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Ім'я",
@@ -207,7 +211,10 @@
     "emptySent": "Немає надісланих транзакцій",
     "emptyReceived": "Немає отриманих транзакцій",
     "hideContact": "Сховати «{{name}}»",
-    "showContact": "Показати «{{name}}»"
+    "showContact": "Показати «{{name}}»",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Експорт книги",
@@ -464,5 +471,10 @@
     "expandTags": "Показати всі ({{count}})",
     "collapseTags": "Згорнути",
     "axisBroken": "Розрив осі"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

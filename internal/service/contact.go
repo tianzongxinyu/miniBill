@@ -169,7 +169,22 @@ func (s *ContactService) Update(db *sql.DB, id int64, in ContactUpdateInput) (*C
 		return nil, err
 	}
 	if in.Name != nil {
-		c.Name = strings.TrimSpace(*in.Name)
+		name := strings.TrimSpace(*in.Name)
+		if name == "" {
+			return nil, fmt.Errorf("%w: contact_name_required", ErrValidation)
+		}
+		var otherID int64
+		err := db.QueryRow(
+			`SELECT id FROM contacts WHERE LOWER(name) = LOWER(?) AND id != ? LIMIT 1`,
+			name, id,
+		).Scan(&otherID)
+		if err == nil {
+			return nil, fmt.Errorf("%w: contact_name_taken", ErrValidation)
+		}
+		if err != sql.ErrNoRows {
+			return nil, err
+		}
+		c.Name = name
 	}
 	if in.Nickname != nil {
 		c.Nickname = *in.Nickname

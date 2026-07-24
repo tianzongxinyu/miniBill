@@ -78,7 +78,8 @@
     "heroBadges": "Self-hosted · Multi-user · Open source",
     "usernameLength": "Username must be 3–32 characters",
     "usernameChars": "Username may only contain letters, numbers, and underscores",
-    "passwordLength": "Password must be at least 6 characters"
+    "passwordLength": "Password must be at least 6 characters",
+    "forgotPasswordHint": "Forgot password? Ask your server admin to reset it."
   },
   "home": {
     "pullRefresh": "Pull to refresh",
@@ -224,7 +225,10 @@
     "filterIncomeAria": "Filter incoming transactions; tap again to clear",
     "emptyExpense": "No outgoing records",
     "emptyIncome": "No incoming records",
-    "deleteTagButton": "Delete"
+    "deleteTagButton": "Delete",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Name",
@@ -243,7 +247,10 @@
     "emptySent": "No sent transactions",
     "emptyReceived": "No received transactions",
     "hideContact": "Hide \"{{name}}\"",
-    "showContact": "Show \"{{name}}\""
+    "showContact": "Show \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Export ledger",
@@ -464,5 +471,10 @@
     "flowIncome": "Income",
     "flowExpense": "Expense",
     "balanceMarker": "Monthly balance"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

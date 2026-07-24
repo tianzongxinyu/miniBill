@@ -78,7 +78,8 @@
     "heroBadges": "セルフホスト · マルチユーザー · オープンソース",
     "usernameLength": "ユーザー名は 3〜32 文字である必要があります",
     "usernameChars": "ユーザー名は英数字とアンダースコアのみ使用できます",
-    "passwordLength": "パスワードは 6 文字以上である必要があります"
+    "passwordLength": "パスワードは 6 文字以上である必要があります",
+    "forgotPasswordHint": "パスワードを忘れた場合は、サーバー管理者にリセットを依頼してください。"
   },
   "home": {
     "pullRefresh": "引いて更新",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "収入で絞り込み、再タップで解除",
     "emptyExpense": "支出なし",
     "emptyIncome": "収入なし",
-    "deleteTagButton": "削除"
+    "deleteTagButton": "削除",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "名前",
@@ -207,7 +211,10 @@
     "emptySent": "送った取引はありません",
     "emptyReceived": "受け取った取引はありません",
     "hideContact": "「{{name}}」を非表示",
-    "showContact": "「{{name}}」を表示"
+    "showContact": "「{{name}}」を表示",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "帳簿をエクスポート",
@@ -464,5 +471,10 @@
     "expandTags": "すべて表示（{{count}}）",
     "collapseTags": "閉じる",
     "axisBroken": "軸を省略表示"
+  },
+  "filter": {
+    "tagMatchLabel": "タグ条件",
+    "matchAnd": "かつ",
+    "matchOr": "または"
   }
 }

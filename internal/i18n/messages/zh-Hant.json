@@ -35,7 +35,7 @@
   "error.open_ledger": "無法打開賬本",
   "error.rate_limited": "嘗試次數過多，請稍後再試",
   "error.registration_closed": "註冊已關閉",
-  "error.system_tag_forbidden": "系統預設標籤不可刪除",
+  "error.system_tag_forbidden": "系統預設標籤不可修改",
   "error.system_tx_forbidden": "系統流水不可修改",
   "error.tag_in_use": "標籤仍被流水引用",
   "error.tag_name_required": "標籤名必填",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "標籤名不能為空",
   "validation.tx_date_format": "流水日期須為 YYYY-MM-DD",
   "validation.year_month_required": "缺少年份和月份",
-  "validation.opening_balance_required": "推算月度餘額須填寫期初"
+  "validation.opening_balance_required": "推算月度餘額須填寫期初",
+  "validation.contact_name_required": "姓名不能為空",
+  "validation.contact_name_taken": "已存在同名聯絡人",
+  "validation.tag_name_taken": "已存在同名標籤"
 }

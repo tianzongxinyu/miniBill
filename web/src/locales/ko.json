@@ -78,7 +78,8 @@
     "heroBadges": "셀프 호스트 · 다중 사용자 · 오픈 소스",
     "usernameLength": "사용자 이름은 3~32자여야 합니다",
     "usernameChars": "사용자 이름은 영문, 숫자, 밑줄(_)만 사용할 수 있습니다",
-    "passwordLength": "비밀번호는 6자 이상이어야 합니다"
+    "passwordLength": "비밀번호는 6자 이상이어야 합니다",
+    "forgotPasswordHint": "비밀번호를 잊으셨나요? 서버 관리자에게 재설정을 요청하세요."
   },
   "home": {
     "pullRefresh": "당겨서 새로고침",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "수입 필터, 다시 눌러 해제",
     "emptyExpense": "지출 없음",
     "emptyIncome": "수입 없음",
-    "deleteTagButton": "삭제"
+    "deleteTagButton": "삭제",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "이름",
@@ -207,7 +211,10 @@
     "emptySent": "보낸 거래 없음",
     "emptyReceived": "받은 거래 없음",
     "hideContact": "\"{{name}}\" 숨기기",
-    "showContact": "\"{{name}}\" 표시"
+    "showContact": "\"{{name}}\" 표시",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "장부 내보내기",
@@ -464,5 +471,10 @@
     "expandTags": "전체 보기 ({{count}})",
     "collapseTags": "접기",
     "axisBroken": "축 생략 표시"
+  },
+  "filter": {
+    "tagMatchLabel": "태그 조건",
+    "matchAnd": "그리고",
+    "matchOr": "또는"
   }
 }

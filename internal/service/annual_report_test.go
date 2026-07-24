@@ -42,7 +42,7 @@ func TestAnnualReportSummaryAndTop(t *testing.T) {
 	tx(30000, "expense", "2026-02-10", &foodID, &cid)
 	tx(20000, "expense", "2026-03-10", &shopID, &cid)
 	tx(8000, "expense", "2026-04-10", nil, nil)
-	tx(90000, "expense", "2026-05-10", &foodID, nil) // top amount
+	tx(90000, "expense", "2026-05-10", &foodID, &cid) // top amount
 
 	report, err := stats.AnnualReport(db, 2026)
 	if err != nil {
@@ -57,11 +57,29 @@ func TestAnnualReportSummaryAndTop(t *testing.T) {
 	if len(report.TopTransactions) == 0 || report.TopTransactions[0].Amount != 90000 {
 		t.Fatalf("top txs = %+v", report.TopTransactions)
 	}
+	if report.TopTransactions[0].ContactName != "张三" {
+		t.Fatalf("top tx contact = %q", report.TopTransactions[0].ContactName)
+	}
+	if report.TopTransactions[0].ContactID == nil || *report.TopTransactions[0].ContactID != cid {
+		t.Fatalf("top tx contact_id = %v, want %d", report.TopTransactions[0].ContactID, cid)
+	}
+	if len(report.TopTransactions[0].Tags) != 1 || report.TopTransactions[0].Tags[0] != "餐饮" {
+		t.Fatalf("top tx tags = %+v", report.TopTransactions[0].Tags)
+	}
+	if len(report.TopTransactions[0].TagItems) != 1 || report.TopTransactions[0].TagItems[0].Name != "餐饮" {
+		t.Fatalf("top tx tag_items = %+v", report.TopTransactions[0].TagItems)
+	}
+	if report.TopTransactions[0].TagItems[0].ColorBg == "" {
+		t.Fatalf("top tx tag color_bg empty: %+v", report.TopTransactions[0].TagItems[0])
+	}
 	if len(report.TopContacts) != 1 || report.TopContacts[0].ContactName != "张三" {
 		t.Fatalf("top contacts = %+v", report.TopContacts)
 	}
-	if report.TopContacts[0].NetIncome != 0-50000 {
+	if report.TopContacts[0].NetIncome != 0-140000 {
 		t.Fatalf("contact net = %d", report.TopContacts[0].NetIncome)
+	}
+	if report.TopContacts[0].TxCount != 3 {
+		t.Fatalf("contact tx_count = %d", report.TopContacts[0].TxCount)
 	}
 	if report.Compare != nil {
 		t.Fatal("expected no compare without prior year")
@@ -75,6 +93,51 @@ func TestAnnualReportSummaryAndTop(t *testing.T) {
 	}
 	if !foundFood {
 		t.Fatalf("by_tag = %+v", report.ByTag)
+	}
+}
+
+func TestAnnualReportTopContactsOrderByTxCount(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 8, 15, 0, 0, 0, 0, time.UTC)
+	})
+
+	resA, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('多笔')`)
+	cidA, _ := resA.LastInsertId()
+	resB, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('大额')`)
+	cidB, _ := resB.LastInsertId()
+
+	// 多笔：3 笔小额；大额：1 笔超大金额 —— 应按笔数倒排，多笔在前
+	for i, date := range []string{"2026-01-01", "2026-01-02", "2026-01-03"} {
+		_, err := db.Exec(
+			`INSERT INTO transactions (amount, type, transaction_date, contact_id) VALUES (?,?,?,?)`,
+			int64(1000*(i+1)), "expense", date, cidA,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	_, err := db.Exec(
+		`INSERT INTO transactions (amount, type, transaction_date, contact_id) VALUES (?,?,?,?)`,
+		900000, "expense", "2026-02-01", cidB,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	report, err := stats.AnnualReport(db, 2026)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(report.TopContacts) < 2 {
+		t.Fatalf("top contacts = %+v", report.TopContacts)
+	}
+	if report.TopContacts[0].ContactName != "多笔" || report.TopContacts[0].TxCount != 3 {
+		t.Fatalf("expected 多笔 first by count, got %+v", report.TopContacts[0])
+	}
+	if report.TopContacts[1].ContactName != "大额" || report.TopContacts[1].TxCount != 1 {
+		t.Fatalf("expected 大额 second, got %+v", report.TopContacts[1])
 	}
 }
 
@@ -141,27 +204,7 @@ func TestDefaultAnnualReportYear(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if y != 2025 {
-		t.Fatalf("expected previous year, got %d", y)
-	}
-
-	for m := 1; m <= 11; m++ {
-		_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026, ?, ?)`, m, int64(m*1000))
-	}
-	y, err = stats.DefaultAnnualReportYear(db)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if y != 2025 {
-		t.Fatalf("expected previous year with 11 months, got %d", y)
-	}
-
-	_, _ = db.Exec(`INSERT INTO monthly_balances (year, month, balance) VALUES (2026, 12, 12000)`)
-	y, err = stats.DefaultAnnualReportYear(db)
-	if err != nil {
-		t.Fatal(err)
-	}
 	if y != 2026 {
-		t.Fatalf("expected current year with 12 months, got %d", y)
+		t.Fatalf("expected current year, got %d", y)
 	}
 }

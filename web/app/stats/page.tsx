@@ -68,6 +68,9 @@ function StatsContent() {
     setSelectedTagIds,
     contactId,
     setContactId,
+    tagMatch,
+    setTagMatch,
+    matchToggleVisible,
     clearSearch,
     searchActive,
     monthSeries,
@@ -179,6 +182,9 @@ function StatsContent() {
         onTagIdsChange={setSelectedTagIds}
         contactId={contactId}
         onContactIdChange={setContactId}
+        tagMatch={tagMatch}
+        onTagMatchChange={setTagMatch}
+        matchToggleVisible={matchToggleVisible}
         onClear={clearSearch}
         mode={mode}
         onModeChange={setMode}

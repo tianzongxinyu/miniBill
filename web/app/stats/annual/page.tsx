@@ -16,11 +16,10 @@ import { formatApiError } from '@/lib/errors';
 import { YEARS_PER_PAGE, yearPageStart } from '@/lib/pickerUtils';
 
 const MIN_YEAR = 2000;
-const MAX_YEAR = 2100;
 
-function parseYearParam(yearParam: string | null): number | null {
+function parseYearParam(yearParam: string | null, maxYear: number): number | null {
   const n = yearParam ? Number(yearParam) : NaN;
-  if (Number.isInteger(n) && n >= MIN_YEAR && n <= MAX_YEAR) return n;
+  if (Number.isInteger(n) && n >= MIN_YEAR && n <= maxYear) return n;
   return null;
 }
 
@@ -28,13 +27,25 @@ function AnnualReportContent() {
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const maxYear = currentYear;
 
   const yearParam = searchParams.get('year');
-  const parsedYear = useMemo(() => parseYearParam(yearParam), [yearParam]);
+  const parsedYear = useMemo(
+    () => parseYearParam(yearParam, maxYear),
+    [yearParam, maxYear]
+  );
   const [resolvingDefault, setResolvingDefault] = useState(parsedYear == null);
   const [defaultError, setDefaultError] = useState<unknown>(null);
 
   useEffect(() => {
+    if (yearParam != null) {
+      const raw = Number(yearParam);
+      if (Number.isInteger(raw) && raw > maxYear) {
+        router.replace(`/stats/annual/?year=${maxYear}`);
+        return;
+      }
+    }
     if (parsedYear != null) {
       setResolvingDefault(false);
       setDefaultError(null);
@@ -46,7 +57,8 @@ function AnnualReportContent() {
     fetchAnnualDefaultYear()
       .then((y) => {
         if (cancelled) return;
-        router.replace(`/stats/annual/?year=${y}`);
+        const clamped = Math.min(maxYear, Math.max(MIN_YEAR, y));
+        router.replace(`/stats/annual/?year=${clamped}`);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -56,7 +68,7 @@ function AnnualReportContent() {
     return () => {
       cancelled = true;
     };
-  }, [parsedYear, router]);
+  }, [parsedYear, router, yearParam, maxYear]);
 
   const year = parsedYear;
   const { report, loading, error } = useAnnualReport(year);
@@ -64,10 +76,10 @@ function AnnualReportContent() {
 
   const setYear = useCallback(
     (y: number) => {
-      const next = Math.min(MAX_YEAR, Math.max(MIN_YEAR, y));
+      const next = Math.min(maxYear, Math.max(MIN_YEAR, y));
       router.replace(`/stats/annual/?year=${next}`);
     },
-    [router]
+    [router, maxYear]
   );
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -75,7 +87,7 @@ function AnnualReportContent() {
   const floatingPanelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [viewYearPageStart, setViewYearPageStart] = useState(() =>
-    yearPageStart(year ?? new Date().getFullYear() - 1)
+    yearPageStart(year ?? currentYear)
   );
 
   const close = useCallback(() => setOpen(false), []);
@@ -91,12 +103,12 @@ function AnnualReportContent() {
   );
 
   const isYearDisabled = useCallback(
-    (y: number) => y < MIN_YEAR || y > MAX_YEAR,
-    []
+    (y: number) => y < MIN_YEAR || y > maxYear,
+    [maxYear]
   );
 
   const prevYearPageDisabled = viewYearPageStart - 1 < MIN_YEAR;
-  const nextYearPageDisabled = viewYearPageStart + YEARS_PER_PAGE > MAX_YEAR;
+  const nextYearPageDisabled = viewYearPageStart + YEARS_PER_PAGE > maxYear;
 
   const selectYear = (y: number) => {
     if (isYearDisabled(y)) return;
@@ -119,11 +131,14 @@ function AnnualReportContent() {
         <div className="annual-report-year-group" role="group" aria-label={t('annualReport.title', { year })}>
           <button
             type="button"
+            className="annual-report-year-nav"
             onClick={() => setYear(year - 1)}
             disabled={year <= MIN_YEAR}
             aria-label={t('annualReport.prevYear')}
           >
-            ‹
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
           </button>
           <button
             ref={titleRef}
@@ -137,11 +152,14 @@ function AnnualReportContent() {
           </button>
           <button
             type="button"
+            className="annual-report-year-nav"
             onClick={() => setYear(year + 1)}
-            disabled={year >= MAX_YEAR}
+            disabled={year >= maxYear}
             aria-label={t('annualReport.nextYear')}
           >
-            ›
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path d="M9 18l6-6-6-6" />
+            </svg>
           </button>
         </div>
 
@@ -160,7 +178,7 @@ function AnnualReportContent() {
             viewYearPageStart={viewYearPageStart}
             value={{ year, month: 1 }}
             prevYearDisabled={year <= MIN_YEAR}
-            nextYearDisabled={year >= MAX_YEAR}
+            nextYearDisabled={year >= maxYear}
             prevYearPageDisabled={prevYearPageDisabled}
             nextYearPageDisabled={nextYearPageDisabled}
             yearPageYears={yearPageYears}

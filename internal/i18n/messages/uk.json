@@ -35,7 +35,7 @@
   "error.open_ledger": "Не вдалося відкрити книгу",
   "error.rate_limited": "Забагато спроб, спробуйте пізніше",
   "error.registration_closed": "Реєстрацію закрито",
-  "error.system_tag_forbidden": "Системні попередньо налаштовані теги не можна видаляти",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Системні транзакції не можна змінювати",
   "error.tag_in_use": "Тег досі використовується в транзакціях",
   "error.tag_name_required": "Потрібна назва тега",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Назва тега не може бути порожньою",
   "validation.tx_date_format": "Дата транзакції має бути YYYY-MM-DD",
   "validation.year_month_required": "Потрібні рік і місяць",
-  "validation.opening_balance_required": "Для розрахунку місячних залишків потрібен початковий залишок"
+  "validation.opening_balance_required": "Для розрахунку місячних залишків потрібен початковий залишок",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

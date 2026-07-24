@@ -35,7 +35,7 @@
   "error.open_ledger": "Nie można otworzyć księgi",
   "error.rate_limited": "Zbyt wiele prób, spróbuj ponownie później",
   "error.registration_closed": "Rejestracja jest zamknięta",
-  "error.system_tag_forbidden": "Wstępnie ustawionych tagów systemowych nie można usunąć",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Transakcji systemowych nie można modyfikować",
   "error.tag_in_use": "Tag jest nadal używany w transakcjach",
   "error.tag_name_required": "Nazwa tagu jest wymagana",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Nazwa tagu nie może być pusta",
   "validation.tx_date_format": "Data transakcji musi być YYYY-MM-DD",
   "validation.year_month_required": "Rok i miesiąc są wymagane",
-  "validation.opening_balance_required": "Do wyliczenia sald miesięcznych wymagane jest saldo otwarcia"
+  "validation.opening_balance_required": "Do wyliczenia sald miesięcznych wymagane jest saldo otwarcia",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

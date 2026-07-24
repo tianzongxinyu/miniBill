@@ -35,7 +35,7 @@
   "error.open_ledger": "Defter açılamıyor",
   "error.rate_limited": "Çok fazla deneme, lütfen daha sonra tekrar deneyin",
   "error.registration_closed": "Kayıt kapalı",
-  "error.system_tag_forbidden": "Sistem ön ayar etiketleri silinemez",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Sistem işlemleri değiştirilemez",
   "error.tag_in_use": "Etiket hâlâ işlemler tarafından kullanılıyor",
   "error.tag_name_required": "Etiket adı gerekli",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Etiket adı boş olamaz",
   "validation.tx_date_format": "İşlem tarihi YYYY-MM-DD olmalı",
   "validation.year_month_required": "Yıl ve ay gerekli",
-  "validation.opening_balance_required": "Aylık bakiyeleri hesaplamak için açılış bakiyesi gerekli"
+  "validation.opening_balance_required": "Aylık bakiyeleri hesaplamak için açılış bakiyesi gerekli",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

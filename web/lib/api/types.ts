@@ -93,10 +93,13 @@ export type StatsSeriesPage<T> = {
   has_more_newer: boolean;
 };
 
+export type TagMatch = 'all' | 'any';
+
 export type TransactionSearchFilter = {
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
+  tagMatch?: TagMatch;
 };
 
 /** @deprecated use TransactionSearchFilter */
@@ -219,6 +222,7 @@ export type TagUpdate = {
   enabled?: boolean;
   color_bg?: string;
   color_fg?: string;
+  name?: string;
 };
 
 export type ContactUpdate = {

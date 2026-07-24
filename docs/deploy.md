@@ -109,6 +109,34 @@ go run ./cmd/create-user -username admin -password yourpass
 
 （与 server 共用同一 `DATA_DIR`，自动读取其中的 `.jwt_secret`。）
 
+Docker 镜像内已包含该工具：
+
+```bash
+docker compose exec minibill /app/create-user -username admin -password yourpass
+```
+
+## 重置用户密码
+
+用户忘记密码时，由管理员在服务器上重置（无邮件找回）。重置后该用户已有登录态立即失效，需用新密码重新登录。
+
+本地 / 源码：
+
+```bash
+go run ./cmd/reset-password -username alice -password newsecret
+```
+
+Docker：
+
+```bash
+docker compose exec minibill /app/reset-password -username alice -password newsecret
+```
+
+飞牛 NAS（fnOS）：在应用安装目录执行（需能访问同一数据目录，通常通过设置 `DATA_DIR`）：
+
+```bash
+DATA_DIR=/path/to/app/data /path/to/app/bin/reset-password -username alice -password newsecret
+```
+
 ## HTTPS
 
 生产环境建议在前面加 Nginx/Caddy 反代并启用 HTTPS。
@@ -131,11 +159,11 @@ go run ./cmd/create-user -username admin -password yourpass
 
 1. 登录 fnOS → **应用中心** → **手动安装**
 2. 上传对应架构的 `.fpk` 文件
-3. 安装向导中设置 **服务端口**（默认 `18080`）和是否开放注册
+3. 安装向导中设置 **服务端口**（默认 `18080`）与备份目录（可选）
 4. 数据目录选择数据盘（非系统盘）
 5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问（首次启动自动生成 JWT 密钥）
 
-修改端口 / 注册开关 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。
+修改端口 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。
 
 **备份目录：** 在 **运行设置 → 编辑** 中填写绝对路径（如 `/vol1/1000/backups`）；留空则不启用备份。保存后会自动重启应用，随后在 Web **我的 → 备份管理** 配置周期与保留份数；**我的 → 数据管理** 可从该目录选择 zip 恢复。
 

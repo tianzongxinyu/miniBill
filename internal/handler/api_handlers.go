@@ -58,10 +58,11 @@ type tagUpdateReq struct {
 	Enabled *bool   `json:"enabled"`
 	ColorBg *string `json:"color_bg"`
 	ColorFg *string `json:"color_fg"`
+	Name    *string `json:"name"`
 }
 
 func (req tagUpdateReq) empty() bool {
-	return req.Enabled == nil && req.ColorBg == nil && req.ColorFg == nil
+	return req.Enabled == nil && req.ColorBg == nil && req.ColorFg == nil && req.Name == nil
 }
 
 type contactUpdateReq struct {
@@ -121,7 +122,7 @@ func (s *Server) register(c *gin.Context) {
 		JSONInternal(c, err.Error())
 		return
 	}
-	token, err := s.authSvc.Sign(user.ID, user.Username)
+	token, err := s.authSvc.Sign(user.ID, user.Username, user.TokenVersion)
 	if err != nil {
 		JSONInternal(c, "")
 		return
@@ -149,7 +150,7 @@ func (s *Server) login(c *gin.Context) {
 	if !remember {
 		expire = 24 * time.Hour
 	}
-	token, err := s.authSvc.SignWithExpire(user.ID, user.Username, expire)
+	token, err := s.authSvc.SignWithExpire(user.ID, user.Username, user.TokenVersion, expire)
 	if err != nil {
 		JSONInternal(c, "")
 		return
@@ -197,11 +198,16 @@ func (s *Server) changePassword(c *gin.Context) {
 		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.wrong_password"))
 		return
 	}
-	hash, _ := auth.HashPassword(req.NewPassword)
+	hash, err := auth.HashPassword(req.NewPassword)
+	if err != nil {
+		JSONInternal(c, "")
+		return
+	}
 	if err := s.system.UpdatePassword(userID, hash); err != nil {
 		JSONInternal(c, "")
 		return
 	}
+	clearAuthCookie(c, s.cfg)
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }
 
@@ -264,6 +270,7 @@ func (s *Server) updateTag(c *gin.Context) {
 			Enabled: req.Enabled,
 			ColorBg: req.ColorBg,
 			ColorFg: req.ColorFg,
+			Name:    req.Name,
 		})
 		if serviceErr(c, err) {
 			return
@@ -379,6 +386,7 @@ func (s *Server) listTransactions(c *gin.Context) {
 			Month:     month,
 			Type:      c.Query("type"),
 			TagIDs:    parseTagIDs(c),
+			TagMatch:  parseTagMatch(c),
 			ContactID: parseContactID(c),
 			NoteQuery: strings.TrimSpace(c.Query("note")),
 			Cursor:    c.Query("cursor"),

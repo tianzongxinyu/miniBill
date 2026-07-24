@@ -1,6 +1,7 @@
 'use client';
 
-import { TransactionsSearchCombobox } from '@/components/transactions/TransactionsSearchCombobox';
+import { SearchFilterToolbar } from '@/components/ui/SearchFilterToolbar';
+import type { TagMatch } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
 
 type StatsToolbarProps = {
@@ -10,6 +11,9 @@ type StatsToolbarProps = {
   onTagIdsChange: (ids: number[]) => void;
   contactId: number | null;
   onContactIdChange: (id: number | null) => void;
+  tagMatch: TagMatch;
+  onTagMatchChange: (match: TagMatch) => void;
+  matchToggleVisible: boolean;
   onClear: () => void;
   mode: 'month' | 'year';
   onModeChange: (mode: 'month' | 'year') => void;
@@ -22,6 +26,9 @@ export function StatsToolbar({
   onTagIdsChange,
   contactId,
   onContactIdChange,
+  tagMatch,
+  onTagMatchChange,
+  matchToggleVisible,
   onClear,
   mode,
   onModeChange,
@@ -29,16 +36,19 @@ export function StatsToolbar({
   const { t } = useTranslation();
 
   return (
-    <div className="stats-toolbar mb-4">
-      <TransactionsSearchCombobox
-        note={note}
-        onNoteChange={onNoteChange}
-        selectedTagIds={selectedTagIds}
-        onTagIdsChange={onTagIdsChange}
-        contactId={contactId}
-        onContactIdChange={onContactIdChange}
-        onClear={onClear}
-      />
+    <SearchFilterToolbar
+      className="stats-toolbar mb-4"
+      note={note}
+      onNoteChange={onNoteChange}
+      selectedTagIds={selectedTagIds}
+      onTagIdsChange={onTagIdsChange}
+      contactId={contactId}
+      onContactIdChange={onContactIdChange}
+      tagMatch={tagMatch}
+      onTagMatchChange={onTagMatchChange}
+      matchToggleVisible={matchToggleVisible}
+      onClear={onClear}
+    >
       <div className="stats-toolbar-right shrink-0 flex gap-2">
         <button
           type="button"
@@ -55,6 +65,6 @@ export function StatsToolbar({
           {t('stats.byYear')}
         </button>
       </div>
-    </div>
+    </SearchFilterToolbar>
   );
 }

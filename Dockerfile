@@ -17,7 +17,9 @@ ENV GOPROXY=https://goproxy.cn,direct
 COPY go.mod go.sum* ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -o /minibill ./cmd/server
+RUN CGO_ENABLED=0 go build -o /minibill ./cmd/server \
+	&& CGO_ENABLED=0 go build -o /create-user ./cmd/create-user \
+	&& CGO_ENABLED=0 go build -o /reset-password ./cmd/reset-password
 
 # Runtime
 FROM ${IMAGE_PREFIX}alpine:3.20
@@ -25,6 +27,8 @@ RUN apk add --no-cache ca-certificates tzdata
 ENV TZ=Asia/Shanghai
 WORKDIR /app
 COPY --from=builder /minibill /app/minibill
+COPY --from=builder /create-user /app/create-user
+COPY --from=builder /reset-password /app/reset-password
 COPY --from=web /app/web/out /app/web/out
 COPY migrations /app/migrations
 ENV STATIC_DIR=/app/web/out

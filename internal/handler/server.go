@@ -97,7 +97,7 @@ func (s *Server) Router() *gin.Engine {
 	authGroup.POST("/logout", s.logout)
 
 	protected := api.Group("")
-	protected.Use(middleware.Auth(s.authSvc))
+	protected.Use(middleware.Auth(s.authSvc, s.system.GetTokenVersion))
 	protected.GET("/auth/session", s.session)
 	protected.PUT("/auth/password", s.changePassword)
 	protected.GET("/meta/editable-range", s.editableRange)
@@ -309,9 +309,14 @@ func parseContactID(c *gin.Context) *int64 {
 	return &id
 }
 
+func parseTagMatch(c *gin.Context) string {
+	return service.NormalizeTagMatch(c.Query("tag_match"))
+}
+
 func parseStatsFilter(c *gin.Context) service.StatsFilter {
 	return service.StatsFilter{
 		TagIDs:    parseTagIDs(c),
+		TagMatch:  parseTagMatch(c),
 		ContactID: parseContactID(c),
 		NoteQuery: strings.TrimSpace(c.Query("note")),
 	}

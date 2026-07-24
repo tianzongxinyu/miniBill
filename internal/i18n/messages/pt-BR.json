@@ -35,7 +35,7 @@
   "error.open_ledger": "Não foi possível abrir o livro-caixa",
   "error.rate_limited": "Muitas tentativas, tente novamente mais tarde",
   "error.registration_closed": "Cadastro fechado",
-  "error.system_tag_forbidden": "Tags predefinidas do sistema não podem ser excluídas",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Transações do sistema não podem ser alteradas",
   "error.tag_in_use": "A tag ainda está vinculada a transações",
   "error.tag_name_required": "Nome da tag é obrigatório",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "O nome da tag não pode estar vazio",
   "validation.tx_date_format": "A data da transação deve estar no formato AAAA-MM-DD",
   "validation.year_month_required": "Ano e mês são obrigatórios",
-  "validation.opening_balance_required": "Saldo inicial necessário para calcular saldos mensais"
+  "validation.opening_balance_required": "Saldo inicial necessário para calcular saldos mensais",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

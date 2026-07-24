@@ -70,23 +70,58 @@ func loadPriorDecemberBalance(db *sql.DB, year int) (*int64, error) {
 	return &bal.Int64, nil
 }
 
-func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64) (string, []interface{}) {
-	parts := make([]string, 0, len(tagIDs)+2)
+func noteTagContactFilterSQL(note string, tagIDs []int64, contactID *int64, tagMatch string) (string, []interface{}) {
+	parts := make([]string, 0, 3)
 	args := make([]interface{}, 0, len(tagIDs)+2)
+	any := NormalizeTagMatch(tagMatch) == TagMatchAny
 	note = strings.TrimSpace(note)
-	if note != "" {
-		parts = append(parts, "t.note LIKE ?")
-		args = append(args, "%"+note+"%")
-	}
-	for _, tid := range tagIDs {
-		parts = append(parts, `EXISTS (SELECT 1 FROM transaction_tags tt WHERE tt.transaction_id=t.id AND tt.tag_id=?)`)
-		args = append(args, tid)
-	}
+
+	// Prefer indexed predicates first (contact, tags), then note LIKE.
 	if contactID != nil {
 		parts = append(parts, "t.contact_id = ?")
 		args = append(args, *contactID)
 	}
+	if len(tagIDs) > 0 {
+		if any {
+			placeholders := make([]string, len(tagIDs))
+			for i, tid := range tagIDs {
+				placeholders[i] = "?"
+				args = append(args, tid)
+			}
+			parts = append(parts, `EXISTS (SELECT 1 FROM transaction_tags tt WHERE tt.transaction_id=t.id AND tt.tag_id IN (`+strings.Join(placeholders, ",")+`))`)
+		} else {
+			for _, tid := range tagIDs {
+				parts = append(parts, `EXISTS (SELECT 1 FROM transaction_tags tt WHERE tt.transaction_id=t.id AND tt.tag_id=?)`)
+				args = append(args, tid)
+			}
+		}
+	}
+	if note != "" {
+		parts = append(parts, "t.note LIKE ?")
+		args = append(args, "%"+note+"%")
+	}
+	if len(parts) == 0 {
+		return "", args
+	}
+	if any {
+		if len(parts) == 1 {
+			return parts[0], args
+		}
+		return "(" + strings.Join(parts, " OR ") + ")", args
+	}
 	return strings.Join(parts, " AND "), args
+}
+
+const (
+	TagMatchAll = "all"
+	TagMatchAny = "any"
+)
+
+func NormalizeTagMatch(tagMatch string) string {
+	if strings.TrimSpace(tagMatch) == TagMatchAny {
+		return TagMatchAny
+	}
+	return TagMatchAll
 }
 
 func tagFromRow(id int64, name string, presetKey sql.NullString, sys, en int, colorBg, colorFg string, usageCount int64) Tag {

@@ -35,7 +35,7 @@
   "error.open_ledger": "Cannot open ledger",
   "error.rate_limited": "Too many attempts, please try again later",
   "error.registration_closed": "Registration is closed",
-  "error.system_tag_forbidden": "System preset tags cannot be deleted",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "System transactions cannot be modified",
   "error.tag_in_use": "Tag is still referenced by transactions",
   "error.tag_name_required": "Tag name is required",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Tag name cannot be empty",
   "validation.tx_date_format": "Transaction date must be YYYY-MM-DD",
   "validation.year_month_required": "Year and month are required",
-  "validation.opening_balance_required": "Opening balance is required to derive monthly balances"
+  "validation.opening_balance_required": "Opening balance is required to derive monthly balances",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

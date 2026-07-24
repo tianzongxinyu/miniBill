@@ -47,6 +47,7 @@ export type TransactionsHrefOptions = {
   note?: string;
   tagIds?: number[];
   contactId?: number | null;
+  tagMatch?: 'all' | 'any';
   type?: 'expense' | 'income';
 };
 
@@ -59,6 +60,9 @@ export function buildTransactionsHref(opts: TransactionsHrefOptions): string {
   if (opts.tagIds?.length) params.set('tags', opts.tagIds.join(','));
   if (opts.contactId != null && opts.contactId > 0) {
     params.set('contact', String(opts.contactId));
+  }
+  if (opts.tagMatch === 'any' && (opts.tagIds?.length ?? 0) + (opts.contactId != null && opts.contactId > 0 ? 1 : 0) + (opts.note?.trim() ? 1 : 0) >= 2) {
+    params.set('match', 'any');
   }
   if (opts.type === 'expense' || opts.type === 'income') {
     params.set('type', opts.type);
@@ -142,6 +146,7 @@ export type TransactionsFiltersFromQuery = {
   note: string;
   tagIds: number[];
   contactId: number | null;
+  tagMatch: 'all' | 'any';
 };
 
 export function parseTransactionsFiltersFromQuery(
@@ -158,5 +163,10 @@ export function parseTransactionsFiltersFromQuery(
   const contactRaw = params.get('contact');
   const contactId =
     contactRaw != null && Number(contactRaw) > 0 ? Number(contactRaw) : null;
-  return { note, tagIds, contactId };
+  const tagMatch =
+    params.get('match') === 'any' &&
+    tagIds.length + (contactId != null ? 1 : 0) + (note.trim() ? 1 : 0) >= 2
+      ? 'any'
+      : 'all';
+  return { note, tagIds, contactId, tagMatch };
 }

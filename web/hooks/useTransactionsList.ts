@@ -13,6 +13,7 @@ import { formatApiError } from '@/lib/errors';
 import { scrollToTop, pullTransactionsScroll, scrollToY, currentPathWithSearch } from '@/lib/scroll';
 import { useOnLedgerChanged, monthInDetail } from '@/lib/ledgerEvents';
 import { useCursorPagination } from '@/hooks/useCursorPagination';
+import type { TagMatch } from '@/lib/api';
 import type { TransactionTypeFilter } from '@/lib/url';
 
 type UseTransactionsListOptions = {
@@ -21,6 +22,7 @@ type UseTransactionsListOptions = {
   note: string;
   tagIds: number[];
   contactId: number | null;
+  tagMatch: TagMatch;
   searchActive: boolean;
   typeFilter: TransactionTypeFilter;
 };
@@ -31,12 +33,31 @@ export function useTransactionsList({
   note,
   tagIds,
   contactId,
+  tagMatch,
   searchActive,
   typeFilter,
 }: UseTransactionsListOptions) {
   const { t } = useTranslation();
-  const filtersRef = useRef({ year, month, note, tagIds, contactId, searchActive, typeFilter });
-  filtersRef.current = { year, month, note, tagIds, contactId, searchActive, typeFilter };
+  const filtersRef = useRef({
+    year,
+    month,
+    note,
+    tagIds,
+    contactId,
+    tagMatch,
+    searchActive,
+    typeFilter,
+  });
+  filtersRef.current = {
+    year,
+    month,
+    note,
+    tagIds,
+    contactId,
+    tagMatch,
+    searchActive,
+    typeFilter,
+  };
 
   const [monthItems, setMonthItems] = useState<Transaction[]>([]);
   const [monthLoading, setMonthLoading] = useState(true);
@@ -49,7 +70,7 @@ export function useTransactionsList({
 
   const fetchSearchPage = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
     const f = filtersRef.current;
-    const key = `search|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${cursor ?? ''}`;
+    const key = `search|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${f.tagMatch}|${cursor ?? ''}`;
     const inflight = searchInflightRef.current;
 
     const canDedupe = cursor != null && signal == null;
@@ -62,6 +83,7 @@ export function useTransactionsList({
       note: f.note,
       tagIds: f.tagIds,
       contactId: f.contactId,
+      tagMatch: f.tagMatch,
       cursor: cursor ?? undefined,
       limit: TRANSACTIONS_SEARCH_PAGE_SIZE,
       signal,
@@ -160,6 +182,7 @@ export function useTransactionsList({
     note,
     tagIds,
     contactId,
+    tagMatch,
   ]);
 
   useEffect(() => {

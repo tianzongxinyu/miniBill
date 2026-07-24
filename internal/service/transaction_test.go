@@ -162,6 +162,74 @@ func TestListByCursorFilteredByTags(t *testing.T) {
 	if len(page.Items) != 1 || page.Items[0].ID != id1 {
 		t.Fatalf("items = %+v, want only id %d", page.Items, id1)
 	}
+
+	anyPage, err := txSvc.ListByCursorFiltered(db, ListFilter{TagIDs: []int64{tagA, tagB}, TagMatch: TagMatchAny}, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(anyPage.Items) != 2 {
+		t.Fatalf("any match items = %+v, want 2", anyPage.Items)
+	}
+}
+
+func TestListByCursorFilteredCrossDimAny(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	txSvc := NewTransactionService(NewStatsService())
+
+	res, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('张三')`)
+	cid, _ := res.LastInsertId()
+	tagA := testutil.InsertTag(t, db, "红包")
+	tagB := testutil.InsertTag(t, db, "工资")
+
+	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note, contact_id) VALUES (100, 'income', '2026-06-01', '', ?)`, cid)
+	onlyContact, _ := res.LastInsertId()
+
+	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (200, 'expense', '2026-06-02', '')`)
+	onlyTag, _ := res.LastInsertId()
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?, ?)`, onlyTag, tagA)
+
+	res, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (300, 'expense', '2026-06-03', '备注命中')`)
+	onlyNote, _ := res.LastInsertId()
+
+	_, _ = db.Exec(`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (400, 'expense', '2026-06-04', '无关')`)
+
+	// any: contact OR tagA OR note — should hit 3 rows, not require all dimensions
+	page, err := txSvc.ListByCursorFiltered(db, ListFilter{
+		NoteQuery: "备注命中",
+		TagIDs:    []int64{tagA, tagB},
+		ContactID: &cid,
+		TagMatch:  TagMatchAny,
+	}, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(page.Items) != 3 {
+		t.Fatalf("any cross-dim items = %+v, want 3", page.Items)
+	}
+	got := map[int64]bool{}
+	for _, it := range page.Items {
+		got[it.ID] = true
+	}
+	for _, id := range []int64{onlyContact, onlyTag, onlyNote} {
+		if !got[id] {
+			t.Fatalf("missing id %d in %+v", id, page.Items)
+		}
+	}
+
+	// all: must match note AND tags AND contact — none of the fixtures do
+	allPage, err := txSvc.ListByCursorFiltered(db, ListFilter{
+		NoteQuery: "备注命中",
+		TagIDs:    []int64{tagA},
+		ContactID: &cid,
+		TagMatch:  TagMatchAll,
+	}, 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(allPage.Items) != 0 {
+		t.Fatalf("all cross-dim items = %+v, want 0", allPage.Items)
+	}
 }
 
 func TestListByCursorFilteredCombined(t *testing.T) {

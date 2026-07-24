@@ -2,12 +2,16 @@ import type { TransactionSearchFilter, YearMonth } from '@/lib/api/types';
 
 export type { YearMonth };
 
+/** 检索条件个数：每个标签 + 联系人 + 非空备注各计 1 */
+export function countSearchConditions(input: TransactionSearchFilter): number {
+  const tagCount = input.tagIds?.length ?? 0;
+  const contactCount = input.contactId != null ? 1 : 0;
+  const noteCount = input.note?.trim() ? 1 : 0;
+  return tagCount + contactCount + noteCount;
+}
+
 export function isTransactionSearchActive(input: TransactionSearchFilter): boolean {
-  return (
-    Boolean(input.note?.trim()) ||
-    Boolean(input.tagIds && input.tagIds.length > 0) ||
-    input.contactId != null
-  );
+  return countSearchConditions(input) > 0;
 }
 
 export function appendSearchFilter(params: URLSearchParams, filter?: TransactionSearchFilter) {
@@ -15,6 +19,9 @@ export function appendSearchFilter(params: URLSearchParams, filter?: Transaction
   if (note) params.set('note', note);
   filter?.tagIds?.forEach((id) => params.append('tag_ids', String(id)));
   if (filter?.contactId != null) params.set('contact_id', String(filter.contactId));
+  if (filter?.tagMatch === 'any' && countSearchConditions(filter) >= 2) {
+    params.set('tag_match', 'any');
+  }
 }
 
 export function normalizeCursorPage<T>(data: {

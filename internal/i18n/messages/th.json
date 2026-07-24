@@ -35,7 +35,7 @@
   "error.open_ledger": "เปิดสมุดบัญชีไม่ได้",
   "error.rate_limited": "พยายามมากเกินไป โปรดลองใหม่ภายหลัง",
   "error.registration_closed": "ปิดการลงทะเบียนแล้ว",
-  "error.system_tag_forbidden": "ไม่สามารถลบแท็กที่ตั้งไว้ล่วงหน้าของระบบได้",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "ไม่สามารถแก้ไขรายการระบบได้",
   "error.tag_in_use": "แท็กยังถูกอ้างอิงโดยรายการ",
   "error.tag_name_required": "ต้องระบุชื่อแท็ก",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "ชื่อแท็กต้องไม่ว่าง",
   "validation.tx_date_format": "วันที่รายการต้องเป็น YYYY-MM-DD",
   "validation.year_month_required": "ต้องระบุปีและเดือน",
-  "validation.opening_balance_required": "ต้องมียอดเปิดเพื่อคำนวณยอดคงเหลือรายเดือน"
+  "validation.opening_balance_required": "ต้องมียอดเปิดเพื่อคำนวณยอดคงเหลือรายเดือน",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

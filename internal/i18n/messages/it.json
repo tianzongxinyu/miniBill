@@ -35,7 +35,7 @@
   "error.open_ledger": "Impossibile aprire il registro",
   "error.rate_limited": "Troppi tentativi, riprova più tardi",
   "error.registration_closed": "Registrazione chiusa",
-  "error.system_tag_forbidden": "Le etichette predefinite di sistema non possono essere eliminate",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Le transazioni di sistema non possono essere modificate",
   "error.tag_in_use": "L'etichetta è ancora collegata a transazioni",
   "error.tag_name_required": "Nome etichetta obbligatorio",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Il nome dell'etichetta non può essere vuoto",
   "validation.tx_date_format": "La data della transazione deve essere nel formato AAAA-MM-GG",
   "validation.year_month_required": "Anno e mese obbligatori",
-  "validation.opening_balance_required": "Saldo iniziale richiesto per derivare i saldi mensili"
+  "validation.opening_balance_required": "Saldo iniziale richiesto per derivare i saldi mensili",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

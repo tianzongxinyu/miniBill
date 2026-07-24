@@ -35,7 +35,7 @@
   "error.open_ledger": "장부를 열 수 없습니다",
   "error.rate_limited": "시도 횟수가 너무 많습니다. 잠시 후 다시 시도하세요",
   "error.registration_closed": "회원가입이 마감되었습니다",
-  "error.system_tag_forbidden": "시스템 기본 태그는 삭제할 수 없습니다",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "시스템 거래는 수정할 수 없습니다",
   "error.tag_in_use": "태그가 거래에서 참조되고 있습니다",
   "error.tag_name_required": "태그 이름은 필수입니다",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "태그 이름을 비울 수 없습니다",
   "validation.tx_date_format": "거래 날짜는 YYYY-MM-DD 형식이어야 합니다",
   "validation.year_month_required": "연도와 월은 필수입니다",
-  "validation.opening_balance_required": "월별 잔액 추산에 기초 잔액이 필요합니다"
+  "validation.opening_balance_required": "월별 잔액 추산에 기초 잔액이 필요합니다",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

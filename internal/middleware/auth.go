@@ -15,6 +15,9 @@ const (
 	TokenCookieName = "minibill_token"
 )
 
+// TokenVersionLookup returns the current token_version for a user.
+type TokenVersionLookup func(userID int64) (int64, error)
+
 func bearerToken(header string) string {
 	if header == "" || !strings.HasPrefix(header, "Bearer ") {
 		return ""
@@ -32,8 +35,8 @@ func tokenFromRequest(c *gin.Context) string {
 	return ""
 }
 
-// Auth 校验 JWT（Authorization: Bearer 或 HttpOnly Cookie）。
-func Auth(authSvc *auth.Service) gin.HandlerFunc {
+// Auth 校验 JWT（Authorization: Bearer 或 HttpOnly Cookie），并核对 token_version。
+func Auth(authSvc *auth.Service, lookup TokenVersionLookup) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := tokenFromRequest(c)
 		if tokenStr == "" {
@@ -44,6 +47,13 @@ func Auth(authSvc *auth.Service) gin.HandlerFunc {
 		if err != nil {
 			apierr.Unauthorized(c)
 			return
+		}
+		if lookup != nil {
+			ver, err := lookup(claims.UserID)
+			if err != nil || ver != claims.TokenVersion {
+				apierr.Unauthorized(c)
+				return
+			}
 		}
 		c.Set(UserIDKey, claims.UserID)
 		c.Set(UsernameKey, claims.Username)

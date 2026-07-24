@@ -78,7 +78,8 @@
     "heroBadges": "مستضاف ذاتيًا · متعدد المستخدمين · مفتوح المصدر",
     "usernameLength": "يجب أن يكون اسم المستخدم من 3 إلى 32 حرفًا",
     "usernameChars": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط",
-    "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
+    "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "forgotPasswordHint": "نسيت كلمة المرور؟ اطلب من مسؤول الخادم إعادة تعيينها."
   },
   "home": {
     "pullRefresh": "اسحب للتحديث",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "تصفية المعاملات الواردة؛ اضغط مرة أخرى للإلغاء",
     "emptyExpense": "لا توجد سجلات صادرة",
     "emptyIncome": "لا توجد سجلات واردة",
-    "deleteTagButton": "حذف"
+    "deleteTagButton": "حذف",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "الاسم",
@@ -207,7 +211,10 @@
     "emptySent": "لا توجد معاملات مرسلة",
     "emptyReceived": "لا توجد معاملات مستلمة",
     "hideContact": "إخفاء \"{{name}}\"",
-    "showContact": "إظهار \"{{name}}\""
+    "showContact": "إظهار \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "تصدير دفتر الحساب",
@@ -464,5 +471,10 @@
     "expandTags": "عرض الكل ({{count}})",
     "collapseTags": "عرض أقل",
     "axisBroken": "محور مقطوع"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

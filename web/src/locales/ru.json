@@ -78,7 +78,8 @@
     "heroBadges": "Самохостинг · Несколько пользователей · Открытый код",
     "usernameLength": "Имя пользователя должно содержать от 3 до 32 символов",
     "usernameChars": "Имя пользователя может содержать только буквы, цифры и подчёркивания",
-    "passwordLength": "Пароль должен содержать не менее 6 символов"
+    "passwordLength": "Пароль должен содержать не менее 6 символов",
+    "forgotPasswordHint": "Забыли пароль? Попросите администратора сервера сбросить его."
   },
   "home": {
     "pullRefresh": "Потяните для обновления",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Фильтр доходов; нажмите снова для сброса",
     "emptyExpense": "Нет записей о расходах",
     "emptyIncome": "Нет записей о доходах",
-    "deleteTagButton": "Удалить"
+    "deleteTagButton": "Удалить",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Имя",
@@ -207,7 +211,10 @@
     "emptySent": "Нет отправленных транзакций",
     "emptyReceived": "Нет полученных транзакций",
     "hideContact": "Скрыть «{{name}}»",
-    "showContact": "Показать «{{name}}»"
+    "showContact": "Показать «{{name}}»",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Экспорт учётной книги",
@@ -464,5 +471,10 @@
     "expandTags": "Показать все ({{count}})",
     "collapseTags": "Свернуть",
     "axisBroken": "Разрыв оси"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

@@ -78,7 +78,8 @@
     "heroBadges": "Auto-hébergé · Multi-utilisateur · Open source",
     "usernameLength": "Le nom d'utilisateur doit comporter 3–32 caractères",
     "usernameChars": "Le nom d'utilisateur ne peut contenir que des lettres, chiffres et underscores",
-    "passwordLength": "Le mot de passe doit comporter au moins 6 caractères"
+    "passwordLength": "Le mot de passe doit comporter au moins 6 caractères",
+    "forgotPasswordHint": "Mot de passe oublié ? Demandez à l'administrateur du serveur de le réinitialiser."
   },
   "home": {
     "pullRefresh": "Tirez pour actualiser",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Filtrer les entrées ; appuyez à nouveau pour annuler",
     "emptyExpense": "Aucun enregistrement de sortie",
     "emptyIncome": "Aucun enregistrement d’entrée",
-    "deleteTagButton": "Supprimer"
+    "deleteTagButton": "Supprimer",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Nom",
@@ -207,7 +211,10 @@
     "emptySent": "Aucune transaction envoyée",
     "emptyReceived": "Aucune transaction reçue",
     "hideContact": "Masquer « {{name}} »",
-    "showContact": "Afficher « {{name}} »"
+    "showContact": "Afficher « {{name}} »",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Exporter le livre de comptes",
@@ -464,5 +471,10 @@
     "expandTags": "Tout afficher ({{count}})",
     "collapseTags": "Réduire",
     "axisBroken": "Axe interrompu"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

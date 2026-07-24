@@ -78,7 +78,8 @@
     "heroBadges": "โฮสต์เอง · หลายผู้ใช้ · โอเพนซอร์ส",
     "usernameLength": "ชื่อผู้ใช้ต้องมี 3–32 ตัวอักษร",
     "usernameChars": "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดล่าง",
-    "passwordLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"
+    "passwordLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+    "forgotPasswordHint": "ลืมรหัสผ่าน? ขอให้ผู้ดูแลเซิร์ฟเวอร์รีเซ็ตให้"
   },
   "home": {
     "pullRefresh": "ดึงเพื่อรีเฟรช",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "กรองรายการรับ แตะอีกครั้งเพื่อยกเลิก",
     "emptyExpense": "ไม่มีรายการจ่าย",
     "emptyIncome": "ไม่มีรายการรับ",
-    "deleteTagButton": "ลบ"
+    "deleteTagButton": "ลบ",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "ชื่อ",
@@ -207,7 +211,10 @@
     "emptySent": "ไม่มีรายการส่ง",
     "emptyReceived": "ไม่มีรายการรับ",
     "hideContact": "ซ่อน \"{{name}}\"",
-    "showContact": "แสดง \"{{name}}\""
+    "showContact": "แสดง \"{{name}}\"",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "ส่งออกสมุดบัญชี",
@@ -464,5 +471,10 @@
     "expandTags": "แสดงทั้งหมด ({{count}})",
     "collapseTags": "ย่อ",
     "axisBroken": "ตัดแกนแล้ว"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

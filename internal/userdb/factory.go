@@ -36,7 +36,8 @@ func (f *Factory) LedgerPath(userID int64, dataPath string) (string, error) {
 	if strings.Contains(clean, "..") {
 		return "", fmt.Errorf("invalid data path")
 	}
-	expected := fmt.Sprintf("users/%d/ledger.db", userID)
+	// filepath.Clean uses OS separators; compare with the same Clean form.
+	expected := filepath.Clean(filepath.Join("users", fmt.Sprintf("%d", userID), "ledger.db"))
 	if clean != expected {
 		return "", fmt.Errorf("data path mismatch")
 	}

@@ -225,6 +225,144 @@ func TestTransactionUpdateRefreshesListTags(t *testing.T) {
 	}
 }
 
+func TestChangePasswordInvalidatesOldToken(t *testing.T) {
+	ts, _ := setupTestServer(t)
+	defer ts.Close()
+
+	token := registerTestUser(t, ts, "dave", "secret1")
+
+	body, _ := json.Marshal(map[string]string{
+		"old_password": "secret1",
+		"new_password": "secret2",
+	})
+	req, _ := http.NewRequest(http.MethodPut, ts.URL+"/api/auth/password", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != http.StatusOK {
+		t.Fatalf("change password status %d", res.StatusCode)
+	}
+	res.Body.Close()
+
+	reqOld, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	reqOld.Header.Set("Authorization", "Bearer "+token)
+	resOld, err := http.DefaultClient.Do(reqOld)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resOld.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("old token status %d, want 401", resOld.StatusCode)
+	}
+	resOld.Body.Close()
+
+	loginBody, _ := json.Marshal(map[string]string{"username": "dave", "password": "secret2"})
+	resLogin, err := http.Post(ts.URL+"/api/auth/login", "application/json", bytes.NewReader(loginBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resLogin.StatusCode != http.StatusOK {
+		t.Fatalf("login status %d", resLogin.StatusCode)
+	}
+	var login struct {
+		Token string `json:"token"`
+	}
+	json.NewDecoder(resLogin.Body).Decode(&login)
+	resLogin.Body.Close()
+	if login.Token == "" {
+		t.Fatal("expected new token")
+	}
+
+	reqNew, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	reqNew.Header.Set("Authorization", "Bearer "+login.Token)
+	resNew, err := http.DefaultClient.Do(reqNew)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resNew.StatusCode != http.StatusOK {
+		t.Fatalf("new token status %d", resNew.StatusCode)
+	}
+	resNew.Body.Close()
+}
+
+func TestResetPasswordInvalidatesOldToken(t *testing.T) {
+	ts, cfg := setupTestServer(t)
+	defer ts.Close()
+
+	token := registerTestUser(t, ts, "erin", "secret1")
+
+	sys, err := bootstrap.OpenSystem(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sys.Close()
+
+	if _, err := bootstrap.ResetUserPassword(sys, "erin", "secret9"); err != nil {
+		t.Fatal(err)
+	}
+
+	reqOld, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	reqOld.Header.Set("Authorization", "Bearer "+token)
+	resOld, err := http.DefaultClient.Do(reqOld)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resOld.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("old token after reset status %d, want 401", resOld.StatusCode)
+	}
+	resOld.Body.Close()
+
+	loginBody, _ := json.Marshal(map[string]string{"username": "erin", "password": "secret9"})
+	resLogin, err := http.Post(ts.URL+"/api/auth/login", "application/json", bytes.NewReader(loginBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resLogin.StatusCode != http.StatusOK {
+		t.Fatalf("login after reset status %d", resLogin.StatusCode)
+	}
+	resLogin.Body.Close()
+}
+
+func TestLegacyTokenWithoutTVStillValidAtVersionZero(t *testing.T) {
+	ts, cfg := setupTestServer(t)
+	defer ts.Close()
+
+	_ = registerTestUser(t, ts, "frank", "secret1")
+
+	sys, err := bootstrap.OpenSystem(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sys.Close()
+	user, err := sys.Store.GetByUsername("frank")
+	if err != nil || user == nil {
+		t.Fatal("user not found")
+	}
+	if user.TokenVersion != 0 {
+		t.Fatalf("token_version = %d, want 0", user.TokenVersion)
+	}
+
+	// Simulate pre-upgrade JWT missing `tv` (Go zero-value TokenVersion = 0).
+	authSvc := auth.NewService(sys.Cfg.JWTSecret, sys.Cfg.JWTExpireDuration())
+	legacy, err := authSvc.Sign(user.ID, user.Username, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req, _ := http.NewRequest(http.MethodGet, ts.URL+"/api/tags", nil)
+	req.Header.Set("Authorization", "Bearer "+legacy)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != http.StatusOK {
+		t.Fatalf("legacy tv=0 token status %d, want 200", res.StatusCode)
+	}
+	res.Body.Close()
+}
+
 func registerTestUser(t *testing.T, ts *httptest.Server, username, password string) string {
 	t.Helper()
 	body, _ := json.Marshal(map[string]string{"username": username, "password": password})

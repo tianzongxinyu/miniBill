@@ -74,3 +74,57 @@ func TestContactEnabledListAndCreateFallback(t *testing.T) {
 		t.Fatalf("case-insensitive fallback id = %d", againCase.ID)
 	}
 }
+
+func TestContactRename(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+
+	svc := &ContactService{}
+	a, err := svc.Create(db, Contact{Name: "甲"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := svc.Create(db, Contact{Name: "乙"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newName := "甲改"
+	updated, err := svc.Update(db, a.ID, ContactUpdateInput{Name: &newName})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if updated.Name != newName {
+		t.Fatalf("name = %q", updated.Name)
+	}
+
+	empty := "  "
+	if _, err := svc.Update(db, a.ID, ContactUpdateInput{Name: &empty}); err == nil {
+		t.Fatal("expected empty name error")
+	}
+
+	taken := "乙"
+	if _, err := svc.Update(db, a.ID, ContactUpdateInput{Name: &taken}); err == nil {
+		t.Fatal("expected duplicate name error")
+	}
+
+	sameCase := "甲改"
+	if _, err := svc.Update(db, a.ID, ContactUpdateInput{Name: &sameCase}); err != nil {
+		t.Fatal(err)
+	}
+
+	asciiA, err := svc.Create(db, Contact{Name: "Alice"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	asciiB, err := svc.Create(db, Contact{Name: "Bob"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	takenCase := "bob"
+	if _, err := svc.Update(db, asciiA.ID, ContactUpdateInput{Name: &takenCase}); err == nil {
+		t.Fatal("expected case-insensitive duplicate name error")
+	}
+	_ = b
+	_ = asciiB
+}

@@ -46,6 +46,11 @@ function loadStatsScrollChart() {
     });
 }
 
+/** Overlap recharts chunk download with chart API latency. */
+export function prefetchStatsChart() {
+  void loadStatsScrollChart();
+}
+
 const DynamicStatsScrollChart = dynamic(loadStatsScrollChart, {
   ssr: false,
   loading: () => <ChartSkeleton height={252} />,

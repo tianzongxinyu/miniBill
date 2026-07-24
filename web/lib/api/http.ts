@@ -37,13 +37,10 @@ function buildApiHeaders(extra?: Record<string, string>, skipContentType?: boole
 }
 
 async function parseApiErrorResponse(res: Response): Promise<never> {
-  if (res.status >= 500) {
-    const data = await res.json().catch(() => ({}));
-    if (!data.error) {
-      throw new ApiError('NETWORK_ERROR', i18n.t('error.networkErrorConfirm'), res.status);
-    }
+  const data = await res.json().catch(() => ({} as { error?: string; message?: string }));
+  if (res.status >= 500 && !data.error) {
+    throw new ApiError('NETWORK_ERROR', i18n.t('error.networkErrorConfirm'), res.status);
   }
-  const data = await res.json().catch(() => ({}));
   throw new ApiError(data.error || 'ERROR', data.message || res.statusText, res.status);
 }
 

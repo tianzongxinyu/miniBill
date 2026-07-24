@@ -78,7 +78,8 @@
     "heroBadges": "Selbst gehostet · Mehrbenutzer · Open Source",
     "usernameLength": "Benutzername muss 3–32 Zeichen lang sein",
     "usernameChars": "Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten",
-    "passwordLength": "Passwort muss mindestens 6 Zeichen lang sein"
+    "passwordLength": "Passwort muss mindestens 6 Zeichen lang sein",
+    "forgotPasswordHint": "Passwort vergessen? Bitten Sie den Server-Administrator um Zurücksetzung."
   },
   "home": {
     "pullRefresh": "Zum Aktualisieren ziehen",
@@ -188,7 +189,10 @@
     "filterIncomeAria": "Einnahmen filtern; erneut tippen zum Aufheben",
     "emptyExpense": "Keine Ausgaben-Einträge",
     "emptyIncome": "Keine Einnahmen-Einträge",
-    "deleteTagButton": "Löschen"
+    "deleteTagButton": "Löschen",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A tag with this name already exists"
   },
   "contacts": {
     "namePlaceholder": "Name eingeben",
@@ -207,7 +211,10 @@
     "emptySent": "Keine gesendeten Transaktionen",
     "emptyReceived": "Keine empfangenen Transaktionen",
     "hideContact": "\"{{name}}\" ausblenden",
-    "showContact": "\"{{name}}\" anzeigen"
+    "showContact": "\"{{name}}\" anzeigen",
+    "editName": "Edit \"{{name}}\"",
+    "renameFailed": "Failed to rename",
+    "nameTaken": "A contact with this name already exists"
   },
   "data": {
     "exportTitle": "Kontenbuch exportieren",
@@ -464,5 +471,10 @@
     "expandTags": "Alle anzeigen ({{count}})",
     "collapseTags": "Weniger anzeigen",
     "axisBroken": "Achsenbruch"
+  },
+  "filter": {
+    "tagMatchLabel": "Tag match",
+    "matchAnd": "AND",
+    "matchOr": "OR"
   }
 }

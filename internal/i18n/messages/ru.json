@@ -35,7 +35,7 @@
   "error.open_ledger": "Не удалось открыть учётную книгу",
   "error.rate_limited": "Слишком много попыток, попробуйте позже",
   "error.registration_closed": "Регистрация закрыта",
-  "error.system_tag_forbidden": "Системные теги нельзя удалять",
+  "error.system_tag_forbidden": "System preset tags cannot be modified",
   "error.system_tx_forbidden": "Системные транзакции нельзя изменять",
   "error.tag_in_use": "Тег всё ещё используется в транзакциях",
   "error.tag_name_required": "Название тега обязательно",
@@ -71,5 +71,8 @@
   "validation.tag_name_empty": "Название тега не может быть пустым",
   "validation.tx_date_format": "Дата транзакции должна быть в формате ГГГГ-ММ-ДД",
   "validation.year_month_required": "Год и месяц обязательны",
-  "validation.opening_balance_required": "Для расчёта месячных остатков нужен начальный остаток"
+  "validation.opening_balance_required": "Для расчёта месячных остатков нужен начальный остаток",
+  "validation.contact_name_required": "Name is required",
+  "validation.contact_name_taken": "A contact with this name already exists",
+  "validation.tag_name_taken": "A tag with this name already exists"
 }

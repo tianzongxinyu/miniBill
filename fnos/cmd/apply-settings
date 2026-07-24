@@ -29,10 +29,6 @@ read_existing_backup_dir() {
     read_env_value "BACKUP_DIR"
 }
 
-read_existing_allow_registration() {
-    read_env_value "ALLOW_REGISTRATION"
-}
-
 normalize_dir_path() {
     local path="$1"
     path="${path//[$'\r\n']/}"
@@ -99,26 +95,45 @@ refresh_backup_dir() {
 }
 
 resolve_port() {
+    local pkgvar port_file env_port
+    pkgvar="$(resolve_pkgvar)"
+    port_file="${pkgvar}/.port"
+
     if [ -n "${wizard_port:-}" ]; then
         echo "${wizard_port}"
-    elif [ -n "${TRIM_SERVICE_PORT:-}" ]; then
-        echo "${TRIM_SERVICE_PORT}"
-    elif [ -f "$(resolve_pkgvar)/.port" ] 2>/dev/null; then
-        cat "$(resolve_pkgvar)/.port"
-    else
-        echo "18080"
+        return
     fi
+    if [ -f "$port_file" ]; then
+        tr -d '[:space:]' < "$port_file"
+        return
+    fi
+    env_port="$(read_env_value "PORT" 2>/dev/null || true)"
+    if [ -n "$env_port" ]; then
+        echo "$env_port"
+        return
+    fi
+    if [ -n "${TRIM_SERVICE_PORT:-}" ]; then
+        echo "${TRIM_SERVICE_PORT}"
+        return
+    fi
+    echo "18080"
 }
 
 patch_port_files() {
     local port="$1"
-    local app_dest ui_config
+    local app_dest ui_config pkgvar log_file patched=""
     app_dest="$(resolve_app_dest)"
-    ui_config="$(app_ui_config)"
+    pkgvar="$(resolve_pkgvar)"
+    log_file="${pkgvar}/minibill.log"
 
-    if [ -f "$ui_config" ]; then
+    for ui_config in \
+        "${app_dest}/app/ui/config" \
+        "${app_dest}/ui/config"
+    do
+        [ -f "$ui_config" ] || continue
         sed -i "s/\"port\": \"[0-9]*\"/\"port\": \"${port}\"/" "$ui_config"
-    fi
+        patched="${patched} ${ui_config}"
+    done
 
     local mf
     for mf in \
@@ -127,6 +142,7 @@ patch_port_files() {
     do
         [ -f "$mf" ] || continue
         sed -i "s/^service_port[[:space:]]*=.*/service_port          = ${port}/" "$mf"
+        patched="${patched} ${mf}"
     done
 
     local sc
@@ -138,27 +154,27 @@ patch_port_files() {
         [ -f "$sc" ] || continue
         sed -i "s/src.ports=\"[0-9]*\\/tcp\"/src.ports=\"${port}\\/tcp\"/" "$sc"
         sed -i "s/dst.ports=\"[0-9]*\\/tcp\"/dst.ports=\"${port}\\/tcp\"/" "$sc"
+        patched="${patched} ${sc}"
     done
 
-    echo "${port}" > "$(resolve_pkgvar)/.port"
+    if [ -n "$pkgvar" ]; then
+        echo "${port}" > "${pkgvar}/.port"
+    fi
+
+    if [ -n "$log_file" ]; then
+        mkdir -p "$(dirname "$log_file")" 2>/dev/null || true
+        echo "$(date '+%F %T') patch_port_files port=${port} files=${patched:-<none>}" >> "$log_file"
+    fi
 }
 
 write_env_file() {
-    local port pkgvar backup_dir backup_line allow_reg
+    local port pkgvar backup_dir backup_line
     port="$(resolve_port)"
     pkgvar="$(resolve_pkgvar)"
     backup_dir="$(resolve_backup_dir)"
 
     [ -n "$pkgvar" ] || return 1
     mkdir -p "${pkgvar}/data" 2>/dev/null || true
-
-    allow_reg="${wizard_allow_registration:-}"
-    if [ -z "$allow_reg" ]; then
-        allow_reg="$(read_existing_allow_registration)"
-    fi
-    if [ -z "$allow_reg" ]; then
-        allow_reg="true"
-    fi
 
     if [ -n "$backup_dir" ]; then
         backup_line="BACKUP_DIR=$(shell_quote "$backup_dir")"
@@ -167,14 +183,14 @@ write_env_file() {
     fi
 
     cat > "${pkgvar}/minibill.env" <<EOF
-ALLOW_REGISTRATION=${allow_reg}
+ALLOW_REGISTRATION=true
 PORT=${port}
 TZ=Asia/Shanghai
 ${backup_line}
 EOF
     chmod 600 "${pkgvar}/minibill.env" 2>/dev/null || true
-    patch_port_files "$port"
 
     ensure_app_ready
+    patch_port_files "$port"
     chmod +x "$APP_BIN" 2>/dev/null || true
 }

@@ -4,4 +4,6 @@
 . "$(dirname "$0")/apply-settings"
 rm -f "$(resolve_pkgvar)/.backup_dir_manual" 2>/dev/null || true
 refresh_backup_dir >/dev/null 2>&1 || true
+# Re-apply saved port to ui/config after upgrade_init re-extracts app.tgz.
+write_env_file || true
 exit 0

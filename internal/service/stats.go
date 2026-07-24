@@ -498,6 +498,7 @@ type MonthlyStatItem struct {
 
 type StatsFilter struct {
 	TagIDs    []int64
+	TagMatch  string
 	ContactID *int64
 	NoteQuery string
 }
@@ -510,7 +511,7 @@ func (f StatsFilter) HasFilter() bool {
 }
 
 func statsFilterSQL(filter StatsFilter) (string, []interface{}) {
-	return noteTagContactFilterSQL(filter.NoteQuery, filter.TagIDs, filter.ContactID)
+	return noteTagContactFilterSQL(filter.NoteQuery, filter.TagIDs, filter.ContactID, filter.TagMatch)
 }
 
 func (s *StatsService) sumTransactionsRange(db *sql.DB, start, end string, filter StatsFilter) (income, expense int64, err error) {
