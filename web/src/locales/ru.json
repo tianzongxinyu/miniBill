@@ -190,9 +190,9 @@
     "emptyExpense": "Нет записей о расходах",
     "emptyIncome": "Нет записей о доходах",
     "deleteTagButton": "Удалить",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "Изменить «{{name}}»",
+    "renameFailed": "Не удалось переименовать",
+    "nameTaken": "Тег с таким именем уже существует"
   },
   "contacts": {
     "namePlaceholder": "Имя",
@@ -212,9 +212,9 @@
     "emptyReceived": "Нет полученных транзакций",
     "hideContact": "Скрыть «{{name}}»",
     "showContact": "Показать «{{name}}»",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "Изменить «{{name}}»",
+    "renameFailed": "Не удалось переименовать",
+    "nameTaken": "Контакт с таким именем уже существует"
   },
   "data": {
     "exportTitle": "Экспорт учётной книги",
@@ -473,8 +473,8 @@
     "axisBroken": "Разрыв оси"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "Совпадение тегов",
+    "matchAnd": "И",
+    "matchOr": "ИЛИ"
   }
 }

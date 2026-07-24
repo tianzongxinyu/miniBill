@@ -190,9 +190,9 @@
     "emptyExpense": "Nenhum registro de saída",
     "emptyIncome": "Nenhum registro de entrada",
     "deleteTagButton": "Excluir",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "Editar \"{{name}}\"",
+    "renameFailed": "Falha ao renomear",
+    "nameTaken": "Já existe uma tag com este nome"
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -212,9 +212,9 @@
     "emptyReceived": "Nenhuma transação recebida",
     "hideContact": "Ocultar \"{{name}}\"",
     "showContact": "Mostrar \"{{name}}\"",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "Editar \"{{name}}\"",
+    "renameFailed": "Falha ao renomear",
+    "nameTaken": "Já existe um contato com este nome"
   },
   "data": {
     "exportTitle": "Exportar livro-caixa",
@@ -473,8 +473,8 @@
     "axisBroken": "Eixo interrompido"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "Correspondência de tags",
+    "matchAnd": "E",
+    "matchOr": "OU"
   }
 }

@@ -190,9 +190,9 @@
     "emptyExpense": "Giden kayıt yok",
     "emptyIncome": "Gelen kayıt yok",
     "deleteTagButton": "Sil",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "«{{name}}» düzenle",
+    "renameFailed": "Yeniden adlandırma başarısız",
+    "nameTaken": "Bu adda bir etiket zaten var"
   },
   "contacts": {
     "namePlaceholder": "Ad",
@@ -212,9 +212,9 @@
     "emptyReceived": "Alınan işlem yok",
     "hideContact": "\"{{name}}\" gizle",
     "showContact": "\"{{name}}\" göster",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "«{{name}}» düzenle",
+    "renameFailed": "Yeniden adlandırma başarısız",
+    "nameTaken": "Bu adda bir kişi zaten var"
   },
   "data": {
     "exportTitle": "Defteri dışa aktar",
@@ -473,8 +473,8 @@
     "axisBroken": "Eksen kırığı"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "Etiket eşleştirme",
+    "matchAnd": "VE",
+    "matchOr": "VEYA"
   }
 }

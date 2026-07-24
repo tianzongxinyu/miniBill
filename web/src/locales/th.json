@@ -190,9 +190,9 @@
     "emptyExpense": "ไม่มีรายการจ่าย",
     "emptyIncome": "ไม่มีรายการรับ",
     "deleteTagButton": "ลบ",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "แก้ไข «{{name}}»",
+    "renameFailed": "เปลี่ยนชื่อไม่สำเร็จ",
+    "nameTaken": "มีแท็กชื่อนี้อยู่แล้ว"
   },
   "contacts": {
     "namePlaceholder": "ชื่อ",
@@ -212,9 +212,9 @@
     "emptyReceived": "ไม่มีรายการรับ",
     "hideContact": "ซ่อน \"{{name}}\"",
     "showContact": "แสดง \"{{name}}\"",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "แก้ไข «{{name}}»",
+    "renameFailed": "เปลี่ยนชื่อไม่สำเร็จ",
+    "nameTaken": "มีผู้ติดต่อชื่อนี้อยู่แล้ว"
   },
   "data": {
     "exportTitle": "ส่งออกสมุดบัญชี",
@@ -473,8 +473,8 @@
     "axisBroken": "ตัดแกนแล้ว"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "การจับคู่แท็ก",
+    "matchAnd": "และ",
+    "matchOr": "หรือ"
   }
 }

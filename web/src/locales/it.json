@@ -190,9 +190,9 @@
     "emptyExpense": "Nessun record in uscita",
     "emptyIncome": "Nessun record in entrata",
     "deleteTagButton": "Elimina",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "Modifica «{{name}}»",
+    "renameFailed": "Rinomina non riuscita",
+    "nameTaken": "Esiste già un tag con questo nome"
   },
   "contacts": {
     "namePlaceholder": "Nome",
@@ -212,9 +212,9 @@
     "emptyReceived": "Nessuna transazione ricevuta",
     "hideContact": "Nascondi \"{{name}}\"",
     "showContact": "Mostra \"{{name}}\"",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "Modifica «{{name}}»",
+    "renameFailed": "Rinomina non riuscita",
+    "nameTaken": "Esiste già un contatto con questo nome"
   },
   "data": {
     "exportTitle": "Esporta registro",
@@ -473,8 +473,8 @@
     "axisBroken": "Asse interrotto"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "Corrispondenza tag",
+    "matchAnd": "E",
+    "matchOr": "O"
   }
 }

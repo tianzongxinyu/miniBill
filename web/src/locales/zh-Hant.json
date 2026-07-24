@@ -474,7 +474,7 @@
   },
   "filter": {
     "tagMatchLabel": "標籤匹配",
-    "matchAnd": "並",
+    "matchAnd": "且",
     "matchOr": "或"
   }
 }

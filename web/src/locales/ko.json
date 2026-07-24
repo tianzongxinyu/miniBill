@@ -190,9 +190,9 @@
     "emptyExpense": "지출 없음",
     "emptyIncome": "수입 없음",
     "deleteTagButton": "삭제",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "「{{name}}」 편집",
+    "renameFailed": "이름 변경 실패",
+    "nameTaken": "같은 이름의 태그가 이미 있습니다"
   },
   "contacts": {
     "namePlaceholder": "이름",
@@ -212,9 +212,9 @@
     "emptyReceived": "받은 거래 없음",
     "hideContact": "\"{{name}}\" 숨기기",
     "showContact": "\"{{name}}\" 표시",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "「{{name}}」 편집",
+    "renameFailed": "이름 변경 실패",
+    "nameTaken": "같은 이름의 연락처가 이미 있습니다"
   },
   "data": {
     "exportTitle": "장부 내보내기",

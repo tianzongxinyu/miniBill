@@ -35,7 +35,7 @@
   "error.open_ledger": "Kan boekhouding niet openen",
   "error.rate_limited": "Te veel pogingen, probeer het later opnieuw",
   "error.registration_closed": "Registratie is gesloten",
-  "error.system_tag_forbidden": "System preset tags cannot be modified",
+  "error.system_tag_forbidden": "Systeemvoorinstelde tags kunnen niet worden gewijzigd",
   "error.system_tx_forbidden": "Systeemtransacties kunnen niet worden gewijzigd",
   "error.tag_in_use": "Tag wordt nog gebruikt in transacties",
   "error.tag_name_required": "Tagnaam is verplicht",
@@ -72,7 +72,7 @@
   "validation.tx_date_format": "Transactiedatum moet JJJJ-MM-DD zijn",
   "validation.year_month_required": "Jaar en maand zijn verplicht",
   "validation.opening_balance_required": "Openingsaldo vereist om maandsaldi af te leiden",
-  "validation.contact_name_required": "Name is required",
-  "validation.contact_name_taken": "A contact with this name already exists",
-  "validation.tag_name_taken": "A tag with this name already exists"
+  "validation.contact_name_required": "Naam is verplicht",
+  "validation.contact_name_taken": "Er bestaat al een contact met deze naam",
+  "validation.tag_name_taken": "Er bestaat al een tag met deze naam"
 }

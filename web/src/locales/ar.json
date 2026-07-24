@@ -190,9 +190,9 @@
     "emptyExpense": "لا توجد سجلات صادرة",
     "emptyIncome": "لا توجد سجلات واردة",
     "deleteTagButton": "حذف",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "تعديل «{{name}}»",
+    "renameFailed": "فشل إعادة التسمية",
+    "nameTaken": "توجد بالفعل علامة بهذا الاسم"
   },
   "contacts": {
     "namePlaceholder": "الاسم",
@@ -212,9 +212,9 @@
     "emptyReceived": "لا توجد معاملات مستلمة",
     "hideContact": "إخفاء \"{{name}}\"",
     "showContact": "إظهار \"{{name}}\"",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "تعديل «{{name}}»",
+    "renameFailed": "فشل إعادة التسمية",
+    "nameTaken": "يوجد بالفعل جهة اتصال بهذا الاسم"
   },
   "data": {
     "exportTitle": "تصدير دفتر الحساب",
@@ -473,8 +473,8 @@
     "axisBroken": "محور مقطوع"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "مطابقة العلامات",
+    "matchAnd": "و",
+    "matchOr": "أو"
   }
 }

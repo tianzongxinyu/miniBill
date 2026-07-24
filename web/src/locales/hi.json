@@ -190,9 +190,9 @@
     "emptyExpense": "कोई खर्च रिकॉर्ड नहीं",
     "emptyIncome": "कोई आय रिकॉर्ड नहीं",
     "deleteTagButton": "हटाएँ",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "«{{name}}» संपादित करें",
+    "renameFailed": "नाम बदलने में विफल",
+    "nameTaken": "इस नाम का टैग पहले से मौजूद है"
   },
   "contacts": {
     "namePlaceholder": "नाम",
@@ -212,9 +212,9 @@
     "emptyReceived": "कोई प्राप्त लेनदेन नहीं",
     "hideContact": "\"{{name}}\" छिपाएँ",
     "showContact": "\"{{name}}\" दिखाएँ",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "«{{name}}» संपादित करें",
+    "renameFailed": "नाम बदलने में विफल",
+    "nameTaken": "इस नाम का संपर्क पहले से मौजूद है"
   },
   "data": {
     "exportTitle": "लेजर निर्यात करें",
@@ -473,8 +473,8 @@
     "axisBroken": "अक्ष खंडित"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "टैग मिलान",
+    "matchAnd": "और",
+    "matchOr": "या"
   }
 }

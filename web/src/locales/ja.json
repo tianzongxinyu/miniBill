@@ -190,9 +190,9 @@
     "emptyExpense": "支出なし",
     "emptyIncome": "収入なし",
     "deleteTagButton": "削除",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "「{{name}}」を編集",
+    "renameFailed": "名前の変更に失敗しました",
+    "nameTaken": "同名のタグが既に存在します"
   },
   "contacts": {
     "namePlaceholder": "名前",
@@ -212,9 +212,9 @@
     "emptyReceived": "受け取った取引はありません",
     "hideContact": "「{{name}}」を非表示",
     "showContact": "「{{name}}」を表示",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "「{{name}}」を編集",
+    "renameFailed": "名前の変更に失敗しました",
+    "nameTaken": "同名の連絡先が既に存在します"
   },
   "data": {
     "exportTitle": "帳簿をエクスポート",

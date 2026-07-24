@@ -190,9 +190,9 @@
     "emptyExpense": "Sin registros de salida",
     "emptyIncome": "Sin registros de entrada",
     "deleteTagButton": "Eliminar",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A tag with this name already exists"
+    "editName": "Editar «{{name}}»",
+    "renameFailed": "Error al renombrar",
+    "nameTaken": "Ya existe una etiqueta con este nombre"
   },
   "contacts": {
     "namePlaceholder": "Nombre",
@@ -212,9 +212,9 @@
     "emptyReceived": "Sin transacciones recibidas",
     "hideContact": "Ocultar \"{{name}}\"",
     "showContact": "Mostrar \"{{name}}\"",
-    "editName": "Edit \"{{name}}\"",
-    "renameFailed": "Failed to rename",
-    "nameTaken": "A contact with this name already exists"
+    "editName": "Editar «{{name}}»",
+    "renameFailed": "Error al renombrar",
+    "nameTaken": "Ya existe un contacto con este nombre"
   },
   "data": {
     "exportTitle": "Exportar libro de cuentas",
@@ -473,8 +473,8 @@
     "axisBroken": "Eje interrumpido"
   },
   "filter": {
-    "tagMatchLabel": "Tag match",
-    "matchAnd": "AND",
-    "matchOr": "OR"
+    "tagMatchLabel": "Coincidencia de etiquetas",
+    "matchAnd": "Y",
+    "matchOr": "O"
   }
 }

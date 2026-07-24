@@ -28,6 +28,7 @@ git push origin vX.Y.Z
 ## 发版后
 
 - 飞牛 NAS 安装 fpk 冒烟：文案、图标、统计图、余额日常支出
+- 飞牛应用商店：同步 `fnos/manifest` 的 `desc`（应用介绍）外，**须单独填写「版本说明」**（参考 [`docs/releases/`](releases/)；官方 fpk 无独立 changelog 字段）
 - Docker 用户：`docker build` / 更新镜像 tag
 - 论坛/GitHub Release 说明变更摘要
 
