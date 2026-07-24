@@ -202,7 +202,6 @@ stage_binary() {
     (
         cd "$ROOT"
         GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${version}" -o "${work_dir}/app/bin/minibill" ./cmd/server
-        GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "${work_dir}/app/bin/create-user" ./cmd/create-user
         GOOS=linux GOARCH="$goarch" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "${work_dir}/app/bin/reset-password" ./cmd/reset-password
     )
 
@@ -211,7 +210,7 @@ stage_binary() {
     cp -a "$ROOT/migrations/system" "${work_dir}/app/migrations/system"
     cp -a "$ROOT/migrations/ledger" "${work_dir}/app/migrations/ledger"
 
-    chmod +x "${work_dir}/app/bin/minibill" "${work_dir}/app/bin/create-user" "${work_dir}/app/bin/reset-password" "${work_dir}"/cmd/*
+    chmod +x "${work_dir}/app/bin/minibill" "${work_dir}/app/bin/reset-password" "${work_dir}"/cmd/*
 }
 
 pack_fpk() {

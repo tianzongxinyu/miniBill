@@ -101,19 +101,9 @@ Docker 示例：在 `.env` 中设置 `BACKUP_DIR=/data/backups` 并挂载该路�
 
 ## 关闭自助注册
 
-`.env` 中设置 `ALLOW_REGISTRATION=false`，然后：
+首次部署建议先保持 `ALLOW_REGISTRATION=true`，通过 Web 注册页或 `POST /api/auth/register` 创建首个用户，再在 `.env` 中设置 `ALLOW_REGISTRATION=false` 并重启服务。
 
-```bash
-go run ./cmd/create-user -username admin -password yourpass
-```
-
-（与 server 共用同一 `DATA_DIR`，自动读取其中的 `.jwt_secret`。）
-
-Docker 镜像内已包含该工具：
-
-```bash
-docker compose exec minibill /app/create-user -username admin -password yourpass
-```
+关闭后无法再自助注册；已有用户登录不受影响。忘记密码请用下方「重置用户密码」。
 
 ## 重置用户密码
 
