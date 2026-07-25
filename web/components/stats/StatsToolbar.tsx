@@ -49,7 +49,7 @@ export function StatsToolbar({
       matchToggleVisible={matchToggleVisible}
       onClear={onClear}
     >
-      <div className="stats-toolbar-right shrink-0 flex gap-2">
+      <div className="tag-match-toggle stats-toolbar-right shrink-0" role="group">
         <button
           type="button"
           onClick={() => onModeChange('month')}

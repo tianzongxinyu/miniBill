@@ -39,7 +39,8 @@
     "deleteFailed": "削除に失敗しました",
     "removeItem": "{{name}}を削除",
     "removeContact": "連絡先{{name}}を削除",
-    "selectYear": "年を選択"
+    "selectYear": "年を選択",
+    "noMatchItems": "一致なし"
   },
   "nav": {
     "home": "ホーム",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "日次支出"
   },
   "stats": {
-    "byMonth": "月別",
-    "byYear": "年別",
+    "byMonth": "月",
+    "byYear": "年",
     "fullscreen": "全画面",
     "loadMore": "さらに読み込み中…",
     "scrollHint": "スワイプでデータ表示",

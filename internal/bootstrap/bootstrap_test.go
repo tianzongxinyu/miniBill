@@ -2,6 +2,7 @@ package bootstrap_test
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/minibill/minibill/internal/bootstrap"
@@ -43,5 +44,7 @@ func TestResetUserPassword(t *testing.T) {
 
 	if _, err := bootstrap.ResetUserPassword(sys, "nobody", "secret2"); err == nil {
 		t.Fatal("expected error for missing user")
+	} else if !strings.Contains(err.Error(), "用户不存在") {
+		t.Fatalf("expected 用户不存在 in error, got %v", err)
 	}
 }

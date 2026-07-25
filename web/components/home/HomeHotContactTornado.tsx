@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
-import type { HomeRankingContact } from '@/lib/api';
+import { getCurrentYearMonth, type HomeRankingContact } from '@/lib/api';
 import { chartStrokeForType } from '@/lib/amountColors';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
+import { buildTransactionsHref } from '@/lib/url';
 
 const BREAK_RATIO = 2;
 const VISUAL_PAD = 1.2;
@@ -68,12 +70,14 @@ function isOverlong(amount: number, visualMax: number, breakAxis: boolean): bool
   return breakAxis && amount > visualMax;
 }
 
-/** White diagonal double-cut for axis-break bars */
-function AxisBreakCut() {
+/** White diagonal double-cut for axis-break bars; bias toward chart center (name col). */
+function AxisBreakCut({ side }: { side: 'expense' | 'income' }) {
+  const a = side === 'expense' ? 'left-[68%]' : 'left-[24%]';
+  const b = side === 'expense' ? 'left-[76%]' : 'left-[32%]';
   return (
     <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <span className="absolute left-[46%] top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface" />
-      <span className="absolute left-[54%] top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface" />
+      <span className={`absolute ${a} top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface`} />
+      <span className={`absolute ${b} top-[-45%] h-[190%] w-[2.5px] -rotate-[28deg] bg-surface`} />
     </span>
   );
 }
@@ -142,7 +146,7 @@ function ExpenseBar({
           className="relative h-4 overflow-hidden rounded-l-full"
           style={{ width: barW, backgroundColor: barColor }}
         >
-          {overlong ? <AxisBreakCut /> : null}
+          {overlong ? <AxisBreakCut side="expense" /> : null}
         </div>
         <span className={`${AMOUNT_LABEL_CLASS} left-0 pl-2 text-left`}>{label}</span>
       </div>
@@ -186,7 +190,7 @@ function IncomeBar({
           className="relative h-4 overflow-hidden rounded-r-full"
           style={{ width: Math.max(MIN_FILL_PX, barW), backgroundColor: barColor }}
         >
-          {overlong ? <AxisBreakCut /> : null}
+          {overlong ? <AxisBreakCut side="income" /> : null}
         </div>
         <span className={`${AMOUNT_LABEL_CLASS} right-0 pr-2 text-right`}>{label}</span>
       </div>
@@ -232,6 +236,7 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
 
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
+  const currentYm = getCurrentYearMonth();
 
   if (rows.length === 0) return null;
 
@@ -244,7 +249,15 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
       </div>
       <div className="px-3 pb-3.5 space-y-2.5">
         {rows.map((row, i) => (
-          <div key={row.id} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-0">
+          <Link
+            key={row.id}
+            href={buildTransactionsHref({
+              year: currentYm.year,
+              month: currentYm.month,
+              contactId: row.id,
+            })}
+            className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-0 rounded-lg hover:bg-accent-soft/40 transition-colors"
+          >
             <div ref={i === 0 ? leftRef : undefined} className="min-w-0">
               <ExpenseBar
                 amount={row.expense}
@@ -278,7 +291,7 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
                 locale={locale}
               />
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

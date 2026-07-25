@@ -62,6 +62,7 @@ export function useTransactionsList({
   const [monthItems, setMonthItems] = useState<Transaction[]>([]);
   const [monthLoading, setMonthLoading] = useState(true);
   const [monthError, setMonthError] = useState('');
+  const [searchTotals, setSearchTotals] = useState({ expense: 0, income: 0 });
   const monthReloadAbortRef = useRef<AbortController | null>(null);
   const searchReloadAbortRef = useRef<AbortController | null>(null);
   const searchInflightRef = useRef<Map<string, Promise<Awaited<ReturnType<typeof fetchTransactions>>>>>(
@@ -70,7 +71,7 @@ export function useTransactionsList({
 
   const fetchSearchPage = useCallback(async (cursor: string | null, signal?: AbortSignal) => {
     const f = filtersRef.current;
-    const key = `search|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${f.tagMatch}|${cursor ?? ''}`;
+    const key = `search|${f.note}|${f.tagIds.join(',')}|${f.contactId ?? ''}|${f.tagMatch}|${f.typeFilter ?? ''}|${cursor ?? ''}`;
     const inflight = searchInflightRef.current;
 
     const canDedupe = cursor != null && signal == null;
@@ -84,6 +85,7 @@ export function useTransactionsList({
       tagIds: f.tagIds,
       contactId: f.contactId,
       tagMatch: f.tagMatch,
+      ...(f.typeFilter ? { type: f.typeFilter } : {}),
       cursor: cursor ?? undefined,
       limit: TRANSACTIONS_SEARCH_PAGE_SIZE,
       signal,
@@ -155,11 +157,16 @@ export function useTransactionsList({
     searchReloadAbortRef.current = ac;
 
     resetSearch();
+    setSearchTotals({ expense: 0, income: 0 });
     setSearchLoading(true);
     setSearchError('');
     try {
       const data = await fetchSearchPage(null, ac.signal);
       if (searchReloadAbortRef.current !== ac) return;
+      setSearchTotals({
+        expense: data.total_expense ?? 0,
+        income: data.total_income ?? 0,
+      });
       applyPage(data);
       restoreScrollOrTop();
     } catch (e) {
@@ -183,6 +190,7 @@ export function useTransactionsList({
     tagIds,
     contactId,
     tagMatch,
+    typeFilter,
   ]);
 
   useEffect(() => {
@@ -208,6 +216,7 @@ export function useTransactionsList({
   if (searchActive) {
     return {
       ...searchPagination,
+      searchTotals,
       reload: reloadSearch,
     };
   }
@@ -220,6 +229,7 @@ export function useTransactionsList({
     error: monthError,
     isFullyLoaded: !monthLoading,
     sentinelRef: searchPagination.sentinelRef,
+    searchTotals: { expense: 0, income: 0 },
     reload: reloadMonth,
   };
 }

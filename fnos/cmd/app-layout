@@ -1,25 +1,46 @@
 # Locate miniBill app files on fnOS and extract app.tgz when needed.
 
+# Emit existing /volN/@appdata/<app> or /volN/@appcenter/<app> dirs (N may vary).
+list_vol_app_dirs() {
+    local kind="$1" # appdata | appcenter
+    local d
+    # shellcheck disable=SC2086
+    for d in /vol*/@"${kind}"/${TRIM_APPNAME} /usr/local/apps/@"${kind}"/${TRIM_APPNAME}; do
+        if [ -d "$d" ]; then
+            echo "$d"
+        fi
+    done
+}
+
 resolve_pkgvar() {
     if [ -n "${TRIM_PKGVAR:-}" ]; then
         echo "${TRIM_PKGVAR}"
         return 0
     fi
-    local d
-    for d in \
-        "/vol1/@appdata/${TRIM_APPNAME}" \
-        "/usr/local/apps/@appdata/${TRIM_APPNAME}"
-    do
-        if [ -n "${TRIM_APPNAME:-}" ] && [ -d "$d" ]; then
-            echo "$d"
+    local d first=""
+    if [ -n "${TRIM_APPNAME:-}" ]; then
+        while IFS= read -r d; do
+            [ -n "$d" ] || continue
+            if [ -z "$first" ]; then
+                first="$d"
+            fi
+            # Prefer the data dir that already has a live system DB.
+            if [ -f "${d}/data/system.db" ]; then
+                echo "$d"
+                return 0
+            fi
+        done <<EOF
+$(list_vol_app_dirs appdata)
+EOF
+        if [ -n "$first" ]; then
+            echo "$first"
             return 0
         fi
-    done
-    if [ -n "${TRIM_APPNAME:-}" ]; then
+        # Prefer first existing vol; fallback keeps historical default for fresh install.
         echo "/vol1/@appdata/${TRIM_APPNAME}"
-    else
-        echo ""
+        return 0
     fi
+    echo ""
 }
 
 resolve_runtime_paths() {
@@ -33,17 +54,23 @@ resolve_runtime_paths() {
 
 resolve_app_dest() {
     local d
-    for d in \
-        "${TRIM_APPDEST:-}" \
-        "/vol1/@appcenter/${TRIM_APPNAME}" \
-        "/usr/local/apps/@appcenter/${TRIM_APPNAME}" \
-        "/var/apps/${TRIM_APPNAME}"
-    do
-        if [ -n "$d" ] && [ -d "$d" ]; then
+    if [ -n "${TRIM_APPDEST:-}" ] && [ -d "${TRIM_APPDEST}" ]; then
+        echo "${TRIM_APPDEST}"
+        return 0
+    fi
+    if [ -n "${TRIM_APPNAME:-}" ]; then
+        while IFS= read -r d; do
+            [ -n "$d" ] || continue
             echo "$d"
             return 0
+        done <<EOF
+$(list_vol_app_dirs appcenter)
+EOF
+        if [ -d "/var/apps/${TRIM_APPNAME}" ]; then
+            echo "/var/apps/${TRIM_APPNAME}"
+            return 0
         fi
-    done
+    fi
     if [ -n "${TRIM_APPDEST:-}" ]; then
         echo "${TRIM_APPDEST}"
         return 0
@@ -75,7 +102,7 @@ ensure_app_ready() {
 
     mkdir -p "${dest}/app"
     tar -xzf "$tgz" -C "${dest}/app"
-    chmod +x "${dest}/app/bin/minibill" 2>/dev/null || true
+    chmod +x "${dest}/app/bin/minibill" "${dest}/app/bin/reset-password" 2>/dev/null || true
 
     if [ -x "${dest}/app/bin/minibill" ]; then
         APP_ROOT="${dest}/app"
@@ -84,7 +111,7 @@ ensure_app_ready() {
     fi
 
     tar -xzf "$tgz" -C "${dest}"
-    chmod +x "${dest}/bin/minibill" 2>/dev/null || true
+    chmod +x "${dest}/bin/minibill" "${dest}/bin/reset-password" 2>/dev/null || true
     if [ -x "${dest}/bin/minibill" ]; then
         APP_ROOT="${dest}"
         APP_BIN="${dest}/bin/minibill"

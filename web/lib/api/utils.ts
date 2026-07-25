@@ -28,11 +28,21 @@ export function normalizeCursorPage<T>(data: {
   items?: T[] | null;
   next_cursor?: string | null;
   has_more?: boolean;
-}): { items: T[]; next_cursor: string | null; has_more: boolean } {
+  total_expense?: number;
+  total_income?: number;
+}): {
+  items: T[];
+  next_cursor: string | null;
+  has_more: boolean;
+  total_expense: number;
+  total_income: number;
+} {
   return {
     items: Array.isArray(data?.items) ? data.items : [],
     next_cursor: data?.next_cursor ?? null,
     has_more: Boolean(data?.has_more),
+    total_expense: typeof data?.total_expense === 'number' ? data.total_expense : 0,
+    total_income: typeof data?.total_income === 'number' ? data.total_income : 0,
   };
 }
 

@@ -39,7 +39,8 @@
     "deleteFailed": "ลบไม่สำเร็จ",
     "removeItem": "ลบ {{name}}",
     "removeContact": "ลบผู้ติดต่อ {{name}}",
-    "selectYear": "เลือกปี"
+    "selectYear": "เลือกปี",
+    "noMatchItems": "ไม่พบรายการ"
   },
   "nav": {
     "home": "หน้าแรก",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "ค่าใช้จ่ายรายวัน"
   },
   "stats": {
-    "byMonth": "ตามเดือน",
-    "byYear": "ตามปี",
+    "byMonth": "ด.",
+    "byYear": "ป.",
     "fullscreen": "เต็มหน้าจอ",
     "loadMore": "กำลังโหลดเพิ่ม…",
     "scrollHint": "ปัดกราฟเพื่อดูข้อมูล",

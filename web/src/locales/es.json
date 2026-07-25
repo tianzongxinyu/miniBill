@@ -39,7 +39,8 @@
     "deleteFailed": "Error al eliminar",
     "removeItem": "Quitar {{name}}",
     "removeContact": "Quitar contacto {{name}}",
-    "selectYear": "Seleccionar año"
+    "selectYear": "Seleccionar año",
+    "noMatchItems": "Sin coincidencias"
   },
   "nav": {
     "home": "Inicio",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Gasto diario"
   },
   "stats": {
-    "byMonth": "Por mes",
-    "byYear": "Por año",
+    "byMonth": "M",
+    "byYear": "A",
     "fullscreen": "Pantalla completa",
     "loadMore": "Cargando más…",
     "scrollHint": "Desliza el gráfico para más datos",

@@ -39,7 +39,8 @@
     "deleteFailed": "Löschen fehlgeschlagen",
     "removeItem": "{{name}} entfernen",
     "removeContact": "Kontakt {{name}} entfernen",
-    "selectYear": "Jahr auswählen"
+    "selectYear": "Jahr auswählen",
+    "noMatchItems": "Keine Treffer"
   },
   "nav": {
     "home": "Start",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Tagesausgabe"
   },
   "stats": {
-    "byMonth": "Nach Monat",
-    "byYear": "Nach Jahr",
+    "byMonth": "Mon",
+    "byYear": "J",
     "fullscreen": "Vollbild",
     "loadMore": "Weitere werden geladen…",
     "scrollHint": "Wischen für mehr Daten",

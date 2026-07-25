@@ -121,10 +121,17 @@ Docker：
 docker compose exec minibill /app/reset-password -username alice -password newsecret
 ```
 
-飞牛 NAS（fnOS）：在应用安装目录执行（需能访问同一数据目录，通常通过设置 `DATA_DIR`）：
+飞牛 NAS（fnOS）：SSH 登录后用封装脚本（自动找安装与数据目录）：
 
 ```bash
-DATA_DIR=/path/to/app/data /path/to/app/bin/reset-password -username alice -password newsecret
+/volX/@appcenter/minibill/cmd/reset-user-password -username alice -password newsecret
+# 卷号因安装盘而异，可先：ls -d /vol*/@appcenter/minibill
+```
+
+报「用户不存在」时看 stderr 的 `DATA_DIR`，并用该目录下 `system.db` 核对用户名是否完全一致：
+
+```bash
+sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 ```
 
 ## HTTPS

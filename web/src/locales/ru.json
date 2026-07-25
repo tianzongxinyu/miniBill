@@ -39,7 +39,8 @@
     "deleteFailed": "Не удалось удалить",
     "removeItem": "Удалить {{name}}",
     "removeContact": "Удалить контакт {{name}}",
-    "selectYear": "Выбрать год"
+    "selectYear": "Выбрать год",
+    "noMatchItems": "Нет совпадений"
   },
   "nav": {
     "home": "Главная",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Ежедневные расходы"
   },
   "stats": {
-    "byMonth": "По месяцам",
-    "byYear": "По годам",
+    "byMonth": "М",
+    "byYear": "Г",
     "fullscreen": "Полный экран",
     "loadMore": "Загрузка…",
     "scrollHint": "Свайп для данных",

@@ -1,11 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
-import type { HomeRankingTag } from '@/lib/api';
+import { getCurrentYearMonth, type HomeRankingTag } from '@/lib/api';
 import { chartStrokeForType, textClassForSign } from '@/lib/amountColors';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
+import { buildTransactionsHref } from '@/lib/url';
 
 const BAR_FILL_OPACITY = 0.65;
 const BREAK_RATIO = 2;
@@ -138,6 +140,8 @@ export function HomeHotTagCapsules({ tags }: { tags: HomeRankingTag[] }) {
 
   if (tags.length === 0) return null;
 
+  const currentYm = getCurrentYearMonth();
+
   return (
     <div className="border-t border-line/40">
       <div className="px-4 pt-2.5 pb-1.5">
@@ -154,41 +158,50 @@ export function HomeHotTagCapsules({ tags }: { tags: HomeRankingTag[] }) {
             net === 0 ? 'text-muted' : textClassForSign(net, scheme);
 
           return (
-            <li key={tag.id} className="min-w-0 py-2">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span
-                  className="h-1.5 w-1.5 shrink-0 rounded-full opacity-80"
-                  style={{ backgroundColor: tag.color_bg || '#3E8E7E' }}
-                  aria-hidden
-                />
-                <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-ink">
-                  {tag.name}
-                  <span className="ml-0.5 font-normal tabular-nums text-muted">
-                    {t('home.hotTagUseCount', { count: tag.use_count })}
-                  </span>
-                </span>
-                <span className={`amount-num shrink-0 text-[11px] font-medium tabular-nums ${netClass}`}>
-                  {formatNet(net, locale)}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="min-w-0 flex-1">
-                  <ProportionalDualBar
-                    income={income}
-                    expense={expense}
-                    visualMax={visualMax}
-                    breakAxis={breakAxis}
-                    incomeColor={incomeColor}
-                    expenseColor={expenseColor}
+            <li key={tag.id} className="min-w-0">
+              <Link
+                href={buildTransactionsHref({
+                  year: currentYm.year,
+                  month: currentYm.month,
+                  tagIds: [tag.id],
+                })}
+                className="block py-2 rounded-lg hover:bg-accent-soft/40 transition-colors"
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full opacity-80"
+                    style={{ backgroundColor: tag.color_bg || '#3E8E7E' }}
+                    aria-hidden
                   />
+                  <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-ink">
+                    {tag.name}
+                    <span className="ml-0.5 font-normal tabular-nums text-muted">
+                      {t('home.hotTagUseCount', { count: tag.use_count })}
+                    </span>
+                  </span>
+                  <span className={`amount-num shrink-0 text-[11px] font-medium tabular-nums ${netClass}`}>
+                    {formatNet(net, locale)}
+                  </span>
                 </div>
-                <p
-                  className="shrink-0 text-right text-[10px] tabular-nums text-muted leading-none"
-                  style={{ width: amountColWidth }}
-                >
-                  {formatIncomeExpenseLabel(income, expense, locale)}
-                </p>
-              </div>
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <ProportionalDualBar
+                      income={income}
+                      expense={expense}
+                      visualMax={visualMax}
+                      breakAxis={breakAxis}
+                      incomeColor={incomeColor}
+                      expenseColor={expenseColor}
+                    />
+                  </div>
+                  <p
+                    className="shrink-0 text-right text-[10px] tabular-nums text-muted leading-none"
+                    style={{ width: amountColWidth }}
+                  >
+                    {formatIncomeExpenseLabel(income, expense, locale)}
+                  </p>
+                </div>
+              </Link>
             </li>
           );
         })}

@@ -8,6 +8,8 @@ export type CursorPage<T> = {
   items: T[];
   next_cursor?: string | null;
   has_more: boolean;
+  total_expense?: number;
+  total_income?: number;
 };
 
 type UseCursorPaginationOptions<T> = {

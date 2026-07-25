@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { EditIcon } from '@/components/ui/EditIcon';
+import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -47,6 +48,17 @@ function ContactsContent() {
     deleteItem: deleteContact,
     createErrorFallback: t('contacts.failed'),
   });
+
+  const filteredItems = useMemo(() => {
+    const q = name.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (c) =>
+        c.id === editingId ||
+        c.name.toLowerCase().includes(q) ||
+        (c.nickname != null && c.nickname.toLowerCase().includes(q))
+    );
+  }, [items, name, editingId]);
 
   const toggle = async (c: Contact) => {
     try {
@@ -112,84 +124,88 @@ function ContactsContent() {
         />
         <button className="btn-primary shrink-0">{t('contacts.add')}</button>
       </form>
-      <Notebook>
-        {items.map((c) => {
-          const enabled = c.enabled !== false;
-          const editing = editingId === c.id;
-          return (
-            <div key={c.id} className="notebook-row flex justify-between items-center gap-3">
-              {editing ? (
-                <input
-                  className="field flex-1 min-w-0"
-                  value={editName}
-                  autoFocus
-                  disabled={renaming}
-                  onChange={(e) => setEditName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
+      {filteredItems.length === 0 ? (
+        name.trim() ? <EmptyNotebook message={t('common.noMatchItems')} /> : <Notebook />
+      ) : (
+        <Notebook>
+          {filteredItems.map((c) => {
+            const enabled = c.enabled !== false;
+            const editing = editingId === c.id;
+            return (
+              <div key={c.id} className="notebook-row flex justify-between items-center gap-3">
+                {editing ? (
+                  <input
+                    className="field flex-1 min-w-0"
+                    value={editName}
+                    autoFocus
+                    disabled={renaming}
+                    onChange={(e) => setEditName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        void saveEdit(c);
+                      } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        cancelEdit();
+                      }
+                    }}
+                    onBlur={() => {
+                      if (skipBlurSave.current) {
+                        skipBlurSave.current = false;
+                        return;
+                      }
                       void saveEdit(c);
-                    } else if (e.key === 'Escape') {
-                      e.preventDefault();
-                      cancelEdit();
-                    }
-                  }}
-                  onBlur={() => {
-                    if (skipBlurSave.current) {
-                      skipBlurSave.current = false;
-                      return;
-                    }
-                    void saveEdit(c);
-                  }}
-                  aria-label={t('contacts.editName', { name: c.name })}
-                />
-              ) : (
-                <Link
-                  href={`/profile/contacts/detail/?id=${c.id}`}
-                  className={`min-w-0 flex-1 ${enabled ? '' : 'opacity-45'}`}
-                >
-                  <div className="text-sm text-ink">{c.name}</div>
-                  {c.nickname && <div className="text-xs text-muted mt-1">{c.nickname}</div>}
-                </Link>
-              )}
-              <div className="flex items-center gap-3 shrink-0">
-                {!editing && (
-                  <button
-                    type="button"
-                    onClick={() => startEdit(c)}
-                    className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                    }}
                     aria-label={t('contacts.editName', { name: c.name })}
+                  />
+                ) : (
+                  <Link
+                    href={`/profile/contacts/detail/?id=${c.id}`}
+                    className={`min-w-0 flex-1 ${enabled ? '' : 'opacity-45'}`}
                   >
-                    <EditIcon />
-                  </button>
+                    <div className="text-sm text-ink">{c.name}</div>
+                    {c.nickname && <div className="text-xs text-muted mt-1">{c.nickname}</div>}
+                  </Link>
                 )}
-                <button
-                  type="button"
-                  onClick={() => void toggle(c)}
-                  className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
-                  aria-label={
-                    enabled
-                      ? t('contacts.hideContact', { name: c.name })
-                      : t('contacts.showContact', { name: c.name })
-                  }
-                >
-                  {enabled ? <EyeIcon /> : <EyeOffIcon />}
-                </button>
-                {!usedIds.has(c.id) && (
+                <div className="flex items-center gap-3 shrink-0">
+                  {!editing && (
+                    <button
+                      type="button"
+                      onClick={() => startEdit(c)}
+                      className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                      aria-label={t('contacts.editName', { name: c.name })}
+                    >
+                      <EditIcon />
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={() => setDeleteTarget(c)}
-                    className="btn-ghost p-1.5 text-expense shrink-0"
-                    aria-label={t('contacts.deleteAria', { name: c.name })}
+                    onClick={() => void toggle(c)}
+                    className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                    aria-label={
+                      enabled
+                        ? t('contacts.hideContact', { name: c.name })
+                        : t('contacts.showContact', { name: c.name })
+                    }
                   >
-                    <TrashIcon />
+                    {enabled ? <EyeIcon /> : <EyeOffIcon />}
                   </button>
-                )}
+                  {!usedIds.has(c.id) && (
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(c)}
+                      className="btn-ghost p-1.5 text-expense shrink-0"
+                      aria-label={t('contacts.deleteAria', { name: c.name })}
+                    >
+                      <TrashIcon />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </Notebook>
+            );
+          })}
+        </Notebook>
+      )}
       <ConfirmDialog
         open={deleteTarget != null}
         title={t('contacts.deleteTitle')}

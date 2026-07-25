@@ -39,7 +39,8 @@
     "deleteFailed": "Verwijderen mislukt",
     "removeItem": "{{name}} verwijderen",
     "removeContact": "Contact {{name}} verwijderen",
-    "selectYear": "Jaar kiezen"
+    "selectYear": "Jaar kiezen",
+    "noMatchItems": "Geen overeenkomsten"
   },
   "nav": {
     "home": "Start",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Dagelijkse uitgaven"
   },
   "stats": {
-    "byMonth": "Per maand",
-    "byYear": "Per jaar",
+    "byMonth": "M",
+    "byYear": "J",
     "fullscreen": "Volledig scherm",
     "loadMore": "Meer laden…",
     "scrollHint": "Veeg voor meer data",

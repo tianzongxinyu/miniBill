@@ -39,7 +39,8 @@
     "deleteFailed": "हटाना विफल",
     "removeItem": "{{name}} हटाएँ",
     "removeContact": "संपर्क {{name}} हटाएँ",
-    "selectYear": "वर्ष चुनें"
+    "selectYear": "वर्ष चुनें",
+    "noMatchItems": "कोई मेल नहीं"
   },
   "nav": {
     "home": "होम",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "दैनिक खर्च"
   },
   "stats": {
-    "byMonth": "महीने के अनुसार",
-    "byYear": "वर्ष के अनुसार",
+    "byMonth": "माह",
+    "byYear": "वर्ष",
     "fullscreen": "पूर्ण स्क्रीन",
     "loadMore": "और लोड हो रहा है…",
     "scrollHint": "और डेटा के लिए स्वाइप करें",

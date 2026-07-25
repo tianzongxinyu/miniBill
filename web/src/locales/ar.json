@@ -39,7 +39,8 @@
     "deleteFailed": "فشل الحذف",
     "removeItem": "إزالة {{name}}",
     "removeContact": "إزالة جهة الاتصال {{name}}",
-    "selectYear": "اختر السنة"
+    "selectYear": "اختر السنة",
+    "noMatchItems": "لا توجد نتائج"
   },
   "nav": {
     "home": "الرئيسية",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "المصروف اليومي"
   },
   "stats": {
-    "byMonth": "حسب الشهر",
-    "byYear": "حسب السنة",
+    "byMonth": "شهر",
+    "byYear": "سنة",
     "fullscreen": "ملء الشاشة",
     "loadMore": "جارٍ تحميل المزيد…",
     "scrollHint": "اسحب الرسم لمزيد من البيانات",

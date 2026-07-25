@@ -39,7 +39,8 @@
     "deleteFailed": "삭제 실패",
     "removeItem": "{{name}} 제거",
     "removeContact": "연락처 {{name}} 제거",
-    "selectYear": "연도 선택"
+    "selectYear": "연도 선택",
+    "noMatchItems": "일치 항목 없음"
   },
   "nav": {
     "home": "홈",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "일일 지출"
   },
   "stats": {
-    "byMonth": "월별",
-    "byYear": "연별",
+    "byMonth": "월",
+    "byYear": "년",
     "fullscreen": "전체 화면",
     "loadMore": "더 불러오는 중…",
     "scrollHint": "스와이프로 데이터 보기",

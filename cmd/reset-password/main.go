@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/minibill/minibill/internal/bootstrap"
 	"github.com/minibill/minibill/internal/config"
@@ -20,9 +21,18 @@ func main() {
 	}
 
 	cfg := config.Load()
+	cfg.ResolvePaths()
 	if err := cfg.Validate(); err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Fprintf(os.Stderr, "using DATA_DIR=%s\n", cfg.DataDir)
+
+	dbPath := filepath.Join(cfg.DataDir, "system.db")
+	if _, err := os.Stat(dbPath); err != nil {
+		log.Fatalf("system.db 不存在: %s（请确认 DATA_DIR 指向实际数据目录，勿指向空目录）", dbPath)
+	}
+
 	sys, err := bootstrap.OpenSystem(cfg)
 	if err != nil {
 		log.Fatal(err)

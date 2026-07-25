@@ -39,7 +39,8 @@
     "deleteFailed": "删除失败",
     "removeItem": "移除 {{name}}",
     "removeContact": "移除联系人 {{name}}",
-    "selectYear": "选年份"
+    "selectYear": "选年份",
+    "noMatchItems": "无匹配"
   },
   "nav": {
     "home": "首页",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "日常支出"
   },
   "stats": {
-    "byMonth": "按月",
-    "byYear": "按年",
+    "byMonth": "月",
+    "byYear": "年",
     "fullscreen": "全屏",
     "loadMore": "加载更多…",
     "scrollHint": "左右滑动查看数据",

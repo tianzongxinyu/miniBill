@@ -39,7 +39,8 @@
     "deleteFailed": "Eliminazione non riuscita",
     "removeItem": "Rimuovi {{name}}",
     "removeContact": "Rimuovi contatto {{name}}",
-    "selectYear": "Seleziona anno"
+    "selectYear": "Seleziona anno",
+    "noMatchItems": "Nessuna corrispondenza"
   },
   "nav": {
     "home": "Pagina iniziale",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Spesa giornaliera"
   },
   "stats": {
-    "byMonth": "Per mese",
-    "byYear": "Per anno",
+    "byMonth": "M",
+    "byYear": "A",
     "fullscreen": "Schermo intero",
     "loadMore": "Caricamento…",
     "scrollHint": "Scorri il grafico per più dati",

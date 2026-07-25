@@ -39,7 +39,8 @@
     "deleteFailed": "Failed to delete",
     "removeItem": "Remove {{name}}",
     "removeContact": "Remove contact {{name}}",
-    "selectYear": "Pick year"
+    "selectYear": "Pick year",
+    "noMatchItems": "No matches"
   },
   "nav": {
     "home": "Home",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Daily expense"
   },
   "stats": {
-    "byMonth": "By month",
-    "byYear": "By year",
+    "byMonth": "Mo",
+    "byYear": "Yr",
     "fullscreen": "Fullscreen",
     "loadMore": "Loading more…",
     "scrollHint": "Swipe chart for more data",

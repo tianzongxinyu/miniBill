@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { EditIcon } from '@/components/ui/EditIcon';
+import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
 import { Notebook } from '@/components/ui/Notebook';
 import { TrashIcon } from '@/components/ui/TrashIcon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -52,6 +53,12 @@ function TagsContent() {
     deleteItem: deleteTag,
     createErrorFallback: t('tags.addFailed'),
   });
+
+  const filteredItems = useMemo(() => {
+    const q = name.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((tag) => tag.id === editingId || tag.name.toLowerCase().includes(q));
+  }, [items, name, editingId]);
 
   const toggle = async (tag: Tag) => {
     try {
@@ -122,100 +129,104 @@ function TagsContent() {
         <input className="field flex-1" placeholder={t('tags.newPlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
         <button className="btn-primary shrink-0">{t('tags.add')}</button>
       </form>
-      <Notebook>
-        {items.map((tag) => {
-          const editing = editingId === tag.id;
-          return (
-            <div key={tag.id} className="notebook-row">
-              <div className="flex justify-between items-start gap-3">
-                {editing ? (
-                  <input
-                    className="field flex-1 min-w-0"
-                    value={editName}
-                    autoFocus
-                    disabled={renaming}
-                    onChange={(e) => setEditName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
+      {filteredItems.length === 0 ? (
+        name.trim() ? <EmptyNotebook message={t('common.noMatchItems')} /> : <Notebook />
+      ) : (
+        <Notebook>
+          {filteredItems.map((tag) => {
+            const editing = editingId === tag.id;
+            return (
+              <div key={tag.id} className="notebook-row">
+                <div className="flex justify-between items-start gap-3">
+                  {editing ? (
+                    <input
+                      className="field flex-1 min-w-0"
+                      value={editName}
+                      autoFocus
+                      disabled={renaming}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          void saveEdit(tag);
+                        } else if (e.key === 'Escape') {
+                          e.preventDefault();
+                          cancelEdit();
+                        }
+                      }}
+                      onBlur={() => {
+                        if (skipBlurSave.current) {
+                          skipBlurSave.current = false;
+                          return;
+                        }
                         void saveEdit(tag);
-                      } else if (e.key === 'Escape') {
-                        e.preventDefault();
-                        cancelEdit();
-                      }
-                    }}
-                    onBlur={() => {
-                      if (skipBlurSave.current) {
-                        skipBlurSave.current = false;
-                        return;
-                      }
-                      void saveEdit(tag);
-                    }}
-                    aria-label={t('tags.editName', { name: tag.name })}
-                  />
-                ) : (
-                  <Link
-                    href={buildTagDetailHref({ tagId: tag.id, returnTo: '/profile/tags/' })}
-                    className="flex items-center gap-1.5 min-w-0 flex-1"
-                  >
-                    <span className={!tag.enabled ? 'opacity-45' : undefined}>
-                      <TagChip name={tag.name} colorBg={tag.color_bg} />
-                    </span>
-                    {tag.is_system && <span className="text-muted text-xs shrink-0">*</span>}
-                  </Link>
-                )}
-                <div className="flex items-center gap-3 shrink-0">
-                  {!tag.is_system && !editing && (
-                    <button
-                      type="button"
-                      onClick={() => startEdit(tag)}
-                      className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                      }}
                       aria-label={t('tags.editName', { name: tag.name })}
+                    />
+                  ) : (
+                    <Link
+                      href={buildTagDetailHref({ tagId: tag.id, returnTo: '/profile/tags/' })}
+                      className="flex items-center gap-1.5 min-w-0 flex-1"
                     >
-                      <EditIcon />
-                    </button>
+                      <span className={!tag.enabled ? 'opacity-45' : undefined}>
+                        <TagChip name={tag.name} colorBg={tag.color_bg} />
+                      </span>
+                      {tag.is_system && <span className="text-muted text-xs shrink-0">*</span>}
+                    </Link>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setColorEditId((id) => (id === tag.id ? null : tag.id))}
-                    className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
-                    aria-label={t('tags.changeColor', { name: tag.name })}
-                    aria-expanded={colorEditId === tag.id}
-                  >
-                    <PaletteIcon />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggle(tag)}
-                    className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
-                    aria-label={tag.enabled ? t('tags.hideTag', { name: tag.name }) : t('tags.showTag', { name: tag.name })}
-                  >
-                    {tag.enabled ? <EyeIcon /> : <EyeOffIcon />}
-                  </button>
-                  {!tag.is_system && !usedIds.has(tag.id) && (
+                  <div className="flex items-center gap-3 shrink-0">
+                    {!tag.is_system && !editing && (
+                      <button
+                        type="button"
+                        onClick={() => startEdit(tag)}
+                        className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                        aria-label={t('tags.editName', { name: tag.name })}
+                      >
+                        <EditIcon />
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setDeleteTarget(tag)}
-                      className="btn-ghost p-1.5 text-expense shrink-0"
-                      aria-label={t('tags.deleteTag', { name: tag.name })}
+                      onClick={() => setColorEditId((id) => (id === tag.id ? null : tag.id))}
+                      className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                      aria-label={t('tags.changeColor', { name: tag.name })}
+                      aria-expanded={colorEditId === tag.id}
                     >
-                      <TrashIcon />
+                      <PaletteIcon />
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      onClick={() => toggle(tag)}
+                      className="btn-ghost p-1.5 text-muted hover:text-ink shrink-0"
+                      aria-label={tag.enabled ? t('tags.hideTag', { name: tag.name }) : t('tags.showTag', { name: tag.name })}
+                    >
+                      {tag.enabled ? <EyeIcon /> : <EyeOffIcon />}
+                    </button>
+                    {!tag.is_system && !usedIds.has(tag.id) && (
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(tag)}
+                        className="btn-ghost p-1.5 text-expense shrink-0"
+                        aria-label={t('tags.deleteTag', { name: tag.name })}
+                      >
+                        <TrashIcon />
+                      </button>
+                    )}
+                  </div>
                 </div>
+                {colorEditId === tag.id && (
+                  <TagColorPicker
+                    name={tag.name}
+                    colorBg={tag.color_bg}
+                    onSave={(bg) => saveColor(tag.id, bg)}
+                    onClose={() => setColorEditId(null)}
+                  />
+                )}
               </div>
-              {colorEditId === tag.id && (
-                <TagColorPicker
-                  name={tag.name}
-                  colorBg={tag.color_bg}
-                  onSave={(bg) => saveColor(tag.id, bg)}
-                  onClose={() => setColorEditId(null)}
-                />
-              )}
-            </div>
-          );
-        })}
-      </Notebook>
+            );
+          })}
+        </Notebook>
+      )}
       <ConfirmDialog
         open={deleteTarget != null}
         title={t('tags.deleteTitle')}

@@ -112,6 +112,8 @@ export type TransactionsPage = {
   items: Transaction[];
   next_cursor?: string | null;
   has_more: boolean;
+  total_expense?: number;
+  total_income?: number;
 };
 
 export type YearMonth = { year: number; month: number };

@@ -57,9 +57,11 @@ type CreateTransactionInput struct {
 }
 
 type TransactionsPage struct {
-	Items      []Transaction `json:"items"`
-	NextCursor *string       `json:"next_cursor"`
-	HasMore    bool          `json:"has_more"`
+	Items        []Transaction `json:"items"`
+	NextCursor   *string       `json:"next_cursor"`
+	HasMore      bool          `json:"has_more"`
+	TotalExpense int64         `json:"total_expense"`
+	TotalIncome  int64         `json:"total_income"`
 }
 
 func parseTxCursor(cursor string) (date string, id int64, err error) {
@@ -134,6 +136,23 @@ func (s *TransactionService) buildListWhere(f ListFilter) (whereSQL string, args
 	return strings.Join(where, " AND "), args, nil
 }
 
+func (s *TransactionService) sumListTotals(db *sql.DB, f ListFilter) (expense, income int64, err error) {
+	f2 := f
+	f2.Cursor = ""
+	f2.Type = ""
+	whereSQL, args, err := s.buildListWhere(f2)
+	if err != nil {
+		return 0, 0, err
+	}
+	q := fmt.Sprintf(`
+		SELECT
+			COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0)
+		FROM transactions t WHERE %s`, whereSQL)
+	err = db.QueryRow(q, args...).Scan(&expense, &income)
+	return expense, income, err
+}
+
 func (s *TransactionService) listByCursorPage(db *sql.DB, f ListFilter, limit int) (*TransactionsPage, error) {
 	if limit <= 0 {
 		limit = 10
@@ -176,6 +195,12 @@ func (s *TransactionService) listByCursorPage(db *sql.DB, f ListFilter, limit in
 		c := formatTxCursor(last.TransactionDate, last.ID)
 		page.NextCursor = &c
 	}
+	expense, income, err := s.sumListTotals(db, f)
+	if err != nil {
+		return nil, err
+	}
+	page.TotalExpense = expense
+	page.TotalIncome = income
 	return page, nil
 }
 

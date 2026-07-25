@@ -39,7 +39,8 @@
     "deleteFailed": "Silme başarısız",
     "removeItem": "{{name}} kaldır",
     "removeContact": "Kişi {{name}} kaldır",
-    "selectYear": "Yıl seç"
+    "selectYear": "Yıl seç",
+    "noMatchItems": "Eşleşme yok"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Günlük gider"
   },
   "stats": {
-    "byMonth": "Aya göre",
-    "byYear": "Yıla göre",
+    "byMonth": "Ay",
+    "byYear": "Yıl",
     "fullscreen": "Tam ekran",
     "loadMore": "Daha fazla yükleniyor…",
     "scrollHint": "Daha fazla veri için kaydır",

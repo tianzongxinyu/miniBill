@@ -39,7 +39,8 @@
     "deleteFailed": "Usuwanie nie powiodło się",
     "removeItem": "Usuń {{name}}",
     "removeContact": "Usuń kontakt {{name}}",
-    "selectYear": "Wybierz rok"
+    "selectYear": "Wybierz rok",
+    "noMatchItems": "Brak dopasowań"
   },
   "nav": {
     "home": "Strona główna",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Codzienny wydatek"
   },
   "stats": {
-    "byMonth": "Według miesiąca",
-    "byYear": "Według roku",
+    "byMonth": "M",
+    "byYear": "R",
     "fullscreen": "Pełny ekran",
     "loadMore": "Ładowanie więcej…",
     "scrollHint": "Przesuń wykres po więcej danych",

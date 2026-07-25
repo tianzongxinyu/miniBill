@@ -9,6 +9,7 @@ import { EmptyNotebook } from '@/components/ui/EmptyNotebook';
 import { ListSkeleton, LoadingFallback } from '@/components/ui/LoadingFallback';
 import { TransactionRow } from '@/components/transactions/TransactionRow';
 import { TransactionsFooter } from '@/components/transactions/TransactionsFooter';
+import { DetailTypeSummaryFilters } from '@/components/contacts/ContactDetailSummaryFilters';
 import { TransactionsMonthSummary } from '@/components/transactions/TransactionsMonthSummary';
 import { TransactionsToolbar } from '@/components/transactions/TransactionsToolbar';
 import { useDebouncedSearchFilter } from '@/hooks/useDebouncedSearchFilter';
@@ -115,9 +116,34 @@ function TransactionsContent() {
       const next: TransactionTypeFilter = typeFilter === type ? null : type;
       setTypeFilter(next);
       scrollToTop(false);
+      if (searchActive) {
+        router.replace(
+          buildTransactionsHref({
+            year,
+            month,
+            note: debouncedNote,
+            tagIds: selectedTagIds,
+            contactId,
+            tagMatch: apiTagMatch,
+            ...(next ? { type: next } : {}),
+          })
+        );
+        return;
+      }
       syncTransactionsUrl({ year, month }, next);
     },
-    [typeFilter, year, month, syncTransactionsUrl]
+    [
+      typeFilter,
+      year,
+      month,
+      searchActive,
+      debouncedNote,
+      selectedTagIds,
+      contactId,
+      apiTagMatch,
+      router,
+      syncTransactionsUrl,
+    ]
   );
 
   const handleMonthChange = useCallback((ym: YearMonth) => {
@@ -151,7 +177,7 @@ function TransactionsContent() {
         tagIds: searchActive ? selectedTagIds : undefined,
         contactId: searchActive ? contactId : undefined,
         tagMatch: searchActive ? apiTagMatch : undefined,
-        ...(typeFilter && !searchActive ? { type: typeFilter } : {}),
+        ...(typeFilter ? { type: typeFilter } : {}),
       }),
     [year, month, searchActive, debouncedNote, selectedTagIds, contactId, apiTagMatch, typeFilter]
   );
@@ -196,6 +222,19 @@ function TransactionsContent() {
           year={year}
           month={month}
           editable
+          typeFilter={typeFilter}
+          onTypeFilterChange={handleTypeFilterChange}
+        />
+      )}
+
+      {searchActive && (
+        <DetailTypeSummaryFilters
+          expenseCents={list.searchTotals.expense}
+          incomeCents={list.searchTotals.income}
+          expenseLabel={t('stats.totalExpense')}
+          incomeLabel={t('stats.totalIncome')}
+          expenseAria={t('transactions.filterExpenseAria')}
+          incomeAria={t('transactions.filterIncomeAria')}
           typeFilter={typeFilter}
           onTypeFilterChange={handleTypeFilterChange}
         />

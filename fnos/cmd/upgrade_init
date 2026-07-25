@@ -13,6 +13,6 @@ fi
 rm -rf "${dest}/app"
 mkdir -p "${dest}/app"
 tar -xzf "$tgz" -C "${dest}/app"
-chmod +x "${dest}/app/bin/minibill" 2>/dev/null || true
+chmod +x "${dest}/app/bin/minibill" "${dest}/app/bin/reset-password" 2>/dev/null || true
 
 exit 0

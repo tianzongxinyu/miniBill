@@ -53,13 +53,14 @@ export function TransactionsToolbar({
       matchToggleVisible={matchToggleVisible}
       onClear={onClear}
     >
-      <MonthPickerField
-        value={month}
-        onChange={onMonthChange}
-        min={earliest}
-        max={maxMonth}
-        disabled={searchActive}
-      />
+      {!searchActive && (
+        <MonthPickerField
+          value={month}
+          onChange={onMonthChange}
+          min={earliest}
+          max={maxMonth}
+        />
+      )}
     </SearchFilterToolbar>
   );
 }

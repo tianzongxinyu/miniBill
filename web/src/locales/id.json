@@ -39,7 +39,8 @@
     "deleteFailed": "Gagal menghapus",
     "removeItem": "Hapus {{name}}",
     "removeContact": "Hapus kontak {{name}}",
-    "selectYear": "Pilih tahun"
+    "selectYear": "Pilih tahun",
+    "noMatchItems": "Tidak ada yang cocok"
   },
   "nav": {
     "home": "Beranda",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Pengeluaran harian"
   },
   "stats": {
-    "byMonth": "Per bulan",
-    "byYear": "Per tahun",
+    "byMonth": "Bln",
+    "byYear": "Thn",
     "fullscreen": "Layar penuh",
     "loadMore": "Memuat lebih banyak…",
     "scrollHint": "Geser grafik untuk data lain",

@@ -39,7 +39,8 @@
     "deleteFailed": "Не вдалося видалити",
     "removeItem": "Видалити {{name}}",
     "removeContact": "Видалити контакт {{name}}",
-    "selectYear": "Обрати рік"
+    "selectYear": "Обрати рік",
+    "noMatchItems": "Немає збігів"
   },
   "nav": {
     "home": "Головна",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Щоденні витрати"
   },
   "stats": {
-    "byMonth": "За місяцем",
-    "byYear": "За роком",
+    "byMonth": "М",
+    "byYear": "Р",
     "fullscreen": "На весь екран",
     "loadMore": "Завантаження ще…",
     "scrollHint": "Свайп для даних",

@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/minibill/minibill/internal/auth"
 	"github.com/minibill/minibill/internal/config"
@@ -80,7 +81,7 @@ func ResetUserPassword(sys *System, username, password string) (*systemdb.User, 
 		return nil, err
 	}
 	if user == nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, fmt.Errorf("%s", userNotFoundMessage(sys, username))
 	}
 	hash, err := auth.HashPassword(password)
 	if err != nil {
@@ -94,7 +95,23 @@ func ResetUserPassword(sys *System, username, password string) (*systemdb.User, 
 		return nil, err
 	}
 	if user == nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, fmt.Errorf("%s", userNotFoundMessage(sys, username))
 	}
 	return user, nil
+}
+
+func userNotFoundMessage(sys *System, username string) string {
+	names := make([]string, 0)
+	if list, err := sys.Store.ListUsers(); err == nil {
+		for _, u := range list {
+			if u != nil && u.Username != "" {
+				names = append(names, u.Username)
+			}
+		}
+	}
+	existing := "(无)"
+	if len(names) > 0 {
+		existing = strings.Join(names, ", ")
+	}
+	return fmt.Sprintf("用户不存在 username=%q data_dir=%s existing=[%s]", username, sys.Cfg.DataDir, existing)
 }

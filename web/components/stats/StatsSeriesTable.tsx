@@ -46,7 +46,7 @@ export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: Sta
 
   return (
     <Notebook className="overflow-x-auto mb-3">
-      <table className="table-auto w-max min-w-full text-sm">
+      <table className="table-auto w-max min-w-full text-xs">
         <thead>
           <tr className="border-b border-line text-muted">
             <th className="px-3 py-3 text-left font-medium whitespace-nowrap">{t('stats.date')}</th>
@@ -74,23 +74,23 @@ export function StatsSeriesTable({ mode, rows, searchActive, hiddenSeries }: Sta
               <td className="px-3 py-3 text-ink whitespace-nowrap">{row.shortLabel}</td>
               {showIncome && (
                 <td className="px-3 py-3 text-right whitespace-nowrap">
-                  <Amount cents={row.incomeCents} type="income" className="text-sm" />
+                  <Amount cents={row.incomeCents} type="income" className="text-xs" />
                 </td>
               )}
               {showExpense && (
                 <td className="px-3 py-3 text-right whitespace-nowrap">
-                  <Amount cents={row.expenseCents} type="expense" className="text-sm" />
+                  <Amount cents={row.expenseCents} type="expense" className="text-xs" />
                 </td>
               )}
               {showNet && (
                 <td className="px-3 py-3 text-right whitespace-nowrap">
-                  <SignedAmount cents={row.netCents} className="text-sm" />
+                  <SignedAmount cents={row.netCents} className="text-xs" />
                 </td>
               )}
               {showBalance && (
                 <td className="px-3 py-3 text-right whitespace-nowrap">
                   {row.balanceCents != null ? (
-                    <BalanceAmount cents={row.balanceCents} className="text-sm" />
+                    <BalanceAmount cents={row.balanceCents} className="text-xs" />
                   ) : (
                     emDash
                   )}

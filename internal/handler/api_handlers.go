@@ -404,9 +404,11 @@ func (s *Server) listTransactions(c *gin.Context) {
 		}
 		_ = localizeTxList(db, page.Items, localeFrom(c))
 		c.JSON(http.StatusOK, gin.H{
-			"items":       orEmptySlice(page.Items),
-			"next_cursor": page.NextCursor,
-			"has_more":    page.HasMore,
+			"items":         orEmptySlice(page.Items),
+			"next_cursor":   page.NextCursor,
+			"has_more":      page.HasMore,
+			"total_expense": page.TotalExpense,
+			"total_income":  page.TotalIncome,
 		})
 	})
 }

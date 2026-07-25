@@ -27,11 +27,9 @@ function brokenPct(sum: number, breakAt: number, maxSum: number): number {
   );
 }
 
-function tagAxisScale(tags: AnnualReport['by_tag']) {
-  const sums = tags
-    .map((x) => x.total_expense + x.total_income)
-    .filter((s) => s > 0)
-    .sort((a, b) => b - a);
+/** Scale bar widths from totals; break axis when max ≥ ratio × second-max. */
+function axisScaleFromSums(rawSums: number[]) {
+  const sums = rawSums.filter((s) => s > 0).sort((a, b) => b - a);
   const maxSum = sums[0] ?? 1;
   const secondMax = sums[1] ?? 0;
   const broken = secondMax > 0 && maxSum >= AXIS_BREAK_RATIO * secondMax;
@@ -40,6 +38,10 @@ function tagAxisScale(tags: AnnualReport['by_tag']) {
     breakAt: broken ? secondMax : 0,
     broken,
   };
+}
+
+function tagAxisScale(tags: AnnualReport['by_tag']) {
+  return axisScaleFromSums(tags.map((x) => x.total_expense + x.total_income));
 }
 
 function Section({
@@ -303,42 +305,99 @@ function TopTxMeta({ tx, returnTo }: { tx: AnnualReportTopTx; returnTo: string }
 
 function TopContactsList({ report }: { report: AnnualReport }) {
   const { t } = useTranslation();
+  const { scheme } = useSettings();
+  const expenseColor = chartStrokeForType('expense', scheme);
+  const incomeColor = chartStrokeForType('income', scheme);
+  const contacts = report.top_contacts;
+  const { maxSum, breakAt, broken } = axisScaleFromSums(
+    contacts.map((c) => c.total_expense + c.total_income)
+  );
 
-  if (report.top_contacts.length === 0) {
+  if (contacts.length === 0) {
     return <p className="text-sm text-muted px-4 py-3">{t('annualReport.noContacts')}</p>;
   }
 
   return (
     <ol>
-      {report.top_contacts.map((c, i) => (
-        <li key={c.contact_id} className="annual-report-row">
-          <span className="annual-report-rank">{i + 1}</span>
-          <div className="annual-report-row-main">
-            <div className="annual-report-row-title">{c.contact_name}</div>
-            <div className="annual-report-row-meta">
-              {t('annualReport.txCount', { count: c.tx_count })}
-            </div>
-          </div>
-          <div className="annual-report-row-amount">
-            <SignedAmount cents={c.net_income} className="annual-report-row-amount-primary" />
-            {(c.total_income > 0 || c.total_expense > 0) && (
-              <div className="annual-report-row-amount-secondary flex items-center justify-end gap-1">
-                {c.total_expense > 0 && (
-                  <Amount cents={c.total_expense} type="expense" className="text-[11px]" />
-                )}
-                {c.total_expense > 0 && c.total_income > 0 && (
-                  <span className="text-muted/70" aria-hidden>
-                    /
+      {contacts.map((c, i) => {
+        const sum = c.total_expense + c.total_income;
+        const sumPct = Math.round(
+          broken ? brokenPct(sum, breakAt, maxSum) : (sum / maxSum) * 100
+        );
+        const expenseShare = sum > 0 ? Math.round((c.total_expense / sum) * 100) : 0;
+        const incomeShare = sum > 0 ? 100 - expenseShare : 0;
+        const showBreakMark = broken && sum > breakAt;
+
+        return (
+          <li key={c.contact_id} className="annual-report-row">
+            <span className="annual-report-rank">{i + 1}</span>
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex items-center gap-3">
+                <span className="annual-report-row-title min-w-0 flex-1">
+                  {c.contact_name}
+                  <span className="annual-report-tag-count">
+                    {t('annualReport.txCount', { count: c.tx_count })}
                   </span>
-                )}
-                {c.total_income > 0 && (
-                  <Amount cents={c.total_income} type="income" className="text-[11px]" />
-                )}
+                </span>
+                <div className="annual-report-row-amount">
+                  <SignedAmount cents={c.net_income} className="annual-report-row-amount-primary" />
+                </div>
               </div>
-            )}
-          </div>
-        </li>
-      ))}
+              {sum > 0 && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className={[
+                      'annual-report-tag-bar-track !col-span-1 min-w-0 flex-1',
+                      showBreakMark && 'annual-report-tag-bar-track-broken',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    <div
+                      className="annual-report-tag-bar-stack"
+                      style={{ width: `${sumPct}%` }}
+                    >
+                      {c.total_expense > 0 && (
+                        <div
+                          className="annual-report-tag-bar-fill"
+                          style={{
+                            width: `${expenseShare}%`,
+                            backgroundColor: expenseColor,
+                          }}
+                        />
+                      )}
+                      {c.total_income > 0 && (
+                        <div
+                          className="annual-report-tag-bar-fill-income"
+                          style={{
+                            width: `${incomeShare}%`,
+                            backgroundColor: incomeColor,
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  {(c.total_expense > 0 || c.total_income > 0) && (
+                    <div className="shrink-0 flex items-center gap-1 tabular-nums text-[11px]">
+                      {c.total_expense > 0 && (
+                        <Amount cents={c.total_expense} type="expense" className="text-[11px]" />
+                      )}
+                      {c.total_expense > 0 && c.total_income > 0 && (
+                        <span className="text-muted/70" aria-hidden>
+                          /
+                        </span>
+                      )}
+                      {c.total_income > 0 && (
+                        <Amount cents={c.total_income} type="income" className="text-[11px]" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

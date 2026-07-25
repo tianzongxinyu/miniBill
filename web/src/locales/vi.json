@@ -39,7 +39,8 @@
     "deleteFailed": "Xóa thất bại",
     "removeItem": "Xóa {{name}}",
     "removeContact": "Xóa liên hệ {{name}}",
-    "selectYear": "Chọn năm"
+    "selectYear": "Chọn năm",
+    "noMatchItems": "Không có kết quả"
   },
   "nav": {
     "home": "Trang chủ",
@@ -127,8 +128,8 @@
     "dailyExpenseTag": "Chi tiêu hàng ngày"
   },
   "stats": {
-    "byMonth": "Theo tháng",
-    "byYear": "Theo năm",
+    "byMonth": "Th",
+    "byYear": "Năm",
     "fullscreen": "Toàn màn hình",
     "loadMore": "Đang tải thêm…",
     "scrollHint": "Vuốt biểu đồ để xem thêm",
