@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
-export function Notebook({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function Notebook({
+  children,
+  className = '',
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return <div className={`notebook ${className}`}>{children}</div>;
 }
 
