@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 export function LoadingFallback() {
   const { t } = useTranslation();
-  return <p className="text-muted text-sm">{t('common.loading')}</p>;
+  return (
+    <div role="status" aria-busy="true" aria-label={t('common.loading')}>
+      <ListSkeleton rows={4} />
+    </div>
+  );
 }
 
 export function ListSkeleton({ rows = 5 }: { rows?: number }) {

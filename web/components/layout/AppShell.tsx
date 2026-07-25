@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/components/AuthProvider';
 import { PageTransition } from '@/components/layout/PageTransition';
@@ -32,6 +32,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(readSidebarCollapsed);
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const [tabPill, setTabPill] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    ready: false,
+  });
 
   const tabs = useMemo(
     () => [
@@ -61,6 +69,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       collapsed ? '4.5rem' : '16rem'
     );
   }, [collapsed]);
+
+  useLayoutEffect(() => {
+    const nav = mobileNavRef.current;
+    if (!nav) return;
+
+    const update = () => {
+      const el = nav.querySelector<HTMLElement>('[data-tab-active="true"]');
+      if (!el) {
+        setTabPill((s) => ({ ...s, ready: false }));
+        return;
+      }
+      setTabPill({
+        left: el.offsetLeft,
+        top: el.offsetTop,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        ready: true,
+      });
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(nav);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [pathname, tabs]);
 
   return (
     <div className="min-h-[100dvh] lg:min-h-screen flex flex-col lg:flex-row">
@@ -145,7 +182,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </main>
 
-      <nav className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50">
+      <nav
+        ref={mobileNavRef}
+        className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50"
+      >
+        {tabPill.ready && (
+          <span
+            className="mobile-tab-pill"
+            style={{
+              left: tabPill.left,
+              top: tabPill.top,
+              width: tabPill.width,
+              height: tabPill.height,
+            }}
+            aria-hidden
+          />
+        )}
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           const Icon = tab.icon;
@@ -153,10 +205,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 text-[10px] px-4 sm:px-5 py-1 rounded-2xl transition-all duration-200 ${
-                active
-                  ? 'text-accent font-medium bg-accent-soft'
-                  : 'text-muted hover:text-accent/70'
+              data-tab-active={active ? 'true' : undefined}
+              className={`relative z-[1] flex flex-col items-center gap-0.5 text-[10px] px-4 sm:px-5 py-1 rounded-2xl transition-colors duration-200 ${
+                active ? 'text-accent font-medium' : 'text-muted hover:text-accent/70'
               }`}
             >
               <Icon active={active} />

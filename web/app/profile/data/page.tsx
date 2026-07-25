@@ -26,6 +26,7 @@ import {
 } from '@/lib/csvImportPreview';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import { formatApiError } from '@/lib/errors';
+import { usePortalPresence } from '@/hooks/usePortalPresence';
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -57,30 +58,33 @@ function BackupPickerDialog({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const [mounted, setMounted] = useState(false);
+  const { hydrated, present, leaving, onLeaveEnd } = usePortalPresence(open);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
+    if (!present) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !leaving) onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose]);
+  }, [present, leaving, onClose]);
 
-  if (!mounted || !open) return null;
+  if (!hydrated || !present) return null;
 
   return createPortal(
-    <div className="confirm-overlay" role="presentation" onClick={onClose}>
+    <div
+      className={`confirm-overlay${leaving ? ' confirm-leave' : ''}`}
+      role="presentation"
+      onAnimationEnd={onLeaveEnd}
+      onClick={() => {
+        if (!leaving) onClose();
+      }}
+    >
       <div
         className="confirm-panel max-w-md w-full"
         role="dialog"
@@ -127,13 +131,18 @@ function BackupPickerDialog({
           )}
         </div>
         <div className="confirm-actions mt-4">
-          <button type="button" className="confirm-cancel" onClick={onClose}>
+          <button
+            type="button"
+            className="confirm-cancel"
+            onClick={onClose}
+            disabled={leaving}
+          >
             {t('common.cancel')}
           </button>
           <button
             type="button"
             className="confirm-cancel"
-            disabled={loading}
+            disabled={loading || leaving}
             onClick={onRefresh}
           >
             {t('common.refresh')}

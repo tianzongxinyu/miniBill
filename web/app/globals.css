@@ -116,9 +116,16 @@ body {
     animation: fade-in 0.45s var(--ease-out-expo) both;
   }
 
-  .page-slide-right,
+  .page-slide-right {
+    animation: page-slide-from-right 0.32s var(--ease-out-expo) both;
+  }
+
   .page-slide-left {
-    animation: fade-in 0.38s var(--ease-out-expo) both;
+    animation: page-slide-from-left 0.32s var(--ease-out-expo) both;
+  }
+
+  .month-swap-enter {
+    animation: fade-in 0.28s var(--ease-out-expo) both;
   }
 
   .notebook {
@@ -967,6 +974,15 @@ body {
     animation: scale-in 0.25s var(--ease-out-expo) both;
   }
 
+  .confirm-overlay.confirm-leave {
+    animation: fade-out 0.18s ease-out both;
+    pointer-events: none;
+  }
+
+  .confirm-overlay.confirm-leave .confirm-panel {
+    animation: scale-out 0.18s var(--ease-out-expo) both;
+  }
+
   .confirm-title {
     @apply text-base font-semibold text-ink tracking-tight;
   }
@@ -1075,14 +1091,25 @@ body {
     @apply mt-2 p-4 w-full;
     @apply bg-surface border border-line/80 rounded-2xl;
     @apply shadow-panel;
-    animation: fade-in-up 0.22s var(--ease-out-expo) both;
+    animation: picker-scale-in 0.2s var(--ease-out-expo) both;
+    transform-origin: top center;
   }
 
   .picker-floating-panel {
     @apply fixed z-[90] mt-0 overflow-hidden;
     @apply border border-line/80 bg-surface shadow-panel rounded-2xl;
-    @apply animate-fade-in;
+    animation: picker-scale-in 0.2s var(--ease-out-expo) both;
+    transform-origin: top center;
     max-width: calc(100vw - 2rem);
+  }
+
+  .mobile-tab-pill {
+    @apply pointer-events-none absolute rounded-2xl bg-accent-soft;
+    transition:
+      left 0.3s var(--ease-out-expo),
+      top 0.3s var(--ease-out-expo),
+      width 0.3s var(--ease-out-expo),
+      height 0.3s var(--ease-out-expo);
   }
 
   @media (min-width: 1024px) {
@@ -1451,6 +1478,7 @@ body {
   .page-enter,
   .page-slide-left,
   .page-slide-right,
+  .month-swap-enter,
   .notebook,
   .notebook-row,
   .btn-primary,
@@ -1463,6 +1491,9 @@ body {
   .picker-floating-panel,
   .confirm-overlay,
   .confirm-panel,
+  .confirm-overlay.confirm-leave,
+  .confirm-overlay.confirm-leave .confirm-panel,
+  .mobile-tab-pill,
   .nav-item-active::before {
     animation: none !important;
     transition: none !important;
@@ -1475,6 +1506,59 @@ body {
 
   .notebook-row:hover {
     transform: none;
+  }
+}
+
+@keyframes page-slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes page-slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes picker-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 

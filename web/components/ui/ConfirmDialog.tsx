@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePortalPresence } from '@/hooks/usePortalPresence';
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -26,36 +27,33 @@ export function ConfirmDialog({
   onClose,
 }: ConfirmDialogProps) {
   const { t } = useTranslation();
-  const [mounted, setMounted] = useState(false);
+  const { hydrated, present, leaving, onLeaveEnd } = usePortalPresence(open);
   const resolvedConfirm = confirmLabel ?? t('common.confirm');
   const resolvedCancel = cancelLabel ?? t('common.cancel');
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
+    if (!present) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !confirming) onClose();
+      if (e.key === 'Escape' && !confirming && !leaving) onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, confirming, onClose]);
+  }, [present, confirming, leaving, onClose]);
 
-  if (!mounted || !open) return null;
+  if (!hydrated || !present) return null;
 
   return createPortal(
     <div
-      className="confirm-overlay"
+      className={`confirm-overlay${leaving ? ' confirm-leave' : ''}`}
       role="presentation"
+      onAnimationEnd={onLeaveEnd}
       onClick={() => {
-        if (!confirming) onClose();
+        if (!confirming && !leaving) onClose();
       }}
     >
       <div
@@ -73,10 +71,20 @@ export function ConfirmDialog({
           {message}
         </p>
         <div className="confirm-actions">
-          <button type="button" className="confirm-cancel" onClick={onClose} disabled={confirming}>
+          <button
+            type="button"
+            className="confirm-cancel"
+            onClick={onClose}
+            disabled={confirming || leaving}
+          >
             {resolvedCancel}
           </button>
-          <button type="button" className="confirm-confirm" onClick={onConfirm} disabled={confirming}>
+          <button
+            type="button"
+            className="confirm-confirm"
+            onClick={onConfirm}
+            disabled={confirming || leaving}
+          >
             {confirming ? t('common.processing') : resolvedConfirm}
           </button>
         </div>

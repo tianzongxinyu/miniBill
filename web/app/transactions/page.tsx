@@ -194,6 +194,24 @@ function TransactionsContent() {
     [year, month, transactionsHref]
   );
 
+  const listBody = list.loading ? (
+    <ListSkeleton />
+  ) : list.items.length === 0 ? (
+    <EmptyNotebook message={emptyMessage} />
+  ) : (
+    <Notebook>
+      {list.items.map((tx) => (
+        <TransactionRow
+          key={tx.id}
+          tx={tx}
+          animate={animateIds.has(tx.id)}
+          returnTo={transactionsHref}
+          onTagClick={handleTagClick}
+        />
+      ))}
+    </Notebook>
+  );
+
   return (
     <div className="pb-28 lg:pb-24">
       <TransactionsToolbar
@@ -214,50 +232,36 @@ function TransactionsContent() {
         maxMonth={maxMonth}
       />
 
-      {!searchActive && (
-        <TransactionsMonthSummary
-          loading={monthSummary.loading}
-          error={monthSummary.error}
-          summary={monthSummary.summary}
-          year={year}
-          month={month}
-          editable
-          typeFilter={typeFilter}
-          onTypeFilterChange={handleTypeFilterChange}
-        />
-      )}
-
-      {searchActive && (
-        <DetailTypeSummaryFilters
-          expenseCents={list.searchTotals.expense}
-          incomeCents={list.searchTotals.income}
-          expenseLabel={t('stats.totalExpense')}
-          incomeLabel={t('stats.totalIncome')}
-          expenseAria={t('transactions.filterExpenseAria')}
-          incomeAria={t('transactions.filterIncomeAria')}
-          typeFilter={typeFilter}
-          onTypeFilterChange={handleTypeFilterChange}
-        />
-      )}
-
       {list.error && <p className="text-expense text-sm mb-2">{list.error}</p>}
 
-      {list.loading ? (
-        <ListSkeleton />
-      ) : list.items.length === 0 ? (
-        <EmptyNotebook message={emptyMessage} />
+      {!searchActive ? (
+        <div key={`${year}-${month}`} className="month-swap-enter">
+          <TransactionsMonthSummary
+            loading={monthSummary.loading}
+            error={monthSummary.error}
+            summary={monthSummary.summary}
+            year={year}
+            month={month}
+            editable
+            typeFilter={typeFilter}
+            onTypeFilterChange={handleTypeFilterChange}
+          />
+          {listBody}
+        </div>
       ) : (
-        <Notebook>
-          {list.items.map((tx) => (
-            <TransactionRow
-              key={tx.id}
-              tx={tx}
-              animate={animateIds.has(tx.id)}
-              returnTo={transactionsHref}
-              onTagClick={handleTagClick}
-            />
-          ))}
-        </Notebook>
+        <>
+          <DetailTypeSummaryFilters
+            expenseCents={list.searchTotals.expense}
+            incomeCents={list.searchTotals.income}
+            expenseLabel={t('stats.totalExpense')}
+            incomeLabel={t('stats.totalIncome')}
+            expenseAria={t('transactions.filterExpenseAria')}
+            incomeAria={t('transactions.filterIncomeAria')}
+            typeFilter={typeFilter}
+            onTypeFilterChange={handleTypeFilterChange}
+          />
+          {listBody}
+        </>
       )}
 
       {searchActive && list.hasMore && (

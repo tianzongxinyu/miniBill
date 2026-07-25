@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { CsvColumnMapping, CsvImportField, CsvImportPreview } from '@/lib/csvImportPreview';
 import { mappingReady } from '@/lib/csvImportPreview';
 import { SimpleSelect } from '@/components/ui/SimpleSelect';
+import { usePortalPresence } from '@/hooks/usePortalPresence';
 
 const FIELDS: CsvImportField[] = ['date', 'flow', 'amount', 'tags', 'contact', 'note', 'balance'];
 
@@ -34,15 +35,23 @@ export function CsvImportMappingDialog({
   onClose,
 }: Props) {
   const { t } = useTranslation();
-  const [mounted, setMounted] = useState(false);
+  const { hydrated, present, leaving, onLeaveEnd } = usePortalPresence(open);
+  const [heldPreview, setHeldPreview] = useState<CsvImportPreview | null>(null);
+  const [heldFilename, setHeldFilename] = useState(filename);
   const [mapping, setMapping] = useState<CsvColumnMapping>({});
   const [keepHistory, setKeepHistory] = useState(true);
   const [deriveBalances, setDeriveBalances] = useState(false);
   const [openingBalance, setOpeningBalance] = useState('');
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!preview) return;
+    setHeldPreview(preview);
+  }, [preview]);
+
+  useEffect(() => {
+    if (!open || !filename) return;
+    setHeldFilename(filename);
+  }, [open, filename]);
 
   useEffect(() => {
     if (!open || !preview) return;
@@ -53,36 +62,38 @@ export function CsvImportMappingDialog({
   }, [open, preview]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!present) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !confirming) onClose();
+      if (e.key === 'Escape' && !confirming && !leaving) onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, confirming, onClose]);
+  }, [present, confirming, leaving, onClose]);
+
+  const activePreview = preview ?? heldPreview;
 
   const columnOptions = useMemo(() => {
-    if (!preview) return [];
+    if (!activePreview) return [];
     return [
       { value: '', label: t('data.csvFieldIgnore') },
-      ...preview.headers.map((h) => ({
+      ...activePreview.headers.map((h) => ({
         value: h,
         label: h || t('data.csvEmptyHeader'),
       })),
     ];
-  }, [preview, t]);
+  }, [activePreview, t]);
 
-  if (!mounted || !open || !preview) return null;
+  if (!hydrated || !present || !activePreview) return null;
 
   const hasRunningBalance = Boolean(mapping.balance);
   const openingOk =
     !deriveBalances || hasRunningBalance || openingBalance.trim() !== '';
-  const canSubmit = mappingReady(mapping) && openingOk && !confirming;
+  const canSubmit = mappingReady(mapping) && openingOk && !confirming && !leaving;
 
   const setField = (field: CsvImportField, value: string) => {
     setMapping((prev) => {
@@ -101,10 +112,11 @@ export function CsvImportMappingDialog({
 
   return createPortal(
     <div
-      className="confirm-overlay"
+      className={`confirm-overlay${leaving ? ' confirm-leave' : ''}`}
       role="presentation"
+      onAnimationEnd={onLeaveEnd}
       onClick={() => {
-        if (!confirming) onClose();
+        if (!confirming && !leaving) onClose();
       }}
     >
       <div
@@ -118,14 +130,14 @@ export function CsvImportMappingDialog({
           {t('data.csvMapTitle')}
         </h2>
         <p className="confirm-message text-sm">
-          {t('data.csvMapSubtitle', { filename })}
+          {t('data.csvMapSubtitle', { filename: heldFilename })}
         </p>
 
         <div className="csv-import-preview mt-4 overflow-x-auto rounded-2xl border border-line/80">
           <table className="w-full text-xs text-left">
             <thead>
               <tr className="bg-accent-soft/50">
-                {preview.headers.map((h, i) => (
+                {activePreview.headers.map((h, i) => (
                   <th
                     key={`${h}-${i}`}
                     className="px-3 py-2 font-medium text-ink whitespace-nowrap"
@@ -136,12 +148,12 @@ export function CsvImportMappingDialog({
               </tr>
             </thead>
             <tbody>
-              {preview.sampleRows.map((row, ri) => (
+              {activePreview.sampleRows.map((row, ri) => (
                 <tr
                   key={ri}
                   className={`border-t border-line/50 ${ri % 2 === 1 ? 'bg-black/[0.02]' : ''}`}
                 >
-                  {preview.headers.map((_, ci) => (
+                  {activePreview.headers.map((_, ci) => (
                     <td
                       key={ci}
                       className="px-3 py-1.5 text-muted whitespace-nowrap max-w-[9rem] truncate"
@@ -174,7 +186,7 @@ export function CsvImportMappingDialog({
                     className="flex-1"
                     value={mapping[field] ?? ''}
                     options={columnOptions}
-                    disabled={confirming}
+                    disabled={confirming || leaving}
                     ariaLabel={label}
                     onChange={(v) => setField(field, v)}
                   />
@@ -190,7 +202,7 @@ export function CsvImportMappingDialog({
               type="checkbox"
               className="mt-1 accent-[var(--color-accent)]"
               checked={keepHistory}
-              disabled={confirming}
+              disabled={confirming || leaving}
               onChange={(e) => setKeepHistory(e.target.checked)}
             />
             <span>
@@ -206,7 +218,7 @@ export function CsvImportMappingDialog({
               type="checkbox"
               className="mt-1 accent-[var(--color-accent)]"
               checked={deriveBalances}
-              disabled={confirming}
+              disabled={confirming || leaving}
               onChange={(e) => setDeriveBalances(e.target.checked)}
             />
             <span>
@@ -233,7 +245,7 @@ export function CsvImportMappingDialog({
               inputMode="decimal"
               className="field"
               value={openingBalance}
-              disabled={confirming}
+              disabled={confirming || leaving}
               placeholder="0"
               onChange={(e) => setOpeningBalance(e.target.value)}
             />
@@ -249,7 +261,12 @@ export function CsvImportMappingDialog({
         )}
 
         <div className="confirm-actions mt-5">
-          <button type="button" className="confirm-cancel" onClick={onClose} disabled={confirming}>
+          <button
+            type="button"
+            className="confirm-cancel"
+            onClick={onClose}
+            disabled={confirming || leaving}
+          >
             {t('common.cancel')}
           </button>
           <button
