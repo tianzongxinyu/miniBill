@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { locales, type TLocale } from '@/src/i18n';
 import {
@@ -33,6 +33,7 @@ export function LocaleSelect({
   disabled = false,
 }: LocaleSelectProps) {
   const { t, i18n } = useTranslation();
+  const labelId = useId();
   const uiLocale = i18n.language;
   const current = value ?? getActiveLocale();
   const [open, setOpen] = useState(false);
@@ -40,6 +41,7 @@ export function LocaleSelect({
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const compact = variant === 'compact';
 
   const close = useCallback(() => {
     setOpen(false);
@@ -66,44 +68,46 @@ export function LocaleSelect({
 
   const displayLabel = getLocaleDisplayName(current);
 
-  if (variant === 'compact') {
-    return (
-      <div className="locale-select-compact">
-        <label className="text-xs text-muted" htmlFor="locale-select-compact">
+  return (
+    <div
+      ref={rootRef}
+      className={compact ? 'locale-select-compact' : 'locale-select-full min-w-0'}
+    >
+      {compact && (
+        <label id={labelId} className="text-xs text-muted block mb-1">
           {t('settings.language')}
         </label>
-        <select
-          id="locale-select-compact"
-          className="field text-sm mt-1"
-          value={current}
-          disabled={disabled}
-          onChange={(e) => select(e.target.value as Locale)}
-        >
-          {(locales as readonly TLocale[]).map((loc) => (
-            <option key={loc} value={loc}>
-              {getLocaleDisplayName(loc)}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
-  return (
-    <div ref={rootRef} className="locale-select-full min-w-0">
+      )}
       <button
         ref={fieldRef}
         type="button"
-        className={['field w-full text-left flex items-center justify-between gap-2', open && 'ring-1 ring-accent/30']
+        className={[
+          'field w-full text-left flex items-center justify-between gap-2',
+          open && 'ring-2 ring-accent/25 border-accent/45',
+        ]
           .filter(Boolean)
           .join(' ')}
         disabled={disabled}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (disabled) return;
+          setOpen((v) => !v);
+        }}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-labelledby={compact ? labelId : undefined}
+        aria-label={compact ? undefined : t('settings.language')}
       >
         <span className="truncate">{displayLabel}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-muted" aria-hidden>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className={`shrink-0 text-muted/70 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          aria-hidden
+        >
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
@@ -114,6 +118,8 @@ export function LocaleSelect({
         panelRef={panelRef}
         onClose={close}
         role="listbox"
+        aria-label={t('settings.language')}
+        panelClassName="locale-select-floating"
         bodyClassName="locale-select-panel-body"
       >
         {searchable && (
@@ -126,26 +132,30 @@ export function LocaleSelect({
             autoComplete="off"
           />
         )}
-        <ul className="locale-select-list max-h-[min(50vh,280px)] overflow-y-auto">
-          {filteredLocales.map((loc) => (
-            <li key={loc}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={loc === current}
-                className={[
-                  'locale-select-option w-full text-left px-3 py-2 text-sm transition-colors',
-                  loc === current ? 'bg-accent-soft text-accent font-medium' : 'text-ink hover:bg-accent-soft/40',
-                ].join(' ')}
-                onClick={() => select(loc)}
-              >
-                {getLocaleDisplayName(loc)}
-              </button>
-            </li>
-          ))}
+        <ul className="locale-select-list max-h-[min(50vh,280px)] overflow-y-auto -mx-1">
+          {filteredLocales.map((loc) => {
+            const isSelected = loc === current;
+            return (
+              <li key={loc}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  className={[
+                    'locale-select-option w-full text-left px-3 py-2 text-sm rounded-xl transition-colors',
+                    isSelected
+                      ? 'bg-accent-soft text-accent font-medium'
+                      : 'text-ink hover:bg-accent-soft/40',
+                  ].join(' ')}
+                  onClick={() => select(loc)}
+                >
+                  {getLocaleDisplayName(loc)}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </FloatingPickerPortal>
     </div>
   );
 }
-

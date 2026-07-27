@@ -1035,6 +1035,22 @@ body {
     @apply top-1.5 right-1.5;
   }
 
+  .picker-floating-panel.locale-select-floating {
+    z-index: 110;
+  }
+
+  .picker-floating-panel-body.locale-select-panel-body {
+    @apply p-2 lg:p-2;
+  }
+
+  .locale-select-panel-body .combobox-floating-close {
+    @apply top-1.5 right-1.5;
+  }
+
+  .locale-select-option {
+    @apply rounded-xl;
+  }
+
   .form-details .date-picker-field {
     @apply border bg-accent-soft/30 px-3 py-2;
     border-color: var(--control-border);
@@ -1347,8 +1363,8 @@ body {
   }
 
   .transactions-toolbar .month-picker-field {
-    @apply min-h-[3.25rem] bg-accent-soft/30;
-    @apply px-2 gap-1 w-auto py-2.5 transition-all duration-200 ease-out;
+    @apply min-h-[2.75rem] bg-accent-soft/30;
+    @apply px-2 gap-1 w-auto py-1.5 transition-all duration-200 ease-out;
     @apply hover:border-accent/45 hover:bg-accent-soft/50;
   }
 
