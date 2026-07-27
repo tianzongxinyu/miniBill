@@ -1346,20 +1346,31 @@ body {
     @apply flex-1 min-w-0;
   }
 
-  .transactions-toolbar .combobox-panel,
-  .transactions-toolbar .month-picker-field,
-  .stats-toolbar .combobox-panel {
+  .transactions-toolbar .month-picker-field {
     @apply min-h-[3.25rem] bg-accent-soft/30;
+    @apply px-2 gap-1 w-auto py-2.5 transition-all duration-200 ease-out;
+    @apply hover:border-accent/45 hover:bg-accent-soft/50;
   }
 
   .transactions-toolbar .combobox-panel,
   .stats-toolbar .combobox-panel {
     @apply flex items-center w-full min-w-0 overflow-hidden;
+    @apply min-h-[2.75rem] py-1.5 bg-accent-soft/30;
   }
 
-  .transactions-toolbar .month-picker-field {
-    @apply px-2 gap-1 w-auto py-2.5 transition-all duration-200 ease-out;
-    @apply hover:border-accent/45 hover:bg-accent-soft/50;
+  .transactions-toolbar .combobox-chip-row,
+  .stats-toolbar .combobox-chip-row {
+    @apply gap-1 min-h-[1.75rem];
+  }
+
+  .transactions-toolbar .combobox-input-inline,
+  .stats-toolbar .combobox-input-inline {
+    @apply py-0.5;
+  }
+
+  .transactions-toolbar .combobox-chip.tag-chip,
+  .stats-toolbar .combobox-chip.tag-chip {
+    @apply px-2.5 py-0.5;
   }
 
   .transactions-toolbar .month-picker-field-value {
@@ -1377,7 +1388,7 @@ body {
 
   .tag-match-toggle {
     @apply shrink-0 flex items-stretch gap-0.5 p-0.5 rounded-xl bg-accent-soft/50 border;
-    @apply h-[3.25rem] min-h-[3.25rem];
+    @apply h-[2.75rem] min-h-[2.75rem];
     border-color: var(--control-border);
   }
 

@@ -120,30 +120,13 @@ resolve_port() {
 }
 
 patch_port_files() {
+    # Do not sed ui/config or manifest: they bind ${wizard_port} so fnOS can
+    # refresh the desktop launcher. Only sync firewall .sc + pkgvar/.port.
     local port="$1"
-    local app_dest ui_config pkgvar log_file patched=""
+    local app_dest pkgvar log_file patched=""
     app_dest="$(resolve_app_dest)"
     pkgvar="$(resolve_pkgvar)"
     log_file="${pkgvar}/minibill.log"
-
-    for ui_config in \
-        "${app_dest}/app/ui/config" \
-        "${app_dest}/ui/config"
-    do
-        [ -f "$ui_config" ] || continue
-        sed -i "s/\"port\": \"[0-9]*\"/\"port\": \"${port}\"/" "$ui_config"
-        patched="${patched} ${ui_config}"
-    done
-
-    local mf
-    for mf in \
-        "${app_dest}/manifest" \
-        "/var/apps/${TRIM_APPNAME}/manifest"
-    do
-        [ -f "$mf" ] || continue
-        sed -i "s/^service_port[[:space:]]*=.*/service_port          = ${port}/" "$mf"
-        patched="${patched} ${mf}"
-    done
 
     local sc
     for sc in \
@@ -159,6 +142,7 @@ patch_port_files() {
 
     if [ -n "$pkgvar" ]; then
         echo "${port}" > "${pkgvar}/.port"
+        patched="${patched} ${pkgvar}/.port"
     fi
 
     if [ -n "$log_file" ]; then

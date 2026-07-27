@@ -1,2 +1,16 @@
 #!/bin/bash
+# Emit current wizard field values so Running Settings form shows saved port/backup.
+
+. "$(dirname "$0")/app-layout"
+. "$(dirname "$0")/apply-settings"
+
+resolve_runtime_paths
+
+CURRENT_PORT="$(resolve_port)"
+CURRENT_BACKUP="$(read_existing_backup_dir 2>/dev/null || true)"
+
+# fnOS uses these as wizard form initial values.
+echo "wizard_port=${CURRENT_PORT}"
+echo "wizard_backup_dir=${CURRENT_BACKUP}"
+
 exit 0

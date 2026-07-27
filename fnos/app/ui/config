@@ -5,7 +5,7 @@
             "desc": "NAS 自托管记账 · 抓大放小 · 余额推算日常支出",
             "icon": "images/icon_{0}.png",
             "type": "url",
-            "port": "18080",
+            "port": "${wizard_port}",
             "protocol": "http",
             "url": "/",
             "allUsers": true
