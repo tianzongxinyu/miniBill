@@ -81,6 +81,7 @@ export function FloatingPickerPortal({
         width: pos.width,
         maxHeight: pos.maxHeight,
         transform: pos.flipUp ? 'translateY(-100%)' : undefined,
+        transformOrigin: pos.flipUp ? 'bottom center' : 'top center',
       }}
       role={role}
       aria-label={ariaLabel}

@@ -100,9 +100,9 @@ export function useComboboxFloatingDropdown({
     if (pageContainer) {
       ({ left, width } = pageBounds(pageContainer, widthMode));
     } else {
-      const margin = 16;
-      left = margin;
-      width = window.innerWidth - margin * 2;
+      // Align to trigger when outside page content containers (e.g. auth footer).
+      left = panelRect.left;
+      width = panelRect.width;
     }
 
     const margin = 8;
