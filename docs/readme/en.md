@@ -125,7 +125,6 @@ See the [Deployment Guide](../deploy.md) for more details.
 
 - [API](../api.md)
 - [Deployment](../deploy.md)
-- [Release checklist](../release.md)
 
 ## Tech Stack
 

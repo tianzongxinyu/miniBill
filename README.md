@@ -125,7 +125,6 @@ cd web && npm install && npm run dev
 
 - [API](docs/api.md)
 - [部署](docs/deploy.md)
-- [发版清单](docs/release.md)
 
 ## 技术栈
 
