@@ -5,13 +5,14 @@
 ## 发版前
 
 1. 确认 `VERSION` 与 `fnos/manifest` 版本一致
-2. 运行测试与构建：
+2. 更新 `fnos/manifest` 的 `changelog`（应用中心「新功能」展示此字段；文案可参考 [`docs/releases/`](releases/)）
+3. 运行测试与构建：
    ```bash
    go test ./...
    cd web && npm run i18n:check && npx tsc --noEmit && npm run build
    ```
-3. 国际化 QA：见 [i18n-qa.md](i18n-qa.md)
-4. 打包 fnOS（可选）：
+4. 国际化 QA：见 [i18n-qa.md](i18n-qa.md)
+5. 打包 fnOS（可选）：
    ```bash
    ./scripts/build-fpk.sh
    ```
@@ -28,7 +29,7 @@ git push origin vX.Y.Z
 ## 发版后
 
 - 飞牛 NAS 安装 fpk 冒烟：文案、图标、统计图、余额日常支出
-- 飞牛应用商店：同步 `fnos/manifest` 的 `desc`（应用介绍）外，**须单独填写「版本说明」**（参考 [`docs/releases/`](releases/)；官方 fpk 无独立 changelog 字段）
+- 飞牛应用商店：同步 `fnos/manifest` 的 `desc`（应用介绍）与 `changelog`（新功能）；若后台另有「版本说明」表单，建议与 `changelog` 保持一致（参考 [`docs/releases/`](releases/)）
 - Docker 用户：`docker build` / 更新镜像 tag
 - 论坛/GitHub Release 说明变更摘要
 
