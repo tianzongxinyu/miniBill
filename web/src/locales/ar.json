@@ -45,13 +45,13 @@
   "nav": {
     "home": "الرئيسية",
     "transactions": "المعاملات",
-    "stats": "الإحصائيات",
-    "profile": "الملف الشخصي",
+    "stats": "إحصاء",
+    "profile": "حساب",
     "logout": "تسجيل الخروج",
     "expandSidebar": "توسيع",
     "collapseSidebar": "طي",
     "collapseSidebarLabel": "طي",
-    "annual": "التقرير السنوي"
+    "annual": "سنوي"
   },
   "auth": {
     "welcomeBack": "مرحبًا بعودتك",

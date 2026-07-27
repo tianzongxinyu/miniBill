@@ -44,14 +44,14 @@
   },
   "nav": {
     "home": "Start",
-    "transactions": "Transacties",
-    "stats": "Statistieken",
+    "transactions": "Boeking",
+    "stats": "Cijfers",
     "profile": "Profiel",
     "logout": "Uitloggen",
     "expandSidebar": "Uitklappen",
     "collapseSidebar": "Inklappen",
     "collapseSidebarLabel": "Inklappen",
-    "annual": "Jaarrapport"
+    "annual": "Jaar"
   },
   "auth": {
     "welcomeBack": "Welkom terug",

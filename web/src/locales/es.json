@@ -44,8 +44,8 @@
   },
   "nav": {
     "home": "Inicio",
-    "transactions": "Transacciones",
-    "stats": "Estadísticas",
+    "transactions": "Cuentas",
+    "stats": "Datos",
     "profile": "Perfil",
     "logout": "Cerrar sesión",
     "expandSidebar": "Expandir",

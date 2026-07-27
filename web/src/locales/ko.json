@@ -46,12 +46,12 @@
     "home": "홈",
     "transactions": "거래",
     "stats": "통계",
-    "profile": "내 정보",
+    "profile": "나",
     "logout": "로그아웃",
     "expandSidebar": "펼치기",
     "collapseSidebar": "접기",
     "collapseSidebarLabel": "접기",
-    "annual": "연간 보고서"
+    "annual": "연간"
   },
   "auth": {
     "welcomeBack": "다시 오신 것을 환영합니다",

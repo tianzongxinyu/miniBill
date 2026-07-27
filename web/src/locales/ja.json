@@ -46,12 +46,12 @@
     "home": "ホーム",
     "transactions": "取引",
     "stats": "統計",
-    "profile": "マイページ",
+    "profile": "マイ",
     "logout": "ログアウト",
     "expandSidebar": "展開",
     "collapseSidebar": "折畳",
     "collapseSidebarLabel": "折畳",
-    "annual": "年次報告"
+    "annual": "年報"
   },
   "auth": {
     "welcomeBack": "おかえりなさい",

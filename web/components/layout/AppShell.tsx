@@ -184,7 +184,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <nav
         ref={mobileNavRef}
-        className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex justify-around py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50"
+        className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50"
       >
         {tabPill.ready && (
           <span
@@ -206,12 +206,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               key={tab.href}
               href={tab.href}
               data-tab-active={active ? 'true' : undefined}
-              className={`relative z-[1] flex flex-col items-center gap-0.5 text-[10px] px-4 sm:px-5 py-1 rounded-2xl transition-colors duration-200 ${
+              className={`relative z-[1] flex flex-1 min-w-0 flex-col items-center gap-0.5 text-[10px] px-0.5 py-1 rounded-2xl transition-colors duration-200 ${
                 active ? 'text-accent font-medium' : 'text-muted hover:text-accent/70'
               }`}
             >
               <Icon active={active} />
-              {tab.label}
+              <span className="w-full truncate text-center leading-tight">{tab.label}</span>
             </Link>
           );
         })}

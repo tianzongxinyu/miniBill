@@ -44,8 +44,8 @@
   },
   "nav": {
     "home": "Головна",
-    "transactions": "Транзакції",
-    "stats": "Статистика",
+    "transactions": "Операції",
+    "stats": "Стат.",
     "profile": "Профіль",
     "logout": "Вийти",
     "expandSidebar": "Розгорнути",

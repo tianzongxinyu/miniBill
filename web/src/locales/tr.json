@@ -43,9 +43,9 @@
     "noMatchItems": "Eşleşme yok"
   },
   "nav": {
-    "home": "Ana sayfa",
+    "home": "Ana",
     "transactions": "İşlemler",
-    "stats": "İstatistikler",
+    "stats": "İstatistik",
     "profile": "Profil",
     "logout": "Çıkış",
     "expandSidebar": "Genişlet",

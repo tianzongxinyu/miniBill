@@ -43,7 +43,7 @@
     "noMatchItems": "Không có kết quả"
   },
   "nav": {
-    "home": "Trang chủ",
+    "home": "Trang",
     "transactions": "Giao dịch",
     "stats": "Thống kê",
     "profile": "Hồ sơ",
@@ -51,7 +51,7 @@
     "expandSidebar": "Mở rộng",
     "collapseSidebar": "Thu gọn",
     "collapseSidebarLabel": "Thu gọn",
-    "annual": "Báo cáo năm"
+    "annual": "Năm"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",

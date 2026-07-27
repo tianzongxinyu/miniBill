@@ -44,14 +44,14 @@
   },
   "nav": {
     "home": "Start",
-    "transactions": "Transaktionen",
+    "transactions": "Buchung",
     "stats": "Statistik",
     "profile": "Profil",
     "logout": "Abmelden",
     "expandSidebar": "Ausklappen",
     "collapseSidebar": "Einklappen",
     "collapseSidebarLabel": "Einklappen",
-    "annual": "Jahresbericht"
+    "annual": "Jahr"
   },
   "auth": {
     "welcomeBack": "Willkommen zurück",

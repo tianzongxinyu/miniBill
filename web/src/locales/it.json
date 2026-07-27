@@ -43,9 +43,9 @@
     "noMatchItems": "Nessuna corrispondenza"
   },
   "nav": {
-    "home": "Pagina iniziale",
+    "home": "Inizio",
     "transactions": "Transazioni",
-    "stats": "Statistiche",
+    "stats": "Dati",
     "profile": "Profilo",
     "logout": "Esci",
     "expandSidebar": "Espandi",

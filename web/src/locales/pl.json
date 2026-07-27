@@ -43,9 +43,9 @@
     "noMatchItems": "Brak dopasowań"
   },
   "nav": {
-    "home": "Strona główna",
+    "home": "Start",
     "transactions": "Transakcje",
-    "stats": "Statystyki",
+    "stats": "Dane",
     "profile": "Profil",
     "logout": "Wyloguj",
     "expandSidebar": "Rozwiń",
