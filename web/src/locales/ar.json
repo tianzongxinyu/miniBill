@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "محاسبة ذاتية استضافة خفيفة",
-    "subtitle": "دفتر حساب شخصي"
+    "subtitle": "دفتر حساب شخصي",
+    "titleOtherLedger": "دفتر {{name}}"
   },
   "common": {
     "back": "رجوع",

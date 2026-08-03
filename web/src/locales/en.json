@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Lightweight self-hosted ledger",
-    "subtitle": "Personal ledger"
+    "subtitle": "Personal ledger",
+    "titleOtherLedger": "{{name}}'s ledger"
   },
   "common": {
     "back": "Back",

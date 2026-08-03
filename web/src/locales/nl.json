@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Lichtgewicht self-hosted boekhouding",
-    "subtitle": "Persoonlijk kasboek"
+    "subtitle": "Persoonlijk kasboek",
+    "titleOtherLedger": "{{name}}s boek"
   },
   "common": {
     "back": "Terug",

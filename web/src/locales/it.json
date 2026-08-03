@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Contabilità leggera self-hosted",
-    "subtitle": "Registro personale"
+    "subtitle": "Registro personale",
+    "titleOtherLedger": "Libro di {{name}}"
   },
   "common": {
     "back": "Indietro",

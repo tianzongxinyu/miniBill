@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Lekka, samodzielnie hostowana księgowość",
-    "subtitle": "Osobista księga"
+    "subtitle": "Osobista księga",
+    "titleOtherLedger": "Księga {{name}}"
   },
   "common": {
     "back": "Wstecz",

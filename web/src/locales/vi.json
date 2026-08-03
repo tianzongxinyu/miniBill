@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Sổ sách kế toán tự lưu trữ nhẹ",
-    "subtitle": "Sổ cái cá nhân"
+    "subtitle": "Sổ cái cá nhân",
+    "titleOtherLedger": "Sổ của {{name}}"
   },
   "common": {
     "back": "Quay lại",

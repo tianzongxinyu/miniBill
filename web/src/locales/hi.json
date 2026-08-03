@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "हल्का स्व-होस्टेड बही-खाता",
-    "subtitle": "व्यक्तिगत लेजर"
+    "subtitle": "व्यक्तिगत लेजर",
+    "titleOtherLedger": "{{name}} की बही"
   },
   "common": {
     "back": "वापस",

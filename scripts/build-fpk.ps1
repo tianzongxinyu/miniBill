@@ -112,12 +112,14 @@ function Update-Manifest([string]$version, [string]$platform, [string]$workDir) 
         $script:ManifestBackup = [System.IO.Path]::GetTempFileName()
         Copy-Item $manifest $script:ManifestBackup -Force
     }
-    $content = Get-Content $manifest -Raw
+    # Always UTF-8 (no BOM): Get-Content defaults to system ANSI/GBK on Chinese Windows
+    # and would mojibake display_name/desc/changelog into the .fpk.
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    $content = [System.IO.File]::ReadAllText($manifest, $utf8)
     $content = $content -replace '(?m)^version\s*=.*', "version               = $version"
     $content = $content -replace '(?m)^arch\s*=.*', "arch                  = $archLabel"
     $content = $content -replace '(?m)^platform\s*=.*', "platform              = $platformLabel"
-    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-    [System.IO.File]::WriteAllText($manifest, $content, $utf8NoBom)
+    [System.IO.File]::WriteAllText($manifest, $content, $utf8)
 }
 
 function Restore-Manifest {
@@ -354,4 +356,4 @@ switch ($PlatformArg) {
 }
 
 Restore-Manifest
-Write-Info "Done. Upload dist/*.fpk to fnOS 应用中心 → 手动安装"
+Write-Info "Done. Upload dist/*.fpk to fnOS App Center -> Manual Install"

@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "軽量セルフホスト型家計簿",
-    "subtitle": "個人帳簿"
+    "subtitle": "個人帳簿",
+    "titleOtherLedger": "{{name}}の帳簿"
   },
   "common": {
     "back": "戻る",

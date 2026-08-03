@@ -12,7 +12,8 @@ from pathlib import Path
 def main() -> int:
     root = Path(os.environ.get("FNOS_DIR") or Path(__file__).resolve().parent.parent / "fnos")
     config_path = root / "wizard" / "config"
-    # 每项独立 step，飞牛应用设置编辑弹窗会竖向排布（同 step 内多字段会并排）
+    # 每项独立 step，飞牛应用设置编辑弹窗会竖向排布（同 step 内多字段会并排）。
+    # stepTitle 作分区标题；label 仅放补充说明，避免与 stepTitle 重复显示。
     payload = [
         {
             "stepTitle": "服务端口",
@@ -20,7 +21,7 @@ def main() -> int:
                 {
                     "type": "text",
                     "field": "wizard_port",
-                    "label": "服务端口",
+                    "label": "应用监听端口",
                     "initValue": "18080",
                 }
             ],
@@ -31,19 +32,23 @@ def main() -> int:
                 {
                     "type": "text",
                     "field": "wizard_backup_dir",
-                    "label": "备份目录（绝对路径，留空表示不启用备份）",
+                    "label": "绝对路径，留空表示不启用备份",
                     "initValue": "",
                 }
             ],
         },
         {
-            "stepTitle": "用户注册",
+            "stepTitle": "是否开放注册",
             "items": [
                 {
-                    "type": "text",
+                    "type": "radio",
                     "field": "wizard_allow_registration",
-                    "label": "开放用户注册（true/false；false=关闭，无用户时仍可注册首位管理员）",
+                    "label": "关闭后已有用户不可自助注册；无用户时仍可注册首位管理员",
                     "initValue": "true",
+                    "options": [
+                        {"label": "开放", "value": "true"},
+                        {"label": "关闭", "value": "false"},
+                    ],
                 }
             ],
         },

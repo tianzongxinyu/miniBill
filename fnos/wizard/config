@@ -5,7 +5,7 @@
             {
                 "type": "text",
                 "field": "wizard_port",
-                "label": "服务端口",
+                "label": "应用监听端口",
                 "initValue": "18080"
             }
         ]
@@ -16,19 +16,29 @@
             {
                 "type": "text",
                 "field": "wizard_backup_dir",
-                "label": "备份目录（绝对路径，留空表示不启用备份）",
+                "label": "绝对路径，留空表示不启用备份",
                 "initValue": ""
             }
         ]
     },
     {
-        "stepTitle": "用户注册",
+        "stepTitle": "是否开放注册",
         "items": [
             {
-                "type": "text",
+                "type": "radio",
                 "field": "wizard_allow_registration",
-                "label": "开放用户注册（true/false；false=关闭，无用户时仍可注册首位管理员）",
-                "initValue": "true"
+                "label": "关闭后已有用户不可自助注册；无用户时仍可注册首位管理员",
+                "initValue": "true",
+                "options": [
+                    {
+                        "label": "开放",
+                        "value": "true"
+                    },
+                    {
+                        "label": "关闭",
+                        "value": "false"
+                    }
+                ]
             }
         ]
     }

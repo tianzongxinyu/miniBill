@@ -1,7 +1,11 @@
 import { FallbackLngObjList } from 'i18next';
 import i18n, { i18nReady, locales, type TLocale } from '@/src/i18n';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
-import { ledgerDocumentTitle } from '@/lib/ledgerDocumentTitle';
+import {
+  getSharedLedgerTitleIsOwn,
+  getSharedLedgerTitleOwner,
+  ledgerDocumentTitle,
+} from '@/lib/ledgerDocumentTitle';
 
 export const LOCALE_STORAGE_KEY = 'minibill-locale';
 /** Set when user picks language on login/register; synced to account settings after auth. */
@@ -103,7 +107,16 @@ export const loadLocale = async (locale: string): Promise<Locale> => {
   await i18n.changeLanguage(validLocale);
   if (typeof document !== 'undefined') {
     document.documentElement.lang = toIntlLocale(validLocale);
-    document.title = ledgerDocumentTitle(i18n.t('app.name'));
+    const ownerUsername = getSharedLedgerTitleOwner();
+    const isOwn = getSharedLedgerTitleIsOwn();
+    document.title = ledgerDocumentTitle(i18n.t('app.name'), {
+      ownerUsername,
+      isOwn,
+      ownLabel: i18n.t('profile.myLedger'),
+      otherLabel: ownerUsername
+        ? i18n.t('app.titleOtherLedger', { name: ownerUsername })
+        : undefined,
+    });
   }
   return validLocale;
 };

@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Лёгкий самохостинговый учёт",
-    "subtitle": "Личная книга учёта"
+    "subtitle": "Личная книга учёта",
+    "titleOtherLedger": "Книга {{name}}"
   },
   "common": {
     "back": "Назад",

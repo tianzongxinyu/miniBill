@@ -12,11 +12,19 @@ export function DocumentTitle() {
   const searchParams = useSearchParams();
   const searchKey = searchParams.toString();
   const { t, i18n } = useTranslation();
-  const { active, ready } = useLedgerAccess();
+  const { active, ready, isOwner } = useLedgerAccess();
 
   useLayoutEffect(() => {
     const ownerUsername = ready ? active?.username ?? null : null;
-    const desired = ledgerDocumentTitle(t('app.name'), ownerUsername);
+    const own = ready && Boolean(active) && isOwner;
+    const desired = ledgerDocumentTitle(t('app.name'), {
+      ownerUsername,
+      isOwn: own,
+      ownLabel: t('profile.myLedger'),
+      otherLabel: ownerUsername
+        ? t('app.titleOtherLedger', { name: ownerUsername })
+        : undefined,
+    });
     const apply = () => {
       if (document.title !== desired) document.title = desired;
     };
@@ -24,7 +32,7 @@ export function DocumentTitle() {
     const obs = new MutationObserver(apply);
     obs.observe(document.head, { childList: true, subtree: true, characterData: true });
     return () => obs.disconnect();
-  }, [pathname, searchKey, t, i18n.language, active?.username, ready]);
+  }, [pathname, searchKey, t, i18n.language, active?.username, ready, isOwner]);
 
   return null;
 }

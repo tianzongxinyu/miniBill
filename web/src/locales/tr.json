@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Hafif, kendi barındırmalı muhasebe",
-    "subtitle": "Kişisel defter"
+    "subtitle": "Kişisel defter",
+    "titleOtherLedger": "{{name}} defteri"
   },
   "common": {
     "back": "Geri",

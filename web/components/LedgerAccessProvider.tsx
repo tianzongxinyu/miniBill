@@ -100,7 +100,7 @@ export function LedgerAccessProvider({ children }: { children: React.ReactNode }
     if (!active) {
       setSharedLedgerTitleOwner(null);
     } else {
-      setSharedLedgerTitleOwner(active.username);
+      setSharedLedgerTitleOwner(active.username, active.permission === 'owner');
     }
   }, [active]);
 

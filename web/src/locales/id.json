@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Pencatatan keuangan ringan yang di-host sendiri",
-    "subtitle": "Buku besar pribadi"
+    "subtitle": "Buku besar pribadi",
+    "titleOtherLedger": "Buku {{name}}"
   },
   "common": {
     "back": "Kembali",

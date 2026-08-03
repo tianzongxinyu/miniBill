@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Легка самохостована бухгалтерія",
-    "subtitle": "Особиста книга"
+    "subtitle": "Особиста книга",
+    "titleOtherLedger": "Книга {{name}}"
   },
   "common": {
     "back": "Назад",

@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Comptabilité légère auto-hébergée",
-    "subtitle": "Livre de comptes personnel"
+    "subtitle": "Livre de comptes personnel",
+    "titleOtherLedger": "Livre de {{name}}"
   },
   "common": {
     "back": "Retour",

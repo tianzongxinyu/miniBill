@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "บัญชีบันทึกรายการเบา ๆ ที่โฮสต์เอง",
-    "subtitle": "สมุดบัญชีส่วนตัว"
+    "subtitle": "สมุดบัญชีส่วนตัว",
+    "titleOtherLedger": "สมุดของ {{name}}"
   },
   "common": {
     "back": "กลับ",

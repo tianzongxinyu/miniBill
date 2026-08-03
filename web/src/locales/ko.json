@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "경량 셀프 호스트 가계부",
-    "subtitle": "개인 장부"
+    "subtitle": "개인 장부",
+    "titleOtherLedger": "{{name}}의 장부"
   },
   "common": {
     "back": "뒤로",

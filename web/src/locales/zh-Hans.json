@@ -2,7 +2,8 @@
   "app": {
     "name": "轻账单",
     "description": "轻量自托管记账",
-    "subtitle": "记账本"
+    "subtitle": "记账本",
+    "titleOtherLedger": "{{name}}的账本"
   },
   "common": {
     "back": "返回",

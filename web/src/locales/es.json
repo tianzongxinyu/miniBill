@@ -2,7 +2,8 @@
   "app": {
     "name": "MiniBill",
     "description": "Contabilidad ligera autoalojada",
-    "subtitle": "Libro de cuentas personal"
+    "subtitle": "Libro de cuentas personal",
+    "titleOtherLedger": "Libro de {{name}}"
   },
   "common": {
     "back": "Atrás",
