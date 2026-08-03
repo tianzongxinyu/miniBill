@@ -19,12 +19,12 @@
 
 ### 部署
 - 飞牛修改运行端口后，桌面入口端口正确跟随新端口（`wizard_port` 绑定）
-- Windows 支持用 PowerShell 打包：`.\scripts\build-fpk.ps1`（自动下载 `fnpack` 1.2.3）
+- Windows 支持打包：`scripts\build-fpk.cmd`（自动 Bypass 执行策略并下载 `fnpack` 1.2.3）
 
 ### 升级说明
 - **飞牛 NAS**：若在应用设置中修改了运行端口，保存重启后请从**新端口**打开桌面入口；若仍跳到旧端口，请升级到本版本 fpk（详见 [docs/deploy.md](docs/deploy.md)）
 - **Docker / 自托管**：更新镜像或二进制后即可，无额外数据迁移
-- **Windows 打包**：在项目根目录执行 `.\scripts\build-fpk.ps1 <version> x86|arm|all` 即可产出 `.fpk`
+- **Windows 打包**：在项目根目录执行 `scripts\build-fpk.cmd <version> x86|arm|all` 即可产出 `.fpk`
 
 ### Full Changelog
 `v1.0.7...v1.0.8`

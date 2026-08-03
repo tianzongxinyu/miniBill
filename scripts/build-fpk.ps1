@@ -1,7 +1,8 @@
 # Build miniBill native .fpk for fnOS (no Docker).
 #
 # Usage:
-#   .\scripts\build-fpk.ps1 [version] [platform]
+#   scripts\build-fpk.cmd [version] [platform]          (recommended on Windows)
+#   powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-fpk.ps1 [version] [platform]
 #
 # platform: all (default, x86+arm), x86, or arm
 
@@ -128,53 +129,11 @@ function Restore-Manifest {
 }
 
 function Sync-WizardConfig {
-    $tmpPy = [System.IO.Path]::GetTempFileName() + ".py"
-    $fnosEscaped = $FnosDir.Replace('\', '\\')
-    @"
-import json
-from pathlib import Path
-
-root = Path(r'$fnosEscaped')
-config_path = root / "wizard" / "config"
-config_path.write_text(
-    json.dumps(
-        [
-            {
-                "stepTitle": "服务端口",
-                "items": [
-                    {
-                        "type": "text",
-                        "field": "wizard_port",
-                        "label": "服务端口",
-                        "initValue": "18080",
-                    }
-                ],
-            },
-            {
-                "stepTitle": "备份目录",
-                "items": [
-                    {
-                        "type": "text",
-                        "field": "wizard_backup_dir",
-                        "label": "备份目录（绝对路径，留空表示不启用备份）",
-                        "initValue": "",
-                    }
-                ],
-            },
-        ],
-        ensure_ascii=False,
-        indent=4,
-    )
-    + "\n",
-    encoding="utf-8",
-)
-"@ | Set-Content -Path $tmpPy -Encoding utf8
+    $env:FNOS_DIR = $FnosDir
     try {
-        Invoke-Python @($tmpPy)
+        Invoke-Python @((Join-Path $Root "scripts\sync-fnos-wizard.py"))
     } catch {
         Write-Err "Failed to sync wizard config"
-    } finally {
-        Remove-Item $tmpPy -Force -ErrorAction SilentlyContinue
     }
 }
 

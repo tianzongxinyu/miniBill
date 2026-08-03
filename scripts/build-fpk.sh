@@ -133,46 +133,7 @@ restore_manifest() {
 
 sync_wizard_config() {
     # 每项独立 step，飞牛应用设置编辑弹窗会竖向排布（同 step 内多字段会并排）
-    FNOS_DIR="$FNOS_DIR" python3 - <<'PY'
-import json
-import os
-from pathlib import Path
-
-root = Path(os.environ["FNOS_DIR"])
-config_path = root / "wizard" / "config"
-config_path.write_text(
-    json.dumps(
-        [
-            {
-                "stepTitle": "服务端口",
-                "items": [
-                    {
-                        "type": "text",
-                        "field": "wizard_port",
-                        "label": "服务端口",
-                        "initValue": "18080",
-                    }
-                ],
-            },
-            {
-                "stepTitle": "备份目录",
-                "items": [
-                    {
-                        "type": "text",
-                        "field": "wizard_backup_dir",
-                        "label": "备份目录（绝对路径，留空表示不启用备份）",
-                        "initValue": "",
-                    }
-                ],
-            },
-        ],
-        ensure_ascii=False,
-        indent=4,
-    )
-    + "\n",
-    encoding="utf-8",
-)
-PY
+    FNOS_DIR="$FNOS_DIR" python3 "${ROOT}/scripts/sync-fnos-wizard.py"
 }
 
 sync_fnos_icons() {

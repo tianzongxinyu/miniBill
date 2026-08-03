@@ -104,12 +104,12 @@ cd web && npm install && npm run dev
 ./scripts/build-fpk.sh all
 ```
 
-**Windows（PowerShell）：**
+**Windows：**
 
-```powershell
-.\scripts\build-fpk.ps1 1.0.8 x86
-.\scripts\build-fpk.ps1 1.0.8 arm
-.\scripts\build-fpk.ps1 1.0.8 all
+```bat
+scripts\build-fpk.cmd 1.0.8 x86
+scripts\build-fpk.cmd 1.0.8 arm
+scripts\build-fpk.cmd 1.0.8 all
 ```
 
 成果物は `dist/minibill_<version>_<platform>.fpk` に出力されます。

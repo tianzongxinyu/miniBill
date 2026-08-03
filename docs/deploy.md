@@ -155,12 +155,12 @@ sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 ./scripts/build-fpk.sh 1.0.8 all
 ```
 
-**Windows（PowerShell）：**
+**Windows：**
 
-```powershell
-.\scripts\build-fpk.ps1 1.0.8 x86
-.\scripts\build-fpk.ps1 1.0.8 arm
-.\scripts\build-fpk.ps1 1.0.8 all
+```bat
+scripts\build-fpk.cmd 1.0.8 x86
+scripts\build-fpk.cmd 1.0.8 arm
+scripts\build-fpk.cmd 1.0.8 all
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包；Windows 首次构建会自动下载 `fnpack-*-windows-amd64`）。
