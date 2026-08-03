@@ -184,7 +184,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <nav
         ref={mobileNavRef}
-        className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex py-1 pb-[calc(0.25rem+env(safe-area-inset-bottom,0px))] z-50"
+        className="mobile-tab-nav lg:hidden fixed bottom-0 inset-x-0 bg-surface border-t border-line flex py-1 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-50"
       >
         {tabPill.ready && (
           <span
