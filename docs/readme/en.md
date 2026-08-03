@@ -83,12 +83,15 @@ MiniBill can be packaged as a native FygoOS `.fpk` install package, running dire
 ### Build Requirements
 
 - Go 1.22+ (cross-compile `linux/amd64` or `linux/arm64`)
-- Node.js + npm (script runs `npm run build` automatically if `web/out` is missing)
-- `curl` (downloads official `fnpack` to `.fnos-shared/` on first build)
+- Node.js + npm (script runs `npm run build` automatically)
+- Python 3 (icon generation and wizard config sync)
+- Official `fnpack` is downloaded to `.fnos-shared/` on first build (Linux / macOS / Windows)
 
 ### Build Install Package
 
 Run from the project root:
+
+**Linux / macOS:**
 
 ```bash
 # x86 NAS (default)
@@ -99,6 +102,14 @@ Run from the project root:
 
 # Build both x86 and ARM
 ./scripts/build-fpk.sh all
+```
+
+**Windows (PowerShell):**
+
+```powershell
+.\scripts\build-fpk.ps1 1.0.8 x86
+.\scripts\build-fpk.ps1 1.0.8 arm
+.\scripts\build-fpk.ps1 1.0.8 all
 ```
 
 Output is at `dist/minibill_<version>_<platform>.fpk`.

@@ -83,15 +83,18 @@ cd web && npm install && npm run dev
 ### 构建要求
 
 - Go 1.22+（交叉编译 `linux/amd64` 或 `linux/arm64`）
-- Node.js + npm（若 `web/out` 不存在，脚本会自动执行 `npm run build`）
-- `curl`（首次构建时自动下载官方 `fnpack` 到 `.fnos-shared/`）
+- Node.js + npm（脚本会自动执行 `npm run build`）
+- Python 3（图标生成与向导配置同步）
+- 首次构建时自动下载官方 `fnpack` 到 `.fnos-shared/`（Linux/macOS/Windows 均支持）
 
 ### 构建安装包
 
 在项目根目录执行：
 
+**Linux / macOS：**
+
 ```bash
-# x86 NAS（默认）
+# x86 NAS（默认同时构建 x86+ARM 时传 all）
 ./scripts/build-fpk.sh 1.0.8
 
 # ARM NAS
@@ -99,6 +102,19 @@ cd web && npm install && npm run dev
 
 # 同时构建 x86 与 ARM
 ./scripts/build-fpk.sh 1.0.8 all
+```
+
+**Windows（PowerShell）：**
+
+```powershell
+# x86 NAS
+.\scripts\build-fpk.ps1 1.0.8 x86
+
+# ARM NAS
+.\scripts\build-fpk.ps1 1.0.8 arm
+
+# 同时构建 x86 与 ARM
+.\scripts\build-fpk.ps1 1.0.8 all
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`。

@@ -83,12 +83,15 @@ cd web && npm install && npm run dev
 ### ビルド要件
 
 - Go 1.22+（クロスコンパイル `linux/amd64` または `linux/arm64`）
-- Node.js + npm（`web/out` が存在しない場合、スクリプトが自動で `npm run build` を実行）
-- `curl`（初回ビルド時に公式 `fnpack` を `.fnos-shared/` に自動ダウンロード）
+- Node.js + npm（スクリプトが自動で `npm run build` を実行）
+- Python 3（アイコン生成とウィザード設定の同期）
+- 初回ビルド時に公式 `fnpack` を `.fnos-shared/` に自動ダウンロード（Linux / macOS / Windows 対応）
 
 ### インストールパッケージの構築
 
 プロジェクトルートで実行：
+
+**Linux / macOS：**
 
 ```bash
 # x86 NAS（デフォルト）
@@ -99,6 +102,14 @@ cd web && npm install && npm run dev
 
 # x86 と ARM を同時構築
 ./scripts/build-fpk.sh all
+```
+
+**Windows（PowerShell）：**
+
+```powershell
+.\scripts\build-fpk.ps1 1.0.8 x86
+.\scripts\build-fpk.ps1 1.0.8 arm
+.\scripts\build-fpk.ps1 1.0.8 all
 ```
 
 成果物は `dist/minibill_<version>_<platform>.fpk` に出力されます。

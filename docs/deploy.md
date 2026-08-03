@@ -140,7 +140,9 @@ sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 
 ## 飞牛 NAS（fnOS）
 
-在项目根目录构建**原生二进制** `.fpk` 安装包（飞牛直接运行进程，无需 Docker）：
+在项目根目录构建**原生二进制** `.fpk` 安装包（飞牛直接运行进程，无需 Docker）。
+
+**Linux / macOS：**
 
 ```bash
 # x86 NAS（默认）
@@ -148,9 +150,20 @@ sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 
 # ARM NAS
 ./scripts/build-fpk.sh 1.0.8 arm
+
+# 同时构建 x86 与 ARM
+./scripts/build-fpk.sh 1.0.8 all
 ```
 
-产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包）。
+**Windows（PowerShell）：**
+
+```powershell
+.\scripts\build-fpk.ps1 1.0.8 x86
+.\scripts\build-fpk.ps1 1.0.8 arm
+.\scripts\build-fpk.ps1 1.0.8 all
+```
+
+产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包；Windows 首次构建会自动下载 `fnpack-*-windows-amd64`）。
 
 安装步骤：
 

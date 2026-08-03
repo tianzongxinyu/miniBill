@@ -12,7 +12,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 FNOS_DIR="$ROOT/fnos"
 DIST_DIR="$ROOT/dist"
 FNPACK="${ROOT}/.fnos-shared/fnpack"
-FNPACK_VERSION="1.2.1"
+FNPACK_VERSION="1.2.3"
 
 VERSION="${1:-}"
 if [ -z "$VERSION" ] && [ -f "$ROOT/VERSION" ]; then
@@ -55,21 +55,34 @@ manifest_platform() {
 }
 
 ensure_fnpack() {
-    if [ -x "$FNPACK" ]; then
+    # On Windows/MSYS hosts the PE binary may be named fnpack.exe.
+    if [ -x "$FNPACK" ] || [ -x "${FNPACK}.exe" ]; then
+        if [ ! -x "$FNPACK" ] && [ -x "${FNPACK}.exe" ]; then
+            FNPACK="${FNPACK}.exe"
+        fi
         return
     fi
     mkdir -p "$(dirname "$FNPACK")"
-    local os arch url
-    case "$(uname -s)" in
+    local os arch url uname_s
+    uname_s="$(uname -s)"
+    case "$uname_s" in
         Darwin) os="darwin" ;;
         Linux) os="linux" ;;
-        *) error "Unsupported OS for fnpack: $(uname -s)" ;;
+        MINGW*|MSYS*|CYGWIN*|Windows_NT)
+            os="windows"
+            FNPACK="${ROOT}/.fnos-shared/fnpack.exe"
+            ;;
+        *) error "Unsupported OS for fnpack: $uname_s" ;;
     esac
     case "$(uname -m)" in
         x86_64|amd64) arch="amd64" ;;
         arm64|aarch64) arch="arm64" ;;
         *) error "Unsupported arch for fnpack: $(uname -m)" ;;
     esac
+    # Official Windows fnpack is published as windows-amd64 only.
+    if [ "$os" = "windows" ]; then
+        arch="amd64"
+    fi
     url="https://static2.fnnas.com/fnpack/fnpack-${FNPACK_VERSION}-${os}-${arch}"
     info "Downloading fnpack ..."
     curl -fsSL "$url" -o "$FNPACK"
