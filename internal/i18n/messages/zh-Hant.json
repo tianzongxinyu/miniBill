@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "推算月度餘額須填寫期初",
   "validation.contact_name_required": "姓名不能為空",
   "validation.contact_name_taken": "已存在同名聯絡人",
-  "validation.tag_name_taken": "已存在同名標籤"
+  "validation.tag_name_taken": "已存在同名標籤",
+  "error.account_disabled": "帳號已停用",
+  "error.admin_self_forbidden": "不能對自己執行此操作",
+  "error.last_admin": "不能移除最後一個管理員",
+  "error.ledger_forbidden": "無權訪問該帳簿",
+  "error.ledger_owner_only": "僅帳簿主人可執行此操作",
+  "error.ledger_readonly": "當前帳簿為唯讀，無法修改"
 }

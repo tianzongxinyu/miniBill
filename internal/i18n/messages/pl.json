@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Do wyliczenia sald miesięcznych wymagane jest saldo otwarcia",
   "validation.contact_name_required": "Nazwa jest wymagana",
   "validation.contact_name_taken": "Kontakt o tej nazwie już istnieje",
-  "validation.tag_name_taken": "Tag o tej nazwie już istnieje"
+  "validation.tag_name_taken": "Tag o tej nazwie już istnieje",
+  "error.account_disabled": "Konto jest wyłączone",
+  "error.admin_self_forbidden": "Nie można wykonać tej czynności na własnym koncie",
+  "error.last_admin": "Nie można usunąć ostatniego administratora",
+  "error.ledger_forbidden": "Brak dostępu do tej księgi",
+  "error.ledger_owner_only": "Tylko właściciel księgi może to zrobić",
+  "error.ledger_readonly": "Ta księga jest tylko do odczytu"
 }

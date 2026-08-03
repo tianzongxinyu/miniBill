@@ -20,5 +20,16 @@
                 "initValue": ""
             }
         ]
+    },
+    {
+        "stepTitle": "用户注册",
+        "items": [
+            {
+                "type": "text",
+                "field": "wizard_allow_registration",
+                "label": "开放用户注册（true/false；false=关闭，无用户时仍可注册首位管理员）",
+                "initValue": "true"
+            }
+        ]
     }
 ]

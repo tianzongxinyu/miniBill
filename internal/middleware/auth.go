@@ -12,11 +12,18 @@ const (
 	UserIDKey       = "user_id"
 	UsernameKey     = "username"
 	AuthTokenKey    = "auth_token"
+	IsAdminKey      = "is_admin"
 	TokenCookieName = "minibill_token"
+
+	LedgerOwnerIDKey    = "ledger_owner_id"
+	LedgerPermissionKey = "ledger_permission"
 )
 
-// TokenVersionLookup returns the current token_version for a user.
-type TokenVersionLookup func(userID int64) (int64, error)
+// AuthGateLookup returns token_version and disabled for a user.
+type AuthGateLookup func(userID int64) (tokenVersion int64, disabled bool, err error)
+
+// AdminLookup returns whether the user is an active admin.
+type AdminLookup func(userID int64) (isAdmin bool, err error)
 
 func bearerToken(header string) string {
 	if header == "" || !strings.HasPrefix(header, "Bearer ") {
@@ -35,8 +42,8 @@ func tokenFromRequest(c *gin.Context) string {
 	return ""
 }
 
-// Auth 校验 JWT（Authorization: Bearer 或 HttpOnly Cookie），并核对 token_version。
-func Auth(authSvc *auth.Service, lookup TokenVersionLookup) gin.HandlerFunc {
+// Auth 校验 JWT（Authorization: Bearer 或 HttpOnly Cookie），并核对 token_version / disabled。
+func Auth(authSvc *auth.Service, lookup AuthGateLookup) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := tokenFromRequest(c)
 		if tokenStr == "" {
@@ -49,8 +56,8 @@ func Auth(authSvc *auth.Service, lookup TokenVersionLookup) gin.HandlerFunc {
 			return
 		}
 		if lookup != nil {
-			ver, err := lookup(claims.UserID)
-			if err != nil || ver != claims.TokenVersion {
+			ver, disabled, err := lookup(claims.UserID)
+			if err != nil || disabled || ver != claims.TokenVersion {
 				apierr.Unauthorized(c)
 				return
 			}
@@ -58,6 +65,20 @@ func Auth(authSvc *auth.Service, lookup TokenVersionLookup) gin.HandlerFunc {
 		c.Set(UserIDKey, claims.UserID)
 		c.Set(UsernameKey, claims.Username)
 		c.Set(AuthTokenKey, tokenStr)
+		c.Next()
+	}
+}
+
+// RequireAdmin ensures the authenticated user is an admin.
+func RequireAdmin(lookup AdminLookup) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		uid := GetUserID(c)
+		ok, err := lookup(uid)
+		if err != nil || !ok {
+			apierr.JSON(c, 403, "FORBIDDEN", "需要管理员权限")
+			return
+		}
+		c.Set(IsAdminKey, true)
 		c.Next()
 	}
 }
@@ -78,4 +99,16 @@ func GetAuthToken(c *gin.Context) string {
 	v, _ := c.Get(AuthTokenKey)
 	token, _ := v.(string)
 	return token
+}
+
+func GetLedgerOwnerID(c *gin.Context) int64 {
+	v, _ := c.Get(LedgerOwnerIDKey)
+	id, _ := v.(int64)
+	return id
+}
+
+func GetLedgerPermission(c *gin.Context) string {
+	v, _ := c.Get(LedgerPermissionKey)
+	p, _ := v.(string)
+	return p
 }

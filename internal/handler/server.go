@@ -92,14 +92,29 @@ func (s *Server) Router() *gin.Engine {
 
 	authGroup := api.Group("/auth")
 	authGroup.Use(middleware.AuthRateLimit())
+	authGroup.GET("/registration", s.registrationStatus)
 	authGroup.POST("/register", s.register)
 	authGroup.POST("/login", s.login)
 	authGroup.POST("/logout", s.logout)
 
 	protected := api.Group("")
-	protected.Use(middleware.Auth(s.authSvc, s.system.GetTokenVersion))
+	protected.Use(middleware.Auth(s.authSvc, s.system.GetAuthGate))
 	protected.GET("/auth/session", s.session)
 	protected.PUT("/auth/password", s.changePassword)
+	protected.GET("/ledgers", s.listLedgers)
+	protected.GET("/users/directory", s.listUserDirectory)
+	protected.GET("/ledger/grants", s.listLedgerGrants)
+	protected.PUT("/ledger/grants", s.upsertLedgerGrant)
+	protected.DELETE("/ledger/grants/:granteeUserId", s.deleteLedgerGrant)
+
+	adminGroup := protected.Group("/admin")
+	adminGroup.Use(middleware.RequireAdmin(s.lookupIsAdmin))
+	adminGroup.GET("/users", s.adminListUsers)
+	adminGroup.POST("/users", s.adminCreateUser)
+	adminGroup.PUT("/users/:id", s.adminUpdateUser)
+	adminGroup.POST("/users/:id/reset-password", s.adminResetPassword)
+	adminGroup.DELETE("/users/:id", s.adminDeleteUser)
+
 	protected.GET("/meta/editable-range", s.editableRange)
 	protected.GET("/meta/earliest-month", s.earliestMonth)
 	protected.GET("/meta/transaction-tags", s.transactionTags)
@@ -147,17 +162,71 @@ func (s *Server) Router() *gin.Engine {
 	return r
 }
 
+var errLedgerForbidden = errors.New("ledger forbidden")
+
 func (s *Server) ledgerDB(c *gin.Context) (*sql.DB, func(), error) {
-	userID := middleware.GetUserID(c)
-	dataPath, err := s.cachedDataPath(userID)
+	callerID := middleware.GetUserID(c)
+	ownerID := callerID
+	if h := strings.TrimSpace(c.GetHeader("X-Ledger-Owner-Id")); h != "" {
+		id, err := strconv.ParseInt(h, 10, 64)
+		if err != nil || id <= 0 {
+			return nil, nil, errLedgerForbidden
+		}
+		ownerID = id
+	}
+
+	owner, err := s.system.GetByID(ownerID)
 	if err != nil {
 		return nil, nil, err
 	}
-	db, err := s.userFactory.Open(userID, dataPath)
+	if owner == nil {
+		return nil, nil, errLedgerForbidden
+	}
+	if owner.Disabled {
+		return nil, nil, errLedgerForbidden
+	}
+
+	perm := "owner"
+	if ownerID != callerID {
+		p, err := s.system.GetGrantPermission(ownerID, callerID)
+		if err != nil {
+			return nil, nil, err
+		}
+		if p == "" {
+			return nil, nil, errLedgerForbidden
+		}
+		perm = p
+	}
+
+	c.Set(middleware.LedgerOwnerIDKey, ownerID)
+	c.Set(middleware.LedgerPermissionKey, perm)
+
+	dataPath, err := s.cachedDataPath(ownerID)
+	if err != nil {
+		return nil, nil, err
+	}
+	db, err := s.userFactory.Open(ownerID, dataPath)
 	if err != nil {
 		return nil, nil, err
 	}
 	return db, func() {}, nil
+}
+
+func (s *Server) lookupIsAdmin(userID int64) (bool, error) {
+	u, err := s.system.GetByID(userID)
+	if err != nil {
+		return false, err
+	}
+	if u == nil {
+		return false, nil
+	}
+	return u.IsAdmin && !u.Disabled, nil
+}
+
+func (s *Server) clearDataPathCache(userID int64) {
+	s.dataPathMu.Lock()
+	delete(s.dataPathCache, userID)
+	s.dataPathMu.Unlock()
 }
 
 func (s *Server) cachedDataPath(userID int64) (string, error) {
@@ -180,7 +249,18 @@ func (s *Server) cachedDataPath(userID int64) (string, error) {
 }
 
 func (s *Server) invalidateLedgerMeta(c *gin.Context) {
-	s.metaStore.Invalidate(middleware.GetUserID(c))
+	ownerID := middleware.GetLedgerOwnerID(c)
+	if ownerID == 0 {
+		ownerID = middleware.GetUserID(c)
+	}
+	s.metaStore.Invalidate(ownerID)
+}
+
+func (s *Server) ledgerOwnerID(c *gin.Context) int64 {
+	if id := middleware.GetLedgerOwnerID(c); id != 0 {
+		return id
+	}
+	return middleware.GetUserID(c)
 }
 
 func (s *Server) editableRange(c *gin.Context) {

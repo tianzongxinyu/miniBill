@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Openingsaldo vereist om maandsaldi af te leiden",
   "validation.contact_name_required": "Naam is verplicht",
   "validation.contact_name_taken": "Er bestaat al een contact met deze naam",
-  "validation.tag_name_taken": "Er bestaat al een tag met deze naam"
+  "validation.tag_name_taken": "Er bestaat al een tag met deze naam",
+  "error.account_disabled": "Account is uitgeschakeld",
+  "error.admin_self_forbidden": "Deze actie kan niet op je eigen account",
+  "error.last_admin": "De laatste beheerder kan niet worden verwijderd",
+  "error.ledger_forbidden": "Geen toegang tot dit boek",
+  "error.ledger_owner_only": "Alleen de eigenaar van het boek kan dit",
+  "error.ledger_readonly": "Dit boek is alleen-lezen"
 }

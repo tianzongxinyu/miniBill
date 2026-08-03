@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 
 function PlusIcon() {
   return (
@@ -23,11 +24,14 @@ function BalanceIcon() {
 
 export function FixedRecordButton() {
   const { t } = useTranslation();
+  const { canWrite } = useLedgerAccess();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (!canWrite) return null;
 
   return (
     <>

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/minibill/minibill/internal/i18n"
+	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 )
 
@@ -48,6 +49,10 @@ func (s *Server) resolveLocale(c *gin.Context, db *sql.DB) string {
 func (s *Server) withLedger(c *gin.Context, fn func(db *sql.DB)) {
 	db, closeFn, err := s.ledgerDB(c)
 	if err != nil {
+		if errors.Is(err, errLedgerForbidden) {
+			JSONError(c, 403, "FORBIDDEN", i18n.T(localeFromHeader(c), "error.ledger_forbidden"))
+			return
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			JSONUnauthorized(c)
 			return
@@ -58,6 +63,41 @@ func (s *Server) withLedger(c *gin.Context, fn func(db *sql.DB)) {
 	defer closeFn()
 	c.Set(localeContextKey, s.resolveLocale(c, db))
 	fn(db)
+}
+
+func (s *Server) withLedgerWrite(c *gin.Context, fn func(db *sql.DB)) {
+	s.withLedger(c, func(db *sql.DB) {
+		if !s.requireLedgerWrite(c) {
+			return
+		}
+		fn(db)
+	})
+}
+
+func (s *Server) withLedgerOwner(c *gin.Context, fn func(db *sql.DB)) {
+	s.withLedger(c, func(db *sql.DB) {
+		if !s.requireLedgerOwner(c) {
+			return
+		}
+		fn(db)
+	})
+}
+
+func (s *Server) requireLedgerWrite(c *gin.Context) bool {
+	p := middleware.GetLedgerPermission(c)
+	if p == "owner" || p == "edit" {
+		return true
+	}
+	JSONError(c, 403, "FORBIDDEN", i18n.T(localeFrom(c), "error.ledger_readonly"))
+	return false
+}
+
+func (s *Server) requireLedgerOwner(c *gin.Context) bool {
+	if middleware.GetLedgerPermission(c) == "owner" {
+		return true
+	}
+	JSONError(c, 403, "FORBIDDEN", i18n.T(localeFrom(c), "error.ledger_owner_only"))
+	return false
 }
 
 func translateValidation(locale, key string) string {

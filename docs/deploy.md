@@ -68,7 +68,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 | 变量 | 说明 | 默认 |
 |------|------|------|
-| ALLOW_REGISTRATION | 是否开放注册 | true |
+| ALLOW_REGISTRATION | 是否开放自助注册（false 时已有用户不可注册；零用户仍可注册首位管理员） | true |
 | DATA_DIR | 数据目录（含自动生成的 `.jwt_secret`） | /data |
 | PORT | 端口 | 8080 |
 | JWT_EXPIRE_DAYS | JWT 有效期（天） | 30 |
@@ -101,9 +101,9 @@ Docker 示例：在 `.env` 中设置 `BACKUP_DIR=/data/backups` 并挂载该路�
 
 ## 关闭自助注册
 
-首次部署建议先保持 `ALLOW_REGISTRATION=true`，通过 Web 注册页或 `POST /api/auth/register` 创建首个用户，再在 `.env` 中设置 `ALLOW_REGISTRATION=false` 并重启服务。
+首次部署可保持 `ALLOW_REGISTRATION=true`，或设为 `false` 后通过 Web 注册页 / `POST /api/auth/register` 创建首个用户（零用户时门禁仍开放）。系统已有用户后，将 `ALLOW_REGISTRATION=false` 并重启，则无法再自助注册。
 
-关闭后无法再自助注册；已有用户登录不受影响。忘记密码请用下方「重置用户密码」。
+飞牛安装/运行设置向导可配置「开放用户注册」（写入 `ALLOW_REGISTRATION`）。关闭后已有用户登录不受影响；忘记密码请用下方「重置用户密码」。管理员仍可通过管理接口添加用户。
 
 ## 重置用户密码
 

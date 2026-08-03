@@ -13,6 +13,7 @@ import (
 	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
+	"github.com/minibill/minibill/internal/systemdb"
 )
 
 type credReq struct {
@@ -88,6 +89,17 @@ type balanceReq struct {
 	Note    string `json:"note"`
 }
 
+func userJSON(u *systemdb.User) gin.H {
+	if u == nil {
+		return gin.H{}
+	}
+	return gin.H{
+		"id":       u.ID,
+		"username": u.Username,
+		"is_admin": u.IsAdmin,
+	}
+}
+
 func mapProvisionError(err error) string {
 	if err == nil {
 		return ""
@@ -98,8 +110,33 @@ func mapProvisionError(err error) string {
 	return err.Error()
 }
 
+func (s *Server) registrationOpen() (bool, error) {
+	if s.cfg.AllowRegistration {
+		return true, nil
+	}
+	n, err := s.system.CountUsers()
+	if err != nil {
+		return false, err
+	}
+	return n == 0, nil
+}
+
+func (s *Server) registrationStatus(c *gin.Context) {
+	open, err := s.registrationOpen()
+	if err != nil {
+		JSONInternal(c, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"open": open})
+}
+
 func (s *Server) register(c *gin.Context) {
-	if !s.cfg.AllowRegistration {
+	open, err := s.registrationOpen()
+	if err != nil {
+		JSONInternal(c, err.Error())
+		return
+	}
+	if !open {
 		JSONError(c, http.StatusForbidden, "FORBIDDEN", i18n.T(localeFromHeader(c), "error.registration_closed"))
 		return
 	}
@@ -130,7 +167,7 @@ func (s *Server) register(c *gin.Context) {
 	setAuthCookie(c, token, true, s.cfg)
 	c.JSON(http.StatusCreated, gin.H{
 		"token": token,
-		"user":  gin.H{"id": user.ID, "username": user.Username},
+		"user":  userJSON(user),
 	})
 }
 
@@ -143,6 +180,10 @@ func (s *Server) login(c *gin.Context) {
 	user, err := s.system.GetByUsername(req.Username)
 	if err != nil || user == nil || !auth.CheckPassword(user.PasswordHash, req.Password) {
 		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.invalid_credentials"))
+		return
+	}
+	if user.Disabled {
+		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.account_disabled"))
 		return
 	}
 	remember := req.Remember == nil || *req.Remember
@@ -158,7 +199,7 @@ func (s *Server) login(c *gin.Context) {
 	setAuthCookie(c, token, remember, s.cfg)
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
-		"user":  gin.H{"id": user.ID, "username": user.Username},
+		"user":  userJSON(user),
 	})
 }
 
@@ -168,12 +209,14 @@ func (s *Server) session(c *gin.Context) {
 		JSONUnauthorized(c)
 		return
 	}
+	user, err := s.system.GetByID(middleware.GetUserID(c))
+	if err != nil || user == nil {
+		JSONUnauthorized(c)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
-		"user": gin.H{
-			"id":       middleware.GetUserID(c),
-			"username": middleware.GetUsername(c),
-		},
+		"user":  userJSON(user),
 	})
 }
 
@@ -228,7 +271,7 @@ func (s *Server) createTag(c *gin.Context) {
 		JSONValidation(c, i18n.T(localeFromHeader(c), "error.tag_name_required"))
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		tag, err := s.tagSvc.Create(db, req.Name)
 		if serviceErr(c, err) {
 			return
@@ -265,7 +308,7 @@ func (s *Server) updateTag(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		tag, err := s.tagSvc.Update(db, id, service.TagUpdateInput{
 			Enabled: req.Enabled,
 			ColorBg: req.ColorBg,
@@ -286,7 +329,7 @@ func (s *Server) deleteTag(c *gin.Context) {
 	if !ok {
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		if serviceErr(c, s.tagSvc.Delete(db, id)) {
 			return
 		}
@@ -326,7 +369,7 @@ func (s *Server) createContact(c *gin.Context) {
 		JSONValidation(c, i18n.T(localeFromHeader(c), "error.contact_name_required"))
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		contact, err := s.contactSvc.Create(db, req)
 		if serviceErr(c, err) {
 			return
@@ -346,7 +389,7 @@ func (s *Server) updateContact(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		contact, err := s.contactSvc.Update(db, id, service.ContactUpdateInput{
 			Enabled:       req.Enabled,
 			Name:          req.Name,
@@ -368,7 +411,7 @@ func (s *Server) deleteContact(c *gin.Context) {
 	if !ok {
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		if serviceErr(c, s.contactSvc.Delete(db, id)) {
 			return
 		}
@@ -396,8 +439,7 @@ func (s *Server) listTransactions(c *gin.Context) {
 		if serviceErr(c, err) {
 			return
 		}
-		userID := middleware.GetUserID(c)
-		meta := s.metaStore.ForUser(userID)
+		meta := s.metaStore.ForUser(s.ledgerOwnerID(c))
 		_ = meta.EnsureWarm(db)
 		if err := s.txSvc.EnrichBatchWithMeta(db, meta, page.Items); err != nil {
 			_ = s.txSvc.EnrichBatch(db, page.Items)
@@ -435,7 +477,7 @@ func (s *Server) createTransaction(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		tx, err := s.txSvc.Create(db, req.toInput())
 		if serviceErr(c, err) {
 			return
@@ -455,7 +497,7 @@ func (s *Server) updateTransaction(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		tx, err := s.txSvc.Update(db, id, req.toInput())
 		if serviceErr(c, err) {
 			return
@@ -470,7 +512,7 @@ func (s *Server) deleteTransaction(c *gin.Context) {
 	if !ok {
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		if serviceErr(c, s.txSvc.Delete(db, id)) {
 			return
 		}
@@ -513,7 +555,7 @@ func (s *Server) upsertBalance(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		b, err := s.balanceSvc.Upsert(db, y, m, req.Balance, req.Note)
 		if serviceErr(c, err) {
 			return
@@ -527,7 +569,7 @@ func (s *Server) deleteBalance(c *gin.Context) {
 	if !ok {
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerWrite(c, func(db *sql.DB) {
 		if serviceErr(c, s.balanceSvc.Delete(db, y, m)) {
 			return
 		}
@@ -737,7 +779,7 @@ func (s *Server) updateSettings(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerOwner(c, func(db *sql.DB) {
 		st, err := s.settingsSvc.Update(db, req)
 		if serviceErr(c, err) {
 			return

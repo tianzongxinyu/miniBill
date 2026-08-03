@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Для розрахунку місячних залишків потрібен початковий залишок",
   "validation.contact_name_required": "Потрібне ім'я",
   "validation.contact_name_taken": "Контакт із таким іменем уже існує",
-  "validation.tag_name_taken": "Тег із такою назвою вже існує"
+  "validation.tag_name_taken": "Тег із такою назвою вже існує",
+  "error.account_disabled": "Обліковий запис вимкнено",
+  "error.admin_self_forbidden": "Неможливо виконати цю дію над власним обліковим записом",
+  "error.last_admin": "Неможливо видалити останнього адміністратора",
+  "error.ledger_forbidden": "Немає доступу до цієї книги",
+  "error.ledger_owner_only": "Лише власник книги може це зробити",
+  "error.ledger_readonly": "Ця книга лише для читання"
 }

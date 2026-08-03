@@ -9,6 +9,7 @@ import {
 } from '@/lib/api';
 import { getStoredLocale, loadLocale, takeExplicitLocale, type Locale } from '@/lib/i18n/utils';
 import { useAuth } from '@/components/AuthProvider';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 
 type SettingsCtx = {
   settings: Settings;
@@ -29,6 +30,7 @@ const SettingsContext = createContext<SettingsCtx | null>(null);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { ownerId, isOwner, ready: ledgerReady } = useLedgerAccess();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +41,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
+    if (!ledgerReady) return;
 
     let cancelled = false;
     setLoading(true);
@@ -46,7 +49,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       .then(async (data) => {
         if (cancelled) return;
         const explicit = takeExplicitLocale();
-        if (explicit && explicit !== data.locale) {
+        if (explicit && explicit !== data.locale && isOwner) {
           try {
             const saved = await putSettings({ ...data, locale: explicit });
             if (!cancelled) {
@@ -77,7 +80,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, ownerId, ledgerReady, isOwner]);
 
   const updateSettings = useCallback(async (next: Settings) => {
     const saved = await putSettings(next);

@@ -13,15 +13,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/minibill/minibill/internal/i18n"
-	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
+	"github.com/minibill/minibill/internal/systemdb"
 )
 
+func (s *Server) ledgerOwnerUser(c *gin.Context) (*systemdb.User, bool) {
+	ownerID := s.ledgerOwnerID(c)
+	user, err := s.system.GetByID(ownerID)
+	if err != nil || user == nil {
+		JSONUnauthorized(c)
+		return nil, false
+	}
+	return user, true
+}
+
 func (s *Server) exportLedgerCSV(c *gin.Context) {
-	s.withLedger(c, func(db *sql.DB) {
-		userID := middleware.GetUserID(c)
+	s.withLedgerOwner(c, func(db *sql.DB) {
+		ownerID := s.ledgerOwnerID(c)
 		var buf bytes.Buffer
-		if err := s.ledgerCSVSvc.Export(db, userID, localeFrom(c), &buf); err != nil {
+		if err := s.ledgerCSVSvc.Export(db, ownerID, localeFrom(c), &buf); err != nil {
 			serviceErr(c, err)
 			return
 		}
@@ -78,10 +88,10 @@ func (s *Server) importLedgerCSV(c *gin.Context) {
 		}
 	}
 
-	s.withLedger(c, func(db *sql.DB) {
-		userID := middleware.GetUserID(c)
+	s.withLedgerOwner(c, func(db *sql.DB) {
+		ownerID := s.ledgerOwnerID(c)
 		limited := io.LimitReader(f, service.MaxLedgerCSVImportBytes)
-		result, err := s.ledgerCSVSvc.ImportCSV(db, userID, limited, opts)
+		result, err := s.ledgerCSVSvc.ImportCSV(db, ownerID, limited, opts)
 		if serviceErr(c, err) {
 			return
 		}

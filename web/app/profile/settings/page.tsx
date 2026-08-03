@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { LocaleSelect } from '@/components/ui/LocaleSelect';
 import { useSettings } from '@/components/SettingsProvider';
@@ -12,6 +14,8 @@ import type { Locale } from '@/lib/i18n/utils';
 
 function SettingsContent() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { isOwner, ready: ledgerReady } = useLedgerAccess();
   const { settings, updateSettings, setLocale } = useSettings();
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
@@ -19,6 +23,17 @@ function SettingsContent() {
   const [savingScheme, setSavingScheme] = useState(false);
   const [savingLocale, setSavingLocale] = useState(false);
   const [changingPwd, setChangingPwd] = useState(false);
+
+  useEffect(() => {
+    if (!ledgerReady) return;
+    if (!isOwner) {
+      router.replace('/profile/');
+    }
+  }, [isOwner, ledgerReady, router]);
+
+  if (!isOwner) {
+    return null;
+  }
 
   const changePwd = async (e: React.FormEvent) => {
     e.preventDefault();

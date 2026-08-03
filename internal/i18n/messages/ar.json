@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "الرصيد الافتتاحي مطلوب لاستنتاج الأرصدة الشهرية",
   "validation.contact_name_required": "الاسم مطلوب",
   "validation.contact_name_taken": "يوجد بالفعل جهة اتصال بهذا الاسم",
-  "validation.tag_name_taken": "توجد بالفعل علامة بهذا الاسم"
+  "validation.tag_name_taken": "توجد بالفعل علامة بهذا الاسم",
+  "error.account_disabled": "الحساب معطّل",
+  "error.admin_self_forbidden": "لا يمكن تنفيذ هذا الإجراء على حسابك",
+  "error.last_admin": "لا يمكن إزالة آخر مسؤول",
+  "error.ledger_forbidden": "لا وصول إلى هذا الدفتر",
+  "error.ledger_owner_only": "مالك الدفتر فقط يمكنه ذلك",
+  "error.ledger_readonly": "هذا الدفتر للقراءة فقط"
 }

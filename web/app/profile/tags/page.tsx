@@ -23,9 +23,11 @@ import {
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
 import { buildTagDetailHref } from '@/lib/url';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 
 function TagsContent() {
   const { t } = useTranslation();
+  const { canWrite } = useLedgerAccess();
   const [colorEditId, setColorEditId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
@@ -125,10 +127,12 @@ function TagsContent() {
   return (
     <div className="page-detail-with-floating-back">
       {error && <p className="text-expense text-sm mb-2">{error}</p>}
+      {canWrite && (
       <form onSubmit={create} className="flex gap-2 mb-2">
         <input className="field flex-1" placeholder={t('tags.newPlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
         <button className="btn-primary shrink-0">{t('tags.add')}</button>
       </form>
+      )}
       {filteredItems.length === 0 ? (
         name.trim() ? <EmptyNotebook message={t('common.noMatchItems')} /> : <Notebook />
       ) : (

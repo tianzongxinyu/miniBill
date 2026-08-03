@@ -13,6 +13,12 @@
                 "field": "wizard_backup_dir",
                 "label": "备份目录（绝对路径，留空不启用）",
                 "initValue": ""
+            },
+            {
+                "type": "text",
+                "field": "wizard_allow_registration",
+                "label": "开放用户注册（true/false；false=关闭，无用户时仍可注册首位管理员）",
+                "initValue": "true"
             }
         ]
     }

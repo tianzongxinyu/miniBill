@@ -2,9 +2,17 @@ import { getActiveLocale, getStoredLocale } from '@/lib/i18n/utils';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import i18n from '@/src/i18n';
 import { clearAuthAndGoLogin, getToken } from '@/lib/api/auth';
+import { getStoredLedgerOwnerId, setStoredLedgerOwnerId } from '@/lib/api/access';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
 const AUTH_FORM_PATHS = ['/auth/login', '/auth/register'];
+const SKIP_LEDGER_HEADER_PATHS = [
+  '/auth/',
+  '/admin/',
+  '/ledgers',
+  '/users/directory',
+  '/ledger/grants',
+];
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -21,11 +29,23 @@ function isAuthFormRequest(path: string, method?: string) {
   return method?.toUpperCase() === 'POST' && AUTH_FORM_PATHS.some((p) => path.startsWith(p));
 }
 
+function shouldAttachLedgerHeader(path: string) {
+  return !SKIP_LEDGER_HEADER_PATHS.some((p) => path.startsWith(p));
+}
+
 export function logoutOnUnauthorized() {
   void clearAuthAndGoLogin();
 }
 
-function buildApiHeaders(extra?: Record<string, string>, skipContentType?: boolean): Record<string, string> {
+function resetLedgerAccessOnForbidden() {
+  if (getStoredLedgerOwnerId() == null) return;
+  setStoredLedgerOwnerId(null);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('ledger:access-reset'));
+  }
+}
+
+function buildApiHeaders(extra?: Record<string, string>, skipContentType?: boolean, path?: string): Record<string, string> {
   const headers: Record<string, string> = {};
   if (!skipContentType) headers['Content-Type'] = 'application/json';
   const locale = getStoredLocale() ?? getActiveLocale();
@@ -33,11 +53,20 @@ function buildApiHeaders(extra?: Record<string, string>, skipContentType?: boole
   if (extra) Object.assign(headers, extra);
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  if (path && shouldAttachLedgerHeader(path)) {
+    const ownerId = getStoredLedgerOwnerId();
+    if (ownerId != null) {
+      headers['X-Ledger-Owner-Id'] = String(ownerId);
+    }
+  }
   return headers;
 }
 
-async function parseApiErrorResponse(res: Response): Promise<never> {
+async function parseApiErrorResponse(res: Response, path: string): Promise<never> {
   const data = await res.json().catch(() => ({} as { error?: string; message?: string }));
+  if (res.status === 403 && getStoredLedgerOwnerId() != null && shouldAttachLedgerHeader(path)) {
+    resetLedgerAccessOnForbidden();
+  }
   if (res.status >= 500 && !data.error) {
     throw new ApiError('NETWORK_ERROR', i18n.t('error.networkErrorConfirm'), res.status);
   }
@@ -47,7 +76,7 @@ async function parseApiErrorResponse(res: Response): Promise<never> {
 export async function apiRaw(path: string, options: ApiOptions = {}): Promise<Response> {
   const { authRedirect = true, ...fetchOptions } = options;
   const skipContentType = fetchOptions.body instanceof FormData;
-  const headers = buildApiHeaders(fetchOptions.headers as Record<string, string>, skipContentType);
+  const headers = buildApiHeaders(fetchOptions.headers as Record<string, string>, skipContentType, path);
 
   let res: Response;
   try {
@@ -67,7 +96,7 @@ export async function apiRaw(path: string, options: ApiOptions = {}): Promise<Re
     throw new ApiError('UNAUTHORIZED', i18n.t('error.unauthorized'), 401);
   }
   if (!res.ok) {
-    await parseApiErrorResponse(res);
+    await parseApiErrorResponse(res, path);
   }
   return res;
 }

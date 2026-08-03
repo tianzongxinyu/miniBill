@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/service"
 )
 
@@ -20,7 +21,7 @@ type backupUpdateReq struct {
 }
 
 func (s *Server) getBackup(c *gin.Context) {
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerOwner(c, func(db *sql.DB) {
 		view, err := s.backupSvc.View(db)
 		if serviceErr(c, err) {
 			return
@@ -35,7 +36,7 @@ func (s *Server) updateBackup(c *gin.Context) {
 		JSONValidation(c, "invalid body")
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
+	s.withLedgerOwner(c, func(db *sql.DB) {
 		cfg, err := s.backupSvc.UpdateConfig(db, service.BackupConfig{
 			Enabled:   req.Enabled,
 			Interval:  req.Interval,
@@ -59,11 +60,11 @@ func (s *Server) updateBackup(c *gin.Context) {
 
 func (s *Server) runBackup(c *gin.Context) {
 	if !s.backupSvc.DirConfigured() {
-		JSONValidation(c, "备份目录未配置")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.backup_dir_missing"))
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
-		user, ok := s.currentUser(c)
+	s.withLedgerOwner(c, func(db *sql.DB) {
+		user, ok := s.ledgerOwnerUser(c)
 		if !ok {
 			return
 		}
@@ -76,15 +77,17 @@ func (s *Server) runBackup(c *gin.Context) {
 }
 
 func (s *Server) listBackupFiles(c *gin.Context) {
-	user, ok := s.currentUser(c)
-	if !ok {
-		return
-	}
-	page, err := s.backupSvc.ListBackupFiles(user.Username)
-	if serviceErr(c, err) {
-		return
-	}
-	c.JSON(http.StatusOK, page)
+	s.withLedgerOwner(c, func(db *sql.DB) {
+		user, ok := s.ledgerOwnerUser(c)
+		if !ok {
+			return
+		}
+		page, err := s.backupSvc.ListBackupFiles(user.Username)
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, page)
+	})
 }
 
 type backupRestoreReq struct {
@@ -93,16 +96,16 @@ type backupRestoreReq struct {
 
 func (s *Server) restoreBackup(c *gin.Context) {
 	if !s.backupSvc.DirConfigured() {
-		JSONValidation(c, "备份目录未配置")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.backup_dir_missing"))
 		return
 	}
 	var req backupRestoreReq
 	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.Filename) == "" {
-		JSONValidation(c, "请选择备份文件")
+		JSONValidation(c, i18n.T(localeFromHeader(c), "error.backup_file_required"))
 		return
 	}
-	s.withLedger(c, func(db *sql.DB) {
-		user, ok := s.currentUser(c)
+	s.withLedgerOwner(c, func(db *sql.DB) {
+		user, ok := s.ledgerOwnerUser(c)
 		if !ok {
 			return
 		}

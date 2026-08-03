@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Anfangssaldo erforderlich, um Monatssalden abzuleiten",
   "validation.contact_name_required": "Name ist erforderlich",
   "validation.contact_name_taken": "Ein Kontakt mit diesem Namen existiert bereits",
-  "validation.tag_name_taken": "Ein Tag mit diesem Namen existiert bereits"
+  "validation.tag_name_taken": "Ein Tag mit diesem Namen existiert bereits",
+  "error.account_disabled": "Konto ist deaktiviert",
+  "error.admin_self_forbidden": "Diese Aktion kann nicht am eigenen Konto ausgeführt werden",
+  "error.last_admin": "Der letzte Admin kann nicht entfernt werden",
+  "error.ledger_forbidden": "Kein Zugriff auf dieses Buch",
+  "error.ledger_owner_only": "Nur der Buchbesitzer kann dies tun",
+  "error.ledger_readonly": "Dieses Buch ist schreibgeschützt"
 }

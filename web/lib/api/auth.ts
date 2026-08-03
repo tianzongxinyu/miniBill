@@ -1,10 +1,16 @@
 import type { User } from '@/lib/api/types';
+import { api } from '@/lib/api/http';
 
 export const TOKEN_KEY = 'token';
 export const USER_KEY = 'user';
 export const REMEMBER_KEY = 'remember_login';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
+
+/** Public registration gate: open when ALLOW_REGISTRATION or zero users. */
+export async function fetchRegistrationStatus(): Promise<{ open: boolean }> {
+  return api<{ open: boolean }>('/auth/registration', { authRedirect: false });
+}
 
 function authStore(persistent: boolean): Storage {
   return persistent ? localStorage : sessionStorage;
@@ -45,6 +51,7 @@ function clearAuthStorage() {
   localStorage.removeItem(USER_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
+  localStorage.removeItem('minibill_ledger_owner_id');
 }
 
 async function revokeAuthCookie(): Promise<void> {

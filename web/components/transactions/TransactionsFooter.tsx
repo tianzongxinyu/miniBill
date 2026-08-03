@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 import { compareYearMonth, nextMonth, prevMonth, type YearMonth } from '@/lib/api';
 
 function PlusIcon() {
@@ -30,6 +31,7 @@ export function TransactionsFooter({
   onMonthChange: (ym: YearMonth) => void;
 }) {
   const { t } = useTranslation();
+  const { canWrite } = useLedgerAccess();
 
   if (!monthFullyLoaded) return null;
 
@@ -52,10 +54,14 @@ export function TransactionsFooter({
         ) : (
           <span className="transactions-footer-nav-spacer" aria-hidden />
         )}
-        <Link href={addHref} className="fab-button fab-button-compact">
-          <PlusIcon />
-          <span>{t('transactions.addOne')}</span>
-        </Link>
+        {canWrite ? (
+          <Link href={addHref} className="fab-button fab-button-compact">
+            <PlusIcon />
+            <span>{t('transactions.addOne')}</span>
+          </Link>
+        ) : (
+          <span className="transactions-footer-nav-spacer" aria-hidden />
+        )}
         {canNext ? (
           <button
             type="button"

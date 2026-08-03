@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "ต้องมียอดเปิดเพื่อคำนวณยอดคงเหลือรายเดือน",
   "validation.contact_name_required": "ต้องระบุชื่อ",
   "validation.contact_name_taken": "มีผู้ติดต่อชื่อนี้อยู่แล้ว",
-  "validation.tag_name_taken": "มีแท็กชื่อนี้อยู่แล้ว"
+  "validation.tag_name_taken": "มีแท็กชื่อนี้อยู่แล้ว",
+  "error.account_disabled": "บัญชีถูกปิดใช้งาน",
+  "error.admin_self_forbidden": "ไม่สามารถทำรายการนี้กับบัญชีของตนเองได้",
+  "error.last_admin": "ไม่สามารถลบผู้ดูแลคนสุดท้ายได้",
+  "error.ledger_forbidden": "ไม่มีสิทธิ์เข้าถึงสมุดนี้",
+  "error.ledger_owner_only": "เฉพาะเจ้าของสมุดเท่านั้นที่ทำได้",
+  "error.ledger_readonly": "สมุดนี้อ่านอย่างเดียว"
 }

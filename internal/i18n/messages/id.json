@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Saldo awal diperlukan untuk menghitung saldo bulanan",
   "validation.contact_name_required": "Nama wajib diisi",
   "validation.contact_name_taken": "Kontak dengan nama ini sudah ada",
-  "validation.tag_name_taken": "Tag dengan nama ini sudah ada"
+  "validation.tag_name_taken": "Tag dengan nama ini sudah ada",
+  "error.account_disabled": "Akun dinonaktifkan",
+  "error.admin_self_forbidden": "Tidak dapat melakukan tindakan ini pada akun sendiri",
+  "error.last_admin": "Tidak dapat menghapus admin terakhir",
+  "error.ledger_forbidden": "Tidak ada akses ke buku ini",
+  "error.ledger_owner_only": "Hanya pemilik buku yang dapat melakukannya",
+  "error.ledger_readonly": "Buku ini hanya-baca"
 }

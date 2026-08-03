@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "मासिक शेष निकालने के लिए शुरुआती शेष आवश्यक है",
   "validation.contact_name_required": "नाम आवश्यक है",
   "validation.contact_name_taken": "इस नाम का संपर्क पहले से मौजूद है",
-  "validation.tag_name_taken": "इस नाम का टैग पहले से मौजूद है"
+  "validation.tag_name_taken": "इस नाम का टैग पहले से मौजूद है",
+  "error.account_disabled": "खाता अक्षम है",
+  "error.admin_self_forbidden": "अपने खाते पर यह क्रिया नहीं कर सकते",
+  "error.last_admin": "अंतिम व्यवस्थापक हटाया नहीं जा सकता",
+  "error.ledger_forbidden": "इस बही तक पहुँच नहीं",
+  "error.ledger_owner_only": "केवल बही स्वामी यह कर सकता है",
+  "error.ledger_readonly": "यह बही केवल पढ़ने योग्य है"
 }

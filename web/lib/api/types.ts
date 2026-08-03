@@ -1,5 +1,34 @@
-export type User = { id: number; username: string };
+export type User = { id: number; username: string; is_admin?: boolean };
 export type AuthResponse = { token: string; user: User };
+
+export type LedgerPermission = 'owner' | 'read' | 'edit';
+
+export type LedgerAccessItem = {
+  owner_id: number;
+  username: string;
+  permission: LedgerPermission;
+};
+
+export type LedgerGrantItem = {
+  id: number;
+  grantee_user_id: number;
+  grantee_username: string;
+  permission: 'read' | 'edit';
+  created_at: string;
+};
+
+export type DirectoryUser = {
+  id: number;
+  username: string;
+};
+
+export type AdminUser = {
+  id: number;
+  username: string;
+  is_admin: boolean;
+  disabled: boolean;
+  created_at: string;
+};
 
 export type Tag = {
   id: number;

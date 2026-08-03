@@ -7,6 +7,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { AuthPageShell } from '@/components/ui/AuthPageShell';
 import { formatApiError } from '@/lib/errors';
 import { redirectToHome } from '@/lib/api';
+import { useRegistrationOpen } from '@/hooks/useRegistrationOpen';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -15,9 +16,11 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const registrationOpen = useRegistrationOpen(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (registrationOpen === false) return;
     setError('');
     if (password !== confirmPassword) {
       setError(t('auth.passwordMismatch'));
@@ -31,6 +34,8 @@ export default function RegisterPage() {
     }
   };
 
+  const closed = registrationOpen === false;
+
   return (
     <AuthPageShell
       asideTitle={t('auth.getStarted')}
@@ -42,12 +47,16 @@ export default function RegisterPage() {
           <h2 className="text-xl font-semibold text-ink">{t('auth.registerAccount')}</h2>
           <p className="text-sm text-muted mt-1">{t('auth.fillInfo')}</p>
         </div>
+        {closed && (
+          <p className="text-expense text-sm animate-fade-in">{t('error.registrationClosed')}</p>
+        )}
         {error && <p className="text-expense text-sm animate-fade-in">{error}</p>}
         <input
           className="field"
           placeholder={t('auth.usernamePlaceholder')}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          disabled={closed}
         />
         <input
           type="password"
@@ -56,6 +65,7 @@ export default function RegisterPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
+          disabled={closed}
         />
         <input
           type="password"
@@ -64,8 +74,9 @@ export default function RegisterPage() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           autoComplete="new-password"
+          disabled={closed}
         />
-        <button type="submit" className="btn-primary-block">
+        <button type="submit" className="btn-primary-block" disabled={closed || registrationOpen === null}>
           {t('auth.register')}
         </button>
         <p className="text-center text-sm text-muted">

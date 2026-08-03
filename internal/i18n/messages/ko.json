@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "월별 잔액 추산에 기초 잔액이 필요합니다",
   "validation.contact_name_required": "이름은 필수입니다",
   "validation.contact_name_taken": "같은 이름의 연락처가 이미 있습니다",
-  "validation.tag_name_taken": "같은 이름의 태그가 이미 있습니다"
+  "validation.tag_name_taken": "같은 이름의 태그가 이미 있습니다",
+  "error.account_disabled": "계정이 비활성화되었습니다",
+  "error.admin_self_forbidden": "자신의 계정에는 이 작업을 수행할 수 없습니다",
+  "error.last_admin": "마지막 관리자는 제거할 수 없습니다",
+  "error.ledger_forbidden": "이 장부에 접근할 수 없습니다",
+  "error.ledger_owner_only": "장부 소유자만 수행할 수 있습니다",
+  "error.ledger_readonly": "이 장부는 읽기 전용입니다"
 }

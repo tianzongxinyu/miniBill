@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "月次残高の推計には期首残高が必要です",
   "validation.contact_name_required": "名前は必須です",
   "validation.contact_name_taken": "同名の連絡先が既に存在します",
-  "validation.tag_name_taken": "同名のタグが既に存在します"
+  "validation.tag_name_taken": "同名のタグが既に存在します",
+  "error.account_disabled": "アカウントは無効です",
+  "error.admin_self_forbidden": "自分自身にはこの操作を実行できません",
+  "error.last_admin": "最後の管理者は削除できません",
+  "error.ledger_forbidden": "この帳簿にアクセスできません",
+  "error.ledger_owner_only": "帳簿の所有者のみ実行できます",
+  "error.ledger_readonly": "この帳簿は読み取り専用です"
 }

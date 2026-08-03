@@ -8,6 +8,7 @@ import { AuthPageShell } from '@/components/ui/AuthPageShell';
 import { formatApiError } from '@/lib/errors';
 import { AppLogo } from '@/components/ui/AppLogo';
 import { redirectToHome } from '@/lib/api';
+import { useRegistrationOpen } from '@/hooks/useRegistrationOpen';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const registrationOpen = useRegistrationOpen(true) !== false;
 
   useLayoutEffect(() => {
     if (!ready || !user) return;
@@ -82,12 +84,14 @@ export default function LoginPage() {
         <button type="submit" className="btn-primary-block">
           {t('auth.login')}
         </button>
-        <p className="text-center text-sm text-muted">
-          {t('auth.noAccount')}
-          <Link href="/register/" className="text-ink underline underline-offset-4 hover:opacity-70 transition-opacity ml-1">
-            {t('auth.register')}
-          </Link>
-        </p>
+        {registrationOpen && (
+          <p className="text-center text-sm text-muted">
+            {t('auth.noAccount')}
+            <Link href="/register/" className="text-ink underline underline-offset-4 hover:opacity-70 transition-opacity ml-1">
+              {t('auth.register')}
+            </Link>
+          </p>
+        )}
       </form>
     </AuthPageShell>
   );

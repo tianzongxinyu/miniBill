@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Solde d’ouverture requis pour déduire les soldes mensuels",
   "validation.contact_name_required": "Le nom est requis",
   "validation.contact_name_taken": "Un contact portant ce nom existe déjà",
-  "validation.tag_name_taken": "Une étiquette portant ce nom existe déjà"
+  "validation.tag_name_taken": "Une étiquette portant ce nom existe déjà",
+  "error.account_disabled": "Le compte est désactivé",
+  "error.admin_self_forbidden": "Impossible d’effectuer cette action sur votre propre compte",
+  "error.last_admin": "Impossible de retirer le dernier administrateur",
+  "error.ledger_forbidden": "Pas d’accès à ce livre",
+  "error.ledger_owner_only": "Seul le propriétaire du livre peut le faire",
+  "error.ledger_readonly": "Ce livre est en lecture seule"
 }

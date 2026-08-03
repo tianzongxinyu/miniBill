@@ -196,13 +196,15 @@ body {
   }
 
   .page-back-link-floating {
-    @apply fixed z-40 left-1/2 -translate-x-1/2 w-[min(100%-1.5rem,42rem)] mt-0;
+    @apply fixed z-40 inset-x-0 mx-auto w-[min(100%-1.5rem,42rem)] mt-0;
     @apply bg-surface/45 backdrop-blur-xl shadow-panel;
     bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   @media (min-width: 1024px) {
     .page-back-link-floating {
+      @apply left-[var(--sidebar-width,16rem)] right-0;
+      @apply lg:transition-[left] lg:duration-300 lg:ease-out;
       bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
     }
   }

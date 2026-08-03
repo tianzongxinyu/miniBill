@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 import { PageBackLink, PageFooterActions } from '@/components/ui/BackLink';
 import { DatePickerField } from '@/components/ui/DatePickerField';
 import { TagCombobox } from '@/components/ui/TagCombobox';
@@ -303,7 +304,17 @@ function AddPageInner() {
 export default function AddPage() {
   return (
     <RequireAuth>
-      <AddPageInner />
+      <AddPageGate />
     </RequireAuth>
   );
+}
+
+function AddPageGate() {
+  const { canWrite } = useLedgerAccess();
+  const router = useRouter();
+  useEffect(() => {
+    if (!canWrite) router.replace('/');
+  }, [canWrite, router]);
+  if (!canWrite) return null;
+  return <AddPageInner />;
 }

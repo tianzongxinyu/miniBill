@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Saldo iniziale richiesto per derivare i saldi mensili",
   "validation.contact_name_required": "Nome obbligatorio",
   "validation.contact_name_taken": "Esiste già un contatto con questo nome",
-  "validation.tag_name_taken": "Esiste già un tag con questo nome"
+  "validation.tag_name_taken": "Esiste già un tag con questo nome",
+  "error.account_disabled": "Account disattivato",
+  "error.admin_self_forbidden": "Non puoi eseguire questa azione sul tuo account",
+  "error.last_admin": "Impossibile rimuovere l’ultimo amministratore",
+  "error.ledger_forbidden": "Nessun accesso a questo libro",
+  "error.ledger_owner_only": "Solo il proprietario del libro può farlo",
+  "error.ledger_readonly": "Questo libro è in sola lettura"
 }

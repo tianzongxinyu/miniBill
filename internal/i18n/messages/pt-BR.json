@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Saldo inicial necessário para calcular saldos mensais",
   "validation.contact_name_required": "Nome é obrigatório",
   "validation.contact_name_taken": "Já existe um contato com este nome",
-  "validation.tag_name_taken": "Já existe uma tag com este nome"
+  "validation.tag_name_taken": "Já existe uma tag com este nome",
+  "error.account_disabled": "A conta está desativada",
+  "error.admin_self_forbidden": "Não é possível executar esta ação na própria conta",
+  "error.last_admin": "Não é possível remover o último administrador",
+  "error.ledger_forbidden": "Sem acesso a este livro",
+  "error.ledger_owner_only": "Somente o dono do livro pode fazer isso",
+  "error.ledger_readonly": "Este livro é somente leitura"
 }

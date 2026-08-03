@@ -151,11 +151,28 @@ patch_port_files() {
     fi
 }
 
+resolve_allow_registration() {
+    local val=""
+    if [ -n "${wizard_allow_registration:-}" ]; then
+        val="$(printf '%s' "$wizard_allow_registration" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+    elif [ "${wizard_allow_registration+set}" = "set" ]; then
+        val="true"
+    else
+        val="$(read_env_value "ALLOW_REGISTRATION" 2>/dev/null || true)"
+        val="$(printf '%s' "$val" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+    fi
+    case "$val" in
+        false|0|no|off) printf 'false' ;;
+        *) printf 'true' ;;
+    esac
+}
+
 write_env_file() {
-    local port pkgvar backup_dir backup_line
+    local port pkgvar backup_dir backup_line allow_reg
     port="$(resolve_port)"
     pkgvar="$(resolve_pkgvar)"
     backup_dir="$(resolve_backup_dir)"
+    allow_reg="$(resolve_allow_registration)"
 
     [ -n "$pkgvar" ] || return 1
     mkdir -p "${pkgvar}/data" 2>/dev/null || true
@@ -167,7 +184,7 @@ write_env_file() {
     fi
 
     cat > "${pkgvar}/minibill.env" <<EOF
-ALLOW_REGISTRATION=true
+ALLOW_REGISTRATION=${allow_reg}
 PORT=${port}
 TZ=Asia/Shanghai
 ${backup_line}

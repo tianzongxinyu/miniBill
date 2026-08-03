@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Для расчёта месячных остатков нужен начальный остаток",
   "validation.contact_name_required": "Имя обязательно",
   "validation.contact_name_taken": "Контакт с таким именем уже существует",
-  "validation.tag_name_taken": "Тег с таким именем уже существует"
+  "validation.tag_name_taken": "Тег с таким именем уже существует",
+  "error.account_disabled": "Учётная запись отключена",
+  "error.admin_self_forbidden": "Нельзя выполнить это действие над своей учёткой",
+  "error.last_admin": "Нельзя удалить последнего администратора",
+  "error.ledger_forbidden": "Нет доступа к этой книге",
+  "error.ledger_owner_only": "Только владелец книги может это сделать",
+  "error.ledger_readonly": "Эта книга только для чтения"
 }

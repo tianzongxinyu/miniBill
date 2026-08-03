@@ -7,7 +7,8 @@ Base URL: `/api`
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/auth/register` | 注册（同时 Set-Cookie） |
+| GET | `/auth/registration` | 注册是否开放 `{ open: boolean }`（`ALLOW_REGISTRATION` 为 true，或系统尚无用户时为 true） |
+| POST | `/auth/register` | 注册（同时 Set-Cookie；`open` 为 false 时 403） |
 | POST | `/auth/login` | 登录（可选 `remember`，见下） |
 | GET | `/auth/session` | 当前会话（需登录，返回 `{ token, user }`） |
 | POST | `/auth/logout` | 清除 Cookie（204） |
@@ -15,7 +16,35 @@ Base URL: `/api`
 
 `POST /auth/login` 请求体：`{ "username", "password", "remember"?: boolean }`。`remember` 省略或为 `true` 时签发 `JWT_EXPIRE_DAYS`（默认 30 天）令牌，写入 HttpOnly Cookie 与 `localStorage`；`remember: false` 时签发 24 小时令牌，Cookie 与 `sessionStorage` 有效期均为 24 小时。
 
+认证响应中的 `user` 含 `{ id, username, is_admin }`。账号被作废（`disabled`）后无法登录；已签发 JWT 在鉴权时也会因 `disabled` 立即失效。
+
+首个注册用户自动成为管理员。`ALLOW_REGISTRATION=false` 时，系统已有用户则禁止自助注册；零用户时仍允许注册首位管理员。管理员创建用户不受该开关限制。
+
 前端请求需 `credentials: same-origin` 以携带 Cookie。WebView（如飞牛 App）在 localStorage 被清空时，可通过 Cookie 调用 `GET /auth/session` 恢复登录态。
+
+账本数据接口可通过请求头 `X-Ledger-Owner-Id` 指定目标账本主人（缺省为当前登录用户）。需对该账本拥有 `owner` / `edit` / `read` 权限；主人被作废后授权失效。
+
+## 管理员
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/admin/users` | 用户列表（需管理员） |
+| POST | `/admin/users` | 添加用户 `{ username, password }` |
+| PUT | `/admin/users/:id` | 更新 `{ is_admin?, disabled? }`（不可操作自己；不可去掉最后一名活跃管理员） |
+| POST | `/admin/users/:id/reset-password` | 重置密码 `{ password }` |
+| DELETE | `/admin/users/:id` | 硬删除用户及账本目录 |
+
+## 账本授权
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/ledgers` | 可访问账本列表（自己 + 有效授权） |
+| GET | `/users/directory` | 未禁用用户目录（不含自己） |
+| GET | `/ledger/grants` | 我发出的授权 |
+| PUT | `/ledger/grants` | upsert `{ grantee_user_id, permission: read\|edit }` |
+| DELETE | `/ledger/grants/:granteeUserId` | 撤销授权 |
+
+权限：`read` 可查看；`edit` 可改流水/标签/联系人/月度余额；`settings` 写入、CSV、备份仅主人。
 
 ## 业务
 

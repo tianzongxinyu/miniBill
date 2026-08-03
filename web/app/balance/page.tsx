@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RequireAuth } from '@/components/RequireAuth';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 import { LoadingFallback } from '@/components/ui/LoadingFallback';
 import { BalanceRegisterForm } from '@/components/balance/BalanceRegisterForm';
 import {
@@ -43,9 +44,21 @@ function BalanceContent() {
 export default function BalancePage() {
   return (
     <RequireAuth>
-      <Suspense fallback={<LoadingFallback />}>
-        <BalanceContent />
-      </Suspense>
+      <BalanceGate />
     </RequireAuth>
+  );
+}
+
+function BalanceGate() {
+  const { canWrite } = useLedgerAccess();
+  const router = useRouter();
+  useEffect(() => {
+    if (!canWrite) router.replace('/');
+  }, [canWrite, router]);
+  if (!canWrite) return null;
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <BalanceContent />
+    </Suspense>
   );
 }

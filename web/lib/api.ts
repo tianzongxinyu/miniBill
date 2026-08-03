@@ -4,3 +4,4 @@ export * from '@/lib/api/http';
 export * from '@/lib/api/utils';
 export * from '@/lib/api/stats';
 export * from '@/lib/api/ledger';
+export * from '@/lib/api/access';

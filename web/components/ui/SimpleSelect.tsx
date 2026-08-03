@@ -16,6 +16,8 @@ type SimpleSelectProps = {
   disabled?: boolean;
   ariaLabel?: string;
   className?: string;
+  /** Shown when value is empty / unmatched. */
+  placeholder?: string;
   /** Default uses `.field`; compact uses soft date-picker-like trigger. */
   size?: 'default' | 'compact';
 };
@@ -27,6 +29,7 @@ export function SimpleSelect({
   disabled = false,
   ariaLabel,
   className,
+  placeholder,
   size = 'default',
 }: SimpleSelectProps) {
   const [open, setOpen] = useState(false);
@@ -39,8 +42,8 @@ export function SimpleSelect({
   useClickOutside([rootRef, panelRef], close);
 
   const selected = options.find((o) => o.value === value);
-  const displayLabel = selected?.label ?? value;
-  const isPlaceholder = value === '';
+  const isPlaceholder = !selected;
+  const displayLabel = selected?.label ?? (isPlaceholder ? placeholder || '—' : value);
   const compact = size === 'compact';
 
   const select = (next: string) => {
@@ -78,13 +81,14 @@ export function SimpleSelect({
         <span
           className={[
             'truncate',
+            isPlaceholder && 'text-muted',
             compact && isPlaceholder && 'csv-map-field-placeholder',
             compact && !isPlaceholder && 'font-medium text-ink',
           ]
             .filter(Boolean)
             .join(' ')}
         >
-          {displayLabel || '—'}
+          {displayLabel}
         </span>
         <svg
           width="16"

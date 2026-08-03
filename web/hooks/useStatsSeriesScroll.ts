@@ -170,15 +170,24 @@ export function useStatsSeriesScroll<T>({
         setHasMoreOlder(false);
         return;
       }
-      prependWidthRef.current = data.items.length * resolvePointWidth();
-      setItems((prev) => [...data.items, ...prev]);
+      setItems((prev) => {
+        const seen = new Set(prev.map(getItemKey));
+        const older = data.items.filter((item) => !seen.has(getItemKey(item)));
+        prependWidthRef.current = older.length * resolvePointWidth();
+        if (older.length === 0) return prev;
+        return [...older, ...prev];
+      });
       setHasMoreOlder(data.has_more_older);
       setError(null);
-      requestAnimationFrame(() => {
-        if (generation !== generationRef.current) return;
-        const el = scrollRef.current;
-        if (el) el.scrollLeft += prependWidthRef.current;
-      });
+      const prependWidth = prependWidthRef.current;
+      prependWidthRef.current = 0;
+      if (prependWidth > 0) {
+        requestAnimationFrame(() => {
+          if (generation !== generationRef.current) return;
+          const el = scrollRef.current;
+          if (el) el.scrollLeft += prependWidth;
+        });
+      }
     } catch (e) {
       if (generation !== generationRef.current) return;
       setError(formatApiError(e, i18n.t('common.loadFailed')));
@@ -209,7 +218,12 @@ export function useStatsSeriesScroll<T>({
         setHasMoreNewer(false);
         return;
       }
-      setItems((prev) => [...prev, ...data.items]);
+      setItems((prev) => {
+        const seen = new Set(prev.map(getItemKey));
+        const newer = data.items.filter((item) => !seen.has(getItemKey(item)));
+        if (newer.length === 0) return prev;
+        return [...prev, ...newer];
+      });
       setHasMoreNewer(data.has_more_newer);
       setError(null);
     } catch (e) {

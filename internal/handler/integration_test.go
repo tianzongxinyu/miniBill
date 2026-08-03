@@ -22,11 +22,16 @@ import (
 
 func setupTestServer(t *testing.T) (*httptest.Server, config.Config) {
 	t.Helper()
+	return setupTestServerOpts(t, true)
+}
+
+func setupTestServerOpts(t *testing.T, allowRegistration bool) (*httptest.Server, config.Config) {
+	t.Helper()
 	gin.SetMode(gin.TestMode)
 	dir := t.TempDir()
 	cfg := config.Config{
 		DataDir:           dir,
-		AllowRegistration: true,
+		AllowRegistration: allowRegistration,
 		JWTExpireDays:     7,
 		MigrationsSystem:  filepath.Join("..", "..", "migrations", "system"),
 		MigrationsLedger:  filepath.Join("..", "..", "migrations", "ledger"),
@@ -84,6 +89,57 @@ func TestHealth(t *testing.T) {
 	}
 	if res.StatusCode != http.StatusOK {
 		t.Fatalf("health status %d", res.StatusCode)
+	}
+}
+
+func TestRegistrationGateWhenClosed(t *testing.T) {
+	ts, _ := setupTestServerOpts(t, false)
+	defer ts.Close()
+
+	resStatus, err := http.Get(ts.URL + "/api/auth/registration")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resStatus.StatusCode != http.StatusOK {
+		t.Fatalf("registration status %d", resStatus.StatusCode)
+	}
+	var status struct {
+		Open bool `json:"open"`
+	}
+	json.NewDecoder(resStatus.Body).Decode(&status)
+	resStatus.Body.Close()
+	if !status.Open {
+		t.Fatal("expected open=true when no users")
+	}
+
+	body, _ := json.Marshal(map[string]string{"username": "alice", "password": "secret1"})
+	res, err := http.Post(ts.URL+"/api/auth/register", "application/json", bytes.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.StatusCode != http.StatusCreated {
+		t.Fatalf("first register status %d, want 201", res.StatusCode)
+	}
+	res.Body.Close()
+
+	resStatus2, err := http.Get(ts.URL + "/api/auth/registration")
+	if err != nil {
+		t.Fatal(err)
+	}
+	json.NewDecoder(resStatus2.Body).Decode(&status)
+	resStatus2.Body.Close()
+	if status.Open {
+		t.Fatal("expected open=false after first user")
+	}
+
+	body2, _ := json.Marshal(map[string]string{"username": "bob", "password": "secret1"})
+	res2, err := http.Post(ts.URL+"/api/auth/register", "application/json", bytes.NewReader(body2))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer res2.Body.Close()
+	if res2.StatusCode != http.StatusForbidden {
+		t.Fatalf("second register status %d, want 403", res2.StatusCode)
 	}
 }
 

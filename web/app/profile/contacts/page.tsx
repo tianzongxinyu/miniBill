@@ -20,9 +20,11 @@ import {
   type Contact,
 } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
+import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 
 function ContactsContent() {
   const { t } = useTranslation();
+  const { canWrite } = useLedgerAccess();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [renaming, setRenaming] = useState(false);
@@ -114,6 +116,7 @@ function ContactsContent() {
   return (
     <div className="page-detail-with-floating-back">
       {error && <p className="text-expense text-sm mb-2">{error}</p>}
+      {canWrite && (
       <form onSubmit={create} className="flex gap-2 mb-2">
         <input
           className="field flex-1"
@@ -124,6 +127,7 @@ function ContactsContent() {
         />
         <button className="btn-primary shrink-0">{t('contacts.add')}</button>
       </form>
+      )}
       {filteredItems.length === 0 ? (
         name.trim() ? <EmptyNotebook message={t('common.noMatchItems')} /> : <Notebook />
       ) : (

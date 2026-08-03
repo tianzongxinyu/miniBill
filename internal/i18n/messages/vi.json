@@ -74,5 +74,11 @@
   "validation.opening_balance_required": "Cần số dư đầu kỳ để suy ra số dư tháng",
   "validation.contact_name_required": "Yêu cầu tên",
   "validation.contact_name_taken": "Đã có liên hệ với tên này",
-  "validation.tag_name_taken": "Đã có thẻ với tên này"
+  "validation.tag_name_taken": "Đã có thẻ với tên này",
+  "error.account_disabled": "Tài khoản đã bị vô hiệu hóa",
+  "error.admin_self_forbidden": "Không thể thực hiện thao tác này trên chính tài khoản của bạn",
+  "error.last_admin": "Không thể gỡ quản trị viên cuối cùng",
+  "error.ledger_forbidden": "Không có quyền truy cập sổ này",
+  "error.ledger_owner_only": "Chỉ chủ sổ mới có thể thực hiện",
+  "error.ledger_readonly": "Sổ này ở chế độ chỉ đọc"
 }
