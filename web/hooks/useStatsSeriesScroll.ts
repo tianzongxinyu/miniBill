@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { StatsSearchFilter, StatsSeriesPage } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
-import { maxScrollLeft } from '@/lib/statsChartScrollSync';
+import { isAtScrollEnd, maxScrollLeft } from '@/lib/statsChartScrollSync';
 import i18n from '@/src/i18n';
 
 type SeriesFetchOpts = {
@@ -55,8 +55,10 @@ export function useStatsSeriesScroll<T>({
   const getPointWidthRef = useRef(getPointWidth);
   const generationRef = useRef(0);
   const searchFilterRef = useRef(searchFilter);
+  const hasMoreOlderRef = useRef(false);
   getPointWidthRef.current = getPointWidth;
   searchFilterRef.current = searchFilter;
+  hasMoreOlderRef.current = hasMoreOlder;
 
   const resolvePointWidth = useCallback(() => {
     return getPointWidthRef.current?.() ?? pointWidth;
@@ -74,15 +76,26 @@ export function useStatsSeriesScroll<T>({
       el.scrollLeft = maxScrollLeft(el.scrollWidth, el.clientWidth);
     };
 
+    const settled = () => {
+      const overflow = el.scrollWidth > el.clientWidth + 1;
+      const atEnd = isAtScrollEnd(el.scrollLeft, el.clientWidth, el.scrollWidth);
+      if (!atEnd) return false;
+      // Keep preferring end until we overflow or there is no older data to autofill.
+      return overflow || !hasMoreOlderRef.current;
+    };
+
     const tryScroll = (attemptsLeft: number) => {
       requestAnimationFrame(() => {
         apply();
-        if (el.scrollLeft > 0 || el.scrollWidth <= el.clientWidth + 1) return;
+        if (settled()) {
+          shouldScrollEndRef.current = false;
+          return;
+        }
         if (attemptsLeft > 0) tryScroll(attemptsLeft - 1);
       });
     };
 
-    requestAnimationFrame(() => tryScroll(3));
+    requestAnimationFrame(() => tryScroll(8));
   }, [scrollRef]);
 
   const loadInitial = useCallback(async () => {
@@ -118,6 +131,7 @@ export function useStatsSeriesScroll<T>({
   useEffect(() => {
     if (!enabled) {
       generationRef.current += 1;
+      shouldScrollEndRef.current = false;
       setItems([]);
       setHasMoreOlder(false);
       setHasMoreNewer(false);
@@ -131,27 +145,28 @@ export function useStatsSeriesScroll<T>({
 
   useEffect(() => {
     if (!shouldScrollEndRef.current) return;
-    shouldScrollEndRef.current = false;
-
-    const el = scrollRef.current;
-    if (!el) {
-      scrollToEnd();
-      return;
-    }
 
     scrollToEnd();
 
-    let observer: ResizeObserver | null = null;
-    if (el.scrollWidth <= el.clientWidth + 1) {
-      observer = new ResizeObserver(() => {
-        el.scrollLeft = maxScrollLeft(el.scrollWidth, el.clientWidth);
-        if (el.scrollWidth > el.clientWidth + 1) observer?.disconnect();
-      });
-      observer.observe(el);
-    }
+    const el = scrollRef.current;
+    if (!el) return;
 
-    return () => observer?.disconnect();
-  }, [items, scrollToEnd, scrollRef]);
+    // Content width may grow without resizing the scroll container box.
+    const inner = el.firstElementChild;
+    const targets: Element[] = [el];
+    if (inner) targets.push(inner);
+
+    const observer = new ResizeObserver(() => {
+      if (!shouldScrollEndRef.current) {
+        observer.disconnect();
+        return;
+      }
+      scrollToEnd();
+    });
+    for (const target of targets) observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [items, hasMoreOlder, scrollToEnd, scrollRef]);
 
   const loadOlder = useCallback(async () => {
     if (!enabled || loadingOlderRef.current || !hasMoreOlder || items.length === 0) return;
@@ -184,6 +199,10 @@ export function useStatsSeriesScroll<T>({
       if (prependWidth > 0) {
         requestAnimationFrame(() => {
           if (generation !== generationRef.current) return;
+          if (shouldScrollEndRef.current) {
+            scrollToEnd();
+            return;
+          }
           const el = scrollRef.current;
           if (el) el.scrollLeft += prependWidth;
         });
@@ -199,7 +218,7 @@ export function useStatsSeriesScroll<T>({
         loadingOlderRef.current = false;
       }
     }
-  }, [enabled, hasMoreOlder, items, defaultLimit, getItemKey, resolvePointWidth, scrollRef]);
+  }, [enabled, hasMoreOlder, items, defaultLimit, getItemKey, resolvePointWidth, scrollRef, scrollToEnd]);
 
   const loadNewer = useCallback(async () => {
     if (!enabled || loadingNewerRef.current || !hasMoreNewer || items.length === 0) return;
