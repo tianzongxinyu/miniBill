@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Contabilidad ligera autoalojada",
-    "subtitle": "Libro de cuentas personal",
-    "titleOtherLedger": "Libro de {{name}}"
+    "subtitle": "Libro de cuentas personal"
   },
   "common": {
     "back": "Atrás",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Esquema de colores actualizado",
     "failed": "Error",
     "language": "Idioma",
-    "languageSearch": "Buscar idiomas"
+    "languageSearch": "Buscar idiomas",
+    "theme": "Apariencia",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema",
+    "themeUpdated": "Apariencia actualizada",
+    "openFnosAppSetting": "Abrir ajustes de la app fnOS"
   },
   "tags": {
     "newPlaceholder": "Nueva etiqueta",
@@ -345,7 +350,7 @@
     "backupFailed": "Error en la copia de seguridad",
     "backupDir": "Directorio de copias de seguridad",
     "configured": "Configurado: {{path}}",
-    "dirNotConfigured": "Carpeta backup sin configurar. Ajustes de app o variable de entorno.",
+    "dirNotConfigured": "Directorio de copia no configurado. Elija una carpeta en fnOS o en ajustes/variables de entorno.",
     "scheduledBackup": "Copia de seguridad programada",
     "enable": "Activar",
     "interval": "Intervalo",
@@ -370,7 +375,15 @@
     "saveSettings": "Guardar ajustes",
     "runNow": "Copiar ahora",
     "runNowDescription": "Exporta el CSV del libro de cuentas actual y lo comprime en un zip en el directorio de copias de seguridad.",
-    "running": "Copiando…"
+    "running": "Copiando…",
+    "pickBackupDir": "Elegir carpeta de copia",
+    "refreshBackupAuth": "Actualizar carpeta autorizada",
+    "pickingBackupDir": "Eligiendo…",
+    "syncingBackupDir": "Sincronizando…",
+    "backupDirSynced": "Carpeta de copia actualizada",
+    "backupDirPickFailed": "No se pudo elegir o sincronizar la carpeta de copia",
+    "openBackupFolder": "Abrir en el administrador de archivos",
+    "openLastBackupFile": "Abrir la ultima copia"
   },
   "add": {
     "editTitle": "Editar transacción",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Sobrescribir entrada existente",
     "overwriteWithAmount": "{{month}} tiene {{amount}}. ¿Sobrescribir?",
     "overwriteWithoutAmount": "{{month}} ya tiene un saldo registrado. ¿Sobrescribir?",
-    "confirmOverwrite": "Confirmar sobrescritura"
+    "confirmOverwrite": "Confirmar sobrescritura",
+    "delete": "Eliminar registro",
+    "deleting": "Eliminando…",
+    "confirmDeleteTitle": "¿Eliminar registro?",
+    "confirmDeleteMessage": "No se puede deshacer. El gasto diario calculado (transacción del sistema) de {{month}} también se eliminará."
   },
   "picker": {
     "prevYearGroup": "Rango de años anterior",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Límite de filas CSV superado",
     "balanceDateFormat": "La fecha de la fila de saldo debe ser YYYY-MM",
     "balanceNegative": "El saldo no puede ser negativo",
+    "balanceMonthNotOpen": "El saldo del mes actual solo se puede registrar a partir del día 25",
     "duplicateBalance": "Saldo mensual duplicado",
     "txDateFormat": "La fecha de la transacción debe ser YYYY-MM-DD",
     "tagNameEmpty": "El nombre de la etiqueta no puede estar vacío",

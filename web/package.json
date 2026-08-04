@@ -12,6 +12,7 @@
     "i18n:sync-zh-hant": "node ../scripts/i18n/sync-zh-hant.mjs"
   },
   "dependencies": {
+    "@trimjs/web-app": "^0.4.2",
     "i18next": "^26.3.1",
     "next": "^14.2.18",
     "react": "^18.3.1",

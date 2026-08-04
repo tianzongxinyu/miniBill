@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "軽量セルフホスト型家計簿",
-    "subtitle": "個人帳簿",
-    "titleOtherLedger": "{{name}}の帳簿"
+    "subtitle": "個人帳簿"
   },
   "common": {
     "back": "戻る",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "配色を更新しました",
     "failed": "失敗",
     "language": "言語",
-    "languageSearch": "検索"
+    "languageSearch": "検索",
+    "theme": "外観",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "themeSystem": "システム",
+    "themeUpdated": "外観を更新しました",
+    "openFnosAppSetting": "fnOSのアプリ設定を開く"
   },
   "tags": {
     "newPlaceholder": "新しいタグ",
@@ -345,7 +350,7 @@
     "backupFailed": "バックアップに失敗しました",
     "backupDir": "バックアップディレクトリ",
     "configured": "設定済み：{{path}}",
-    "dirNotConfigured": "バックアップ先未設定。アプリ設定または環境変数で指定。",
+    "dirNotConfigured": "バックアップディレクトリ未設定。fnOSでフォルダを選ぶか、アプリ設定/環境変数で指定してください。",
     "scheduledBackup": "定期バックアップ",
     "enable": "有効",
     "interval": "間隔",
@@ -370,7 +375,15 @@
     "saveSettings": "設定を保存",
     "runNow": "今すぐバックアップ",
     "runNowDescription": "CSVをzipでバックアップ先へ。",
-    "running": "バックアップ中…"
+    "running": "バックアップ中…",
+    "pickBackupDir": "バックアップフォルダを選択",
+    "refreshBackupAuth": "認可フォルダを更新",
+    "pickingBackupDir": "選択中…",
+    "syncingBackupDir": "同期中…",
+    "backupDirSynced": "バックアップフォルダを更新しました",
+    "backupDirPickFailed": "バックアップフォルダの選択または同期に失敗しました",
+    "openBackupFolder": "ファイルマネージャーで開く",
+    "openLastBackupFile": "最新のバックアップを開く"
   },
   "add": {
     "editTitle": "取引を編集",
@@ -400,7 +413,11 @@
     "overwriteTitle": "上書き",
     "overwriteWithAmount": "{{month}}は{{amount}}あり。上書き？",
     "overwriteWithoutAmount": "{{month}}は登録済み。上書き？",
-    "confirmOverwrite": "上書きを確認"
+    "confirmOverwrite": "上書きを確認",
+    "delete": "登録を削除",
+    "deleting": "削除中…",
+    "confirmDeleteTitle": "登録を削除しますか",
+    "confirmDeleteMessage": "削除後は元に戻せません。{{month}} の推計日常支出（システム取引）も削除されます。"
   },
   "picker": {
     "prevYearGroup": "前年",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV の行数上限を超えました",
     "balanceDateFormat": "残高行の日付は YYYY-MM 形式である必要があります",
     "balanceNegative": "残高はマイナスにできません",
+    "balanceMonthNotOpen": "当月の残高は毎月25日以降に登録できます",
     "duplicateBalance": "月次残高が重複しています",
     "txDateFormat": "取引日は YYYY-MM-DD 形式である必要があります",
     "tagNameEmpty": "タグ名を空にできません",

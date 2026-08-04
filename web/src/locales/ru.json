@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Лёгкий самохостинговый учёт",
-    "subtitle": "Личная книга учёта",
-    "titleOtherLedger": "Книга {{name}}"
+    "subtitle": "Личная книга учёта"
   },
   "common": {
     "back": "Назад",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Цветовая схема обновлена",
     "failed": "Ошибка",
     "language": "Язык",
-    "languageSearch": "Поиск языков"
+    "languageSearch": "Поиск языков",
+    "theme": "Оформление",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "themeSystem": "Системная",
+    "themeUpdated": "Оформление обновлено",
+    "openFnosAppSetting": "Открыть настройки приложения fnOS"
   },
   "tags": {
     "newPlaceholder": "Новый тег",
@@ -345,7 +350,7 @@
     "backupFailed": "Ошибка резервного копирования",
     "backupDir": "Каталог резервных копий",
     "configured": "Настроено: {{path}}",
-    "dirNotConfigured": "Папка бэкапа не задана. Настройки приложения или переменная среды.",
+    "dirNotConfigured": "Каталог резервных копий не задан. Выберите папку в fnOS или укажите в настройках/переменных окружения.",
     "scheduledBackup": "Резервное копирование по расписанию",
     "enable": "Включить",
     "interval": "Интервал",
@@ -370,7 +375,15 @@
     "saveSettings": "Сохранить настройки",
     "runNow": "Создать копию сейчас",
     "runNowDescription": "Экспортировать текущий CSV учётной книги и упаковать в zip в каталог резервных копий.",
-    "running": "Создание копии…"
+    "running": "Создание копии…",
+    "pickBackupDir": "Выбрать папку резервных копий",
+    "refreshBackupAuth": "Обновить авторизованную папку",
+    "pickingBackupDir": "Выбор…",
+    "syncingBackupDir": "Синхронизация…",
+    "backupDirSynced": "Папка резервных копий обновлена",
+    "backupDirPickFailed": "Не удалось выбрать или синхронизировать папку",
+    "openBackupFolder": "Открыть в файловом менеджере",
+    "openLastBackupFile": "Открыть последний файл резервной копии"
   },
   "add": {
     "editTitle": "Редактировать транзакцию",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Перезаписать существующую запись",
     "overwriteWithAmount": "Для {{month}} уже есть баланс ({{amount}}). Перезаписать?",
     "overwriteWithoutAmount": "Для {{month}} уже есть баланс. Перезаписать?",
-    "confirmOverwrite": "Подтвердить перезапись"
+    "confirmOverwrite": "Подтвердить перезапись",
+    "delete": "Удалить запись",
+    "deleting": "Удаление…",
+    "confirmDeleteTitle": "Удалить запись?",
+    "confirmDeleteMessage": "Действие нельзя отменить. Рассчитанный повседневный расход (системная операция) за {{month}} также будет удалён."
   },
   "picker": {
     "prevYearGroup": "Предыдущий диапазон лет",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Превышен лимит строк CSV",
     "balanceDateFormat": "Дата строки баланса должна быть в формате ГГГГ-ММ",
     "balanceNegative": "Баланс не может быть отрицательным",
+    "balanceMonthNotOpen": "Баланс текущего месяца можно зарегистрировать только с 25-го числа",
     "duplicateBalance": "Дублирующийся месячный баланс",
     "txDateFormat": "Дата транзакции должна быть в формате ГГГГ-ММ-ДД",
     "tagNameEmpty": "Название тега не может быть пустым",

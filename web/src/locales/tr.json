@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Hafif, kendi barındırmalı muhasebe",
-    "subtitle": "Kişisel defter",
-    "titleOtherLedger": "{{name}} defteri"
+    "subtitle": "Kişisel defter"
   },
   "common": {
     "back": "Geri",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Renk şeması güncellendi",
     "failed": "Başarısız",
     "language": "Dil",
-    "languageSearch": "Dil ara"
+    "languageSearch": "Dil ara",
+    "theme": "Görünüm",
+    "themeLight": "Açık",
+    "themeDark": "Koyu",
+    "themeSystem": "Sistem",
+    "themeUpdated": "Görünüm güncellendi",
+    "openFnosAppSetting": "fnOS uygulama ayarlarini ac"
   },
   "tags": {
     "newPlaceholder": "Yeni etiket",
@@ -345,7 +350,7 @@
     "backupFailed": "Yedekleme başarısız",
     "backupDir": "Yedekleme dizini",
     "configured": "Yapılandırıldı: {{path}}",
-    "dirNotConfigured": "Yedek klasörü ayarlı değil. Uygulama ayarları veya ortam değişkeni.",
+    "dirNotConfigured": "Yedek dizini ayarli degil. fnOS'ta bir klasor secin veya uygulama ayarlari/ortam degiskenlerinde belirtin.",
     "scheduledBackup": "Zamanlanmış yedekleme",
     "enable": "Etkinleştir",
     "interval": "Aralık",
@@ -370,7 +375,15 @@
     "saveSettings": "Ayarları kaydet",
     "runNow": "Şimdi yedekle",
     "runNowDescription": "Mevcut defter CSV'sini dışa aktarın ve yedek dizininde zip'e sıkıştırın.",
-    "running": "Yedekleniyor…"
+    "running": "Yedekleniyor…",
+    "pickBackupDir": "Yedek klasorunu sec",
+    "refreshBackupAuth": "Yetkili klasoru yenile",
+    "pickingBackupDir": "Seciliyor…",
+    "syncingBackupDir": "Senkronize ediliyor…",
+    "backupDirSynced": "Yedek klasoru guncellendi",
+    "backupDirPickFailed": "Yedek klasoru secilemedi veya senkronize edilemedi",
+    "openBackupFolder": "Dosya yoneticisinde ac",
+    "openLastBackupFile": "Son yedek dosyasini ac"
   },
   "add": {
     "editTitle": "İşlemi düzenle",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Mevcut kaydın üzerine yaz",
     "overwriteWithAmount": "{{month}} ayında zaten bakiye var ({{amount}}). Üzerine yazılsın mı?",
     "overwriteWithoutAmount": "{{month}} ayında zaten bakiye kaydı var. Üzerine yazılsın mı?",
-    "confirmOverwrite": "Üzerine yazmayı onayla"
+    "confirmOverwrite": "Üzerine yazmayı onayla",
+    "delete": "Kaydı sil",
+    "deleting": "Siliniyor…",
+    "confirmDeleteTitle": "Kayıt silinsin mi?",
+    "confirmDeleteMessage": "Bu işlem geri alınamaz. {{month}} için hesaplanan günlük gider (sistem işlemi) de kaldırılır."
   },
   "picker": {
     "prevYearGroup": "Önceki yıl aralığı",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV satır sınırı aşıldı",
     "balanceDateFormat": "Bakiye satırı tarihi YYYY-MM olmalı",
     "balanceNegative": "Bakiye negatif olamaz",
+    "balanceMonthNotOpen": "Cari ay bakiyesi yalnızca ayın 25'inden itibaren kaydedilebilir",
     "duplicateBalance": "Yinelenen aylık bakiye",
     "txDateFormat": "İşlem tarihi YYYY-MM-DD olmalı",
     "tagNameEmpty": "Etiket adı boş olamaz",

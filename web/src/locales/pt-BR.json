@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Contabilidade leve auto-hospedada",
-    "subtitle": "Livro-caixa pessoal",
-    "titleOtherLedger": "Livro de {{name}}"
+    "subtitle": "Livro-caixa pessoal"
   },
   "common": {
     "back": "Voltar",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Esquema de cores atualizado",
     "failed": "Falhou",
     "language": "Idioma",
-    "languageSearch": "Buscar idiomas"
+    "languageSearch": "Buscar idiomas",
+    "theme": "Aparência",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "themeSystem": "Sistema",
+    "themeUpdated": "Aparência atualizada",
+    "openFnosAppSetting": "Abrir configuracoes do app fnOS"
   },
   "tags": {
     "newPlaceholder": "Nova tag",
@@ -345,7 +350,7 @@
     "backupFailed": "Falha no backup",
     "backupDir": "Diretório de backup",
     "configured": "Configurado: {{path}}",
-    "dirNotConfigured": "Pasta backup não definida. Configurações do app ou variável de ambiente.",
+    "dirNotConfigured": "Diretorio de backup nao definido. Escolha uma pasta no fnOS ou nas configuracoes/variaveis de ambiente.",
     "scheduledBackup": "Backup agendado",
     "enable": "Ativar",
     "interval": "Intervalo",
@@ -370,7 +375,15 @@
     "saveSettings": "Salvar configurações",
     "runNow": "Fazer backup agora",
     "runNowDescription": "Exporta o CSV atual do livro-caixa e o compacta em um zip no diretório de backup.",
-    "running": "Fazendo backup…"
+    "running": "Fazendo backup…",
+    "pickBackupDir": "Escolher pasta de backup",
+    "refreshBackupAuth": "Atualizar pasta autorizada",
+    "pickingBackupDir": "Escolhendo…",
+    "syncingBackupDir": "Sincronizando…",
+    "backupDirSynced": "Pasta de backup atualizada",
+    "backupDirPickFailed": "Falha ao escolher ou sincronizar a pasta de backup",
+    "openBackupFolder": "Abrir no gerenciador de arquivos",
+    "openLastBackupFile": "Abrir o ultimo arquivo de backup"
   },
   "add": {
     "editTitle": "Editar transação",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Substituir registro existente",
     "overwriteWithAmount": "{{month}} já tem um saldo ({{amount}}). Substituir?",
     "overwriteWithoutAmount": "{{month}} já tem um saldo registrado. Substituir?",
-    "confirmOverwrite": "Confirmar substituição"
+    "confirmOverwrite": "Confirmar substituição",
+    "delete": "Excluir registro",
+    "deleting": "Excluindo…",
+    "confirmDeleteTitle": "Excluir registro?",
+    "confirmDeleteMessage": "Não é possível desfazer. A despesa diária calculada (transação do sistema) de {{month}} também será removida."
   },
   "picker": {
     "prevYearGroup": "Intervalo de anos anterior",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Limite de linhas do CSV excedido",
     "balanceDateFormat": "A data do saldo deve estar no formato AAAA-MM",
     "balanceNegative": "O saldo não pode ser negativo",
+    "balanceMonthNotOpen": "O saldo do mês atual só pode ser registrado a partir do dia 25",
     "duplicateBalance": "Saldo mensal duplicado",
     "txDateFormat": "A data da transação deve estar no formato AAAA-MM-DD",
     "tagNameEmpty": "O nome da tag não pode estar vazio",

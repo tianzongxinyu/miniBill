@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/minibill/minibill/internal/i18n"
@@ -61,6 +62,7 @@ type BackupView struct {
 	BackupConfig
 	DirConfigured bool   `json:"dir_configured"`
 	DirPath       string `json:"dir_path,omitempty"`
+	SemanticPath  string `json:"semantic_path,omitempty"`
 }
 
 type BackupFileInfo struct {
@@ -77,6 +79,7 @@ type BackupFilesPage struct {
 }
 
 type BackupService struct {
+	mu        sync.RWMutex
 	backupDir string
 	csvSvc    *LedgerCSVService
 	now       func() time.Time
@@ -97,28 +100,40 @@ func NewBackupService(backupDir string, csvSvc *LedgerCSVService) *BackupService
 }
 
 func (s *BackupService) DirConfigured() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.backupDir != ""
 }
 
 func (s *BackupService) DirPath() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.backupDir
+}
+
+// SetBackupDir updates the runtime backup directory (no process restart).
+func (s *BackupService) SetBackupDir(dir string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.backupDir = strings.TrimSpace(dir)
 }
 
 func (s *BackupService) CheckDirWritable() error {
 	if !s.DirConfigured() {
 		return ErrBackupDirNotConfigured
 	}
-	if err := os.MkdirAll(s.backupDir, 0o755); err != nil {
+	dir := s.DirPath()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("backup dir create failed: %w", err)
 	}
-	info, err := os.Stat(s.backupDir)
+	info, err := os.Stat(dir)
 	if err != nil {
 		return fmt.Errorf("backup dir unavailable: %w", err)
 	}
 	if !info.IsDir() {
 		return fmt.Errorf("backup dir is not a directory")
 	}
-	test := filepath.Join(s.backupDir, ".minibill-write-test")
+	test := filepath.Join(dir, ".minibill-write-test")
 	if err := os.WriteFile(test, []byte("ok"), 0o600); err != nil {
 		return fmt.Errorf("backup dir not writable: %w", err)
 	}

@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
+import { FnosHostSync } from '@/components/FnosHostSync';
 import { I18nProvider } from '@/components/I18nProvider';
 import { LedgerAccessProvider } from '@/components/LedgerAccessProvider';
 import { SettingsProvider } from '@/components/SettingsProvider';
 import { APP_DESCRIPTION, APP_NAME } from '@/lib/appMeta';
+import { THEME_BOOTSTRAP_SCRIPT } from '@/lib/theme';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -33,12 +35,18 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
+      </head>
       <body>
         <AuthProvider>
           <LedgerAccessProvider>
             <SettingsProvider>
-              <I18nProvider>{children}</I18nProvider>
+              <I18nProvider>
+                <FnosHostSync />
+                {children}
+              </I18nProvider>
             </SettingsProvider>
           </LedgerAccessProvider>
         </AuthProvider>

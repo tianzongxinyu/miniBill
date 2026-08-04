@@ -10,6 +10,8 @@ import { useSettings } from '@/components/SettingsProvider';
 import {
   ApiError,
   centsToYuanInput,
+  compareYearMonth,
+  deleteMonthlyBalance,
   fetchMonthlyBalance,
   upsertMonthlyBalance,
   type YearMonth,
@@ -53,10 +55,13 @@ export function BalanceRegisterForm({
   const [isEdit, setIsEdit] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const monthChanged = !sameMonth(selectedMonth, initialTargetRef.current);
   const needsOverwriteHint = hasExisting && monthChanged;
+  const busy = loadingMonth || saving || deleting;
 
   const loadMonth = useCallback(
     async (ym: YearMonth, isInitial: boolean) => {
@@ -109,6 +114,13 @@ export function BalanceRegisterForm({
     setSaving(true);
     setError('');
     try {
+      // Block new registration past open window; allow updates to an existing record.
+      if (!hasExisting && compareYearMonth(selectedMonth, maxMonth) > 0) {
+        setError(t('validation.balanceMonthNotOpen'));
+        setSaving(false);
+        setConfirmOpen(false);
+        return;
+      }
       await upsertMonthlyBalance(selectedMonth.year, selectedMonth.month, balance, note);
       notifyBalanceMonths(selectedMonth.year, selectedMonth.month);
       router.replace(returnTo);
@@ -117,7 +129,21 @@ export function BalanceRegisterForm({
       setSaving(false);
       setConfirmOpen(false);
     }
-  }, [balance, note, returnTo, router, selectedMonth, t]);
+  }, [balance, hasExisting, maxMonth, note, returnTo, router, selectedMonth, t]);
+
+  const remove = useCallback(async () => {
+    setDeleting(true);
+    setError('');
+    try {
+      await deleteMonthlyBalance(selectedMonth.year, selectedMonth.month);
+      notifyBalanceMonths(selectedMonth.year, selectedMonth.month);
+      router.replace(returnTo);
+    } catch (err) {
+      setError(formatApiError(err, t('common.deleteFailed')));
+      setDeleting(false);
+      setDeleteConfirmOpen(false);
+    }
+  }, [returnTo, router, selectedMonth, t]);
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,9 +157,7 @@ export function BalanceRegisterForm({
   if (!initialLoaded) {
     return (
       <div className="add-form">
-        <h1 className="form-page-title">
-          {t('balance.registerTitle')}
-        </h1>
+        <h1 className="form-page-title">{t('balance.registerTitle')}</h1>
         <p className="text-muted text-sm">{t('common.loading')}</p>
         <PageBackLink href={backHref} />
       </div>
@@ -152,9 +176,7 @@ export function BalanceRegisterForm({
   return (
     <>
       <form onSubmit={save} className="add-form">
-        <h1 className="form-page-title">
-          {t('balance.registerTitle')}
-        </h1>
+        <h1 className="form-page-title">{t('balance.registerTitle')}</h1>
 
         {error && <p className="form-alert-error">{error}</p>}
 
@@ -170,7 +192,7 @@ export function BalanceRegisterForm({
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
               required
-              disabled={loadingMonth || saving}
+              disabled={busy}
             />
           </div>
         </div>
@@ -183,7 +205,7 @@ export function BalanceRegisterForm({
               onChange={handleMonthChange}
               min={minMonth}
               max={maxMonth}
-              disabled={loadingMonth || saving || isEdit}
+              disabled={busy || isEdit}
               variant="field"
             />
           </div>
@@ -197,7 +219,7 @@ export function BalanceRegisterForm({
               placeholder={t('common.optional')}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              disabled={loadingMonth || saving}
+              disabled={busy}
             />
           </div>
         </div>
@@ -208,9 +230,19 @@ export function BalanceRegisterForm({
         )}
 
         <PageFooterActions>
-          <button type="submit" className="form-submit" disabled={saving || loadingMonth}>
+          <button type="submit" className="form-submit" disabled={busy}>
             {saving ? t('balance.saving') : isEdit ? t('balance.saveChanges') : t('balance.saveRegister')}
           </button>
+          {hasExisting && (
+            <button
+              type="button"
+              className="btn-danger-block"
+              disabled={busy}
+              onClick={() => setDeleteConfirmOpen(true)}
+            >
+              {deleting ? t('balance.deleting') : t('balance.delete')}
+            </button>
+          )}
           <PageBackLink href={backHref} />
         </PageFooterActions>
       </form>
@@ -224,6 +256,18 @@ export function BalanceRegisterForm({
         onConfirm={() => void persist()}
         onClose={() => {
           if (!saving) setConfirmOpen(false);
+        }}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={t('balance.confirmDeleteTitle')}
+        message={t('balance.confirmDeleteMessage', { month: monthLabel })}
+        confirmLabel={t('balance.delete')}
+        confirming={deleting}
+        onConfirm={() => void remove()}
+        onClose={() => {
+          if (!deleting) setDeleteConfirmOpen(false);
         }}
       />
     </>

@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Lekka, samodzielnie hostowana księgowość",
-    "subtitle": "Osobista księga",
-    "titleOtherLedger": "Księga {{name}}"
+    "subtitle": "Osobista księga"
   },
   "common": {
     "back": "Wstecz",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Kolorystyka zaktualizowana",
     "failed": "Niepowodzenie",
     "language": "Język",
-    "languageSearch": "Szukaj języków"
+    "languageSearch": "Szukaj języków",
+    "theme": "Wygląd",
+    "themeLight": "Jasny",
+    "themeDark": "Ciemny",
+    "themeSystem": "Systemowy",
+    "themeUpdated": "Wygląd zaktualizowany",
+    "openFnosAppSetting": "Otworz ustawienia aplikacji fnOS"
   },
   "tags": {
     "newPlaceholder": "Nowy tag",
@@ -345,7 +350,7 @@
     "backupFailed": "Kopia zapasowa nie powiodła się",
     "backupDir": "Katalog kopii zapasowych",
     "configured": "Skonfigurowano: {{path}}",
-    "dirNotConfigured": "Folder kopii nie ustawiony. Ustawienia aplikacji lub zmienna środowiskowa.",
+    "dirNotConfigured": "Katalog kopii zapasowych nieustawiony. Wybierz folder w fnOS lub w ustawieniach/zmiennych srodowiskowych.",
     "scheduledBackup": "Zaplanowana kopia zapasowa",
     "enable": "Włącz",
     "interval": "Interwał",
@@ -370,7 +375,15 @@
     "saveSettings": "Zapisz ustawienia",
     "runNow": "Kopia teraz",
     "runNowDescription": "Eksportuj bieżący CSV księgi i skompresuj do zip w katalogu kopii zapasowych.",
-    "running": "Tworzenie kopii…"
+    "running": "Tworzenie kopii…",
+    "pickBackupDir": "Wybierz folder kopii zapasowych",
+    "refreshBackupAuth": "Odswiez autoryzowany folder",
+    "pickingBackupDir": "Wybieranie…",
+    "syncingBackupDir": "Synchronizacja…",
+    "backupDirSynced": "Folder kopii zapasowych zaktualizowany",
+    "backupDirPickFailed": "Nie udalo sie wybrac ani zsynchronizowac folderu kopii",
+    "openBackupFolder": "Otworz w menedzerze plikow",
+    "openLastBackupFile": "Otworz ostatni plik kopii zapasowej"
   },
   "add": {
     "editTitle": "Edytuj transakcję",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Nadpisz istniejący wpis",
     "overwriteWithAmount": "{{month}} ma już saldo ({{amount}}). Nadpisać?",
     "overwriteWithoutAmount": "{{month}} ma już wpis salda. Nadpisać?",
-    "confirmOverwrite": "Potwierdź nadpisanie"
+    "confirmOverwrite": "Potwierdź nadpisanie",
+    "delete": "Usuń rejestrację",
+    "deleting": "Usuwanie…",
+    "confirmDeleteTitle": "Usunąć rejestrację?",
+    "confirmDeleteMessage": "Tej operacji nie można cofnąć. Wyliczony wydatek codzienny (transakcja systemowa) za {{month}} również zostanie usunięty."
   },
   "picker": {
     "prevYearGroup": "Poprzedni zakres lat",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Przekroczono limit wierszy CSV",
     "balanceDateFormat": "Data wiersza salda musi być YYYY-MM",
     "balanceNegative": "Saldo nie może być ujemne",
+    "balanceMonthNotOpen": "Saldo bieżącego miesiąca można zarejestrować dopiero od 25. dnia",
     "duplicateBalance": "Zduplikowane miesięczne saldo",
     "txDateFormat": "Data transakcji musi być YYYY-MM-DD",
     "tagNameEmpty": "Nazwa tagu nie może być pusta",

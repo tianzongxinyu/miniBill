@@ -122,9 +122,10 @@ function ProportionalDualBar({
 
 export function HomeHotTagCapsules({ tags }: { tags: HomeRankingTag[] }) {
   const { t } = useTranslation();
-  const { scheme, locale } = useSettings();
+  const { scheme, locale, theme } = useSettings();
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
+  void theme;
 
   const { visualMax, breakAxis } = useMemo(() => {
     const totals = tags.map((tag) => (tag.total_income ?? 0) + (tag.total_expense ?? 0));

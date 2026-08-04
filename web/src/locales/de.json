@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Leichtgewichtige, selbst gehostete Buchhaltung",
-    "subtitle": "Persönliches Kontenbuch",
-    "titleOtherLedger": "{{name}}s Buch"
+    "subtitle": "Persönliches Kontenbuch"
   },
   "common": {
     "back": "Zurück",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Farbschema aktualisiert",
     "failed": "Fehlgeschlagen",
     "language": "Sprache",
-    "languageSearch": "Sprachen suchen"
+    "languageSearch": "Sprachen suchen",
+    "theme": "Erscheinungsbild",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "themeSystem": "System folgen",
+    "themeUpdated": "Erscheinungsbild aktualisiert",
+    "openFnosAppSetting": "fnOS-App-Einstellungen oeffnen"
   },
   "tags": {
     "newPlaceholder": "Neuer Tag",
@@ -345,7 +350,7 @@
     "backupFailed": "Sicherung fehlgeschlagen",
     "backupDir": "Sicherungsverzeichnis",
     "configured": "Konfiguriert: {{path}}",
-    "dirNotConfigured": "Backup-Pfad nicht gesetzt. In App-Einstellungen oder Umgebungsvariable.",
+    "dirNotConfigured": "Backup-Verzeichnis nicht gesetzt. Ordner in fnOS waehlen oder in App-Einstellungen/Env festlegen.",
     "scheduledBackup": "Geplante Sicherung",
     "enable": "Aktivieren",
     "interval": "Intervall",
@@ -370,7 +375,15 @@
     "saveSettings": "Einstellungen speichern",
     "runNow": "Jetzt sichern",
     "runNowDescription": "CSV als Zip ins Backup-Verzeichnis.",
-    "running": "Sicherung läuft…"
+    "running": "Sicherung läuft…",
+    "pickBackupDir": "Backup-Ordner waehlen",
+    "refreshBackupAuth": "Autorisierten Ordner aktualisieren",
+    "pickingBackupDir": "Auswahl…",
+    "syncingBackupDir": "Synchronisiere…",
+    "backupDirSynced": "Backup-Ordner aktualisiert",
+    "backupDirPickFailed": "Backup-Ordner konnte nicht gewaehlt oder synchronisiert werden",
+    "openBackupFolder": "Im Dateimanager oeffnen",
+    "openLastBackupFile": "Letzte Backup-Datei oeffnen"
   },
   "add": {
     "editTitle": "Transaktion bearbeiten",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Vorhandenen Eintrag überschreiben",
     "overwriteWithAmount": "{{month}} hat {{amount}}. Überschreiben?",
     "overwriteWithoutAmount": "{{month}} hat bereits einen Saldo. Überschreiben?",
-    "confirmOverwrite": "Überschreiben bestätigen"
+    "confirmOverwrite": "Überschreiben bestätigen",
+    "delete": "Eintrag löschen",
+    "deleting": "Löschen…",
+    "confirmDeleteTitle": "Eintrag löschen?",
+    "confirmDeleteMessage": "Dies kann nicht rückgängig gemacht werden. Die berechneten Alltagsausgaben (Systembuchung) für {{month}} werden ebenfalls entfernt."
   },
   "picker": {
     "prevYearGroup": "Vorheriger Jahresbereich",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV-Zeilenlimit überschritten",
     "balanceDateFormat": "Saldo-Zeilendatum muss YYYY-MM sein",
     "balanceNegative": "Saldo darf nicht negativ sein",
+    "balanceMonthNotOpen": "Der Saldo des laufenden Monats kann erst ab dem 25. erfasst werden",
     "duplicateBalance": "Doppelter Monatssaldo",
     "txDateFormat": "Transaktionsdatum muss YYYY-MM-DD sein",
     "tagNameEmpty": "Tag-Name darf nicht leer sein",

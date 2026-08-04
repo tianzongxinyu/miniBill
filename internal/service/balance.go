@@ -3,6 +3,9 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
+	"github.com/minibill/minibill/internal/domain"
 )
 
 type Balance struct {
@@ -52,7 +55,15 @@ func (s *BalanceService) Upsert(db *sql.DB, year, month int, balance int64, note
 	if balance < 0 {
 		return nil, fmt.Errorf("%w: balance_negative", ErrValidation)
 	}
-	_, err := db.Exec(`
+	_, err := s.Get(db, year, month)
+	exists := err == nil
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+	if !exists && !domain.CanRegisterBalanceMonth(year, month, time.Now()) {
+		return nil, fmt.Errorf("%w: balance_month_not_open", ErrValidation)
+	}
+	_, err = db.Exec(`
 		INSERT INTO monthly_balances (year, month, balance, note, updated_at) VALUES (?,?,?,?,datetime('now'))
 		ON CONFLICT(year, month) DO UPDATE SET balance=excluded.balance, note=excluded.note, updated_at=datetime('now')`,
 		year, month, balance, note)

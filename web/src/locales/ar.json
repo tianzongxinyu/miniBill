@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "محاسبة ذاتية استضافة خفيفة",
-    "subtitle": "دفتر حساب شخصي",
-    "titleOtherLedger": "دفتر {{name}}"
+    "subtitle": "دفتر حساب شخصي"
   },
   "common": {
     "back": "رجوع",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "تم تحديث مخطط الألوان",
     "failed": "فشل",
     "language": "اللغة",
-    "languageSearch": "البحث عن اللغات"
+    "languageSearch": "البحث عن اللغات",
+    "theme": "المظهر",
+    "themeLight": "فاتح",
+    "themeDark": "داكن",
+    "themeSystem": "النظام",
+    "themeUpdated": "تم تحديث المظهر",
+    "openFnosAppSetting": "فتح إعدادات تطبيق fnOS"
   },
   "tags": {
     "newPlaceholder": "وسم جديد",
@@ -345,7 +350,7 @@
     "backupFailed": "فشل النسخ الاحتياطي",
     "backupDir": "دليل النسخ الاحتياطي",
     "configured": "مُعد: {{path}}",
-    "dirNotConfigured": "مجلد النسخ غير مضبوط. إعدادات التطبيق أو متغير البيئة.",
+    "dirNotConfigured": "لم يضبط مجلد النسخ الاحتياطي. اختر مجلدا في fnOS او عبر الاعدادات/متغيرات البيئة.",
     "scheduledBackup": "نسخ احتياطي مجدول",
     "enable": "تفعيل",
     "interval": "الفترة",
@@ -370,7 +375,15 @@
     "saveSettings": "حفظ الإعدادات",
     "runNow": "نسخ احتياطي الآن",
     "runNowDescription": "تصدير CSV دفتر الحساب الحالي وضغطه في zip في دليل النسخ الاحتياطي.",
-    "running": "جارٍ النسخ الاحتياطي…"
+    "running": "جارٍ النسخ الاحتياطي…",
+    "pickBackupDir": "اختيار مجلد النسخ الاحتياطي",
+    "refreshBackupAuth": "تحديث المجلد المصرح به",
+    "pickingBackupDir": "جار الاختيار…",
+    "syncingBackupDir": "جار المزامنة…",
+    "backupDirSynced": "تم تحديث مجلد النسخ الاحتياطي",
+    "backupDirPickFailed": "تعذر اختيار مجلد النسخ او مزامنته",
+    "openBackupFolder": "فتح في مدير الملفات",
+    "openLastBackupFile": "فتح اخر ملف نسخ احتياطي"
   },
   "add": {
     "editTitle": "تعديل المعاملة",
@@ -400,7 +413,11 @@
     "overwriteTitle": "استبدال الإدخال الموجود",
     "overwriteWithAmount": "{{month}} لديه بالفعل رصيد ({{amount}}). استبدال؟",
     "overwriteWithoutAmount": "{{month}} لديه بالفعل إدخال رصيد. استبدال؟",
-    "confirmOverwrite": "تأكيد الاستبدال"
+    "confirmOverwrite": "تأكيد الاستبدال",
+    "delete": "حذف التسجيل",
+    "deleting": "جارٍ الحذف…",
+    "confirmDeleteTitle": "حذف التسجيل؟",
+    "confirmDeleteMessage": "لا يمكن التراجع. ستُحذف أيضًا النفقات اليومية المحسوبة (معاملة النظام) لـ {{month}}."
   },
   "picker": {
     "prevYearGroup": "نطاق السنة السابق",
@@ -466,6 +483,7 @@
     "csvRowLimit": "تم تجاوز حد صفوف CSV",
     "balanceDateFormat": "يجب أن يكون تاريخ صف الرصيد YYYY-MM",
     "balanceNegative": "لا يمكن أن يكون الرصيد سالبًا",
+    "balanceMonthNotOpen": "لا يمكن تسجيل رصيد الشهر الحالي إلا في اليوم 25 أو بعده",
     "duplicateBalance": "رصيد شهري مكرر",
     "txDateFormat": "يجب أن يكون تاريخ المعاملة YYYY-MM-DD",
     "tagNameEmpty": "لا يمكن أن يكون اسم الوسم فارغًا",

@@ -4,6 +4,7 @@ import { useLayoutEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useLedgerAccess } from '@/components/LedgerAccessProvider';
+import { withFnosSdk } from '@/lib/fnos/sdk';
 import { ledgerDocumentTitle } from '@/lib/ledgerDocumentTitle';
 
 /** Keep document.title in sync with locale and active ledger; Next.js resets it on client navigation. */
@@ -20,15 +21,12 @@ export function DocumentTitle() {
     const desired = ledgerDocumentTitle(t('app.name'), {
       ownerUsername,
       isOwn: own,
-      ownLabel: t('profile.myLedger'),
-      otherLabel: ownerUsername
-        ? t('app.titleOtherLedger', { name: ownerUsername })
-        : undefined,
     });
     const apply = () => {
       if (document.title !== desired) document.title = desired;
     };
     apply();
+    void withFnosSdk((sdk) => sdk.setTitle(desired));
     const obs = new MutationObserver(apply);
     obs.observe(document.head, { childList: true, subtree: true, characterData: true });
     return () => obs.disconnect();

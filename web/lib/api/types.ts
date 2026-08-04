@@ -1,3 +1,5 @@
+import type { ThemePreference } from '@/lib/theme';
+
 export type User = { id: number; username: string; is_admin?: boolean };
 export type AuthResponse = { token: string; user: User };
 
@@ -190,10 +192,13 @@ export type TagDetail = {
 
 export type AmountColorScheme = 'red_up' | 'green_up';
 
+export type { ThemePreference };
+
 export type Settings = {
   locale: string;
   default_date_mode: string;
   amount_color_scheme: AmountColorScheme;
+  theme: ThemePreference;
 };
 
 export type BackupInterval = 'daily' | 'weekly' | 'monthly';
@@ -212,6 +217,7 @@ export type BackupConfig = {
   last_error?: string;
   dir_configured: boolean;
   dir_path?: string;
+  semantic_path?: string;
 };
 
 export type BackupFileInfo = {

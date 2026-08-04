@@ -4,13 +4,13 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '@/components/SettingsProvider';
 import {
-  BALANCE_CHART_FILL_BOTTOM,
-  BALANCE_CHART_FILL_TOP,
-  BALANCE_CHART_STROKE,
+  balanceChartFillBottom,
+  balanceChartFillTop,
+  balanceChartStroke,
   chartStrokeForType,
-  NET_INCOME_CHART_FILL_BOTTOM,
-  NET_INCOME_CHART_FILL_TOP,
-  NET_INCOME_CHART_STROKE,
+  netIncomeChartFillBottom,
+  netIncomeChartFillTop,
+  netIncomeChartStroke,
 } from '@/lib/amountColors';
 import {
   axisTickValues,
@@ -104,7 +104,7 @@ function XAxisTick({
       y={y}
       dy={16}
       textAnchor="middle"
-      fill="#8a9390"
+      fill="var(--color-muted)"
       fontSize={12}
       data-category-name={label}
       data-category-x={x}
@@ -149,7 +149,7 @@ export function StatsScrollChart({
   tapToInspect = false,
 }: StatsScrollChartProps) {
   const { t } = useTranslation();
-  const { scheme, locale } = useSettings();
+  const { scheme, locale, theme } = useSettings();
   const seriesLabels = useMemo(
     () =>
       Object.fromEntries(
@@ -166,6 +166,13 @@ export function StatsScrollChart({
   const netGradientId = useId().replace(/:/g, '');
   const incomeStroke = chartStrokeForType('income', scheme);
   const expenseStroke = chartStrokeForType('expense', scheme);
+  const netStroke = netIncomeChartStroke();
+  const netFillTop = netIncomeChartFillTop();
+  const netFillBottom = netIncomeChartFillBottom();
+  const balStroke = balanceChartStroke();
+  const balFillTop = balanceChartFillTop();
+  const balFillBottom = balanceChartFillBottom();
+  void theme;
 
   const rows = useMemo(
     () =>
@@ -418,7 +425,7 @@ export function StatsScrollChart({
 
   const chartMargin =
     marginProp ?? (tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN);
-  const axisTickLine = { stroke: '#e8eeec' };
+  const axisTickLine = { stroke: 'var(--color-line)' };
 
   if (loading && chartData.length === 0) {
     return (
@@ -462,22 +469,22 @@ export function StatsScrollChart({
       >
       <defs>
         <linearGradient id={netGradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={NET_INCOME_CHART_FILL_TOP} />
-          <stop offset="100%" stopColor={NET_INCOME_CHART_FILL_BOTTOM} />
+          <stop offset="0%" stopColor={netFillTop} />
+          <stop offset="100%" stopColor={netFillBottom} />
         </linearGradient>
         <linearGradient id={balanceGradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={BALANCE_CHART_FILL_TOP} />
-          <stop offset="100%" stopColor={BALANCE_CHART_FILL_BOTTOM} />
+          <stop offset="0%" stopColor={balFillTop} />
+          <stop offset="100%" stopColor={balFillBottom} />
         </linearGradient>
       </defs>
-      <CartesianGrid stroke="#e8eeec" strokeDasharray="3 3" vertical={false} />
+      <CartesianGrid stroke="var(--color-line)" strokeDasharray="3 3" vertical={false} />
       <XAxis
         dataKey="name"
         type="category"
         scale="point"
         interval={tapToInspect ? 0 : 'preserveStartEnd'}
         minTickGap={tapToInspect ? 12 : 16}
-        tick={tapToInspect ? renderXAxisTick : { fill: '#8a9390', fontSize: 12 }}
+        tick={tapToInspect ? renderXAxisTick : { fill: 'var(--color-muted)', fontSize: 12 }}
         axisLine={false}
         tickLine={false}
         padding={{ left: xPad, right: xPad }}
@@ -507,7 +514,7 @@ export function StatsScrollChart({
       <ReferenceLine
         y={0}
         yAxisId="left"
-        stroke="#e8eeec"
+        stroke="var(--color-line)"
         strokeWidth={1}
         strokeDasharray="4 4"
         ifOverflow="extendDomain"
@@ -516,7 +523,7 @@ export function StatsScrollChart({
         <ReferenceLine
           x={pinnedRow.name}
           yAxisId="left"
-          stroke="#8a9390"
+          stroke="var(--color-muted)"
           strokeWidth={1}
           strokeDasharray="4 4"
         />
@@ -525,7 +532,7 @@ export function StatsScrollChart({
         <Tooltip
           content={renderTooltip}
           trigger="hover"
-          cursor={{ stroke: '#8a9390', strokeWidth: 1, strokeDasharray: '4 4' }}
+          cursor={{ stroke: 'var(--color-muted)', strokeWidth: 1, strokeDasharray: '4 4' }}
           wrapperStyle={{ pointerEvents: 'none', zIndex: 20 }}
         />
       )}
@@ -534,7 +541,7 @@ export function StatsScrollChart({
           yAxisId="left"
           type="monotone"
           dataKey="net"
-          stroke={NET_INCOME_CHART_STROKE}
+          stroke={netStroke}
           strokeWidth={1.5}
           strokeDasharray="4 4"
           fill={`url(#${netGradientId})`}
@@ -574,7 +581,7 @@ export function StatsScrollChart({
           yAxisId="right"
           type="monotone"
           dataKey="balance"
-          stroke={BALANCE_CHART_STROKE}
+          stroke={balStroke}
           strokeWidth={1.5}
           strokeDasharray="4 4"
           fill={`url(#${balanceGradientId})`}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minibill/minibill/internal/fnosapi"
 	"github.com/minibill/minibill/internal/i18n"
 	"github.com/minibill/minibill/internal/service"
 )
@@ -26,6 +27,7 @@ func (s *Server) getBackup(c *gin.Context) {
 		if serviceErr(c, err) {
 			return
 		}
+		s.attachBackupSemanticPath(view, localeFromHeader(c))
 		c.JSON(http.StatusOK, view)
 	})
 }
@@ -54,6 +56,7 @@ func (s *Server) updateBackup(c *gin.Context) {
 			DirConfigured: s.backupSvc.DirConfigured(),
 			DirPath:       s.backupSvc.DirPath(),
 		}
+		s.attachBackupSemanticPath(view, localeFromHeader(c))
 		c.JSON(http.StatusOK, view)
 	})
 }
@@ -115,4 +118,28 @@ func (s *Server) restoreBackup(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, result)
 	})
+}
+
+func (s *Server) attachBackupSemanticPath(view *service.BackupView, locale string) {
+	if view == nil || view.DirPath == "" || !fnosapi.Available() {
+		return
+	}
+	lang := "zh-CN"
+	switch {
+	case strings.HasPrefix(locale, "zh-Hant"), strings.HasPrefix(locale, "zh-TW"), strings.HasPrefix(locale, "zh-HK"):
+		lang = "zh-TW"
+	case strings.HasPrefix(locale, "zh"):
+		lang = "zh-CN"
+	case strings.HasPrefix(locale, "en"):
+		lang = "en-US"
+	case locale != "":
+		lang = locale
+	}
+	m, err := fnosapi.ConvertPath([]string{view.DirPath}, lang)
+	if err != nil {
+		return
+	}
+	if sem := m[view.DirPath]; sem != "" {
+		view.SemanticPath = sem
+	}
 }

@@ -18,16 +18,11 @@ export function getSharedLedgerTitleIsOwn(): boolean {
 export type LedgerDocumentTitleOptions = {
   ownerUsername?: string | null;
   isOwn?: boolean;
-  /** Translated "我的账本" / "My ledger". */
-  ownLabel?: string;
-  /** Translated "{{name}}的账本" / "{{name}}'s ledger". */
-  otherLabel?: string;
 };
 
 /**
- * With ledger → `{appName}（{ownLabel|otherLabel}）`;
- * otherwise `appName`.
- * Pass pre-translated labels from i18n.
+ * Own / no ledger → `appName`;
+ * other ledger → `{appName}({ownerUsername})`.
  */
 export function ledgerDocumentTitle(
   appName: string,
@@ -36,10 +31,6 @@ export function ledgerDocumentTitle(
   const ownerUsername =
     options?.ownerUsername === undefined ? sharedOwnerUsername : options.ownerUsername;
   const isOwn = options?.isOwn === undefined ? sharedIsOwn : options.isOwn;
-  if (!ownerUsername && !isOwn) return appName;
-  const inner = isOwn
-    ? options?.ownLabel ?? ownerUsername
-    : options?.otherLabel ?? ownerUsername;
-  if (!inner) return appName;
-  return `${appName}（${inner}）`;
+  if (isOwn || !ownerUsername) return appName;
+  return `${appName}(${ownerUsername})`;
 }

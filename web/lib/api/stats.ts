@@ -137,3 +137,7 @@ export async function upsertMonthlyBalance(
     body: JSON.stringify({ balance: yuanToCents(balanceYuan), note }),
   });
 }
+
+export async function deleteMonthlyBalance(year: number, month: number): Promise<void> {
+  await api(`/monthly-balances/${year}/${month}`, { method: 'DELETE' });
+}

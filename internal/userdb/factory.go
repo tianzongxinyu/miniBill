@@ -137,6 +137,6 @@ func (f *Factory) prepareLedger(db *sql.DB) error {
 			return err
 		}
 	}
-	_, err := db.Exec(`INSERT OR IGNORE INTO settings (id, locale, default_currency, default_date_mode, amount_color_scheme) VALUES (1, 'zh-Hans', 'CNY', 'today', 'red_up')`)
+	_, err := db.Exec(`INSERT OR IGNORE INTO settings (id, locale, default_currency, default_date_mode, amount_color_scheme, theme) VALUES (1, 'zh-Hans', 'CNY', 'today', 'red_up', 'light')`)
 	return err
 }

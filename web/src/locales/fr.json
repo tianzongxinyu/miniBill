@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Comptabilité légère auto-hébergée",
-    "subtitle": "Livre de comptes personnel",
-    "titleOtherLedger": "Livre de {{name}}"
+    "subtitle": "Livre de comptes personnel"
   },
   "common": {
     "back": "Retour",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Schéma de couleurs mis à jour",
     "failed": "Échec",
     "language": "Langue",
-    "languageSearch": "Rechercher des langues"
+    "languageSearch": "Rechercher des langues",
+    "theme": "Apparence",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "themeSystem": "Système",
+    "themeUpdated": "Apparence mise à jour",
+    "openFnosAppSetting": "Ouvrir les parametres de l'app fnOS"
   },
   "tags": {
     "newPlaceholder": "Nouveau tag",
@@ -345,7 +350,7 @@
     "backupFailed": "Échec de la sauvegarde",
     "backupDir": "Répertoire de sauvegarde",
     "configured": "Configuré : {{path}}",
-    "dirNotConfigured": "Dossier backup non défini. Réglages app ou variable d'environnement.",
+    "dirNotConfigured": "Dossier de sauvegarde non defini. Choisissez un dossier dans fnOS, ou via les parametres / variables d'environnement.",
     "scheduledBackup": "Sauvegarde planifiée",
     "enable": "Activer",
     "interval": "Intervalle",
@@ -370,7 +375,15 @@
     "saveSettings": "Enregistrer les paramètres",
     "runNow": "Sauvegarder maintenant",
     "runNowDescription": "CSV en zip vers le dossier backup.",
-    "running": "Sauvegarde en cours…"
+    "running": "Sauvegarde en cours…",
+    "pickBackupDir": "Choisir le dossier de sauvegarde",
+    "refreshBackupAuth": "Actualiser le dossier autorise",
+    "pickingBackupDir": "Selection…",
+    "syncingBackupDir": "Synchronisation…",
+    "backupDirSynced": "Dossier de sauvegarde mis a jour",
+    "backupDirPickFailed": "Echec du choix ou de la synchronisation du dossier",
+    "openBackupFolder": "Ouvrir dans le gestionnaire de fichiers",
+    "openLastBackupFile": "Ouvrir la derniere sauvegarde"
   },
   "add": {
     "editTitle": "Modifier la transaction",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Écraser l'entrée existante",
     "overwriteWithAmount": "{{month}} a {{amount}}. Écraser ?",
     "overwriteWithoutAmount": "{{month}} a déjà un solde enregistré. Écraser ?",
-    "confirmOverwrite": "Confirmer l'écrasement"
+    "confirmOverwrite": "Confirmer l'écrasement",
+    "delete": "Supprimer l’enregistrement",
+    "deleting": "Suppression…",
+    "confirmDeleteTitle": "Supprimer l’enregistrement ?",
+    "confirmDeleteMessage": "Cette action est irréversible. Les dépenses quotidiennes calculées (transaction système) pour {{month}} seront également effacées."
   },
   "picker": {
     "prevYearGroup": "Plage d'années précédente",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Limite de lignes CSV dépassée",
     "balanceDateFormat": "La date de la ligne de solde doit être YYYY-MM",
     "balanceNegative": "Le solde ne peut pas être négatif",
+    "balanceMonthNotOpen": "Le solde du mois en cours ne peut être enregistré qu'à partir du 25",
     "duplicateBalance": "Solde mensuel en double",
     "txDateFormat": "La date de la transaction doit être YYYY-MM-DD",
     "tagNameEmpty": "Le nom du tag ne peut pas être vide",

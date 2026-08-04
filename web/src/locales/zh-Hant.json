@@ -2,8 +2,7 @@
   "app": {
     "name": "輕賬單",
     "description": "輕量自託管記賬",
-    "subtitle": "記賬本",
-    "titleOtherLedger": "{{name}}的帳簿"
+    "subtitle": "記賬本"
   },
   "common": {
     "back": "返回",
@@ -81,7 +80,7 @@
     "usernameLength": "用戶名須 3～32 位",
     "usernameChars": "用戶名僅允許字母、數字、下劃線",
     "passwordLength": "密碼至少 6 位",
-    "forgotPasswordHint": "忘記密碼？請聯絡伺服器管理員重設。"
+    "forgotPasswordHint": "忘記密碼？請聯繫服務器管理員重置。"
   },
   "home": {
     "pullRefresh": "下拉刷新",
@@ -105,7 +104,7 @@
     "pastTitle": "往月賬單",
     "hotTags": "熱門標籤",
     "hotTagUseCount": "({{count}})",
-    "hotContacts": "熱門聯絡人",
+    "hotContacts": "熱門聯繫人",
     "trendHalfYear": "近半年",
     "trendOneYear": "近一年"
   },
@@ -144,7 +143,7 @@
   },
   "annualReport": {
     "nav": "年報",
-    "title": "{{year}}年 帳單年報",
+    "title": "{{year}}年 賬單年報",
     "subtitle": "根據本年流水自動彙總。",
     "prototypeBadge": "原型 · 假數據",
     "prevYear": "上一年",
@@ -175,7 +174,7 @@
       "expense_over_income": "本年總支出超過總收入。"
     },
     "expandTags": "展開全部（{{count}}）",
-    "collapseTags": "收合",
+    "collapseTags": "收起",
     "axisBroken": "已斷軸"
   },
   "profile": {
@@ -187,14 +186,14 @@
     "logout": "退出",
     "grants": "授權",
     "users": "用戶",
-    "myLedger": "我的帳簿",
+    "myLedger": "我的賬本",
     "otherLedger": "{{name}}（{{permission}}）",
-    "switchLedger": "切換帳簿",
+    "switchLedger": "切換賬本",
     "permissionEdit": "可編輯",
-    "permissionRead": "唯讀"
+    "permissionRead": "只讀"
   },
   "grants": {
-    "description": "分享本帳本給他人查看或編輯",
+    "description": "分享本賬本給他人查看或編輯",
     "add": "授權給用戶",
     "pickUser": "選擇用戶",
     "grant": "授權",
@@ -202,13 +201,13 @@
     "empty": "尚未授權給任何人",
     "noUsers": "沒有可授權的用戶",
     "deleteTitle": "刪除授權",
-    "deleteConfirm": "撤銷對「{{name}}」的帳簿授權？",
+    "deleteConfirm": "撤銷對「{{name}}」的賬本授權？",
     "editTitle": "修改「{{name}}」的授權",
     "editAria": "編輯「{{name}}」的授權",
     "deleteAria": "刪除「{{name}}」的授權"
   },
   "admin": {
-    "description": "管理帳號、角色與密碼",
+    "description": "管理賬號、角色與密碼",
     "addUser": "添加用戶",
     "create": "創建",
     "empty": "暫無用戶",
@@ -227,7 +226,7 @@
     "editAria": "編輯「{{name}}」",
     "delete": "刪除",
     "deleteTitle": "刪除用戶",
-    "deleteMessage": "將永久刪除「{{name}}」及其帳簿資料，無法恢復。",
+    "deleteMessage": "將永久刪除「{{name}}」及其賬本數據，無法恢復。",
     "makeAdminAria": "將「{{name}}」設為管理員",
     "revokeAdminAria": "取消「{{name}}」的管理員",
     "enableAria": "啟用「{{name}}」",
@@ -247,7 +246,13 @@
     "colorSchemeUpdated": "配色已更新",
     "failed": "失敗",
     "language": "語言",
-    "languageSearch": "搜語言"
+    "languageSearch": "搜語言",
+    "theme": "外觀",
+    "themeLight": "淺色",
+    "themeDark": "深色",
+    "themeSystem": "跟隨系統",
+    "themeUpdated": "外觀已更新",
+    "openFnosAppSetting": "打開飛牛應用設置"
   },
   "tags": {
     "newPlaceholder": "新標籤",
@@ -301,7 +306,7 @@
     "showContact": "顯示「{{name}}」",
     "editName": "編輯「{{name}}」",
     "renameFailed": "改名失敗",
-    "nameTaken": "已存在同名聯絡人"
+    "nameTaken": "已存在同名聯繫人"
   },
   "data": {
     "exportTitle": "導出賬本",
@@ -338,15 +343,15 @@
     "importSummarySkippedDaily": "跳過日常支出 {{count}} 條",
     "importSummaryCreatedTags": "新建標籤 {{count}} 個",
     "importSummaryCreatedContacts": "新建聯繫人 {{count}} 個",
-    "importDescriptionMapped": "對應欄位後匯入；可選擇保留歷史並跳過重複；缺失標籤/聯繫人自動建立。",
-    "csvMapTitle": "對應 CSV 欄位",
-    "csvMapSubtitle": "「{{filename}}」預覽。確認對應後匯入。",
-    "csvMapFields": "欄位對應",
+    "importDescriptionMapped": "映射列後導入；可選擇保留歷史並跳過重複；缺失標籤/聯繫人自動創建。",
+    "csvMapTitle": "映射 CSV 列",
+    "csvMapSubtitle": "「{{filename}}」預覽。確認映射後導入。",
+    "csvMapFields": "列映射",
     "csvFieldIgnore": "忽略",
     "csvEmptyHeader": "（空）",
     "csvKeepHistory": "保留現有歷史",
-    "csvKeepHistoryHint": "同日、標籤、備註、金額相同的列將跳過。取消勾選則先清空帳簿再寫入。",
-    "csvMapRequired": "須對應日期、流向與金額。",
+    "csvKeepHistoryHint": "同日、標籤、備註、金額相同的行將跳過。取消勾選則先清空賬本再寫入。",
+    "csvMapRequired": "須映射日期、流向與金額。",
     "csvParseFailed": "無法解析 CSV",
     "importSummarySkippedDuplicates": "跳過重複 {{count}} 條",
     "csvField": {
@@ -363,7 +368,7 @@
     "csvDeriveFromRunning": "將用每月最後一筆結餘作為月末餘額，無需填寫期初。",
     "csvOpeningBalance": "期初餘額",
     "csvOpeningBalanceHint": "最早流水月之前那個月的月末現金。",
-    "csvOpeningRequired": "請填寫期初，或對應結餘欄。",
+    "csvOpeningRequired": "請填寫期初，或映射結餘列。",
     "importSummaryDerivedBalances": "推算月度餘額 {{count}} 條"
   },
   "backup": {
@@ -381,7 +386,15 @@
     "backupFailed": "備份失敗",
     "backupDir": "備份目錄",
     "configured": "已配置：{{path}}",
-    "dirNotConfigured": "未配置備份目錄，請在應用設置或環境變量中指定路徑。",
+    "dirNotConfigured": "未配置備份目錄，請在飛牛內選擇目錄，或在應用設置/環境變量中指定路徑。",
+    "pickBackupDir": "選擇備份目錄",
+    "refreshBackupAuth": "刷新授權目錄",
+    "pickingBackupDir": "選擇中…",
+    "syncingBackupDir": "同步中…",
+    "backupDirSynced": "備份目錄已更新",
+    "backupDirPickFailed": "選擇或同步備份目錄失敗",
+    "openBackupFolder": "在文件管理器中打開",
+    "openLastBackupFile": "打開最近備份文件",
     "scheduledBackup": "定期備份",
     "enable": "啟用",
     "interval": "週期",
@@ -436,7 +449,11 @@
     "overwriteTitle": "覆蓋登記",
     "overwriteWithAmount": "{{month}} 已有 {{amount}}，覆蓋？",
     "overwriteWithoutAmount": "{{month}} 已有登記，覆蓋？",
-    "confirmOverwrite": "確認覆蓋"
+    "confirmOverwrite": "確認覆蓋",
+    "delete": "刪除登記",
+    "deleting": "刪除中…",
+    "confirmDeleteTitle": "確認刪除登記",
+    "confirmDeleteMessage": "刪除後不可恢復。{{month}} 推算的日常支出（系統流水）也會一併清除。"
   },
   "picker": {
     "prevYearGroup": "上年組",
@@ -502,6 +519,7 @@
     "csvRowLimit": "CSV 行數超過上限",
     "balanceDateFormat": "月度餘額行日期須為 YYYY-MM",
     "balanceNegative": "餘額不能為負",
+    "balanceMonthNotOpen": "當月餘額須在本月 25 日及以後登記",
     "duplicateBalance": "重複月度餘額",
     "txDateFormat": "流水日期須為 YYYY-MM-DD",
     "tagNameEmpty": "標籤名不能為空",

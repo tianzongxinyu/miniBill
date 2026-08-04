@@ -19,10 +19,11 @@ export function StatFilterButton({
   onClick: () => void;
   children: ReactNode;
 }) {
-  const { scheme } = useSettings();
+  const { scheme, theme } = useSettings();
   const style = active
     ? filterActiveStyleForType(filterType, scheme)
     : filterInactiveStyleForType(filterType, scheme);
+  void theme;
 
   return (
     <button

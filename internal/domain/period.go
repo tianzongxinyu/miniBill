@@ -65,6 +65,38 @@ func NextMonth(ym YearMonth) YearMonth {
 	return YearMonth{Year: y, Month: int(m)}
 }
 
+// BalanceMonthOpenDay: current month becomes registerable on this calendar day (inclusive).
+const BalanceMonthOpenDay = 25
+
+// MaxRegisterableBalanceMonth returns the latest year-month that may be registered at now.
+// Days 1–24: previous month; day >= 25: current month.
+func MaxRegisterableBalanceMonth(now time.Time) YearMonth {
+	loc := now.Location()
+	t := now.In(loc)
+	y, m, d := t.Date()
+	curr := YearMonth{Year: y, Month: int(m)}
+	if d < BalanceMonthOpenDay {
+		return PrevMonth(curr)
+	}
+	return curr
+}
+
+// CanRegisterBalanceMonth reports whether year/month may be registered at now
+// (must not be after MaxRegisterableBalanceMonth).
+func CanRegisterBalanceMonth(year, month int, now time.Time) bool {
+	if month < 1 || month > 12 {
+		return false
+	}
+	max := MaxRegisterableBalanceMonth(now)
+	if year < max.Year {
+		return true
+	}
+	if year > max.Year {
+		return false
+	}
+	return month <= max.Month
+}
+
 const DailyExpenseTagName = "日常支出"
 const DailyExpensePresetKey = "daily_expense"
 

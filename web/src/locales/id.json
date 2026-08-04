@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Pencatatan keuangan ringan yang di-host sendiri",
-    "subtitle": "Buku besar pribadi",
-    "titleOtherLedger": "Buku {{name}}"
+    "subtitle": "Buku besar pribadi"
   },
   "common": {
     "back": "Kembali",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Skema warna diperbarui",
     "failed": "Gagal",
     "language": "Bahasa",
-    "languageSearch": "Cari bahasa"
+    "languageSearch": "Cari bahasa",
+    "theme": "Tampilan",
+    "themeLight": "Terang",
+    "themeDark": "Gelap",
+    "themeSystem": "Sistem",
+    "themeUpdated": "Tampilan diperbarui",
+    "openFnosAppSetting": "Buka pengaturan aplikasi fnOS"
   },
   "tags": {
     "newPlaceholder": "Tag baru",
@@ -345,7 +350,7 @@
     "backupFailed": "Cadangan gagal",
     "backupDir": "Direktori cadangan",
     "configured": "Dikonfigurasi: {{path}}",
-    "dirNotConfigured": "Folder cadangan belum diatur. Pengaturan app atau variabel lingkungan.",
+    "dirNotConfigured": "Direktori cadangan belum diatur. Pilih folder di fnOS atau di pengaturan/variabel lingkungan.",
     "scheduledBackup": "Cadangan terjadwal",
     "enable": "Aktifkan",
     "interval": "Frekuensi",
@@ -370,7 +375,15 @@
     "saveSettings": "Simpan pengaturan",
     "runNow": "Cadangkan sekarang",
     "runNowDescription": "Ekspor CSV buku besar saat ini dan kompres ke zip di direktori cadangan.",
-    "running": "Mencadangkan…"
+    "running": "Mencadangkan…",
+    "pickBackupDir": "Pilih folder cadangan",
+    "refreshBackupAuth": "Segarkan folder yang diizinkan",
+    "pickingBackupDir": "Memilih…",
+    "syncingBackupDir": "Menyinkronkan…",
+    "backupDirSynced": "Folder cadangan diperbarui",
+    "backupDirPickFailed": "Gagal memilih atau menyinkronkan folder cadangan",
+    "openBackupFolder": "Buka di pengelola file",
+    "openLastBackupFile": "Buka file cadangan terakhir"
   },
   "add": {
     "editTitle": "Edit transaksi",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Timpa entri yang ada",
     "overwriteWithAmount": "{{month}} sudah memiliki saldo ({{amount}}). Timpa?",
     "overwriteWithoutAmount": "{{month}} sudah memiliki entri saldo. Timpa?",
-    "confirmOverwrite": "Konfirmasi timpa"
+    "confirmOverwrite": "Konfirmasi timpa",
+    "delete": "Hapus pendaftaran",
+    "deleting": "Menghapus…",
+    "confirmDeleteTitle": "Hapus pendaftaran?",
+    "confirmDeleteMessage": "Tidak dapat dibatalkan. Pengeluaran harian yang dihitung (transaksi sistem) untuk {{month}} juga akan dihapus."
   },
   "picker": {
     "prevYearGroup": "Rentang tahun sebelumnya",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Batas baris CSV terlampaui",
     "balanceDateFormat": "Tanggal baris saldo harus YYYY-MM",
     "balanceNegative": "Saldo tidak boleh negatif",
+    "balanceMonthNotOpen": "Saldo bulan berjalan hanya dapat dicatat mulai tanggal 25",
     "duplicateBalance": "Saldo bulanan duplikat",
     "txDateFormat": "Tanggal transaksi harus YYYY-MM-DD",
     "tagNameEmpty": "Nama tag tidak boleh kosong",

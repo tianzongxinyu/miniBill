@@ -2,8 +2,7 @@
   "app": {
     "name": "轻账单",
     "description": "轻量自托管记账",
-    "subtitle": "记账本",
-    "titleOtherLedger": "{{name}}的账本"
+    "subtitle": "记账本"
   },
   "common": {
     "back": "返回",
@@ -247,7 +246,13 @@
     "colorSchemeUpdated": "配色已更新",
     "failed": "失败",
     "language": "语言",
-    "languageSearch": "搜语言"
+    "languageSearch": "搜语言",
+    "theme": "外观",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeSystem": "跟随系统",
+    "themeUpdated": "外观已更新",
+    "openFnosAppSetting": "打开飞牛应用设置"
   },
   "tags": {
     "newPlaceholder": "新标签",
@@ -381,7 +386,15 @@
     "backupFailed": "备份失败",
     "backupDir": "备份目录",
     "configured": "已配置：{{path}}",
-    "dirNotConfigured": "未配置备份目录，请在应用设置或环境变量中指定路径。",
+    "dirNotConfigured": "未配置备份目录，请在飞牛内选择目录，或在应用设置/环境变量中指定路径。",
+    "pickBackupDir": "选择备份目录",
+    "refreshBackupAuth": "刷新授权目录",
+    "pickingBackupDir": "选择中…",
+    "syncingBackupDir": "同步中…",
+    "backupDirSynced": "备份目录已更新",
+    "backupDirPickFailed": "选择或同步备份目录失败",
+    "openBackupFolder": "在文件管理器中打开",
+    "openLastBackupFile": "打开最近备份文件",
     "scheduledBackup": "定期备份",
     "enable": "启用",
     "interval": "周期",
@@ -436,7 +449,11 @@
     "overwriteTitle": "覆盖登记",
     "overwriteWithAmount": "{{month}} 已有 {{amount}}，覆盖？",
     "overwriteWithoutAmount": "{{month}} 已有登记，覆盖？",
-    "confirmOverwrite": "确认覆盖"
+    "confirmOverwrite": "确认覆盖",
+    "delete": "删除登记",
+    "deleting": "删除中…",
+    "confirmDeleteTitle": "确认删除登记",
+    "confirmDeleteMessage": "删除后不可恢复。{{month}} 推算的日常支出（系统流水）也会一并清除。"
   },
   "picker": {
     "prevYearGroup": "上年组",
@@ -502,6 +519,7 @@
     "csvRowLimit": "CSV 行数超过上限",
     "balanceDateFormat": "月度余额行日期须为 YYYY-MM",
     "balanceNegative": "余额不能为负",
+    "balanceMonthNotOpen": "当月余额须在本月 25 日及以后登记",
     "duplicateBalance": "重复月度余额",
     "txDateFormat": "流水日期须为 YYYY-MM-DD",
     "tagNameEmpty": "标签名不能为空",

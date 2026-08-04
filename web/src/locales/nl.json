@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Lichtgewicht self-hosted boekhouding",
-    "subtitle": "Persoonlijk kasboek",
-    "titleOtherLedger": "{{name}}s boek"
+    "subtitle": "Persoonlijk kasboek"
   },
   "common": {
     "back": "Terug",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Kleurenschema bijgewerkt",
     "failed": "Mislukt",
     "language": "Taal",
-    "languageSearch": "Talen zoeken"
+    "languageSearch": "Talen zoeken",
+    "theme": "Weergave",
+    "themeLight": "Licht",
+    "themeDark": "Donker",
+    "themeSystem": "Systeem",
+    "themeUpdated": "Weergave bijgewerkt",
+    "openFnosAppSetting": "fnOS-appinstellingen openen"
   },
   "tags": {
     "newPlaceholder": "Nieuwe tag",
@@ -345,7 +350,7 @@
     "backupFailed": "Back-up mislukt",
     "backupDir": "Back-upmap",
     "configured": "Geconfigureerd: {{path}}",
-    "dirNotConfigured": "Backupmap niet ingesteld. App-instellingen of omgevingsvariabele.",
+    "dirNotConfigured": "Back-upmap niet ingesteld. Kies een map in fnOS of via app-instellingen/omgevingsvariabelen.",
     "scheduledBackup": "Geplande back-up",
     "enable": "Inschakelen",
     "interval": "Frequentie",
@@ -370,7 +375,15 @@
     "saveSettings": "Instellingen opslaan",
     "runNow": "Nu back-up maken",
     "runNowDescription": "Exporteer het huidige kasboek-CSV en comprimeer het naar een zip in de back-upmap.",
-    "running": "Back-up maken…"
+    "running": "Back-up maken…",
+    "pickBackupDir": "Back-upmap kiezen",
+    "refreshBackupAuth": "Geautoriseerde map vernieuwen",
+    "pickingBackupDir": "Kiezen…",
+    "syncingBackupDir": "Synchroniseren…",
+    "backupDirSynced": "Back-upmap bijgewerkt",
+    "backupDirPickFailed": "Back-upmap kiezen of synchroniseren mislukt",
+    "openBackupFolder": "Openen in bestandsbeheer",
+    "openLastBackupFile": "Laatste back-upbestand openen"
   },
   "add": {
     "editTitle": "Transactie bewerken",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Bestaande invoer overschrijven",
     "overwriteWithAmount": "{{month}} heeft al een saldo ({{amount}}). Overschrijven?",
     "overwriteWithoutAmount": "{{month}} heeft al een saldo. Overschrijven?",
-    "confirmOverwrite": "Overschrijven bevestigen"
+    "confirmOverwrite": "Overschrijven bevestigen",
+    "delete": "Registratie verwijderen",
+    "deleting": "Verwijderen…",
+    "confirmDeleteTitle": "Registratie verwijderen?",
+    "confirmDeleteMessage": "Dit kan niet ongedaan worden gemaakt. De berekende dagelijkse uitgave (systeemtransactie) voor {{month}} wordt ook verwijderd."
   },
   "picker": {
     "prevYearGroup": "Vorig jaarbereik",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV-rijlimiet overschreden",
     "balanceDateFormat": "Datum van saldo moet JJJJ-MM zijn",
     "balanceNegative": "Saldo kan niet negatief zijn",
+    "balanceMonthNotOpen": "Het saldo van de huidige maand kan pas vanaf de 25e worden geregistreerd",
     "duplicateBalance": "Dubbel maandsaldo",
     "txDateFormat": "Transactiedatum moet JJJJ-MM-DD zijn",
     "tagNameEmpty": "Tagnaam mag niet leeg zijn",

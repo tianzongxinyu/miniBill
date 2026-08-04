@@ -3,9 +3,9 @@
 import { useSettings } from '@/components/SettingsProvider';
 import { useTranslation } from 'react-i18next';
 import {
-  BALANCE_CHART_STROKE,
+  balanceChartStroke,
   chartStrokeForType,
-  NET_INCOME_CHART_STROKE,
+  netIncomeChartStroke,
 } from '@/lib/amountColors';
 
 type LegendItem = {
@@ -25,9 +25,10 @@ export function StatsChartLegend({
   onToggleSeries: (dataKey: string) => void;
 }) {
   const { t } = useTranslation();
-  const { scheme } = useSettings();
+  const { scheme, theme } = useSettings();
   const incomeStroke = chartStrokeForType('income', scheme);
   const expenseStroke = chartStrokeForType('expense', scheme);
+  void theme; // re-read CSS vars when appearance changes
 
   const items: LegendItem[] = searchActive
     ? [
@@ -37,8 +38,8 @@ export function StatsChartLegend({
     : [
         { key: 'expense', label: t('stats.totalExpense'), color: expenseStroke },
         { key: 'income', label: t('stats.totalIncome'), color: incomeStroke },
-        { key: 'net', label: t('stats.netIncome'), color: NET_INCOME_CHART_STROKE, dashed: true },
-        { key: 'balance', label: t('stats.balance'), color: BALANCE_CHART_STROKE, dashed: true },
+        { key: 'net', label: t('stats.netIncome'), color: netIncomeChartStroke(), dashed: true },
+        { key: 'balance', label: t('stats.balance'), color: balanceChartStroke(), dashed: true },
       ];
 
   return (

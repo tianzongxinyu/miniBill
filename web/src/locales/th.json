@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "บัญชีบันทึกรายการเบา ๆ ที่โฮสต์เอง",
-    "subtitle": "สมุดบัญชีส่วนตัว",
-    "titleOtherLedger": "สมุดของ {{name}}"
+    "subtitle": "สมุดบัญชีส่วนตัว"
   },
   "common": {
     "back": "กลับ",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "อัปเดตโครงสีแล้ว",
     "failed": "ล้มเหลว",
     "language": "ภาษา",
-    "languageSearch": "ค้นหาภาษา"
+    "languageSearch": "ค้นหาภาษา",
+    "theme": "ลักษณะ",
+    "themeLight": "สว่าง",
+    "themeDark": "มืด",
+    "themeSystem": "ตามระบบ",
+    "themeUpdated": "อัปเดตลักษณะแล้ว",
+    "openFnosAppSetting": "เปิดการตั้งค่าแอป fnOS"
   },
   "tags": {
     "newPlaceholder": "แท็กใหม่",
@@ -345,7 +350,7 @@
     "backupFailed": "สำรองไม่สำเร็จ",
     "backupDir": "ไดเรกทอรีสำรอง",
     "configured": "ตั้งค่าแล้ว: {{path}}",
-    "dirNotConfigured": "ยังไม่ตั้งโฟลเดอร์สำรอง ตั้งในแอปหรือตัวแปรสภาพแวดล้อม",
+    "dirNotConfigured": "ยังไม่ได้ตั้งค่าโฟลเดอร์สำรอง เลือกใน fnOS หรือตั้งค่าในแอป/ตัวแปรสภาพแวดล้อม",
     "scheduledBackup": "สำรองตามกำหนด",
     "enable": "เปิดใช้",
     "interval": "ช่วงเวลา",
@@ -370,7 +375,15 @@
     "saveSettings": "บันทึกการตั้งค่า",
     "runNow": "สำรองตอนนี้",
     "runNowDescription": "ส่งออก CSV สมุดบัญชีปัจจุบันและบีบอัดเป็น zip ในไดเรกทอรีสำรอง",
-    "running": "กำลังสำรอง…"
+    "running": "กำลังสำรอง…",
+    "pickBackupDir": "เลือกโฟลเดอร์สำรอง",
+    "refreshBackupAuth": "รีเฟรชโฟลเดอร์ที่อนุญาต",
+    "pickingBackupDir": "กำลังเลือก…",
+    "syncingBackupDir": "กำลังซิงค์…",
+    "backupDirSynced": "อัปเดตโฟลเดอร์สำรองแล้ว",
+    "backupDirPickFailed": "เลือกหรือซิงค์โฟลเดอร์สำรองไม่สำเร็จ",
+    "openBackupFolder": "เปิดในตัวจัดการไฟล์",
+    "openLastBackupFile": "เปิดไฟล์สำรองล่าสุด"
   },
   "add": {
     "editTitle": "แก้ไขรายการ",
@@ -400,7 +413,11 @@
     "overwriteTitle": "แทนที่รายการที่มี",
     "overwriteWithAmount": "{{month}} มียอดคงเหลือ ({{amount}}) แล้ว แทนที่?",
     "overwriteWithoutAmount": "{{month}} มียอดคงเหลือแล้ว แทนที่?",
-    "confirmOverwrite": "ยืนยันแทนที่"
+    "confirmOverwrite": "ยืนยันแทนที่",
+    "delete": "ลบการลงทะเบียน",
+    "deleting": "กำลังลบ…",
+    "confirmDeleteTitle": "ลบการลงทะเบียน?",
+    "confirmDeleteMessage": "ไม่สามารถกู้คืนได้ ค่าใช้จ่ายประจำวันที่คำนวณไว้ (รายการระบบ) ของ {{month}} จะถูกลบด้วย"
   },
   "picker": {
     "prevYearGroup": "ช่วงปีก่อน",
@@ -466,6 +483,7 @@
     "csvRowLimit": "เกินขีดจำกัดแถว CSV",
     "balanceDateFormat": "วันที่แถวยอดคงเหลือต้องเป็น YYYY-MM",
     "balanceNegative": "ยอดคงเหลือต้องไม่ติดลบ",
+    "balanceMonthNotOpen": "ยอดคงเหลือเดือนปัจจุบันลงทะเบียนได้ตั้งแต่วันที่ 25 เป็นต้นไป",
     "duplicateBalance": "ยอดคงเหลือรายเดือนซ้ำ",
     "txDateFormat": "วันที่รายการต้องเป็น YYYY-MM-DD",
     "tagNameEmpty": "ชื่อแท็กต้องไม่ว่าง",

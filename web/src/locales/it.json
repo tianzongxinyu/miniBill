@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Contabilità leggera self-hosted",
-    "subtitle": "Registro personale",
-    "titleOtherLedger": "Libro di {{name}}"
+    "subtitle": "Registro personale"
   },
   "common": {
     "back": "Indietro",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Schema colori aggiornato",
     "failed": "Non riuscito",
     "language": "Lingua",
-    "languageSearch": "Cerca lingue"
+    "languageSearch": "Cerca lingue",
+    "theme": "Aspetto",
+    "themeLight": "Chiaro",
+    "themeDark": "Scuro",
+    "themeSystem": "Sistema",
+    "themeUpdated": "Aspetto aggiornato",
+    "openFnosAppSetting": "Apri impostazioni app fnOS"
   },
   "tags": {
     "newPlaceholder": "Nuova etichetta",
@@ -345,7 +350,7 @@
     "backupFailed": "Backup non riuscito",
     "backupDir": "Directory di backup",
     "configured": "Configurata: {{path}}",
-    "dirNotConfigured": "Cartella backup non impostata. Impostazioni app o variabile d'ambiente.",
+    "dirNotConfigured": "Cartella di backup non impostata. Scegli una cartella in fnOS o nelle impostazioni/variabili d'ambiente.",
     "scheduledBackup": "Backup programmato",
     "enable": "Attiva",
     "interval": "Intervallo",
@@ -370,7 +375,15 @@
     "saveSettings": "Salva impostazioni",
     "runNow": "Backup ora",
     "runNowDescription": "Esporta il CSV del registro corrente e lo comprime in uno zip nella directory di backup.",
-    "running": "Backup in corso…"
+    "running": "Backup in corso…",
+    "pickBackupDir": "Scegli cartella di backup",
+    "refreshBackupAuth": "Aggiorna cartella autorizzata",
+    "pickingBackupDir": "Selezione…",
+    "syncingBackupDir": "Sincronizzazione…",
+    "backupDirSynced": "Cartella di backup aggiornata",
+    "backupDirPickFailed": "Impossibile scegliere o sincronizzare la cartella di backup",
+    "openBackupFolder": "Apri nel file manager",
+    "openLastBackupFile": "Apri ultimo file di backup"
   },
   "add": {
     "editTitle": "Modifica transazione",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Sovrascrivi voce esistente",
     "overwriteWithAmount": "{{month}} ha già un saldo ({{amount}}). Sovrascrivere?",
     "overwriteWithoutAmount": "{{month}} ha già un saldo registrato. Sovrascrivere?",
-    "confirmOverwrite": "Conferma sovrascrittura"
+    "confirmOverwrite": "Conferma sovrascrittura",
+    "delete": "Elimina registrazione",
+    "deleting": "Eliminazione…",
+    "confirmDeleteTitle": "Eliminare la registrazione?",
+    "confirmDeleteMessage": "L’operazione non è reversibile. Verrà rimossa anche la spesa quotidiana calcolata (transazione di sistema) di {{month}}."
   },
   "picker": {
     "prevYearGroup": "Intervallo anni precedente",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Limite righe CSV superato",
     "balanceDateFormat": "La data del saldo deve essere nel formato AAAA-MM",
     "balanceNegative": "Il saldo non può essere negativo",
+    "balanceMonthNotOpen": "Il saldo del mese corrente può essere registrato solo dal giorno 25",
     "duplicateBalance": "Saldo mensile duplicato",
     "txDateFormat": "La data della transazione deve essere nel formato AAAA-MM-GG",
     "tagNameEmpty": "Il nome dell'etichetta non può essere vuoto",

@@ -5,12 +5,103 @@
 :root {
   --font-sans: "Inter", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --color-accent: #3E8E7E;
-  --color-accent-soft: #E8F4F1;
   --radius-surface: 1rem;
   --radius-card: var(--radius-surface);
   --radius-control: var(--radius-surface);
-  --control-border: color-mix(in srgb, var(--color-accent) 32%, #e8eeec);
+  color-scheme: light;
+
+  --color-canvas: #e8ecf1;
+  --color-canvas-rgb: 232 236 241;
+  --color-surface: #f4f6f9;
+  --color-surface-rgb: 244 246 249;
+  --color-ink: #1a1a1a;
+  --color-ink-rgb: 26 26 26;
+  --color-muted: #8b939c;
+  --color-muted-rgb: 139 147 156;
+  --color-line: #d5dbe3;
+  --color-line-rgb: 213 219 227;
+  --color-accent: #3e8e7e;
+  --color-accent-rgb: 62 142 126;
+  --color-accent-soft: #e8f4f1;
+  --color-accent-soft-rgb: 232 244 241;
+  --color-accent-muted: #6ba99c;
+  --color-accent-muted-rgb: 107 169 156;
+  --color-income: #2f9e8a;
+  --color-income-rgb: 47 158 138;
+  --color-expense: #e05252;
+  --color-expense-rgb: 224 82 82;
+  --color-sidebar: #f4f6f9;
+  --color-sidebar-rgb: 244 246 249;
+  --color-sidebar-surface: #e8ecf1;
+  --color-sidebar-surface-rgb: 232 236 241;
+  --color-sidebar-border: #d5dbe3;
+  --color-sidebar-border-rgb: 213 219 227;
+  --color-sidebar-muted: #8b939c;
+  --color-sidebar-muted-rgb: 139 147 156;
+  --color-sidebar-active: #3e8e7e;
+  --color-sidebar-active-rgb: 62 142 126;
+
+  --control-border: color-mix(in srgb, var(--color-accent) 32%, var(--color-line));
+  --shadow-panel: 0 1px 3px rgb(26 26 26 / 0.04);
+  --shadow-sidebar: 1px 0 0 var(--color-line);
+  --theme-color: #3e8e7e;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: #22262d;
+  --color-canvas-rgb: 34 38 45;
+  --color-surface: #2e333c;
+  --color-surface-rgb: 46 51 60;
+  --color-ink: #eef1f4;
+  --color-ink-rgb: 238 241 244;
+  --color-muted: #a2abb6;
+  --color-muted-rgb: 162 171 182;
+  --color-line: #454b56;
+  --color-line-rgb: 69 75 86;
+  --color-accent: #6b9fd4;
+  --color-accent-rgb: 107 159 212;
+  --color-accent-soft: #4a515c;
+  --color-accent-soft-rgb: 74 81 92;
+  --color-accent-muted: #8bb4e0;
+  --color-accent-muted-rgb: 139 180 224;
+  --color-income: #7cb87a;
+  --color-income-rgb: 124 184 122;
+  --color-expense: #ef7575;
+  --color-expense-rgb: 239 117 117;
+  --color-sidebar: #2e333c;
+  --color-sidebar-rgb: 46 51 60;
+  --color-sidebar-surface: #1b1e24;
+  --color-sidebar-surface-rgb: 27 30 36;
+  --color-sidebar-border: #454b56;
+  --color-sidebar-border-rgb: 69 75 86;
+  --color-sidebar-muted: #a2abb6;
+  --color-sidebar-muted-rgb: 162 171 182;
+  --color-sidebar-active: #6b9fd4;
+  --color-sidebar-active-rgb: 107 159 212;
+
+  --control-border: color-mix(in srgb, var(--color-accent) 40%, var(--color-line));
+  --shadow-panel: 0 1px 3px rgb(0 0 0 / 0.28);
+  --shadow-sidebar: 1px 0 0 var(--color-line);
+  --theme-color: #6b9fd4;
+}
+
+/* Dark: selected / active chrome uses bright gray, not solid accent fill */
+html[data-theme='dark'] .btn-segment-active {
+  @apply bg-accent-soft text-ink border-line;
+}
+
+html[data-theme='dark'] .nav-item-active {
+  @apply text-ink bg-accent-soft;
+}
+
+html[data-theme='dark'] .nav-item-active::before {
+  @apply bg-muted;
+}
+
+html[data-theme='dark'] .form-hero-type .btn-segment-active {
+  @apply bg-accent-soft text-ink border-line;
 }
 
 body {
@@ -289,7 +380,12 @@ body {
   }
 
   .loading-shimmer {
-    background: linear-gradient(90deg, #e8eeec 25%, #f4f8f7 50%, #e8eeec 75%);
+    background: linear-gradient(
+      90deg,
+      var(--color-line) 25%,
+      var(--color-canvas) 50%,
+      var(--color-line) 75%
+    );
     background-size: 200% 100%;
     @apply animate-shimmer rounded-lg;
   }
@@ -576,8 +672,8 @@ body {
       -55deg,
       transparent,
       transparent 1.5px,
-      #ffffff 1.5px,
-      #ffffff 3px
+      var(--color-surface) 1.5px,
+      var(--color-surface) 3px
     );
     pointer-events: none;
   }
@@ -853,7 +949,7 @@ body {
   }
 
   .form-alert-error {
-    @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-expense bg-red-50/80 border border-red-100;
+    @apply flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-sm text-expense bg-expense/10 border border-expense/20;
     border-left-width: 3px;
     border-left-color: theme('colors.expense');
   }

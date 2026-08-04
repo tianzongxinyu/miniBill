@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "경량 셀프 호스트 가계부",
-    "subtitle": "개인 장부",
-    "titleOtherLedger": "{{name}}의 장부"
+    "subtitle": "개인 장부"
   },
   "common": {
     "back": "뒤로",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "색상 구성이 변경되었습니다",
     "failed": "실패",
     "language": "언어",
-    "languageSearch": "검색"
+    "languageSearch": "검색",
+    "theme": "모양",
+    "themeLight": "밝은 모드",
+    "themeDark": "어두운 모드",
+    "themeSystem": "시스템",
+    "themeUpdated": "모양이 업데이트되었습니다",
+    "openFnosAppSetting": "fnOS 앱 설정 열기"
   },
   "tags": {
     "newPlaceholder": "새 태그",
@@ -345,7 +350,7 @@
     "backupFailed": "백업 실패",
     "backupDir": "백업 디렉터리",
     "configured": "설정됨: {{path}}",
-    "dirNotConfigured": "백업 경로 미설정. 앱 설정 또는 환경 변수에서 지정.",
+    "dirNotConfigured": "백업 디렉터리가 없습니다. fnOS에서 폴더를 선택하거나 앱 설정/환경 변수로 지정하세요.",
     "scheduledBackup": "예약 백업",
     "enable": "사용",
     "interval": "간격",
@@ -370,7 +375,15 @@
     "saveSettings": "설정 저장",
     "runNow": "지금 백업",
     "runNowDescription": "CSV를 zip으로 백업 폴더에 저장.",
-    "running": "백업 중…"
+    "running": "백업 중…",
+    "pickBackupDir": "백업 폴더 선택",
+    "refreshBackupAuth": "권한 폴더 새로고침",
+    "pickingBackupDir": "선택 중…",
+    "syncingBackupDir": "동기화 중…",
+    "backupDirSynced": "백업 폴더가 업데이트되었습니다",
+    "backupDirPickFailed": "백업 폴더 선택 또는 동기화에 실패했습니다",
+    "openBackupFolder": "파일 관리자에서 열기",
+    "openLastBackupFile": "최근 백업 파일 열기"
   },
   "add": {
     "editTitle": "거래 수정",
@@ -400,7 +413,11 @@
     "overwriteTitle": "기존 항목 덮어쓰기",
     "overwriteWithAmount": "{{month}}에 {{amount}} 있음. 덮어쓸까요?",
     "overwriteWithoutAmount": "{{month}} 등록됨. 덮어쓸까요?",
-    "confirmOverwrite": "덮어쓰기 확인"
+    "confirmOverwrite": "덮어쓰기 확인",
+    "delete": "등록 삭제",
+    "deleting": "삭제 중…",
+    "confirmDeleteTitle": "등록을 삭제할까요?",
+    "confirmDeleteMessage": "삭제 후 복구할 수 없습니다. {{month}}의 산출된 일상 지출(시스템 거래)도 함께 삭제됩니다."
   },
   "picker": {
     "prevYearGroup": "이전 연도",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV 행 수 제한을 초과했습니다",
     "balanceDateFormat": "잔액 행 날짜는 YYYY-MM 형식이어야 합니다",
     "balanceNegative": "잔액은 음수일 수 없습니다",
+    "balanceMonthNotOpen": "당월 잔액은 매월 25일 이후에만 등록할 수 있습니다",
     "duplicateBalance": "월별 잔액이 중복되었습니다",
     "txDateFormat": "거래 날짜는 YYYY-MM-DD 형식이어야 합니다",
     "tagNameEmpty": "태그 이름을 비울 수 없습니다",

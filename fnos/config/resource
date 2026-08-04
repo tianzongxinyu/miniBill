@@ -1,5 +1,9 @@
 {
     "port-config": {
         "protocol-file": "MiniBill.sc"
-    }
+    },
+    "api-scope": [
+        "trim.file.sharedAccess",
+        "trim.file.path"
+    ]
 }

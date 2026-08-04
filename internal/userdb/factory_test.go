@@ -106,6 +106,13 @@ func TestFactoryOpenMigratesExistingLedger(t *testing.T) {
 	if scheme != "red_up" {
 		t.Fatalf("amount_color_scheme = %q, want red_up", scheme)
 	}
+	var theme string
+	if err := opened.QueryRow(`SELECT theme FROM settings WHERE id=1`).Scan(&theme); err != nil {
+		t.Fatalf("theme missing after Open migrate: %v", err)
+	}
+	if theme != "light" {
+		t.Fatalf("theme = %q, want light", theme)
+	}
 }
 
 func TestFactoryOpenConcurrent(t *testing.T) {

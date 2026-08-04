@@ -112,10 +112,6 @@ export const loadLocale = async (locale: string): Promise<Locale> => {
     document.title = ledgerDocumentTitle(i18n.t('app.name'), {
       ownerUsername,
       isOwn,
-      ownLabel: i18n.t('profile.myLedger'),
-      otherLabel: ownerUsername
-        ? i18n.t('app.titleOtherLedger', { name: ownerUsername })
-        : undefined,
     });
   }
   return validLocale;

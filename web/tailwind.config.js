@@ -4,32 +4,32 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        canvas: '#f8faf9',
-        surface: '#ffffff',
-        ink: '#1a1a1a',
-        muted: '#8a9390',
-        line: '#e8eeec',
+        canvas: 'rgb(var(--color-canvas-rgb) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface-rgb) / <alpha-value>)',
+        ink: 'rgb(var(--color-ink-rgb) / <alpha-value>)',
+        muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
+        line: 'rgb(var(--color-line-rgb) / <alpha-value>)',
         accent: {
-          DEFAULT: '#3E8E7E',
-          soft: '#E8F4F1',
-          muted: '#6BA99C',
+          DEFAULT: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--color-accent-soft-rgb) / <alpha-value>)',
+          muted: 'rgb(var(--color-accent-muted-rgb) / <alpha-value>)',
         },
-        income: '#2F9E8A',
-        expense: '#E05252',
+        income: 'rgb(var(--color-income-rgb) / <alpha-value>)',
+        expense: 'rgb(var(--color-expense-rgb) / <alpha-value>)',
         sidebar: {
-          DEFAULT: '#ffffff',
-          surface: '#f8faf9',
-          border: '#e8eeec',
-          muted: '#8a9390',
-          active: '#3E8E7E',
+          DEFAULT: 'rgb(var(--color-sidebar-rgb) / <alpha-value>)',
+          surface: 'rgb(var(--color-sidebar-surface-rgb) / <alpha-value>)',
+          border: 'rgb(var(--color-sidebar-border-rgb) / <alpha-value>)',
+          muted: 'rgb(var(--color-sidebar-muted-rgb) / <alpha-value>)',
+          active: 'rgb(var(--color-sidebar-active-rgb) / <alpha-value>)',
         },
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        panel: '0 1px 3px rgba(26, 26, 26, 0.04)',
-        sidebar: '1px 0 0 rgba(232, 238, 236, 1)',
+        panel: 'var(--shadow-panel)',
+        sidebar: 'var(--shadow-sidebar)',
       },
       keyframes: {
         'fade-in-up': {

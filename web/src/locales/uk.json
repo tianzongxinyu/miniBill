@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Легка самохостована бухгалтерія",
-    "subtitle": "Особиста книга",
-    "titleOtherLedger": "Книга {{name}}"
+    "subtitle": "Особиста книга"
   },
   "common": {
     "back": "Назад",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "Колірну схему оновлено",
     "failed": "Помилка",
     "language": "Мова",
-    "languageSearch": "Пошук мов"
+    "languageSearch": "Пошук мов",
+    "theme": "Оформлення",
+    "themeLight": "Світла",
+    "themeDark": "Темна",
+    "themeSystem": "Системна",
+    "themeUpdated": "Оформлення оновлено",
+    "openFnosAppSetting": "Відкрити налаштування додатка fnOS"
   },
   "tags": {
     "newPlaceholder": "Новий тег",
@@ -345,7 +350,7 @@
     "backupFailed": "Резервна копія не вдалася",
     "backupDir": "Каталог резервних копій",
     "configured": "Налаштовано: {{path}}",
-    "dirNotConfigured": "Папку резерву не налаштовано. Налаштування застосунку або змінна середовища.",
+    "dirNotConfigured": "Каталог резервних копій не задано. Оберіть теку в fnOS або в налаштуваннях/змінних середовища.",
     "scheduledBackup": "Заплановане резервне копіювання",
     "enable": "Увімкнути",
     "interval": "Інтервал",
@@ -370,7 +375,15 @@
     "saveSettings": "Зберегти налаштування",
     "runNow": "Резервна копія зараз",
     "runNowDescription": "Експортувати поточний CSV книги та стиснути в zip у каталозі резервних копій.",
-    "running": "Створення резервної копії…"
+    "running": "Створення резервної копії…",
+    "pickBackupDir": "Вибрати теку резервних копій",
+    "refreshBackupAuth": "Оновити авторизовану теку",
+    "pickingBackupDir": "Вибір…",
+    "syncingBackupDir": "Синхронізація…",
+    "backupDirSynced": "Теку резервних копій оновлено",
+    "backupDirPickFailed": "Не вдалося вибрати або синхронізувати теку",
+    "openBackupFolder": "Відкрити у файловому менеджері",
+    "openLastBackupFile": "Відкрити останній файл резервної копії"
   },
   "add": {
     "editTitle": "Редагувати транзакцію",
@@ -400,7 +413,11 @@
     "overwriteTitle": "Перезаписати наявний запис",
     "overwriteWithAmount": "У {{month}} вже є баланс ({{amount}}). Перезаписати?",
     "overwriteWithoutAmount": "У {{month}} вже є запис балансу. Перезаписати?",
-    "confirmOverwrite": "Підтвердити перезапис"
+    "confirmOverwrite": "Підтвердити перезапис",
+    "delete": "Видалити запис",
+    "deleting": "Видалення…",
+    "confirmDeleteTitle": "Видалити запис?",
+    "confirmDeleteMessage": "Цю дію не можна скасувати. Розрахований щоденний витрата (системна операція) за {{month}} також буде видалено."
   },
   "picker": {
     "prevYearGroup": "Попередній діапазон років",
@@ -466,6 +483,7 @@
     "csvRowLimit": "Перевищено ліміт рядків CSV",
     "balanceDateFormat": "Дата рядка балансу має бути YYYY-MM",
     "balanceNegative": "Баланс не може бути від'ємним",
+    "balanceMonthNotOpen": "Баланс поточного місяця можна зареєструвати лише з 25-го числа",
     "duplicateBalance": "Дублікат місячного балансу",
     "txDateFormat": "Дата транзакції має бути YYYY-MM-DD",
     "tagNameEmpty": "Назва тега не може бути порожньою",

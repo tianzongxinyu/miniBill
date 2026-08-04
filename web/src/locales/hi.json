@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "हल्का स्व-होस्टेड बही-खाता",
-    "subtitle": "व्यक्तिगत लेजर",
-    "titleOtherLedger": "{{name}} की बही"
+    "subtitle": "व्यक्तिगत लेजर"
   },
   "common": {
     "back": "वापस",
@@ -211,7 +210,13 @@
     "colorSchemeUpdated": "रंग योजना अपडेट की गई",
     "failed": "विफल",
     "language": "भाषा",
-    "languageSearch": "भाषाएँ खोजें"
+    "languageSearch": "भाषाएँ खोजें",
+    "theme": "रूप",
+    "themeLight": "हल्का",
+    "themeDark": "गहरा",
+    "themeSystem": "सिस्टम",
+    "themeUpdated": "रूप अपडेट किया गया",
+    "openFnosAppSetting": "fnOS ऐप सेटिंग्स खोलें"
   },
   "tags": {
     "newPlaceholder": "नया टैग",
@@ -345,7 +350,7 @@
     "backupFailed": "बैकअप विफल",
     "backupDir": "बैकअप निर्देशिका",
     "configured": "कॉन्फ़िगर: {{path}}",
-    "dirNotConfigured": "बैकअप फ़ोल्डर सेट नहीं। ऐप सेटिंग या एनवायरनमेंट वेरिएबल।",
+    "dirNotConfigured": "बैकअप निर्देशिका सेट नहीं है। fnOS में फ़ोल्डर चुनें या ऐप सेटिंग्स/पर्यावरण चर में सेट करें।",
     "scheduledBackup": "अनुसूचित बैकअप",
     "enable": "सक्षम करें",
     "interval": "अंतराल",
@@ -370,7 +375,15 @@
     "saveSettings": "सेटिंग्स सहेजें",
     "runNow": "अभी बैकअप लें",
     "runNowDescription": "वर्तमान लेजर CSV निर्यात करें और बैकअप निर्देशिका में zip में संपीड़ित करें।",
-    "running": "बैकअप हो रहा है…"
+    "running": "बैकअप हो रहा है…",
+    "pickBackupDir": "बैकअप फ़ोल्डर चुनें",
+    "refreshBackupAuth": "अधिकृत फ़ोल्डर ताज़ा करें",
+    "pickingBackupDir": "चुन रहे हैं…",
+    "syncingBackupDir": "सिंक हो रहा है…",
+    "backupDirSynced": "बैकअप फ़ोल्डर अपडेट हो गया",
+    "backupDirPickFailed": "बैकअप फ़ोल्डर चुनने या सिंक करने में विफल",
+    "openBackupFolder": "फ़ाइल प्रबंधक में खोलें",
+    "openLastBackupFile": "अंतिम बैकअप फ़ाइल खोलें"
   },
   "add": {
     "editTitle": "लेनदेन संपादित करें",
@@ -400,7 +413,11 @@
     "overwriteTitle": "मौजूदा प्रविष्टि ओवरराइट करें",
     "overwriteWithAmount": "{{month}} में पहले से शेष ({{amount}}) है। ओवरराइट करें?",
     "overwriteWithoutAmount": "{{month}} में पहले से शेष प्रविष्टि है। ओवरराइट करें?",
-    "confirmOverwrite": "ओवरराइट की पुष्टि करें"
+    "confirmOverwrite": "ओवरराइट की पुष्टि करें",
+    "delete": "पंजीकरण हटाएँ",
+    "deleting": "हटाया जा रहा है…",
+    "confirmDeleteTitle": "पंजीकरण हटाएँ?",
+    "confirmDeleteMessage": "यह पूर्ववत नहीं किया जा सकता। {{month}} की गणना की गई दैनिक खर्च (सिस्टम लेनदेन) भी हटा दी जाएगी।"
   },
   "picker": {
     "prevYearGroup": "पिछली वर्ष सीमा",
@@ -466,6 +483,7 @@
     "csvRowLimit": "CSV पंक्ति सीमा पार हो गई",
     "balanceDateFormat": "मासिक शेष पंक्ति की तारीख YYYY-MM होनी चाहिए",
     "balanceNegative": "शेष ऋणात्मक नहीं हो सकता",
+    "balanceMonthNotOpen": "चालू माह का शेष केवल 25 तारीख या उसके बाद दर्ज किया जा सकता है",
     "duplicateBalance": "डुप्लिकेट मासिक शेष",
     "txDateFormat": "लेनदेन की तारीख YYYY-MM-DD होनी चाहिए",
     "tagNameEmpty": "टैग नाम खाली नहीं हो सकता",

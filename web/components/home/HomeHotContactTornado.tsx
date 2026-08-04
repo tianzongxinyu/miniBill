@@ -200,7 +200,7 @@ function IncomeBar({
 
 export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingContact[] }) {
   const { t } = useTranslation();
-  const { scheme, locale } = useSettings();
+  const { scheme, locale, theme } = useSettings();
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const [leftWidth, setLeftWidth] = useState(140);
@@ -236,6 +236,7 @@ export function HomeHotContactTornado({ contacts }: { contacts: HomeRankingConta
 
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
+  void theme;
   const currentYm = getCurrentYearMonth();
 
   if (rows.length === 0) return null;

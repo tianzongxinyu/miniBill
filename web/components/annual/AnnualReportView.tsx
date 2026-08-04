@@ -135,9 +135,10 @@ function SummaryHero({ report }: { report: AnnualReport }) {
 
 function TagBars({ report }: { report: AnnualReport }) {
   const { t } = useTranslation();
-  const { scheme } = useSettings();
+  const { scheme, theme } = useSettings();
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
+  void theme;
   const [expanded, setExpanded] = useState(false);
   const tags = report.by_tag;
   const { maxSum, breakAt, broken } = tagAxisScale(tags);
@@ -305,9 +306,10 @@ function TopTxMeta({ tx, returnTo }: { tx: AnnualReportTopTx; returnTo: string }
 
 function TopContactsList({ report }: { report: AnnualReport }) {
   const { t } = useTranslation();
-  const { scheme } = useSettings();
+  const { scheme, theme } = useSettings();
   const expenseColor = chartStrokeForType('expense', scheme);
   const incomeColor = chartStrokeForType('income', scheme);
+  void theme;
   const contacts = report.top_contacts;
   const { maxSum, breakAt, broken } = axisScaleFromSums(
     contacts.map((c) => c.total_expense + c.total_income)

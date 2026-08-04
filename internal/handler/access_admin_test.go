@@ -134,7 +134,7 @@ func TestLedgerGrantReadWrite(t *testing.T) {
 	}
 
 	res = authJSON(t, http.MethodPut, ts.URL+"/api/settings", bobToken, map[string]any{
-		"locale": "en", "default_date_mode": "today", "amount_color_scheme": "red_up",
+		"locale": "en", "default_date_mode": "today", "amount_color_scheme": "red_up", "theme": "light",
 	}, adminID)
 	res.Body.Close()
 	if res.StatusCode != http.StatusForbidden {

@@ -2,8 +2,7 @@
   "app": {
     "name": "MiniBill",
     "description": "Lightweight self-hosted ledger",
-    "subtitle": "Personal ledger",
-    "titleOtherLedger": "{{name}}'s ledger"
+    "subtitle": "Personal ledger"
   },
   "common": {
     "back": "Back",
@@ -247,7 +246,13 @@
     "colorSchemeUpdated": "Color scheme updated",
     "failed": "Failed",
     "language": "Language",
-    "languageSearch": "Search"
+    "languageSearch": "Search",
+    "theme": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "themeUpdated": "Appearance updated",
+    "openFnosAppSetting": "Open fnOS app settings"
   },
   "tags": {
     "newPlaceholder": "New tag",
@@ -381,7 +386,15 @@
     "backupFailed": "Backup failed",
     "backupDir": "Backup directory",
     "configured": "Configured: {{path}}",
-    "dirNotConfigured": "Backup dir not set. Configure in app settings or env var.",
+    "dirNotConfigured": "Backup dir not set. Pick a folder in fnOS, or set it in app settings / env.",
+    "pickBackupDir": "Choose backup folder",
+    "refreshBackupAuth": "Refresh authorized folder",
+    "pickingBackupDir": "Choosing…",
+    "syncingBackupDir": "Syncing…",
+    "backupDirSynced": "Backup folder updated",
+    "backupDirPickFailed": "Failed to choose or sync backup folder",
+    "openBackupFolder": "Open in File Manager",
+    "openLastBackupFile": "Open last backup file",
     "scheduledBackup": "Scheduled backup",
     "enable": "Enable",
     "interval": "Interval",
@@ -436,7 +449,11 @@
     "overwriteTitle": "Overwrite",
     "overwriteWithAmount": "{{month}} has {{amount}}. Overwrite?",
     "overwriteWithoutAmount": "{{month}} has entry. Overwrite?",
-    "confirmOverwrite": "Confirm overwrite"
+    "confirmOverwrite": "Confirm overwrite",
+    "delete": "Delete registration",
+    "deleting": "Deleting…",
+    "confirmDeleteTitle": "Delete registration?",
+    "confirmDeleteMessage": "This cannot be undone. The calculated daily expense (system transaction) for {{month}} will also be removed."
   },
   "picker": {
     "prevYearGroup": "Prev years",
@@ -502,6 +519,7 @@
     "csvRowLimit": "CSV row limit exceeded",
     "balanceDateFormat": "Balance row date must be YYYY-MM",
     "balanceNegative": "Balance cannot be negative",
+    "balanceMonthNotOpen": "Current-month balance can only be registered on or after the 25th",
     "duplicateBalance": "Duplicate monthly balance",
     "txDateFormat": "Transaction date must be YYYY-MM-DD",
     "tagNameEmpty": "Tag name cannot be empty",
