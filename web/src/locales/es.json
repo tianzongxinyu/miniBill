@@ -215,8 +215,7 @@
     "themeLight": "Claro",
     "themeDark": "Oscuro",
     "themeSystem": "Sistema",
-    "themeUpdated": "Apariencia actualizada",
-    "openFnosAppSetting": "Abrir ajustes de la app fnOS"
+    "themeUpdated": "Apariencia actualizada"
   },
   "tags": {
     "newPlaceholder": "Nueva etiqueta",
@@ -290,8 +289,8 @@
     "restoreComplete": "Restaurado desde copia de seguridad: {{summary}}",
     "selectBackup": "Elegir archivo de copia de seguridad",
     "noBackups": "No hay archivos de copia de seguridad",
-    "backupDirNotConfigured": "El directorio de copias de seguridad no está configurado. Completa primero la autorización del directorio en",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Directorio de copia no configurado. Configuralo en ajustes o BACKUP_DIR; abre",
+    "backupDirNotConfiguredSuffix": "para ver el estado actual.",
     "loadBackupListFailed": "Error al cargar la lista de copias de seguridad",
     "exportFailed": "Error al exportar",
     "importFailed": "Error al importar",
@@ -350,7 +349,7 @@
     "backupFailed": "Error en la copia de seguridad",
     "backupDir": "Directorio de copias de seguridad",
     "configured": "Configurado: {{path}}",
-    "dirNotConfigured": "Directorio de copia no configurado. Elija una carpeta en fnOS o en ajustes/variables de entorno.",
+    "dirNotConfigured": "Directorio de copia no configurado. Configuralo en ajustes de la app o con BACKUP_DIR.",
     "scheduledBackup": "Copia de seguridad programada",
     "enable": "Activar",
     "interval": "Intervalo",
@@ -375,15 +374,7 @@
     "saveSettings": "Guardar ajustes",
     "runNow": "Copiar ahora",
     "runNowDescription": "Exporta el CSV del libro de cuentas actual y lo comprime en un zip en el directorio de copias de seguridad.",
-    "running": "Copiando…",
-    "pickBackupDir": "Elegir carpeta de copia",
-    "refreshBackupAuth": "Actualizar carpeta autorizada",
-    "pickingBackupDir": "Eligiendo…",
-    "syncingBackupDir": "Sincronizando…",
-    "backupDirSynced": "Carpeta de copia actualizada",
-    "backupDirPickFailed": "No se pudo elegir o sincronizar la carpeta de copia",
-    "openBackupFolder": "Abrir en el administrador de archivos",
-    "openLastBackupFile": "Abrir la ultima copia"
+    "running": "Copiando…"
   },
   "add": {
     "editTitle": "Editar transacción",

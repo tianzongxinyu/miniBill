@@ -215,8 +215,7 @@
     "themeLight": "Hell",
     "themeDark": "Dunkel",
     "themeSystem": "System folgen",
-    "themeUpdated": "Erscheinungsbild aktualisiert",
-    "openFnosAppSetting": "fnOS-App-Einstellungen oeffnen"
+    "themeUpdated": "Erscheinungsbild aktualisiert"
   },
   "tags": {
     "newPlaceholder": "Neuer Tag",
@@ -290,8 +289,8 @@
     "restoreComplete": "Aus Sicherung wiederhergestellt: {{summary}}",
     "selectBackup": "Sicherungsdatei wählen",
     "noBackups": "Keine Sicherungsdateien",
-    "backupDirNotConfigured": "Sicherungsverzeichnis ist nicht konfiguriert. Bitte schließen Sie zuerst die Verzeichnisautorisierung in",
-    "backupDirNotConfiguredSuffix": " ab.",
+    "backupDirNotConfigured": "Backup-Verzeichnis nicht gesetzt. In App-Einstellungen oder BACKUP_DIR konfigurieren; Status unter",
+    "backupDirNotConfiguredSuffix": "pruefen.",
     "loadBackupListFailed": "Sicherungsliste konnte nicht geladen werden",
     "exportFailed": "Export fehlgeschlagen",
     "importFailed": "Import fehlgeschlagen",
@@ -350,7 +349,7 @@
     "backupFailed": "Sicherung fehlgeschlagen",
     "backupDir": "Sicherungsverzeichnis",
     "configured": "Konfiguriert: {{path}}",
-    "dirNotConfigured": "Backup-Verzeichnis nicht gesetzt. Ordner in fnOS waehlen oder in App-Einstellungen/Env festlegen.",
+    "dirNotConfigured": "Backup-Verzeichnis nicht gesetzt. In den App-Einstellungen oder per BACKUP_DIR konfigurieren.",
     "scheduledBackup": "Geplante Sicherung",
     "enable": "Aktivieren",
     "interval": "Intervall",
@@ -375,15 +374,7 @@
     "saveSettings": "Einstellungen speichern",
     "runNow": "Jetzt sichern",
     "runNowDescription": "CSV als Zip ins Backup-Verzeichnis.",
-    "running": "Sicherung läuft…",
-    "pickBackupDir": "Backup-Ordner waehlen",
-    "refreshBackupAuth": "Autorisierten Ordner aktualisieren",
-    "pickingBackupDir": "Auswahl…",
-    "syncingBackupDir": "Synchronisiere…",
-    "backupDirSynced": "Backup-Ordner aktualisiert",
-    "backupDirPickFailed": "Backup-Ordner konnte nicht gewaehlt oder synchronisiert werden",
-    "openBackupFolder": "Im Dateimanager oeffnen",
-    "openLastBackupFile": "Letzte Backup-Datei oeffnen"
+    "running": "Sicherung läuft…"
   },
   "add": {
     "editTitle": "Transaktion bearbeiten",

@@ -215,8 +215,7 @@
     "themeLight": "Açık",
     "themeDark": "Koyu",
     "themeSystem": "Sistem",
-    "themeUpdated": "Görünüm güncellendi",
-    "openFnosAppSetting": "fnOS uygulama ayarlarini ac"
+    "themeUpdated": "Görünüm güncellendi"
   },
   "tags": {
     "newPlaceholder": "Yeni etiket",
@@ -290,8 +289,8 @@
     "restoreComplete": "Yedekten geri yüklendi: {{summary}}",
     "selectBackup": "Yedek dosyası seç",
     "noBackups": "Yedek dosyası yok",
-    "backupDirNotConfigured": "Yedekleme dizini yapılandırılmamış. Lütfen dizin yetkilendirmesini tamamlayın:",
-    "backupDirNotConfiguredSuffix": "önce.",
+    "backupDirNotConfigured": "Yedek dizini ayarlanmamis. Uygulama ayarlari veya BACKUP_DIR ile yapilandirin; acin",
+    "backupDirNotConfiguredSuffix": "ve guncel durumu kontrol edin.",
     "loadBackupListFailed": "Yedek listesi yüklenemedi",
     "exportFailed": "Dışa aktarma başarısız",
     "importFailed": "İçe aktarma başarısız",
@@ -350,7 +349,7 @@
     "backupFailed": "Yedekleme başarısız",
     "backupDir": "Yedekleme dizini",
     "configured": "Yapılandırıldı: {{path}}",
-    "dirNotConfigured": "Yedek dizini ayarli degil. fnOS'ta bir klasor secin veya uygulama ayarlari/ortam degiskenlerinde belirtin.",
+    "dirNotConfigured": "Yedek dizini ayarlanmamis. Uygulama ayarlarinda veya BACKUP_DIR ile yapilandirin.",
     "scheduledBackup": "Zamanlanmış yedekleme",
     "enable": "Etkinleştir",
     "interval": "Aralık",
@@ -375,15 +374,7 @@
     "saveSettings": "Ayarları kaydet",
     "runNow": "Şimdi yedekle",
     "runNowDescription": "Mevcut defter CSV'sini dışa aktarın ve yedek dizininde zip'e sıkıştırın.",
-    "running": "Yedekleniyor…",
-    "pickBackupDir": "Yedek klasorunu sec",
-    "refreshBackupAuth": "Yetkili klasoru yenile",
-    "pickingBackupDir": "Seciliyor…",
-    "syncingBackupDir": "Senkronize ediliyor…",
-    "backupDirSynced": "Yedek klasoru guncellendi",
-    "backupDirPickFailed": "Yedek klasoru secilemedi veya senkronize edilemedi",
-    "openBackupFolder": "Dosya yoneticisinde ac",
-    "openLastBackupFile": "Son yedek dosyasini ac"
+    "running": "Yedekleniyor…"
   },
   "add": {
     "editTitle": "İşlemi düzenle",

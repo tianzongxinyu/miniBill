@@ -244,24 +244,6 @@ export async function restoreFromBackup(filename: string): Promise<LedgerImportR
   });
 }
 
-export type FnosBackupDirView = {
-  available: boolean;
-  configured: boolean;
-  path?: string;
-  semantic_path?: string;
-};
-
-export async function fetchFnosBackupDir(): Promise<FnosBackupDirView> {
-  return api<FnosBackupDirView>('/admin/fnos/backup-dir');
-}
-
-export async function syncFnosBackupDir(path?: string): Promise<FnosBackupDirView> {
-  return api<FnosBackupDirView>('/admin/fnos/backup-dir/sync', {
-    method: 'POST',
-    body: JSON.stringify(path ? { path } : {}),
-  });
-}
-
 function exportFallbackFilename(): string {
   return `minibill-ledger-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
 }

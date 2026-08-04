@@ -101,19 +101,6 @@ func call(reqName string, data any, out any) error {
 	return json.Unmarshal(rpc.Data, out)
 }
 
-type sharedFoldersData struct {
-	Paths []string `json:"paths"`
-}
-
-// GetSharedAccessibleFolders returns directories authorized via trim.file.sharedAccess.
-func GetSharedAccessibleFolders() ([]string, error) {
-	var data sharedFoldersData
-	if err := call("trim.file.getSharedAccessibleFolders", map[string]any{}, &data); err != nil {
-		return nil, err
-	}
-	return data.Paths, nil
-}
-
 type convertPathResultItem struct {
 	Path         string `json:"path"`
 	SemanticPath string `json:"semanticPath"`

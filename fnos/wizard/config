@@ -27,7 +27,7 @@
             {
                 "type": "radio",
                 "field": "wizard_allow_registration",
-                "label": "关闭后用户不能主动注册",
+                "label": "关闭后已有用户不可自助注册；无用户时仍可注册首位管理员",
                 "initValue": "true",
                 "options": [
                     {

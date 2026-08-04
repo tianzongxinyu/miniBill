@@ -215,8 +215,7 @@
     "themeLight": "Світла",
     "themeDark": "Темна",
     "themeSystem": "Системна",
-    "themeUpdated": "Оформлення оновлено",
-    "openFnosAppSetting": "Відкрити налаштування додатка fnOS"
+    "themeUpdated": "Оформлення оновлено"
   },
   "tags": {
     "newPlaceholder": "Новий тег",
@@ -290,8 +289,8 @@
     "restoreComplete": "Відновлено з резервної копії: {{summary}}",
     "selectBackup": "Обрати файл резервної копії",
     "noBackups": "Немає файлів резервних копій",
-    "backupDirNotConfigured": "Каталог резервних копій не налаштовано. Спочатку завершіть авторизацію каталогу в",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Каталог резервних копій не задано. Вкажіть у налаштуваннях або BACKUP_DIR; відкрийте",
+    "backupDirNotConfiguredSuffix": "щоб перевірити поточний стан.",
     "loadBackupListFailed": "Не вдалося завантажити список резервних копій",
     "exportFailed": "Експорт не вдався",
     "importFailed": "Імпорт не вдався",
@@ -350,7 +349,7 @@
     "backupFailed": "Резервна копія не вдалася",
     "backupDir": "Каталог резервних копій",
     "configured": "Налаштовано: {{path}}",
-    "dirNotConfigured": "Каталог резервних копій не задано. Оберіть теку в fnOS або в налаштуваннях/змінних середовища.",
+    "dirNotConfigured": "Каталог резервних копій не задано. Вкажіть у налаштуваннях додатка або через BACKUP_DIR.",
     "scheduledBackup": "Заплановане резервне копіювання",
     "enable": "Увімкнути",
     "interval": "Інтервал",
@@ -375,15 +374,7 @@
     "saveSettings": "Зберегти налаштування",
     "runNow": "Резервна копія зараз",
     "runNowDescription": "Експортувати поточний CSV книги та стиснути в zip у каталозі резервних копій.",
-    "running": "Створення резервної копії…",
-    "pickBackupDir": "Вибрати теку резервних копій",
-    "refreshBackupAuth": "Оновити авторизовану теку",
-    "pickingBackupDir": "Вибір…",
-    "syncingBackupDir": "Синхронізація…",
-    "backupDirSynced": "Теку резервних копій оновлено",
-    "backupDirPickFailed": "Не вдалося вибрати або синхронізувати теку",
-    "openBackupFolder": "Відкрити у файловому менеджері",
-    "openLastBackupFile": "Відкрити останній файл резервної копії"
+    "running": "Створення резервної копії…"
   },
   "add": {
     "editTitle": "Редагувати транзакцію",

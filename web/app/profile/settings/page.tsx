@@ -10,7 +10,6 @@ import { LocaleSelect } from '@/components/ui/LocaleSelect';
 import { useSettings } from '@/components/SettingsProvider';
 import { api, logoutAndRedirect, type AmountColorScheme } from '@/lib/api';
 import { formatApiError } from '@/lib/errors';
-import { openFnosAppSetting, useFnosReady } from '@/lib/fnos/hooks';
 import type { Locale } from '@/lib/i18n/utils';
 import type { ThemePreference } from '@/lib/theme';
 
@@ -19,7 +18,6 @@ function SettingsContent() {
   const router = useRouter();
   const { isOwner, ready: ledgerReady } = useLedgerAccess();
   const { settings, updateSettings, setLocale, setTheme } = useSettings();
-  const fnosReady = useFnosReady();
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [msg, setMsg] = useState('');
@@ -174,17 +172,6 @@ function SettingsContent() {
         <input type="password" placeholder={t('settings.newPassword')} className="field" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} disabled={changingPwd} />
         <button className="btn-primary" disabled={changingPwd}>{t('settings.change')}</button>
       </form>
-      {fnosReady && (
-        <div className="notebook p-4 space-y-3">
-          <button
-            type="button"
-            className="btn-segment px-4"
-            onClick={() => void openFnosAppSetting()}
-          >
-            {t('settings.openFnosAppSetting')}
-          </button>
-        </div>
-      )}
       <PageBackLink href="/profile/" />
     </div>
   );

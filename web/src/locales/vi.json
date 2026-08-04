@@ -215,8 +215,7 @@
     "themeLight": "Sáng",
     "themeDark": "Tối",
     "themeSystem": "Hệ thống",
-    "themeUpdated": "Đã cập nhật giao diện",
-    "openFnosAppSetting": "Mo cai dat ung dung fnOS"
+    "themeUpdated": "Đã cập nhật giao diện"
   },
   "tags": {
     "newPlaceholder": "Thẻ mới",
@@ -290,8 +289,8 @@
     "restoreComplete": "Đã khôi phục từ sao lưu: {{summary}}",
     "selectBackup": "Chọn tệp sao lưu",
     "noBackups": "Không có tệp sao lưu",
-    "backupDirNotConfigured": "Thư mục sao lưu chưa được cấu hình. Vui lòng hoàn tất ủy quyền thư mục trong",
-    "backupDirNotConfiguredSuffix": "trước.",
+    "backupDirNotConfigured": "Chua cau hinh thu muc sao luu. Dat trong cai dat ung dung hoac BACKUP_DIR; mo",
+    "backupDirNotConfiguredSuffix": "de xem trang thai hien tai.",
     "loadBackupListFailed": "Tải danh sách sao lưu thất bại",
     "exportFailed": "Xuất thất bại",
     "importFailed": "Nhập thất bại",
@@ -350,7 +349,7 @@
     "backupFailed": "Sao lưu thất bại",
     "backupDir": "Thư mục sao lưu",
     "configured": "Đã cấu hình: {{path}}",
-    "dirNotConfigured": "Chua dat thu muc sao luu. Chon thu muc trong fnOS hoac trong cai dat/bien moi truong.",
+    "dirNotConfigured": "Chua cau hinh thu muc sao luu. Dat trong cai dat ung dung hoac bien moi truong BACKUP_DIR.",
     "scheduledBackup": "Sao lưu theo lịch",
     "enable": "Bật",
     "interval": "Chu kỳ",
@@ -375,15 +374,7 @@
     "saveSettings": "Lưu cài đặt",
     "runNow": "Sao lưu ngay",
     "runNowDescription": "Xuất CSV sổ cái hiện tại và nén thành zip trong thư mục sao lưu.",
-    "running": "Đang sao lưu…",
-    "pickBackupDir": "Chon thu muc sao luu",
-    "refreshBackupAuth": "Lam moi thu muc da uy quyen",
-    "pickingBackupDir": "Dang chon…",
-    "syncingBackupDir": "Dang dong bo…",
-    "backupDirSynced": "Da cap nhat thu muc sao luu",
-    "backupDirPickFailed": "Khong the chon hoac dong bo thu muc sao luu",
-    "openBackupFolder": "Mo trong trinh quan ly tep",
-    "openLastBackupFile": "Mo tep sao luu gan nhat"
+    "running": "Đang sao lưu…"
   },
   "add": {
     "editTitle": "Sửa giao dịch",

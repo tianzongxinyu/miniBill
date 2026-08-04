@@ -107,9 +107,9 @@ Run from the project root:
 **Windows:**
 
 ```bat
-scripts\build-fpk.cmd 1.0.8 x86
-scripts\build-fpk.cmd 1.0.8 arm
-scripts\build-fpk.cmd 1.0.8 all
+scripts\build-fpk.cmd 1.0.9 x86
+scripts\build-fpk.cmd 1.0.9 arm
+scripts\build-fpk.cmd 1.0.9 all
 ```
 
 Output is at `dist/minibill_<version>_<platform>.fpk`.

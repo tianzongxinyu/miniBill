@@ -111,13 +111,6 @@ func (s *BackupService) DirPath() string {
 	return s.backupDir
 }
 
-// SetBackupDir updates the runtime backup directory (no process restart).
-func (s *BackupService) SetBackupDir(dir string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.backupDir = strings.TrimSpace(dir)
-}
-
 func (s *BackupService) CheckDirWritable() error {
 	if !s.DirConfigured() {
 		return ErrBackupDirNotConfigured

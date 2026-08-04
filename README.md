@@ -95,25 +95,25 @@ cd web && npm install && npm run dev
 
 ```bash
 # x86 NAS（默认同时构建 x86+ARM 时传 all）
-./scripts/build-fpk.sh 1.0.8
+./scripts/build-fpk.sh 1.0.9
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.8 arm
+./scripts/build-fpk.sh 1.0.9 arm
 
 # 同时构建 x86 与 ARM
-./scripts/build-fpk.sh 1.0.8 all
+./scripts/build-fpk.sh 1.0.9 all
 ```
 
 **Windows：**
 
 ```bat
 REM 推荐：经 cmd 包装，不受 ExecutionPolicy 限制
-scripts\build-fpk.cmd 1.0.8 x86
-scripts\build-fpk.cmd 1.0.8 arm
-scripts\build-fpk.cmd 1.0.8 all
+scripts\build-fpk.cmd 1.0.9 x86
+scripts\build-fpk.cmd 1.0.9 arm
+scripts\build-fpk.cmd 1.0.9 all
 
 REM 或直接 Bypass 调用 ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-fpk.ps1 1.0.8 x86
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-fpk.ps1 1.0.9 x86
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`。

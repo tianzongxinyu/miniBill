@@ -215,8 +215,7 @@
     "themeLight": "สว่าง",
     "themeDark": "มืด",
     "themeSystem": "ตามระบบ",
-    "themeUpdated": "อัปเดตลักษณะแล้ว",
-    "openFnosAppSetting": "เปิดการตั้งค่าแอป fnOS"
+    "themeUpdated": "อัปเดตลักษณะแล้ว"
   },
   "tags": {
     "newPlaceholder": "แท็กใหม่",
@@ -290,8 +289,8 @@
     "restoreComplete": "กู้คืนจากสำรอง: {{summary}}",
     "selectBackup": "เลือกไฟล์สำรอง",
     "noBackups": "ไม่มีไฟล์สำรอง",
-    "backupDirNotConfigured": "ยังไม่ได้ตั้งค่าไดเรกทอรีสำรอง กรุณาอนุญาตไดเรกทอรีใน",
-    "backupDirNotConfiguredSuffix": "ก่อน",
+    "backupDirNotConfigured": "ยังไม่ได้ตั้งค่าไดเรกทอรีสำรอง กำหนดในตั้งค่าแอปหรือ BACKUP_DIR แล้วเปิด",
+    "backupDirNotConfiguredSuffix": "เพื่อดูสถานะปัจจุบัน",
     "loadBackupListFailed": "โหลดรายการสำรองไม่สำเร็จ",
     "exportFailed": "ส่งออกไม่สำเร็จ",
     "importFailed": "นำเข้าไม่สำเร็จ",
@@ -350,7 +349,7 @@
     "backupFailed": "สำรองไม่สำเร็จ",
     "backupDir": "ไดเรกทอรีสำรอง",
     "configured": "ตั้งค่าแล้ว: {{path}}",
-    "dirNotConfigured": "ยังไม่ได้ตั้งค่าโฟลเดอร์สำรอง เลือกใน fnOS หรือตั้งค่าในแอป/ตัวแปรสภาพแวดล้อม",
+    "dirNotConfigured": "ยังไม่ได้ตั้งค่าไดเรกทอรีสำรอง กำหนดในตั้งค่าแอปหรือตัวแปร BACKUP_DIR",
     "scheduledBackup": "สำรองตามกำหนด",
     "enable": "เปิดใช้",
     "interval": "ช่วงเวลา",
@@ -375,15 +374,7 @@
     "saveSettings": "บันทึกการตั้งค่า",
     "runNow": "สำรองตอนนี้",
     "runNowDescription": "ส่งออก CSV สมุดบัญชีปัจจุบันและบีบอัดเป็น zip ในไดเรกทอรีสำรอง",
-    "running": "กำลังสำรอง…",
-    "pickBackupDir": "เลือกโฟลเดอร์สำรอง",
-    "refreshBackupAuth": "รีเฟรชโฟลเดอร์ที่อนุญาต",
-    "pickingBackupDir": "กำลังเลือก…",
-    "syncingBackupDir": "กำลังซิงค์…",
-    "backupDirSynced": "อัปเดตโฟลเดอร์สำรองแล้ว",
-    "backupDirPickFailed": "เลือกหรือซิงค์โฟลเดอร์สำรองไม่สำเร็จ",
-    "openBackupFolder": "เปิดในตัวจัดการไฟล์",
-    "openLastBackupFile": "เปิดไฟล์สำรองล่าสุด"
+    "running": "กำลังสำรอง…"
   },
   "add": {
     "editTitle": "แก้ไขรายการ",

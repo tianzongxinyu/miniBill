@@ -215,8 +215,7 @@
     "themeLight": "Chiaro",
     "themeDark": "Scuro",
     "themeSystem": "Sistema",
-    "themeUpdated": "Aspetto aggiornato",
-    "openFnosAppSetting": "Apri impostazioni app fnOS"
+    "themeUpdated": "Aspetto aggiornato"
   },
   "tags": {
     "newPlaceholder": "Nuova etichetta",
@@ -290,8 +289,8 @@
     "restoreComplete": "Ripristinato da backup: {{summary}}",
     "selectBackup": "Scegli file di backup",
     "noBackups": "Nessun file di backup",
-    "backupDirNotConfigured": "Directory di backup non configurata. Completa prima l'autorizzazione della directory in",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Directory di backup non configurata. Impostala nelle impostazioni o BACKUP_DIR; apri",
+    "backupDirNotConfiguredSuffix": "per controllare lo stato attuale.",
     "loadBackupListFailed": "Impossibile caricare l'elenco backup",
     "exportFailed": "Esportazione non riuscita",
     "importFailed": "Importazione non riuscita",
@@ -350,7 +349,7 @@
     "backupFailed": "Backup non riuscito",
     "backupDir": "Directory di backup",
     "configured": "Configurata: {{path}}",
-    "dirNotConfigured": "Cartella di backup non impostata. Scegli una cartella in fnOS o nelle impostazioni/variabili d'ambiente.",
+    "dirNotConfigured": "Directory di backup non configurata. Impostala nelle impostazioni app o con BACKUP_DIR.",
     "scheduledBackup": "Backup programmato",
     "enable": "Attiva",
     "interval": "Intervallo",
@@ -375,15 +374,7 @@
     "saveSettings": "Salva impostazioni",
     "runNow": "Backup ora",
     "runNowDescription": "Esporta il CSV del registro corrente e lo comprime in uno zip nella directory di backup.",
-    "running": "Backup in corso…",
-    "pickBackupDir": "Scegli cartella di backup",
-    "refreshBackupAuth": "Aggiorna cartella autorizzata",
-    "pickingBackupDir": "Selezione…",
-    "syncingBackupDir": "Sincronizzazione…",
-    "backupDirSynced": "Cartella di backup aggiornata",
-    "backupDirPickFailed": "Impossibile scegliere o sincronizzare la cartella di backup",
-    "openBackupFolder": "Apri nel file manager",
-    "openLastBackupFile": "Apri ultimo file di backup"
+    "running": "Backup in corso…"
   },
   "add": {
     "editTitle": "Modifica transazione",

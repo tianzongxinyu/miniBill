@@ -206,15 +206,15 @@ body {
 
 @layer components {
   .page-enter {
-    animation: fade-in 0.45s var(--ease-out-expo) both;
+    animation: fade-in 0.18s var(--ease-out-expo) both;
   }
 
   .page-slide-right {
-    animation: page-slide-from-right 0.32s var(--ease-out-expo) both;
+    animation: page-slide-from-right 0.22s var(--ease-out-expo) both;
   }
 
   .page-slide-left {
-    animation: page-slide-from-left 0.32s var(--ease-out-expo) both;
+    animation: page-slide-from-left 0.22s var(--ease-out-expo) both;
   }
 
   .month-swap-enter {
@@ -289,6 +289,8 @@ body {
   .page-back-link-floating {
     @apply fixed z-40 inset-x-0 mx-auto w-[min(100%-1.5rem,42rem)] mt-0;
     @apply bg-surface/45 backdrop-blur-xl shadow-panel;
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
     bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
   }
 
@@ -800,6 +802,8 @@ body {
     @apply transition-all duration-200 ease-out;
     @apply hover:bg-accent/90;
     @apply active:scale-[0.98];
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
   }
 
   .fab-button-secondary {
@@ -808,6 +812,8 @@ body {
     @apply shadow-panel ring-0;
     @apply hover:bg-surface/85 hover:border-accent/45;
     @apply active:scale-[0.98];
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
   }
 
   .fab-button-compact {
@@ -825,6 +831,8 @@ body {
   .transactions-footer-inner {
     @apply flex w-full max-w-3xl items-center justify-between gap-2 px-2 py-2;
     @apply rounded-2xl border border-line/60 bg-surface/45 backdrop-blur-xl shadow-panel;
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
   }
 
   .transactions-footer-nav {

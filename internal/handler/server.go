@@ -114,8 +114,6 @@ func (s *Server) Router() *gin.Engine {
 	adminGroup.PUT("/users/:id", s.adminUpdateUser)
 	adminGroup.POST("/users/:id/reset-password", s.adminResetPassword)
 	adminGroup.DELETE("/users/:id", s.adminDeleteUser)
-	adminGroup.GET("/fnos/backup-dir", s.fnosBackupDirStatus)
-	adminGroup.POST("/fnos/backup-dir/sync", s.fnosBackupDirSync)
 
 	protected.GET("/meta/editable-range", s.editableRange)
 	protected.GET("/meta/earliest-month", s.earliestMonth)

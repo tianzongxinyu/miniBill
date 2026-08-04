@@ -215,8 +215,7 @@
     "themeLight": "Jasny",
     "themeDark": "Ciemny",
     "themeSystem": "Systemowy",
-    "themeUpdated": "Wygląd zaktualizowany",
-    "openFnosAppSetting": "Otworz ustawienia aplikacji fnOS"
+    "themeUpdated": "Wygląd zaktualizowany"
   },
   "tags": {
     "newPlaceholder": "Nowy tag",
@@ -290,8 +289,8 @@
     "restoreComplete": "Przywrócono z kopii zapasowej: {{summary}}",
     "selectBackup": "Wybierz plik kopii zapasowej",
     "noBackups": "Brak plików kopii zapasowej",
-    "backupDirNotConfigured": "Katalog kopii zapasowych nie jest skonfigurowany. Dokończ autoryzację katalogu w",
-    "backupDirNotConfiguredSuffix": "najpierw.",
+    "backupDirNotConfigured": "Katalog kopii nie jest ustawiony. Skonfiguruj w ustawieniach lub BACKUP_DIR; otworz",
+    "backupDirNotConfiguredSuffix": "aby sprawdzic biezacy stan.",
     "loadBackupListFailed": "Nie udało się załadować listy kopii zapasowych",
     "exportFailed": "Eksport nie powiódł się",
     "importFailed": "Import nie powiódł się",
@@ -350,7 +349,7 @@
     "backupFailed": "Kopia zapasowa nie powiodła się",
     "backupDir": "Katalog kopii zapasowych",
     "configured": "Skonfigurowano: {{path}}",
-    "dirNotConfigured": "Katalog kopii zapasowych nieustawiony. Wybierz folder w fnOS lub w ustawieniach/zmiennych srodowiskowych.",
+    "dirNotConfigured": "Katalog kopii zapasowych nie jest ustawiony. Skonfiguruj w ustawieniach aplikacji lub przez BACKUP_DIR.",
     "scheduledBackup": "Zaplanowana kopia zapasowa",
     "enable": "Włącz",
     "interval": "Interwał",
@@ -375,15 +374,7 @@
     "saveSettings": "Zapisz ustawienia",
     "runNow": "Kopia teraz",
     "runNowDescription": "Eksportuj bieżący CSV księgi i skompresuj do zip w katalogu kopii zapasowych.",
-    "running": "Tworzenie kopii…",
-    "pickBackupDir": "Wybierz folder kopii zapasowych",
-    "refreshBackupAuth": "Odswiez autoryzowany folder",
-    "pickingBackupDir": "Wybieranie…",
-    "syncingBackupDir": "Synchronizacja…",
-    "backupDirSynced": "Folder kopii zapasowych zaktualizowany",
-    "backupDirPickFailed": "Nie udalo sie wybrac ani zsynchronizowac folderu kopii",
-    "openBackupFolder": "Otworz w menedzerze plikow",
-    "openLastBackupFile": "Otworz ostatni plik kopii zapasowej"
+    "running": "Tworzenie kopii…"
   },
   "add": {
     "editTitle": "Edytuj transakcję",

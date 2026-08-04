@@ -33,8 +33,8 @@ docker build -t yourname/minibill:latest .
 docker login
 docker push yourname/minibill:latest
 # 建议同时推送版本号 tag，便于回滚
-# docker tag yourname/minibill:latest yourname/minibill:1.0.8
-# docker push yourname/minibill:1.0.8
+# docker tag yourname/minibill:latest yourname/minibill:1.0.9
+# docker push yourname/minibill:1.0.9
 ```
 
 **多架构**（NAS / ARM 等）：
@@ -146,21 +146,21 @@ sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 
 ```bash
 # x86 NAS（默认）
-./scripts/build-fpk.sh 1.0.8
+./scripts/build-fpk.sh 1.0.9
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.8 arm
+./scripts/build-fpk.sh 1.0.9 arm
 
 # 同时构建 x86 与 ARM
-./scripts/build-fpk.sh 1.0.8 all
+./scripts/build-fpk.sh 1.0.9 all
 ```
 
 **Windows：**
 
 ```bat
-scripts\build-fpk.cmd 1.0.8 x86
-scripts\build-fpk.cmd 1.0.8 arm
-scripts\build-fpk.cmd 1.0.8 all
+scripts\build-fpk.cmd 1.0.9 x86
+scripts\build-fpk.cmd 1.0.9 arm
+scripts\build-fpk.cmd 1.0.9 all
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包；Windows 首次构建会自动下载 `fnpack-*-windows-amd64`）。
@@ -173,14 +173,14 @@ scripts\build-fpk.cmd 1.0.8 all
 4. 数据目录选择数据盘（非系统盘）
 5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问（首次启动自动生成 JWT 密钥）
 
-修改端口 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。桌面入口端口与安装/运行向导中的 `wizard_port` 绑定，保存后应从新端口打开；若仍打开旧端口，请升级到含该修复的 fpk。Web 内也可点击「打开飞牛应用设置」。
+修改端口 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。桌面入口端口与安装/运行向导中的 `wizard_port` 绑定，保存后应从新端口打开；若仍打开旧端口，请升级到含该修复的 fpk。
 
 **备份目录：**
 
-- **飞牛（推荐）**：管理员在 Web **我的 → 备份管理** 中「选择备份目录」，通过系统共享目录授权（开放 API，需 fnOS `1.2.0401+` / App `1.34.0+`）；也可在运行设置中手填绝对路径。
-- **手填 / Docker**：在运行设置填写绝对路径（如 `/vol1/1000/backups`），或设置环境变量 `BACKUP_DIR`；留空则不启用备份。
+- **飞牛**：在安装向导或运行设置中填写绝对路径（如 `/vol1/1000/backups`）；留空则不启用备份。
+- **Docker / 自托管**：设置环境变量 `BACKUP_DIR`；留空则不启用备份。
 - 配置后在 Web **我的 → 备份管理** 设置周期与保留份数；**我的 → 数据管理** 可从该目录选择 zip 恢复。
 
-本包声明 `micro_app=true`，并申请 `trim.file.sharedAccess`、`trim.file.path` scope，用于目录授权与路径展示。
+本包声明 `micro_app=true`，并申请 `trim.file.path` scope，用于备份路径的友好展示。
 
 卸载时可选保留账本数据（`system.db` 与用户 `ledger.db` 在应用数据目录）。

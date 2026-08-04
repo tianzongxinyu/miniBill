@@ -215,8 +215,7 @@
     "themeLight": "हल्का",
     "themeDark": "गहरा",
     "themeSystem": "सिस्टम",
-    "themeUpdated": "रूप अपडेट किया गया",
-    "openFnosAppSetting": "fnOS ऐप सेटिंग्स खोलें"
+    "themeUpdated": "रूप अपडेट किया गया"
   },
   "tags": {
     "newPlaceholder": "नया टैग",
@@ -290,8 +289,8 @@
     "restoreComplete": "बैकअप से पुनर्स्थापित: {{summary}}",
     "selectBackup": "बैकअप फ़ाइल चुनें",
     "noBackups": "कोई बैकअप फ़ाइल नहीं",
-    "backupDirNotConfigured": "बैकअप निर्देशिका कॉन्फ़िगर नहीं है। कृपया निर्देशिका प्राधिकरण पूरा करें",
-    "backupDirNotConfiguredSuffix": "पहले।",
+    "backupDirNotConfigured": "बैकअप डायरेक्टरी सेट नहीं है। ऐप सेटिंग्स या BACKUP_DIR में सेट करें; खोलें",
+    "backupDirNotConfiguredSuffix": "वर्तमान स्थिति देखने के लिए।",
     "loadBackupListFailed": "बैकअप सूची लोड विफल",
     "exportFailed": "निर्यात विफल",
     "importFailed": "आयात विफल",
@@ -350,7 +349,7 @@
     "backupFailed": "बैकअप विफल",
     "backupDir": "बैकअप निर्देशिका",
     "configured": "कॉन्फ़िगर: {{path}}",
-    "dirNotConfigured": "बैकअप निर्देशिका सेट नहीं है। fnOS में फ़ोल्डर चुनें या ऐप सेटिंग्स/पर्यावरण चर में सेट करें।",
+    "dirNotConfigured": "बैकअप डायरेक्टरी सेट नहीं है। ऐप सेटिंग्स या BACKUP_DIR पर्यावरण चर में कॉन्फ़िगर करें।",
     "scheduledBackup": "अनुसूचित बैकअप",
     "enable": "सक्षम करें",
     "interval": "अंतराल",
@@ -375,15 +374,7 @@
     "saveSettings": "सेटिंग्स सहेजें",
     "runNow": "अभी बैकअप लें",
     "runNowDescription": "वर्तमान लेजर CSV निर्यात करें और बैकअप निर्देशिका में zip में संपीड़ित करें।",
-    "running": "बैकअप हो रहा है…",
-    "pickBackupDir": "बैकअप फ़ोल्डर चुनें",
-    "refreshBackupAuth": "अधिकृत फ़ोल्डर ताज़ा करें",
-    "pickingBackupDir": "चुन रहे हैं…",
-    "syncingBackupDir": "सिंक हो रहा है…",
-    "backupDirSynced": "बैकअप फ़ोल्डर अपडेट हो गया",
-    "backupDirPickFailed": "बैकअप फ़ोल्डर चुनने या सिंक करने में विफल",
-    "openBackupFolder": "फ़ाइल प्रबंधक में खोलें",
-    "openLastBackupFile": "अंतिम बैकअप फ़ाइल खोलें"
+    "running": "बैकअप हो रहा है…"
   },
   "add": {
     "editTitle": "लेनदेन संपादित करें",

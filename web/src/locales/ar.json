@@ -215,8 +215,7 @@
     "themeLight": "فاتح",
     "themeDark": "داكن",
     "themeSystem": "النظام",
-    "themeUpdated": "تم تحديث المظهر",
-    "openFnosAppSetting": "فتح إعدادات تطبيق fnOS"
+    "themeUpdated": "تم تحديث المظهر"
   },
   "tags": {
     "newPlaceholder": "وسم جديد",
@@ -290,8 +289,8 @@
     "restoreComplete": "تمت الاستعادة من النسخة الاحتياطية: {{summary}}",
     "selectBackup": "اختر ملف النسخة الاحتياطية",
     "noBackups": "لا توجد ملفات نسخ احتياطي",
-    "backupDirNotConfigured": "دليل النسخ الاحتياطي غير مُعد. يرجى إكمال تفويض الدليل في",
-    "backupDirNotConfiguredSuffix": "أولًا.",
+    "backupDirNotConfigured": "لم يُضبط مجلد النسخ الاحتياطي. عيّنه في الإعدادات أو BACKUP_DIR؛ افتح",
+    "backupDirNotConfiguredSuffix": "للتحقق من الحالة الحالية.",
     "loadBackupListFailed": "فشل تحميل قائمة النسخ الاحتياطية",
     "exportFailed": "فشل التصدير",
     "importFailed": "فشل الاستيراد",
@@ -350,7 +349,7 @@
     "backupFailed": "فشل النسخ الاحتياطي",
     "backupDir": "دليل النسخ الاحتياطي",
     "configured": "مُعد: {{path}}",
-    "dirNotConfigured": "لم يضبط مجلد النسخ الاحتياطي. اختر مجلدا في fnOS او عبر الاعدادات/متغيرات البيئة.",
+    "dirNotConfigured": "لم يُضبط مجلد النسخ الاحتياطي. عيّنه في إعدادات التطبيق أو عبر BACKUP_DIR.",
     "scheduledBackup": "نسخ احتياطي مجدول",
     "enable": "تفعيل",
     "interval": "الفترة",
@@ -375,15 +374,7 @@
     "saveSettings": "حفظ الإعدادات",
     "runNow": "نسخ احتياطي الآن",
     "runNowDescription": "تصدير CSV دفتر الحساب الحالي وضغطه في zip في دليل النسخ الاحتياطي.",
-    "running": "جارٍ النسخ الاحتياطي…",
-    "pickBackupDir": "اختيار مجلد النسخ الاحتياطي",
-    "refreshBackupAuth": "تحديث المجلد المصرح به",
-    "pickingBackupDir": "جار الاختيار…",
-    "syncingBackupDir": "جار المزامنة…",
-    "backupDirSynced": "تم تحديث مجلد النسخ الاحتياطي",
-    "backupDirPickFailed": "تعذر اختيار مجلد النسخ او مزامنته",
-    "openBackupFolder": "فتح في مدير الملفات",
-    "openLastBackupFile": "فتح اخر ملف نسخ احتياطي"
+    "running": "جارٍ النسخ الاحتياطي…"
   },
   "add": {
     "editTitle": "تعديل المعاملة",

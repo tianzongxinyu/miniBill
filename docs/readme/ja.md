@@ -107,9 +107,9 @@ cd web && npm install && npm run dev
 **Windows：**
 
 ```bat
-scripts\build-fpk.cmd 1.0.8 x86
-scripts\build-fpk.cmd 1.0.8 arm
-scripts\build-fpk.cmd 1.0.8 all
+scripts\build-fpk.cmd 1.0.9 x86
+scripts\build-fpk.cmd 1.0.9 arm
+scripts\build-fpk.cmd 1.0.9 all
 ```
 
 成果物は `dist/minibill_<version>_<platform>.fpk` に出力されます。

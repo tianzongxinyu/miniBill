@@ -215,8 +215,7 @@
     "themeLight": "Terang",
     "themeDark": "Gelap",
     "themeSystem": "Sistem",
-    "themeUpdated": "Tampilan diperbarui",
-    "openFnosAppSetting": "Buka pengaturan aplikasi fnOS"
+    "themeUpdated": "Tampilan diperbarui"
   },
   "tags": {
     "newPlaceholder": "Tag baru",
@@ -290,8 +289,8 @@
     "restoreComplete": "Dipulihkan dari cadangan: {{summary}}",
     "selectBackup": "Pilih file cadangan",
     "noBackups": "Tidak ada file cadangan",
-    "backupDirNotConfigured": "Direktori cadangan belum dikonfigurasi. Selesaikan otorisasi direktori di",
-    "backupDirNotConfiguredSuffix": "terlebih dahulu.",
+    "backupDirNotConfigured": "Direktori cadangan belum diatur. Atur di pengaturan aplikasi atau BACKUP_DIR; buka",
+    "backupDirNotConfiguredSuffix": "untuk melihat status saat ini.",
     "loadBackupListFailed": "Gagal memuat daftar cadangan",
     "exportFailed": "Ekspor gagal",
     "importFailed": "Impor gagal",
@@ -350,7 +349,7 @@
     "backupFailed": "Cadangan gagal",
     "backupDir": "Direktori cadangan",
     "configured": "Dikonfigurasi: {{path}}",
-    "dirNotConfigured": "Direktori cadangan belum diatur. Pilih folder di fnOS atau di pengaturan/variabel lingkungan.",
+    "dirNotConfigured": "Direktori cadangan belum diatur. Atur di pengaturan aplikasi atau via BACKUP_DIR.",
     "scheduledBackup": "Cadangan terjadwal",
     "enable": "Aktifkan",
     "interval": "Frekuensi",
@@ -375,15 +374,7 @@
     "saveSettings": "Simpan pengaturan",
     "runNow": "Cadangkan sekarang",
     "runNowDescription": "Ekspor CSV buku besar saat ini dan kompres ke zip di direktori cadangan.",
-    "running": "Mencadangkan…",
-    "pickBackupDir": "Pilih folder cadangan",
-    "refreshBackupAuth": "Segarkan folder yang diizinkan",
-    "pickingBackupDir": "Memilih…",
-    "syncingBackupDir": "Menyinkronkan…",
-    "backupDirSynced": "Folder cadangan diperbarui",
-    "backupDirPickFailed": "Gagal memilih atau menyinkronkan folder cadangan",
-    "openBackupFolder": "Buka di pengelola file",
-    "openLastBackupFile": "Buka file cadangan terakhir"
+    "running": "Mencadangkan…"
   },
   "add": {
     "editTitle": "Edit transaksi",

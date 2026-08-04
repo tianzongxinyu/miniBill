@@ -215,8 +215,7 @@
     "themeLight": "Clair",
     "themeDark": "Sombre",
     "themeSystem": "Système",
-    "themeUpdated": "Apparence mise à jour",
-    "openFnosAppSetting": "Ouvrir les parametres de l'app fnOS"
+    "themeUpdated": "Apparence mise à jour"
   },
   "tags": {
     "newPlaceholder": "Nouveau tag",
@@ -290,8 +289,8 @@
     "restoreComplete": "Restauré depuis la sauvegarde : {{summary}}",
     "selectBackup": "Choisir un fichier de sauvegarde",
     "noBackups": "Aucun fichier de sauvegarde",
-    "backupDirNotConfigured": "Le répertoire de sauvegarde n'est pas configuré. Veuillez d'abord terminer l'autorisation du répertoire dans",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Repertoire de sauvegarde non configure. Definissez-le dans les parametres ou BACKUP_DIR ; ouvrez",
+    "backupDirNotConfiguredSuffix": "pour verifier l'etat actuel.",
     "loadBackupListFailed": "Échec du chargement de la liste de sauvegardes",
     "exportFailed": "Échec de l'exportation",
     "importFailed": "Échec de l'importation",
@@ -350,7 +349,7 @@
     "backupFailed": "Échec de la sauvegarde",
     "backupDir": "Répertoire de sauvegarde",
     "configured": "Configuré : {{path}}",
-    "dirNotConfigured": "Dossier de sauvegarde non defini. Choisissez un dossier dans fnOS, ou via les parametres / variables d'environnement.",
+    "dirNotConfigured": "Repertoire de sauvegarde non configure. Definissez-le dans les parametres de l'app ou via BACKUP_DIR.",
     "scheduledBackup": "Sauvegarde planifiée",
     "enable": "Activer",
     "interval": "Intervalle",
@@ -375,15 +374,7 @@
     "saveSettings": "Enregistrer les paramètres",
     "runNow": "Sauvegarder maintenant",
     "runNowDescription": "CSV en zip vers le dossier backup.",
-    "running": "Sauvegarde en cours…",
-    "pickBackupDir": "Choisir le dossier de sauvegarde",
-    "refreshBackupAuth": "Actualiser le dossier autorise",
-    "pickingBackupDir": "Selection…",
-    "syncingBackupDir": "Synchronisation…",
-    "backupDirSynced": "Dossier de sauvegarde mis a jour",
-    "backupDirPickFailed": "Echec du choix ou de la synchronisation du dossier",
-    "openBackupFolder": "Ouvrir dans le gestionnaire de fichiers",
-    "openLastBackupFile": "Ouvrir la derniere sauvegarde"
+    "running": "Sauvegarde en cours…"
   },
   "add": {
     "editTitle": "Modifier la transaction",

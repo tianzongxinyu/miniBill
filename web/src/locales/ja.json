@@ -215,8 +215,7 @@
     "themeLight": "ライト",
     "themeDark": "ダーク",
     "themeSystem": "システム",
-    "themeUpdated": "外観を更新しました",
-    "openFnosAppSetting": "fnOSのアプリ設定を開く"
+    "themeUpdated": "外観を更新しました"
   },
   "tags": {
     "newPlaceholder": "新しいタグ",
@@ -290,8 +289,8 @@
     "restoreComplete": "バックアップから復元しました：{{summary}}",
     "selectBackup": "バックアップファイルを選択",
     "noBackups": "バックアップファイルがありません",
-    "backupDirNotConfigured": "バックアップディレクトリが設定されていません。",
-    "backupDirNotConfiguredSuffix": "でディレクトリの認可を完了してください。",
+    "backupDirNotConfigured": "バックアップディレクトリが未設定です。アプリ設定または BACKUP_DIR で指定し、",
+    "backupDirNotConfiguredSuffix": "で状態を確認してください。",
     "loadBackupListFailed": "バックアップ一覧の読み込みに失敗しました",
     "exportFailed": "エクスポートに失敗しました",
     "importFailed": "インポートに失敗しました",
@@ -350,7 +349,7 @@
     "backupFailed": "バックアップに失敗しました",
     "backupDir": "バックアップディレクトリ",
     "configured": "設定済み：{{path}}",
-    "dirNotConfigured": "バックアップディレクトリ未設定。fnOSでフォルダを選ぶか、アプリ設定/環境変数で指定してください。",
+    "dirNotConfigured": "バックアップディレクトリが未設定です。アプリ設定または環境変数 BACKUP_DIR で指定してください。",
     "scheduledBackup": "定期バックアップ",
     "enable": "有効",
     "interval": "間隔",
@@ -375,15 +374,7 @@
     "saveSettings": "設定を保存",
     "runNow": "今すぐバックアップ",
     "runNowDescription": "CSVをzipでバックアップ先へ。",
-    "running": "バックアップ中…",
-    "pickBackupDir": "バックアップフォルダを選択",
-    "refreshBackupAuth": "認可フォルダを更新",
-    "pickingBackupDir": "選択中…",
-    "syncingBackupDir": "同期中…",
-    "backupDirSynced": "バックアップフォルダを更新しました",
-    "backupDirPickFailed": "バックアップフォルダの選択または同期に失敗しました",
-    "openBackupFolder": "ファイルマネージャーで開く",
-    "openLastBackupFile": "最新のバックアップを開く"
+    "running": "バックアップ中…"
   },
   "add": {
     "editTitle": "取引を編集",

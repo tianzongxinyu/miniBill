@@ -3,23 +3,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
-import { useAuth } from '@/components/AuthProvider';
 import { PageBackLink } from '@/components/ui/BackLink';
 import { useSettings } from '@/components/SettingsProvider';
 import {
   fetchBackup,
   runBackupNow,
-  syncFnosBackupDir,
   updateBackup,
   type BackupConfig,
   type BackupInterval,
 } from '@/lib/api';
-import {
-  openFnosBackupFile,
-  openFnosBackupFolder,
-  pickSharedBackupFolder,
-} from '@/lib/fnos/auth';
-import { openFnosAppSetting, useFnosReady } from '@/lib/fnos/hooks';
 import { toIntlLocale } from '@/lib/i18n/intlLocale';
 import { formatApiError } from '@/lib/errors';
 import { OptionPickerField } from '@/components/ui/OptionPickerField';
@@ -50,16 +42,11 @@ const WEEKDAY_KEYS = [
 
 function BackupContent() {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const { locale } = useSettings();
-  const fnosReady = useFnosReady();
-  const isAdmin = Boolean(user?.is_admin);
   const [cfg, setCfg] = useState<BackupConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [running, setRunning] = useState(false);
-  const [picking, setPicking] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
 
@@ -96,51 +83,6 @@ function BackupContent() {
   useEffect(() => {
     void load();
   }, [load]);
-
-  const applySyncedDir = async (path?: string) => {
-    const view = await syncFnosBackupDir(path);
-    setCfg((prev) =>
-      prev
-        ? {
-            ...prev,
-            dir_configured: view.configured,
-            dir_path: view.path,
-            semantic_path: view.semantic_path,
-          }
-        : prev
-    );
-    setMsg(t('backup.backupDirSynced'));
-  };
-
-  const onPickBackupDir = async () => {
-    setPicking(true);
-    setMsg('');
-    setError('');
-    try {
-      const paths = await pickSharedBackupFolder();
-      if (!paths?.length) return;
-      await applySyncedDir(paths[0]);
-      await load();
-    } catch (err) {
-      setError(formatApiError(err, t('backup.backupDirPickFailed')));
-    } finally {
-      setPicking(false);
-    }
-  };
-
-  const onRefreshAuth = async () => {
-    setSyncing(true);
-    setMsg('');
-    setError('');
-    try {
-      await applySyncedDir();
-      await load();
-    } catch (err) {
-      setError(formatApiError(err, t('backup.backupDirPickFailed')));
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const onSave = async () => {
     if (!cfg) return;
@@ -192,9 +134,8 @@ function BackupContent() {
 
   const dirReady = cfg.dir_configured;
   const displayPath = cfg.semantic_path || cfg.dir_path;
-  const scheduleDisabled = saving || running || picking || syncing;
-  const runDisabled = !dirReady || running || saving || picking || syncing;
-  const busy = picking || syncing;
+  const scheduleDisabled = saving || running;
+  const runDisabled = !dirReady || running || saving;
 
   return (
     <div className="space-y-3">
@@ -210,57 +151,6 @@ function BackupContent() {
             </p>
           ) : (
             <p className="text-xs text-muted">{t('backup.dirNotConfigured')}</p>
-          )}
-          {fnosReady && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {isAdmin && (
-                <>
-                  <button
-                    type="button"
-                    className="btn-segment px-4"
-                    disabled={busy}
-                    onClick={() => void onPickBackupDir()}
-                  >
-                    {picking ? t('backup.pickingBackupDir') : t('backup.pickBackupDir')}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-segment px-4"
-                    disabled={busy}
-                    onClick={() => void onRefreshAuth()}
-                  >
-                    {syncing ? t('backup.syncingBackupDir') : t('backup.refreshBackupAuth')}
-                  </button>
-                </>
-              )}
-              {dirReady && cfg.dir_path && (
-                <button
-                  type="button"
-                  className="btn-segment px-4"
-                  onClick={() => void openFnosBackupFolder(cfg.dir_path!)}
-                >
-                  {t('backup.openBackupFolder')}
-                </button>
-              )}
-              {dirReady && cfg.dir_path && cfg.last_file && (
-                <button
-                  type="button"
-                  className="btn-segment px-4"
-                  onClick={() =>
-                    void openFnosBackupFile(`${cfg.dir_path!.replace(/\/$/, '')}/${user?.username ?? ''}/${cfg.last_file}`)
-                  }
-                >
-                  {t('backup.openLastBackupFile')}
-                </button>
-              )}
-              <button
-                type="button"
-                className="btn-segment px-4"
-                onClick={() => void openFnosAppSetting()}
-              >
-                {t('settings.openFnosAppSetting')}
-              </button>
-            </div>
           )}
         </div>
 

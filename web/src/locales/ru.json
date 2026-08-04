@@ -215,8 +215,7 @@
     "themeLight": "Светлая",
     "themeDark": "Тёмная",
     "themeSystem": "Системная",
-    "themeUpdated": "Оформление обновлено",
-    "openFnosAppSetting": "Открыть настройки приложения fnOS"
+    "themeUpdated": "Оформление обновлено"
   },
   "tags": {
     "newPlaceholder": "Новый тег",
@@ -290,8 +289,8 @@
     "restoreComplete": "Восстановлено из резервной копии: {{summary}}",
     "selectBackup": "Выбрать файл резервной копии",
     "noBackups": "Нет файлов резервных копий",
-    "backupDirNotConfigured": "Каталог резервных копий не настроен. Сначала завершите авторизацию каталога в",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Каталог резервных копий не задан. Укажите в настройках или BACKUP_DIR; откройте",
+    "backupDirNotConfiguredSuffix": "чтобы проверить текущее состояние.",
     "loadBackupListFailed": "Не удалось загрузить список резервных копий",
     "exportFailed": "Ошибка экспорта",
     "importFailed": "Ошибка импорта",
@@ -350,7 +349,7 @@
     "backupFailed": "Ошибка резервного копирования",
     "backupDir": "Каталог резервных копий",
     "configured": "Настроено: {{path}}",
-    "dirNotConfigured": "Каталог резервных копий не задан. Выберите папку в fnOS или укажите в настройках/переменных окружения.",
+    "dirNotConfigured": "Каталог резервных копий не задан. Укажите в настройках приложения или через BACKUP_DIR.",
     "scheduledBackup": "Резервное копирование по расписанию",
     "enable": "Включить",
     "interval": "Интервал",
@@ -375,15 +374,7 @@
     "saveSettings": "Сохранить настройки",
     "runNow": "Создать копию сейчас",
     "runNowDescription": "Экспортировать текущий CSV учётной книги и упаковать в zip в каталог резервных копий.",
-    "running": "Создание копии…",
-    "pickBackupDir": "Выбрать папку резервных копий",
-    "refreshBackupAuth": "Обновить авторизованную папку",
-    "pickingBackupDir": "Выбор…",
-    "syncingBackupDir": "Синхронизация…",
-    "backupDirSynced": "Папка резервных копий обновлена",
-    "backupDirPickFailed": "Не удалось выбрать или синхронизировать папку",
-    "openBackupFolder": "Открыть в файловом менеджере",
-    "openLastBackupFile": "Открыть последний файл резервной копии"
+    "running": "Создание копии…"
   },
   "add": {
     "editTitle": "Редактировать транзакцию",

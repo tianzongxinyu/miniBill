@@ -215,8 +215,7 @@
     "themeLight": "밝은 모드",
     "themeDark": "어두운 모드",
     "themeSystem": "시스템",
-    "themeUpdated": "모양이 업데이트되었습니다",
-    "openFnosAppSetting": "fnOS 앱 설정 열기"
+    "themeUpdated": "모양이 업데이트되었습니다"
   },
   "tags": {
     "newPlaceholder": "새 태그",
@@ -290,8 +289,8 @@
     "restoreComplete": "백업에서 복원됨: {{summary}}",
     "selectBackup": "백업 파일 선택",
     "noBackups": "백업 파일 없음",
-    "backupDirNotConfigured": "백업 디렉터리가 설정되지 않았습니다.",
-    "backupDirNotConfiguredSuffix": "에서 디렉터리 권한을 먼저 설정하세요.",
+    "backupDirNotConfigured": "백업 디렉터리가 설정되지 않았습니다. 앱 설정 또는 BACKUP_DIR로 지정한 뒤",
+    "backupDirNotConfiguredSuffix": "에서 상태를 확인하세요.",
     "loadBackupListFailed": "백업 목록 불러오기 실패",
     "exportFailed": "내보내기 실패",
     "importFailed": "가져오기 실패",
@@ -350,7 +349,7 @@
     "backupFailed": "백업 실패",
     "backupDir": "백업 디렉터리",
     "configured": "설정됨: {{path}}",
-    "dirNotConfigured": "백업 디렉터리가 없습니다. fnOS에서 폴더를 선택하거나 앱 설정/환경 변수로 지정하세요.",
+    "dirNotConfigured": "백업 디렉터리가 설정되지 않았습니다. 앱 설정 또는 환경 변수 BACKUP_DIR로 지정하세요.",
     "scheduledBackup": "예약 백업",
     "enable": "사용",
     "interval": "간격",
@@ -375,15 +374,7 @@
     "saveSettings": "설정 저장",
     "runNow": "지금 백업",
     "runNowDescription": "CSV를 zip으로 백업 폴더에 저장.",
-    "running": "백업 중…",
-    "pickBackupDir": "백업 폴더 선택",
-    "refreshBackupAuth": "권한 폴더 새로고침",
-    "pickingBackupDir": "선택 중…",
-    "syncingBackupDir": "동기화 중…",
-    "backupDirSynced": "백업 폴더가 업데이트되었습니다",
-    "backupDirPickFailed": "백업 폴더 선택 또는 동기화에 실패했습니다",
-    "openBackupFolder": "파일 관리자에서 열기",
-    "openLastBackupFile": "최근 백업 파일 열기"
+    "running": "백업 중…"
   },
   "add": {
     "editTitle": "거래 수정",

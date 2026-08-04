@@ -215,8 +215,7 @@
     "themeLight": "Licht",
     "themeDark": "Donker",
     "themeSystem": "Systeem",
-    "themeUpdated": "Weergave bijgewerkt",
-    "openFnosAppSetting": "fnOS-appinstellingen openen"
+    "themeUpdated": "Weergave bijgewerkt"
   },
   "tags": {
     "newPlaceholder": "Nieuwe tag",
@@ -290,8 +289,8 @@
     "restoreComplete": "Hersteld vanuit back-up: {{summary}}",
     "selectBackup": "Back-upbestand kiezen",
     "noBackups": "Geen back-upbestanden",
-    "backupDirNotConfigured": "Back-upmap is niet geconfigureerd. Voltooi eerst de mapautorisatie in",
-    "backupDirNotConfiguredSuffix": ".",
+    "backupDirNotConfigured": "Back-upmap niet ingesteld. Stel in via app-instellingen of BACKUP_DIR; open",
+    "backupDirNotConfiguredSuffix": "om de huidige status te bekijken.",
     "loadBackupListFailed": "Back-uplijst laden mislukt",
     "exportFailed": "Exporteren mislukt",
     "importFailed": "Importeren mislukt",
@@ -350,7 +349,7 @@
     "backupFailed": "Back-up mislukt",
     "backupDir": "Back-upmap",
     "configured": "Geconfigureerd: {{path}}",
-    "dirNotConfigured": "Back-upmap niet ingesteld. Kies een map in fnOS of via app-instellingen/omgevingsvariabelen.",
+    "dirNotConfigured": "Back-upmap niet ingesteld. Stel in via app-instellingen of BACKUP_DIR.",
     "scheduledBackup": "Geplande back-up",
     "enable": "Inschakelen",
     "interval": "Frequentie",
@@ -375,15 +374,7 @@
     "saveSettings": "Instellingen opslaan",
     "runNow": "Nu back-up maken",
     "runNowDescription": "Exporteer het huidige kasboek-CSV en comprimeer het naar een zip in de back-upmap.",
-    "running": "Back-up maken…",
-    "pickBackupDir": "Back-upmap kiezen",
-    "refreshBackupAuth": "Geautoriseerde map vernieuwen",
-    "pickingBackupDir": "Kiezen…",
-    "syncingBackupDir": "Synchroniseren…",
-    "backupDirSynced": "Back-upmap bijgewerkt",
-    "backupDirPickFailed": "Back-upmap kiezen of synchroniseren mislukt",
-    "openBackupFolder": "Openen in bestandsbeheer",
-    "openLastBackupFile": "Laatste back-upbestand openen"
+    "running": "Back-up maken…"
   },
   "add": {
     "editTitle": "Transactie bewerken",
