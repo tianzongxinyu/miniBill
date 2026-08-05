@@ -286,12 +286,39 @@ body {
     @apply active:scale-[0.98];
   }
 
-  .page-back-link-floating {
-    @apply fixed z-40 inset-x-0 mx-auto w-[min(100%-1.5rem,42rem)] mt-0;
-    @apply bg-surface/45 backdrop-blur-xl shadow-panel;
+  /* iOS：毛玻璃放在 ::before，避免与 transform 同层导致 blur 失效 */
+  .glass-frost {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: transparent !important;
+  }
+
+  .glass-frost::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
+  }
+
+  .glass-frost > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-back-link-floating {
+    @apply glass-frost fixed z-40 inset-x-0 mx-auto w-[min(100%-1.5rem,42rem)] mt-0;
+    @apply shadow-panel;
+    @apply active:scale-100 active:opacity-90;
     bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .page-back-link-floating::before {
+    background: rgb(var(--color-surface-rgb) / 0.45);
   }
 
   @media (min-width: 1024px) {
@@ -796,24 +823,33 @@ body {
   }
 
   .fab-button {
-    @apply relative flex flex-1 items-center justify-center gap-2 min-w-0 py-3.5 rounded-2xl;
-    @apply bg-accent/80 text-white text-xs font-medium backdrop-blur-xl;
+    @apply glass-frost relative flex flex-1 items-center justify-center gap-2 min-w-0 py-3.5 rounded-2xl;
+    @apply text-white text-xs font-medium;
     @apply shadow-[0_4px_16px_rgba(62,142,126,0.25)] ring-1 ring-accent/20;
-    @apply transition-all duration-200 ease-out;
-    @apply hover:bg-accent/90;
-    @apply active:scale-[0.98];
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    @apply transition-opacity duration-200 ease-out;
+    @apply active:opacity-90;
+  }
+
+  .fab-button::before {
+    background: rgb(var(--color-accent-rgb) / 0.55);
+  }
+
+  .fab-button:hover::before {
+    background: rgb(var(--color-accent-rgb) / 0.7);
   }
 
   .fab-button-secondary {
-    @apply bg-surface/45 text-accent border backdrop-blur-xl;
+    @apply text-accent border shadow-panel ring-0;
     border-color: var(--control-border);
-    @apply shadow-panel ring-0;
-    @apply hover:bg-surface/85 hover:border-accent/45;
-    @apply active:scale-[0.98];
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    @apply hover:border-accent/45;
+  }
+
+  .fab-button-secondary::before {
+    background: rgb(var(--color-surface-rgb) / 0.45);
+  }
+
+  .fab-button-secondary:hover::before {
+    background: rgb(var(--color-surface-rgb) / 0.85);
   }
 
   .fab-button-compact {
@@ -829,10 +865,12 @@ body {
   }
 
   .transactions-footer-inner {
-    @apply flex w-full max-w-3xl items-center justify-between gap-2 px-2 py-2;
-    @apply rounded-2xl border border-line/60 bg-surface/45 backdrop-blur-xl shadow-panel;
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    @apply glass-frost flex w-full max-w-3xl items-center justify-between gap-2 px-2 py-2;
+    @apply rounded-2xl border border-line/60 shadow-panel;
+  }
+
+  .transactions-footer-inner::before {
+    background: rgb(var(--color-surface-rgb) / 0.45);
   }
 
   .transactions-footer-nav {
