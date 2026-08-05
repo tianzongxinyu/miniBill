@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useLedgerAccess } from '@/components/LedgerAccessProvider';
+import { getFloatingRoot } from '@/lib/floatingRoot';
 
 function PlusIcon() {
   return (
@@ -67,7 +68,7 @@ export function FixedRecordButton() {
               </div>
             </div>
           </div>,
-          document.body
+          getFloatingRoot()
         )}
     </>
   );

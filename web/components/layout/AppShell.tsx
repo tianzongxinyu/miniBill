@@ -180,6 +180,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className={`flex-1 pb-24 lg:pb-8 min-h-[100dvh] lg:min-h-screen transition-[margin] duration-300 ease-out ${mainMl}`}>
         <PageTransition>{children}</PageTransition>
+        {/* Floating glass chrome portals here — outside PageTransition (no residual transform). */}
+        <div id="minibill-floating-root" />
       </main>
 
       <nav

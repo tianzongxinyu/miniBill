@@ -286,39 +286,23 @@ body {
     @apply active:scale-[0.98];
   }
 
-  /* iOS：毛玻璃放在 ::before，避免与 transform 同层导致 blur 失效 */
+  /*
+   * 悬浮控件：背景与 backdrop-filter 同层。
+   * iPhone/飞牛 WKWebView 上 blur 常无效，触控端用较高不透明度避免「镂空」。
+   */
   .glass-frost {
     position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: transparent !important;
-  }
-
-  .glass-frost::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-  }
-
-  .glass-frost > * {
-    position: relative;
-    z-index: 1;
+    background: rgb(var(--color-surface-rgb) / 0.72);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    backdrop-filter: blur(40px) saturate(1.4);
+    transform: none !important;
   }
 
   .page-back-link-floating {
     @apply glass-frost fixed z-40 inset-x-0 mx-auto w-[min(100%-1.5rem,42rem)] mt-0;
     @apply shadow-panel;
-    @apply active:scale-100 active:opacity-90;
+    @apply transition-opacity duration-200 ease-out active:opacity-90;
     bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
-  }
-
-  .page-back-link-floating::before {
-    background: rgb(var(--color-surface-rgb) / 0.45);
   }
 
   @media (min-width: 1024px) {
@@ -830,26 +814,23 @@ body {
     @apply active:opacity-90;
   }
 
-  .fab-button::before {
-    background: rgb(var(--color-accent-rgb) / 0.55);
+  .fab-button:not(.fab-button-secondary) {
+    background: rgb(var(--color-accent-rgb) / 0.88);
   }
 
-  .fab-button:hover::before {
-    background: rgb(var(--color-accent-rgb) / 0.7);
+  .fab-button:not(.fab-button-secondary):hover {
+    background: rgb(var(--color-accent-rgb) / 0.94);
   }
 
   .fab-button-secondary {
     @apply text-accent border shadow-panel ring-0;
     border-color: var(--control-border);
     @apply hover:border-accent/45;
+    background: rgb(var(--color-surface-rgb) / 0.82);
   }
 
-  .fab-button-secondary::before {
-    background: rgb(var(--color-surface-rgb) / 0.45);
-  }
-
-  .fab-button-secondary:hover::before {
-    background: rgb(var(--color-surface-rgb) / 0.85);
+  .fab-button-secondary:hover {
+    background: rgb(var(--color-surface-rgb) / 0.9);
   }
 
   .fab-button-compact {
@@ -869,10 +850,6 @@ body {
     @apply rounded-2xl border border-line/60 shadow-panel;
   }
 
-  .transactions-footer-inner::before {
-    background: rgb(var(--color-surface-rgb) / 0.45);
-  }
-
   .transactions-footer-nav {
     @apply btn-ghost px-3 py-2 text-sm shrink-0 min-w-[4.5rem];
   }
@@ -887,6 +864,37 @@ body {
 
   .transactions-footer-nav-spacer {
     @apply min-w-[4.5rem] shrink-0;
+  }
+
+  /* iPhone / 触控：较高不透明度 + 显式 blur，避免镂空同时尽量露出毛玻璃 */
+  @media (hover: none) and (pointer: coarse) {
+    .glass-frost,
+    .page-back-link-floating,
+    .transactions-footer-inner {
+      background: rgb(var(--color-surface-rgb) / 0.82);
+      -webkit-backdrop-filter: blur(40px) saturate(1.4);
+      backdrop-filter: blur(40px) saturate(1.4);
+    }
+
+    .fab-button:not(.fab-button-secondary) {
+      background: rgb(var(--color-accent-rgb) / 0.94);
+      -webkit-backdrop-filter: blur(40px) saturate(1.4);
+      backdrop-filter: blur(40px) saturate(1.4);
+    }
+
+    .fab-button:not(.fab-button-secondary):hover {
+      background: rgb(var(--color-accent-rgb) / 0.96);
+    }
+
+    .fab-button.fab-button-secondary {
+      background: rgb(var(--color-surface-rgb) / 0.9);
+      -webkit-backdrop-filter: blur(40px) saturate(1.4);
+      backdrop-filter: blur(40px) saturate(1.4);
+    }
+
+    .fab-button.fab-button-secondary:hover {
+      background: rgb(var(--color-surface-rgb) / 0.94);
+    }
   }
 
   /* —— 记一笔 / 余额登记（与 PageTransition max-w-3xl 同宽，不再内层 max-w-lg）—— */

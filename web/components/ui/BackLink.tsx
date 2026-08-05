@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { getFloatingRoot } from '@/lib/floatingRoot';
 
 export function PageBackLink({
   href,
@@ -36,14 +37,14 @@ export function PageBackLink({
         aria-hidden
         tabIndex={-1}
       >
-        {label}
+        <span>{label}</span>
       </Link>
       {mounted &&
         createPortal(
           <Link href={href} className="page-back-link page-back-link-floating">
-            {label}
+            <span>{label}</span>
           </Link>,
-          document.body
+          getFloatingRoot()
         )}
     </>
   );

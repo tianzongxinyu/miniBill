@@ -43,7 +43,7 @@ def main() -> int:
                 {
                     "type": "radio",
                     "field": "wizard_allow_registration",
-                    "label": "关闭后已有用户不可自助注册；无用户时仍可注册首位管理员",
+                    "label": "关闭后不可自助注册",
                     "initValue": "true",
                     "options": [
                         {"label": "开放", "value": "true"},

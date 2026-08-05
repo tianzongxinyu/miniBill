@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useLedgerAccess } from '@/components/LedgerAccessProvider';
 import { compareYearMonth, nextMonth, prevMonth, type YearMonth } from '@/lib/api';
+import { getFloatingRoot } from '@/lib/floatingRoot';
 
 function PlusIcon() {
   return (
@@ -112,7 +113,7 @@ export function TransactionsFooter({
           <div className="transactions-footer">
             <FooterBar {...barProps} />
           </div>,
-          document.body
+          getFloatingRoot()
         )}
     </>
   );
