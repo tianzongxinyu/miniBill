@@ -4,7 +4,8 @@ import { useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 const NAV_ORDER = ['/', '/transactions/', '/stats/', '/stats/annual/', '/profile/'];
-const LAYOUT_CLASS = 'max-w-3xl mx-auto px-2 pt-4 pb-2 lg:px-4 lg:pt-6 lg:pb-3';
+const LAYOUT_CLASS =
+  'w-full min-w-0 max-w-3xl mx-auto px-2 pt-4 pb-2 lg:px-4 lg:pt-6 lg:pb-3';
 
 function navIndex(pathname: string): number {
   if (pathname === '/') return 0;
