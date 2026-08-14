@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,6 +17,8 @@ type Config struct {
 	DataDir           string
 	BackupDir         string
 	Port              string
+	GatewaySocket     string // Unix socket for fnOS unified gateway (optional)
+	GatewayPrefix     string // e.g. /app/minibill; stripped before routing
 	AllowRegistration bool
 	SecureCookies     bool
 	JWTExpireDays     int
@@ -35,6 +38,8 @@ func Load() Config {
 		DataDir:           getEnv("DATA_DIR", "./data"),
 		BackupDir:         getEnv("BACKUP_DIR", ""),
 		Port:              getEnv("PORT", "8080"),
+		GatewaySocket:     strings.TrimSpace(os.Getenv("GATEWAY_SOCKET")),
+		GatewayPrefix:     strings.TrimRight(strings.TrimSpace(getEnv("GATEWAY_PREFIX", "")), "/"),
 		AllowRegistration: allowReg,
 		SecureCookies:     secureCookies,
 		JWTExpireDays:     expireDays,

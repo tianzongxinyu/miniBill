@@ -80,7 +80,8 @@
     "usernameLength": "用戶名須 3～32 位",
     "usernameChars": "用戶名僅允許字母、數字、下劃線",
     "passwordLength": "密碼至少 6 位",
-    "forgotPasswordHint": "忘記密碼？請聯繫服務器管理員重置。"
+    "forgotPasswordHint": "忘記密碼？請聯繫服務器管理員重置。",
+    "fnosSameUserHint": "飛牛 NAS 免密登入需已有同名帳本帳號（可先註冊或請管理員建立）。"
   },
   "home": {
     "pullRefresh": "下拉刷新",
@@ -190,7 +191,8 @@
     "otherLedger": "{{name}}（{{permission}}）",
     "switchLedger": "切換賬本",
     "permissionEdit": "可編輯",
-    "permissionRead": "只讀"
+    "permissionRead": "只讀",
+    "recurring": "週期任務"
   },
   "grants": {
     "description": "分享本賬本給他人查看或編輯",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "標籤匹配",
     "matchAnd": "且",
     "matchOr": "或"
+  },
+  "recurring": {
+    "title": "週期任務",
+    "createTitle": "添加規則",
+    "editTitle": "編輯規則",
+    "dayOfMonth": "每月第幾天",
+    "dayOfMonthShort": "每月 {{day}} 日",
+    "enable": "開啟",
+    "disable": "關閉",
+    "empty": "暫無週期任務",
+    "deleteTitle": "刪除規則",
+    "deleteConfirm": "刪除該週期任務？已產生的流水不會刪除。",
+    "invalidAmount": "請輸入有效金額",
+    "invalidDay": "日期須在 1–28 之間",
+    "create": "添加",
+    "enabledShort": "自動記帳",
+    "enabledHint": "開啟後每月到期日自動建立流水。",
+    "descriptionShort": "按月收支，到期自動建流水。",
+    "emptyHint": "添加第一條週期任務"
   }
 }

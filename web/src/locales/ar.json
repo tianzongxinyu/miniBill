@@ -80,7 +80,8 @@
     "usernameLength": "يجب أن يكون اسم المستخدم من 3 إلى 32 حرفًا",
     "usernameChars": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط",
     "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
-    "forgotPasswordHint": "نسيت كلمة المرور؟ اطلب من مسؤول الخادم إعادة تعيينها."
+    "forgotPasswordHint": "نسيت كلمة المرور؟ اطلب من مسؤول الخادم إعادة تعيينها.",
+    "fnosSameUserHint": "تسجيل الدخول إلى NAS بدون كلمة مرور يتطلب حساب MiniBill موجوداً بنفس اسم المستخدم."
   },
   "home": {
     "pullRefresh": "اسحب للتحديث",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "تبديل الدفتر",
     "permissionEdit": "يمكن التعديل",
-    "permissionRead": "للقراءة فقط"
+    "permissionRead": "للقراءة فقط",
+    "recurring": "متكرر"
   },
   "grants": {
     "description": "شارك هذا الدفتر ليطّلع عليه الآخرون أو يعدّلوه",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "مطابقة العلامات",
     "matchAnd": "و",
     "matchOr": "أو"
+  },
+  "recurring": {
+    "title": "متكرر",
+    "createTitle": "إضافة قاعدة",
+    "editTitle": "تعديل القاعدة",
+    "dayOfMonth": "يوم من الشهر",
+    "dayOfMonthShort": "كل شهر يوم {{day}}",
+    "enable": "تفعيل",
+    "disable": "إيقاف",
+    "empty": "لا توجد قواعد متكررة بعد",
+    "deleteTitle": "حذف القاعدة",
+    "deleteConfirm": "حذف هذه القاعدة؟ المعاملات السابقة تبقى.",
+    "invalidAmount": "أدخل مبلغاً صالحاً",
+    "invalidDay": "يجب أن يكون اليوم بين 1 و28",
+    "create": "إضافة",
+    "enabledShort": "إنشاء تلقائي",
+    "enabledHint": "عند التفعيل يُنشئ معاملة في يوم الاستحقاق كل شهر.",
+    "descriptionShort": "دخل أو مصروف شهري، يُنشأ تلقائياً عند الاستحقاق.",
+    "emptyHint": "أضف أول قاعدة متكررة"
   }
 }

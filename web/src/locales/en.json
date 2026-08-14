@@ -80,7 +80,8 @@
     "usernameLength": "Username must be 3–32 characters",
     "usernameChars": "Username may only contain letters, numbers, and underscores",
     "passwordLength": "Password must be at least 6 characters",
-    "forgotPasswordHint": "Forgot password? Ask your server admin to reset it."
+    "forgotPasswordHint": "Forgot password? Ask your server admin to reset it.",
+    "fnosSameUserHint": "Passwordless NAS sign-in requires an existing MiniBill account with the same username."
   },
   "home": {
     "pullRefresh": "Pull to refresh",
@@ -190,7 +191,8 @@
     "otherLedger": "{{name}} ({{permission}})",
     "switchLedger": "Switch ledger",
     "permissionEdit": "Can edit",
-    "permissionRead": "Read only"
+    "permissionRead": "Read only",
+    "recurring": "Recurring"
   },
   "grants": {
     "description": "Share this ledger for others to view or edit",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Tag match",
     "matchAnd": "AND",
     "matchOr": "OR"
+  },
+  "recurring": {
+    "title": "Recurring",
+    "createTitle": "Add rule",
+    "editTitle": "Edit rule",
+    "dayOfMonth": "Day of month",
+    "dayOfMonthShort": "Every month on {{day}}",
+    "enable": "Enable",
+    "disable": "Disable",
+    "empty": "No recurring rules yet",
+    "deleteTitle": "Delete rule",
+    "deleteConfirm": "Delete this recurring rule? Past transactions stay.",
+    "invalidAmount": "Enter a valid amount",
+    "invalidDay": "Day must be between 1 and 28",
+    "create": "Add",
+    "enabledShort": "Auto create",
+    "enabledHint": "When on, creates a transaction on the due day each month.",
+    "descriptionShort": "Monthly income or expense, auto-created when due.",
+    "emptyHint": "Add your first recurring rule"
   }
 }

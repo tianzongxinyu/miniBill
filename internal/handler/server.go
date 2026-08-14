@@ -37,6 +37,7 @@ type Server struct {
 	settingsSvc   *service.SettingsService
 	ledgerCSVSvc  *service.LedgerCSVService
 	backupSvc     *service.BackupService
+	recurringSvc  *service.RecurringService
 	metaStore     *cache.LedgerMetaStore
 	dataPathMu    sync.RWMutex
 	dataPathCache map[int64]string
@@ -49,6 +50,7 @@ func NewServer(cfg config.Config, system *systemdb.Store, factory *userdb.Factor
 func NewServerWithVersion(cfg config.Config, system *systemdb.Store, factory *userdb.Factory, authSvc *auth.Service, version string) *Server {
 	statsSvc := service.NewStatsService()
 	txSvc := service.NewTransactionService(statsSvc)
+	recurringSvc := service.NewRecurringService(txSvc)
 	metaStore := cache.NewLedgerMetaStore(0)
 	ledgerCSVSvc := service.NewLedgerCSVService(txSvc, statsSvc, metaStore)
 	return &Server{
@@ -65,6 +67,7 @@ func NewServerWithVersion(cfg config.Config, system *systemdb.Store, factory *us
 		settingsSvc:   &service.SettingsService{},
 		ledgerCSVSvc:  ledgerCSVSvc,
 		backupSvc:     service.NewBackupService(cfg.BackupDir, ledgerCSVSvc),
+		recurringSvc:  recurringSvc,
 		metaStore:     metaStore,
 		dataPathCache: make(map[int64]string),
 	}
@@ -72,6 +75,10 @@ func NewServerWithVersion(cfg config.Config, system *systemdb.Store, factory *us
 
 func (s *Server) BackupService() *service.BackupService {
 	return s.backupSvc
+}
+
+func (s *Server) RecurringService() *service.RecurringService {
+	return s.recurringSvc
 }
 
 func (s *Server) Router() *gin.Engine {
@@ -95,6 +102,7 @@ func (s *Server) Router() *gin.Engine {
 	authGroup.GET("/registration", s.registrationStatus)
 	authGroup.POST("/register", s.register)
 	authGroup.POST("/login", s.login)
+	authGroup.POST("/fnos", s.fnosLogin)
 	authGroup.POST("/logout", s.logout)
 
 	protected := api.Group("")
@@ -129,6 +137,11 @@ func (s *Server) Router() *gin.Engine {
 	protected.POST("/contacts", s.createContact)
 	protected.PUT("/contacts/:id", s.updateContact)
 	protected.DELETE("/contacts/:id", s.deleteContact)
+	protected.GET("/recurring-rules", s.listRecurringRules)
+	protected.GET("/recurring-rules/:id", s.getRecurringRule)
+	protected.POST("/recurring-rules", s.createRecurringRule)
+	protected.PUT("/recurring-rules/:id", s.updateRecurringRule)
+	protected.DELETE("/recurring-rules/:id", s.deleteRecurringRule)
 	protected.GET("/transactions", s.listTransactions)
 	protected.GET("/transactions/:id", s.getTransaction)
 	protected.POST("/transactions", s.createTransaction)

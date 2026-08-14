@@ -18,6 +18,10 @@ function appendStamp(template) {
 const nextConfig = {
   // 开发模式不用 static export，否则 rewrites 不生效，/api 无法代理到后端
   ...(isDev ? {} : { output: 'export' }),
+  // fnOS unified gateway serves under /app/minibill
+  ...(process.env.NEXT_PUBLIC_BASE_PATH
+    ? { basePath: process.env.NEXT_PUBLIC_BASE_PATH.replace(/\/$/, '') }
+    : {}),
   trailingSlash: true,
   images: { unoptimized: true },
   generateBuildId: async () => buildStamp,

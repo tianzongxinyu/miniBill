@@ -9,20 +9,33 @@ import (
 	"github.com/minibill/minibill/internal/userdb"
 )
 
+const backupScanInterval = 5 * time.Minute
+
 type BackupScheduler struct {
-	backup   *BackupService
-	system   *systemdb.Store
-	factory  *userdb.Factory
-	interval time.Duration
+	backup  *BackupService
+	system  *systemdb.Store
+	factory *userdb.Factory
+	now     func() time.Time
 }
 
 func NewBackupScheduler(backup *BackupService, system *systemdb.Store, factory *userdb.Factory) *BackupScheduler {
 	return &BackupScheduler{
-		backup:   backup,
-		system:   system,
-		factory:  factory,
-		interval: time.Minute,
+		backup:  backup,
+		system:  system,
+		factory: factory,
+		now:     time.Now,
 	}
+}
+
+// nextBackupScanAt returns the next wall-clock slot aligned to midnight + N*5min,
+// strictly after now when now falls exactly on a slot (startup tick already covered it).
+func nextBackupScanAt(now time.Time) time.Time {
+	loc := now.Location()
+	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+	elapsed := now.Sub(midnight)
+	steps := elapsed / backupScanInterval
+	next := midnight.Add((steps + 1) * backupScanInterval)
+	return next
 }
 
 func (sch *BackupScheduler) Run(ctx context.Context) {
@@ -30,15 +43,27 @@ func (sch *BackupScheduler) Run(ctx context.Context) {
 		log.Printf("backup scheduler: disabled (BACKUP_DIR not configured)")
 		return
 	}
-	log.Printf("backup scheduler: started (interval=%s)", sch.interval)
+	log.Printf("backup scheduler: started (on start + every %s from midnight local)", backupScanInterval)
 	sch.tick()
-	ticker := time.NewTicker(sch.interval)
-	defer ticker.Stop()
+
 	for {
+		now := sch.now()
+		next := nextBackupScanAt(now)
+		wait := next.Sub(now)
+		if wait < 0 {
+			wait = 0
+		}
+		timer := time.NewTimer(wait)
 		select {
 		case <-ctx.Done():
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
 			return
-		case <-ticker.C:
+		case <-timer.C:
 			sch.tick()
 		}
 	}

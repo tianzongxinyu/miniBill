@@ -80,7 +80,8 @@
     "usernameLength": "Kullanıcı adı 3–32 karakter olmalı",
     "usernameChars": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir",
     "passwordLength": "Parola en az 6 karakter olmalı",
-    "forgotPasswordHint": "Şifrenizi mi unuttunuz? Sunucu yöneticisinden sıfırlamasını isteyin."
+    "forgotPasswordHint": "Şifrenizi mi unuttunuz? Sunucu yöneticisinden sıfırlamasını isteyin.",
+    "fnosSameUserHint": "Şifresiz NAS girişi, aynı kullanıcı adına sahip mevcut bir MiniBill hesabı gerektirir."
   },
   "home": {
     "pullRefresh": "Yenilemek için çekin",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Defter değiştir",
     "permissionEdit": "Düzenleyebilir",
-    "permissionRead": "Salt okunur"
+    "permissionRead": "Salt okunur",
+    "recurring": "Tekrarlayan"
   },
   "grants": {
     "description": "Bu defteri başkalarının görüntülemesi veya düzenlemesi için paylaşın",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Etiket eşleştirme",
     "matchAnd": "VE",
     "matchOr": "VEYA"
+  },
+  "recurring": {
+    "title": "Tekrarlayan",
+    "createTitle": "Kural ekle",
+    "editTitle": "Kuralı düzenle",
+    "dayOfMonth": "Ayın günü",
+    "dayOfMonthShort": "Her ayın {{day}}. günü",
+    "enable": "Aç",
+    "disable": "Kapat",
+    "empty": "Henüz tekrarlayan kural yok",
+    "deleteTitle": "Kuralı sil",
+    "deleteConfirm": "Bu kural silinsin mi? Oluşturulmuş işlemler kalır.",
+    "invalidAmount": "Geçerli bir tutar girin",
+    "invalidDay": "Gün 1–28 arasında olmalı",
+    "create": "Ekle",
+    "enabledShort": "Otomatik oluştur",
+    "enabledHint": "Açıkken her ay vade gününde işlem oluşturur.",
+    "descriptionShort": "Aylık akış, vade gününde otomatik.",
+    "emptyHint": "İlk tekrarlayan kuralı ekle"
   }
 }

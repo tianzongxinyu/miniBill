@@ -34,7 +34,11 @@ start)
     refresh_backup_dir >/dev/null 2>&1 || true
     port="${PORT:-$port}"
 
-    echo "$(date '+%F %T') starting port=$port backup_dir=${BACKUP_DIR:-<empty>} bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"
+    APP_DEST="$(resolve_app_dest)"
+    GATEWAY_SOCKET="${APP_DEST}/app.sock"
+    rm -f "$GATEWAY_SOCKET" 2>/dev/null || true
+
+    echo "$(date '+%F %T') starting port=$port gateway_socket=$GATEWAY_SOCKET backup_dir=${BACKUP_DIR:-<empty>} bin=$APP_BIN root=$APP_ROOT" >> "$LOG_FILE"
 
     (
         export DATA_DIR
@@ -43,6 +47,8 @@ start)
         export MIGRATIONS_SYSTEM="${APP_ROOT}/migrations/system"
         export MIGRATIONS_LEDGER="${APP_ROOT}/migrations/ledger"
         export PORT="$port"
+        export GATEWAY_SOCKET
+        export GATEWAY_PREFIX="/app/minibill"
         export TZ="${TZ:-Asia/Shanghai}"
         cd "$DATA_DIR" || exit 1
         exec "$APP_BIN"

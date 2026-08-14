@@ -751,7 +751,7 @@ body {
   }
 
   .annual-report-compare-row {
-    @apply grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2 items-baseline;
+    @apply grid grid-cols-[4.5rem_minmax(0,1fr)_minmax(0,1fr)] gap-x-3 items-baseline;
     @apply px-0 py-2.5 border-b border-line/40 last:border-b-0;
   }
 
@@ -764,7 +764,7 @@ body {
   }
 
   .annual-report-compare-curr {
-    @apply min-w-0;
+    @apply min-w-0 text-right pr-1;
   }
 
   .annual-report-compare-value {
@@ -772,11 +772,15 @@ body {
   }
 
   .annual-report-compare-prev {
-    @apply block mt-0.5 text-[11px] text-muted tabular-nums;
+    @apply mt-0.5 min-w-0 text-right;
+  }
+
+  .annual-report-compare-prev-value {
+    @apply text-[14px] font-semibold tabular-nums leading-snug text-muted;
   }
 
   .annual-report-compare-delta {
-    @apply text-right shrink-0;
+    @apply min-w-0 text-right pl-1;
   }
 
   .annual-report-compare-delta-amt {
@@ -1024,6 +1028,19 @@ body {
 
   .record-form .form-row {
     @apply px-2 grid-cols-[3.5rem_minmax(0,1fr)] gap-x-1.5;
+  }
+
+  .recurring-edit-form.record-form .form-row {
+    /* Narrower label column so value controls get more width */
+    @apply grid-cols-[5.25rem_minmax(0,1fr)] gap-x-2;
+  }
+
+  .recurring-edit-form .form-label {
+    @apply whitespace-nowrap normal-case tracking-normal font-medium;
+  }
+
+  .recurring-edit-form .form-row > :not(.form-label) {
+    @apply w-full min-w-0;
   }
 
   .form-amount-input::-webkit-outer-spin-button,

@@ -9,6 +9,7 @@ import { formatApiError } from '@/lib/errors';
 import { AppLogo } from '@/components/ui/AppLogo';
 import { redirectToHome } from '@/lib/api';
 import { useRegistrationOpen } from '@/hooks/useRegistrationOpen';
+import { isFnosHost } from '@/lib/fnos/sdk';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -16,12 +17,23 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showFnosHint, setShowFnosHint] = useState(false);
   const registrationOpen = useRegistrationOpen(true) !== false;
 
   useLayoutEffect(() => {
     if (!ready || !user) return;
     redirectToHome();
   }, [ready, user]);
+
+  useLayoutEffect(() => {
+    let cancelled = false;
+    void isFnosHost().then((ok) => {
+      if (!cancelled) setShowFnosHint(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +93,9 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <p className="text-xs text-muted -mt-2">{t('auth.forgotPasswordHint')}</p>
+        {showFnosHint && (
+          <p className="text-xs text-muted -mt-2">{t('auth.fnosSameUserHint')}</p>
+        )}
         <button type="submit" className="btn-primary-block">
           {t('auth.login')}
         </button>

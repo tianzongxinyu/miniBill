@@ -80,7 +80,8 @@
     "usernameLength": "用户名须 3～32 位",
     "usernameChars": "用户名仅允许字母、数字、下划线",
     "passwordLength": "密码至少 6 位",
-    "forgotPasswordHint": "忘记密码？请联系服务器管理员重置。"
+    "forgotPasswordHint": "忘记密码？请联系服务器管理员重置。",
+    "fnosSameUserHint": "飞牛 NAS 免密登录需已有同名账本账号（可先注册或请管理员创建）。"
   },
   "home": {
     "pullRefresh": "下拉刷新",
@@ -190,7 +191,8 @@
     "otherLedger": "{{name}}（{{permission}}）",
     "switchLedger": "切换账本",
     "permissionEdit": "可编辑",
-    "permissionRead": "只读"
+    "permissionRead": "只读",
+    "recurring": "任务"
   },
   "grants": {
     "description": "分享本账本给他人查看或编辑",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "标签匹配",
     "matchAnd": "且",
     "matchOr": "或"
+  },
+  "recurring": {
+    "title": "任务",
+    "createTitle": "添加规则",
+    "editTitle": "编辑规则",
+    "dayOfMonth": "每月第几天",
+    "dayOfMonthShort": "每月 {{day}} 日",
+    "enable": "开启",
+    "disable": "关闭",
+    "empty": "暂无任务",
+    "deleteTitle": "删除规则",
+    "deleteConfirm": "删除该任务？已生成的流水不会删除。",
+    "invalidAmount": "请输入有效金额",
+    "invalidDay": "日期须在 1–28 之间",
+    "create": "添加",
+    "enabledShort": "自动记账",
+    "enabledHint": "开启后每月到期日自动创建流水。",
+    "descriptionShort": "按月收支，到期自动建流水。",
+    "emptyHint": "添加第一条周期任务"
   }
 }

@@ -92,14 +92,18 @@ function Ensure-WebOut {
         Write-Info "Removing existing web/out ..."
         Remove-Item -Recurse -Force $webOut
     }
-    Write-Info "Building frontend (web/out) ..."
+    Write-Info "Building frontend (web/out) with fnOS basePath /app/minibill ..."
     Push-Location (Join-Path $Root "web")
     try {
+        $env:NEXT_PUBLIC_BASE_PATH = "/app/minibill"
+        $env:NEXT_PUBLIC_API_BASE = "/app/minibill/api"
         npm install
         if (-not $?) { Write-Err "npm install failed" }
         npm run build
         if (-not $?) { Write-Err "npm run build failed" }
     } finally {
+        Remove-Item Env:NEXT_PUBLIC_BASE_PATH -ErrorAction SilentlyContinue
+        Remove-Item Env:NEXT_PUBLIC_API_BASE -ErrorAction SilentlyContinue
         Pop-Location
     }
 }

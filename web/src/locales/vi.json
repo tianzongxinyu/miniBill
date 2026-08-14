@@ -80,7 +80,8 @@
     "usernameLength": "Tên người dùng phải có 3–32 ký tự",
     "usernameChars": "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới",
     "passwordLength": "Mật khẩu phải có ít nhất 6 ký tự",
-    "forgotPasswordHint": "Quên mật khẩu? Hãy nhờ quản trị viên máy chủ đặt lại."
+    "forgotPasswordHint": "Quên mật khẩu? Hãy nhờ quản trị viên máy chủ đặt lại.",
+    "fnosSameUserHint": "Đăng nhập NAS không mật khẩu cần tài khoản MiniBill sẵn có cùng tên người dùng."
   },
   "home": {
     "pullRefresh": "Kéo để làm mới",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Đổi sổ",
     "permissionEdit": "Được sửa",
-    "permissionRead": "Chỉ xem"
+    "permissionRead": "Chỉ xem",
+    "recurring": "Định kỳ"
   },
   "grants": {
     "description": "Chia sẻ sổ này để người khác xem hoặc chỉnh sửa",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Khớp thẻ",
     "matchAnd": "VÀ",
     "matchOr": "HOẶC"
+  },
+  "recurring": {
+    "title": "Định kỳ",
+    "createTitle": "Thêm quy tắc",
+    "editTitle": "Sửa quy tắc",
+    "dayOfMonth": "Ngày trong tháng",
+    "dayOfMonthShort": "Mỗi tháng ngày {{day}}",
+    "enable": "Bật",
+    "disable": "Tắt",
+    "empty": "Chưa có quy tắc định kỳ",
+    "deleteTitle": "Xóa quy tắc",
+    "deleteConfirm": "Xóa quy tắc này? Giao dịch đã tạo vẫn giữ nguyên.",
+    "invalidAmount": "Nhập số tiền hợp lệ",
+    "invalidDay": "Ngày phải từ 1 đến 28",
+    "create": "Thêm",
+    "enabledShort": "Tự tạo",
+    "enabledHint": "Khi bật sẽ tạo giao dịch vào ngày đến hạn mỗi tháng.",
+    "descriptionShort": "Thu chi hàng tháng, tự tạo khi đến hạn.",
+    "emptyHint": "Thêm quy tắc định kỳ đầu tiên"
   }
 }

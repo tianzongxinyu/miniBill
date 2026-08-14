@@ -80,7 +80,8 @@
     "usernameLength": "Nazwa użytkownika musi mieć 3–32 znaki",
     "usernameChars": "Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia",
     "passwordLength": "Hasło musi mieć co najmniej 6 znaków",
-    "forgotPasswordHint": "Nie pamiętasz hasła? Poproś administratora serwera o zresetowanie."
+    "forgotPasswordHint": "Nie pamiętasz hasła? Poproś administratora serwera o zresetowanie.",
+    "fnosSameUserHint": "Logowanie NAS bez hasła wymaga istniejącego konta MiniBill o tej samej nazwie użytkownika."
   },
   "home": {
     "pullRefresh": "Pociągnij, aby odświeżyć",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Zmień księgę",
     "permissionEdit": "Może edytować",
-    "permissionRead": "Tylko odczyt"
+    "permissionRead": "Tylko odczyt",
+    "recurring": "Cykliczne"
   },
   "grants": {
     "description": "Udostępnij tę księgę, aby inni mogli ją przeglądać lub edytować",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Dopasowanie tagów",
     "matchAnd": "I",
     "matchOr": "LUB"
+  },
+  "recurring": {
+    "title": "Cykliczne",
+    "createTitle": "Dodaj regułę",
+    "editTitle": "Edytuj regułę",
+    "dayOfMonth": "Dzień miesiąca",
+    "dayOfMonthShort": "Co miesiąc dnia {{day}}",
+    "enable": "Włącz",
+    "disable": "Wyłącz",
+    "empty": "Brak reguł cyklicznych",
+    "deleteTitle": "Usuń regułę",
+    "deleteConfirm": "Usunąć tę regułę? Istniejące transakcje pozostaną.",
+    "invalidAmount": "Podaj prawidłową kwotę",
+    "invalidDay": "Dzień musi być między 1 a 28",
+    "create": "Dodaj",
+    "enabledShort": "Auto zapis",
+    "enabledHint": "Po włączeniu tworzy transakcję w dniu terminu co miesiąc.",
+    "descriptionShort": "Miesięczne przepływy, auto w dniu terminu.",
+    "emptyHint": "Dodaj pierwszą regułę cykliczną"
   }
 }

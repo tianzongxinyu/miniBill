@@ -1,5 +1,6 @@
 import type { User } from '@/lib/api/types';
 import { api } from '@/lib/api/http';
+import { appPathname, withBasePath } from '@/lib/basePath';
 
 export const TOKEN_KEY = 'token';
 export const USER_KEY = 'user';
@@ -78,7 +79,7 @@ export function notifyAuthLogout() {
 /** 整页跳转；优先 replace，WebView 下更可靠 */
 export function hardNavigate(path: string) {
   if (typeof window === 'undefined') return;
-  const url = new URL(path, window.location.origin).href;
+  const url = new URL(withBasePath(path), window.location.origin).href;
   try {
     window.location.replace(url);
   } catch {
@@ -88,14 +89,14 @@ export function hardNavigate(path: string) {
 
 export function redirectToLogin() {
   if (typeof window === 'undefined') return;
-  const path = window.location.pathname;
+  const path = appPathname();
   if (path.startsWith('/login') || path.startsWith('/register')) return;
   hardNavigate('/login/');
 }
 
 export function redirectToHome() {
   if (typeof window === 'undefined') return;
-  const path = window.location.pathname;
+  const path = appPathname();
   if (path === '/' || path === '') return;
   hardNavigate('/');
 }
@@ -105,7 +106,7 @@ export async function clearAuthAndGoLogin() {
   await revokeAuthCookie();
   clearAuthStorage();
   if (typeof window === 'undefined') return;
-  const path = window.location.pathname;
+  const path = appPathname();
   if (path.startsWith('/login') || path.startsWith('/register')) {
     notifyAuthLogout();
     return;

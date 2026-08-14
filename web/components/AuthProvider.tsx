@@ -11,6 +11,7 @@ import {
   setAuthSession,
   User,
 } from '@/lib/api';
+import { isFnosHost } from '@/lib/fnos/sdk';
 
 type AuthCtx = {
   user: User | null;
@@ -43,7 +44,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             current = data.user;
           }
         } catch {
-          /* not logged in */
+          /* not logged in via cookie */
+        }
+      }
+      if (!current) {
+        try {
+          if (await isFnosHost()) {
+            const data = await api<AuthResponse>('/auth/fnos', {
+              method: 'POST',
+              authRedirect: false,
+            });
+            if (data?.token && data?.user?.username) {
+              setAuthSession(data.token, data.user, true);
+              current = data.user;
+            }
+          }
+        } catch {
+          /* no matching MiniBill user or not on gateway */
         }
       }
       if (!cancelled) {

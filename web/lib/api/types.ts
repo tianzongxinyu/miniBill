@@ -109,6 +109,32 @@ export type MonthSeriesPoint = {
   daily_expense?: number | null;
 };
 
+export type RecurringRule = {
+  id: number;
+  amount: number;
+  type: 'income' | 'expense';
+  day_of_month: number;
+  note: string;
+  contact_id?: number | null;
+  contact_name?: string;
+  tag_ids: number[];
+  tag_items?: TransactionTagItem[];
+  enabled: boolean;
+  last_run_year_month?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RecurringRuleInput = {
+  amount: number;
+  type: 'income' | 'expense';
+  day_of_month: number;
+  note: string;
+  contact_id?: number | null;
+  tag_ids: number[];
+  enabled: boolean;
+};
+
 export type YearSeriesPoint = {
   year: number;
   total_income: number;

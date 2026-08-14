@@ -80,7 +80,8 @@
     "usernameLength": "ユーザー名は 3〜32 文字である必要があります",
     "usernameChars": "ユーザー名は英数字とアンダースコアのみ使用できます",
     "passwordLength": "パスワードは 6 文字以上である必要があります",
-    "forgotPasswordHint": "パスワードを忘れた場合は、サーバー管理者にリセットを依頼してください。"
+    "forgotPasswordHint": "パスワードを忘れた場合は、サーバー管理者にリセットを依頼してください。",
+    "fnosSameUserHint": "NAS のパスワードレスログインには、同名の軽帳簿アカウントが必要です。"
   },
   "home": {
     "pullRefresh": "引いて更新",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}}（{{permission}}）",
     "switchLedger": "帳簿を切替",
     "permissionEdit": "編集可",
-    "permissionRead": "閲覧のみ"
+    "permissionRead": "閲覧のみ",
+    "recurring": "定期"
   },
   "grants": {
     "description": "この帳簿を他のユーザーと共有して閲覧・編集できます",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "タグ条件",
     "matchAnd": "かつ",
     "matchOr": "または"
+  },
+  "recurring": {
+    "title": "定期ルール",
+    "createTitle": "ルールを追加",
+    "editTitle": "ルールを編集",
+    "dayOfMonth": "毎月の日付",
+    "dayOfMonthShort": "毎月{{day}}日",
+    "enable": "有効にする",
+    "disable": "無効にする",
+    "empty": "定期ルールはまだありません",
+    "deleteTitle": "ルールを削除",
+    "deleteConfirm": "この定期ルールを削除しますか？既に作成された取引は残ります。",
+    "invalidAmount": "有効な金額を入力してください",
+    "invalidDay": "日付は1〜28の範囲で指定してください",
+    "create": "追加",
+    "enabledShort": "自動作成",
+    "enabledHint": "有効にすると毎月の期日に取引を自動作成します。",
+    "descriptionShort": "毎月の収支。期日に自動作成。",
+    "emptyHint": "最初の定期ルールを追加"
   }
 }

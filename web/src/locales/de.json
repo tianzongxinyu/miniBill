@@ -80,7 +80,8 @@
     "usernameLength": "Benutzername muss 3–32 Zeichen lang sein",
     "usernameChars": "Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten",
     "passwordLength": "Passwort muss mindestens 6 Zeichen lang sein",
-    "forgotPasswordHint": "Passwort vergessen? Bitten Sie den Server-Administrator um Zurücksetzung."
+    "forgotPasswordHint": "Passwort vergessen? Bitten Sie den Server-Administrator um Zurücksetzung.",
+    "fnosSameUserHint": "Passwortlose NAS-Anmeldung erfordert ein bestehendes MiniBill-Konto mit demselben Benutzernamen."
   },
   "home": {
     "pullRefresh": "Zum Aktualisieren ziehen",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Buch wechseln",
     "permissionEdit": "Bearbeiten",
-    "permissionRead": "Nur Lesen"
+    "permissionRead": "Nur Lesen",
+    "recurring": "Wiederkehrend"
   },
   "grants": {
     "description": "Dieses Buch mit anderen zum Ansehen oder Bearbeiten teilen",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Tag-Abgleich",
     "matchAnd": "UND",
     "matchOr": "ODER"
+  },
+  "recurring": {
+    "title": "Wiederkehrend",
+    "createTitle": "Regel hinzufügen",
+    "editTitle": "Regel bearbeiten",
+    "dayOfMonth": "Tag des Monats",
+    "dayOfMonthShort": "Jeden Monat am {{day}}",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren",
+    "empty": "Noch keine wiederkehrenden Regeln",
+    "deleteTitle": "Regel löschen",
+    "deleteConfirm": "Diese Regel löschen? Bereits erstellte Buchungen bleiben erhalten.",
+    "invalidAmount": "Gültigen Betrag eingeben",
+    "invalidDay": "Tag muss zwischen 1 und 28 liegen",
+    "create": "Hinzufügen",
+    "enabledShort": "Auto-Buchung",
+    "enabledHint": "Bei Aktivierung wird am Fälligkeitstag automatisch gebucht.",
+    "descriptionShort": "Monatliche Buchungen, automatisch am Fälligkeitstag.",
+    "emptyHint": "Erste wiederkehrende Regel hinzufügen"
   }
 }

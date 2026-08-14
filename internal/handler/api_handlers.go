@@ -46,6 +46,32 @@ func (req transactionReq) toInput() service.CreateTransactionInput {
 	}
 }
 
+type recurringRuleReq struct {
+	Amount     int64   `json:"amount"`
+	Type       string  `json:"type"`
+	DayOfMonth int     `json:"day_of_month"`
+	Note       string  `json:"note"`
+	ContactID  *int64  `json:"contact_id"`
+	TagIDs     []int64 `json:"tag_ids"`
+	Enabled    *bool   `json:"enabled"`
+}
+
+func (req recurringRuleReq) toInput() service.RecurringRuleInput {
+	enabled := true
+	if req.Enabled != nil {
+		enabled = *req.Enabled
+	}
+	return service.RecurringRuleInput{
+		Amount:     req.Amount,
+		Type:       req.Type,
+		DayOfMonth: req.DayOfMonth,
+		Note:       req.Note,
+		ContactID:  req.ContactID,
+		TagIDs:     req.TagIDs,
+		Enabled:    enabled,
+	}
+}
+
 type changePasswordReq struct {
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
@@ -197,6 +223,44 @@ func (s *Server) login(c *gin.Context) {
 		return
 	}
 	setAuthCookie(c, token, remember, s.cfg)
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user":  userJSON(user),
+	})
+}
+
+// fnosLogin signs in via fnOS unified-gateway headers (X-Trim-Username).
+// Only trusted when the request arrived on the gateway Unix socket.
+// Does not create users: missing MiniBill account → 404 NO_MATCHING_USER.
+func (s *Server) fnosLogin(c *gin.Context) {
+	if !middleware.IsGatewayTrusted(c) {
+		JSONError(c, http.StatusNotFound, "NOT_FOUND", i18n.T(localeFromHeader(c), "error.not_found"))
+		return
+	}
+	username := strings.TrimSpace(c.GetHeader("X-Trim-Username"))
+	if username == "" {
+		JSONUnauthorized(c)
+		return
+	}
+	user, err := s.system.GetByUsername(username)
+	if err != nil {
+		JSONInternal(c, "")
+		return
+	}
+	if user == nil {
+		JSONError(c, http.StatusNotFound, "NO_MATCHING_USER", i18n.T(localeFromHeader(c), "error.fnos_no_matching_user"))
+		return
+	}
+	if user.Disabled {
+		JSONError(c, http.StatusUnauthorized, "UNAUTHORIZED", i18n.T(localeFromHeader(c), "error.account_disabled"))
+		return
+	}
+	token, err := s.authSvc.SignWithExpire(user.ID, user.Username, user.TokenVersion, s.cfg.JWTExpireDuration())
+	if err != nil {
+		JSONInternal(c, "")
+		return
+	}
+	setAuthCookie(c, token, true, s.cfg)
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 		"user":  userJSON(user),
@@ -517,6 +581,77 @@ func (s *Server) deleteTransaction(c *gin.Context) {
 			return
 		}
 		s.invalidateLedgerMeta(c)
+		c.Status(http.StatusNoContent)
+	})
+}
+
+func (s *Server) listRecurringRules(c *gin.Context) {
+	s.withLedger(c, func(db *sql.DB) {
+		list, err := s.recurringSvc.List(db)
+		if serviceErr(c, err) {
+			return
+		}
+		jsonItems(c, list)
+	})
+}
+
+func (s *Server) getRecurringRule(c *gin.Context) {
+	id, ok := parseID(c, "id")
+	if !ok {
+		return
+	}
+	s.withLedger(c, func(db *sql.DB) {
+		rule, err := s.recurringSvc.Get(db, id)
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, rule)
+	})
+}
+
+func (s *Server) createRecurringRule(c *gin.Context) {
+	var req recurringRuleReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		JSONValidation(c, "invalid body")
+		return
+	}
+	s.withLedgerWrite(c, func(db *sql.DB) {
+		rule, err := s.recurringSvc.Create(db, req.toInput())
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusCreated, rule)
+	})
+}
+
+func (s *Server) updateRecurringRule(c *gin.Context) {
+	id, ok := parseID(c, "id")
+	if !ok {
+		return
+	}
+	var req recurringRuleReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		JSONValidation(c, "invalid body")
+		return
+	}
+	s.withLedgerWrite(c, func(db *sql.DB) {
+		rule, err := s.recurringSvc.Update(db, id, req.toInput())
+		if serviceErr(c, err) {
+			return
+		}
+		c.JSON(http.StatusOK, rule)
+	})
+}
+
+func (s *Server) deleteRecurringRule(c *gin.Context) {
+	id, ok := parseID(c, "id")
+	if !ok {
+		return
+	}
+	s.withLedgerWrite(c, func(db *sql.DB) {
+		if serviceErr(c, s.recurringSvc.Delete(db, id)) {
+			return
+		}
 		c.Status(http.StatusNoContent)
 	})
 }

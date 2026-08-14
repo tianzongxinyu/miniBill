@@ -80,7 +80,8 @@
     "usernameLength": "उपयोगकर्ता नाम 3–32 अक्षर का होना चाहिए",
     "usernameChars": "उपयोगकर्ता नाम में केवल अक्षर, संख्याएँ और अंडरस्कोर हो सकते हैं",
     "passwordLength": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए",
-    "forgotPasswordHint": "पासवर्ड भूल गए? सर्वर व्यवस्थापक से रीसेट करवाएँ।"
+    "forgotPasswordHint": "पासवर्ड भूल गए? सर्वर व्यवस्थापक से रीसेट करवाएँ।",
+    "fnosSameUserHint": "पासवर्ड रहित NAS साइन-इन के लिए उसी उपयोगकर्ता नाम वाला मौजूदा MiniBill खाता आवश्यक है।"
   },
   "home": {
     "pullRefresh": "रीफ़्रेश के लिए खींचें",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "बही बदलें",
     "permissionEdit": "संपादन योग्य",
-    "permissionRead": "केवल पढ़ें"
+    "permissionRead": "केवल पढ़ें",
+    "recurring": "आवर्ती"
   },
   "grants": {
     "description": "इस बही को दूसरों के देखने या संपादन के लिए साझा करें",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "टैग मिलान",
     "matchAnd": "और",
     "matchOr": "या"
+  },
+  "recurring": {
+    "title": "आवर्ती",
+    "createTitle": "नियम जोड़ें",
+    "editTitle": "नियम संपादित करें",
+    "dayOfMonth": "महीने का दिन",
+    "dayOfMonthShort": "प्रत्येक माह दिन {{day}}",
+    "enable": "चालू करें",
+    "disable": "बंद करें",
+    "empty": "अभी कोई आवर्ती नियम नहीं",
+    "deleteTitle": "नियम हटाएँ",
+    "deleteConfirm": "यह नियम हटाएँ? बने हुए लेनदेन रहेंगे।",
+    "invalidAmount": "मान्य राशि दर्ज करें",
+    "invalidDay": "दिन 1–28 के बीच होना चाहिए",
+    "create": "जोड़ें",
+    "enabledShort": "स्वतः बनाएँ",
+    "enabledHint": "चालू होने पर हर महीने देय दिन पर लेनदेन बनेगा।",
+    "descriptionShort": "मासिक आय/व्यय, देय पर स्वतः।",
+    "emptyHint": "पहला आवर्ती नियम जोड़ें"
   }
 }

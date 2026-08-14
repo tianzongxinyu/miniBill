@@ -80,7 +80,8 @@
     "usernameLength": "ชื่อผู้ใช้ต้องมี 3–32 ตัวอักษร",
     "usernameChars": "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดล่าง",
     "passwordLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
-    "forgotPasswordHint": "ลืมรหัสผ่าน? ขอให้ผู้ดูแลเซิร์ฟเวอร์รีเซ็ตให้"
+    "forgotPasswordHint": "ลืมรหัสผ่าน? ขอให้ผู้ดูแลเซิร์ฟเวอร์รีเซ็ตให้",
+    "fnosSameUserHint": "การเข้าสู่ระบบ NAS แบบไม่ใช้รหัสผ่านต้องมีบัญชี MiniBill ที่ชื่อผู้ใช้เดียวกันอยู่แล้ว"
   },
   "home": {
     "pullRefresh": "ดึงเพื่อรีเฟรช",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "สลับสมุด",
     "permissionEdit": "แก้ไขได้",
-    "permissionRead": "อ่านอย่างเดียว"
+    "permissionRead": "อ่านอย่างเดียว",
+    "recurring": "รายการซ้ำ"
   },
   "grants": {
     "description": "แชร์สมุดนี้ให้ผู้อื่นดูหรือแก้ไข",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "การจับคู่แท็ก",
     "matchAnd": "และ",
     "matchOr": "หรือ"
+  },
+  "recurring": {
+    "title": "รายการซ้ำ",
+    "createTitle": "เพิ่มกฎ",
+    "editTitle": "แก้ไขกฎ",
+    "dayOfMonth": "วันที่ของเดือน",
+    "dayOfMonthShort": "ทุกเดือนวันที่ {{day}}",
+    "enable": "เปิด",
+    "disable": "ปิด",
+    "empty": "ยังไม่มีกฎรายการซ้ำ",
+    "deleteTitle": "ลบกฎ",
+    "deleteConfirm": "ลบกฎนี้หรือไม่? รายการที่สร้างแล้วจะยังอยู่",
+    "invalidAmount": "กรุณาใส่จำนวนเงินที่ถูกต้อง",
+    "invalidDay": "วันต้องอยู่ระหว่าง 1 ถึง 28",
+    "create": "เพิ่ม",
+    "enabledShort": "สร้างอัตโนมัติ",
+    "enabledHint": "เมื่อเปิดจะสร้างรายการในวันครบกำหนดทุกเดือน",
+    "descriptionShort": "รายรับรายจ่ายรายเดือน สร้างอัตโนมัติเมื่อครบกำหนด",
+    "emptyHint": "เพิ่มกฎรายการซ้ำแรก"
   }
 }

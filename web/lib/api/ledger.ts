@@ -19,6 +19,8 @@ import type {
   TagUpdate,
   Transaction,
   TransactionsPage,
+  RecurringRule,
+  RecurringRuleInput,
 } from '@/lib/api/types';
 import {
   appendSearchFilter,
@@ -292,4 +294,29 @@ export async function importLedgerCSV(
 
   const res = await apiRaw('/ledger/import', { method: 'POST', body: form });
   return (await res.json()) as LedgerImportResult;
+}
+
+export async function fetchRecurringRules(): Promise<RecurringRule[]> {
+  return apiList<RecurringRule>('/recurring-rules');
+}
+
+export async function createRecurringRule(body: RecurringRuleInput): Promise<RecurringRule> {
+  return api<RecurringRule>('/recurring-rules', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateRecurringRule(
+  id: number,
+  body: RecurringRuleInput
+): Promise<RecurringRule> {
+  return api<RecurringRule>(`/recurring-rules/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function deleteRecurringRule(id: number): Promise<void> {
+  await api(`/recurring-rules/${id}`, { method: 'DELETE' });
 }

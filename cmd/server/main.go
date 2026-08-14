@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +17,7 @@ import (
 	"github.com/minibill/minibill/internal/bootstrap"
 	"github.com/minibill/minibill/internal/config"
 	"github.com/minibill/minibill/internal/handler"
+	"github.com/minibill/minibill/internal/middleware"
 	"github.com/minibill/minibill/internal/service"
 
 	_ "modernc.org/sqlite"
@@ -49,6 +51,8 @@ func main() {
 	defer cancel()
 	scheduler := service.NewBackupScheduler(srv.BackupService(), sys.Store, sys.Factory)
 	go scheduler.Run(ctx)
+	recurringSch := service.NewRecurringScheduler(srv.RecurringService(), sys.Store, sys.Factory)
+	go recurringSch.Run(ctx)
 
 	if stat, err := os.Stat(cfg.StaticDir); err == nil && stat.IsDir() {
 		absStaticRoot, err := filepath.Abs(cfg.StaticDir)
@@ -71,17 +75,48 @@ func main() {
 		})
 	}
 
+	var handlerHTTP http.Handler = r
+	if cfg.GatewayPrefix != "" {
+		handlerHTTP = middleware.StripPrefixHandler(cfg.GatewayPrefix, r)
+	}
+
 	httpSrv := &http.Server{
-		Addr:    ":" + cfg.Port,
-		Handler: r,
+		Handler:     handlerHTTP,
+		ConnContext: middleware.GatewayConnContext,
 	}
 
 	go func() {
 		log.Printf("%s %s listening on :%s", "轻账单", version, cfg.Port)
-		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		ln, err := net.Listen("tcp", ":"+cfg.Port)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()
+
+	if sock := cfg.GatewaySocket; sock != "" {
+		go func() {
+			_ = os.Remove(sock)
+			if err := os.MkdirAll(filepath.Dir(sock), 0o755); err != nil {
+				log.Printf("gateway socket dir: %v", err)
+				return
+			}
+			ln, err := net.Listen("unix", sock)
+			if err != nil {
+				log.Printf("gateway unix listen %s: %v", sock, err)
+				return
+			}
+			if err := os.Chmod(sock, 0o666); err != nil {
+				log.Printf("gateway socket chmod: %v", err)
+			}
+			log.Printf("%s %s listening on unix %s (prefix=%s)", "轻账单", version, sock, cfg.GatewayPrefix)
+			if err := httpSrv.Serve(ln); err != nil && err != http.ErrServerClosed {
+				log.Printf("gateway serve: %v", err)
+			}
+		}()
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -90,6 +125,9 @@ func main() {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 	_ = httpSrv.Shutdown(shutdownCtx)
+	if sock := cfg.GatewaySocket; sock != "" {
+		_ = os.Remove(sock)
+	}
 }
 
 func setStaticCacheControl(c *gin.Context, filePath string) {

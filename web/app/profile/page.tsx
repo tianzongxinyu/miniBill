@@ -13,7 +13,7 @@ import type { LedgerAccessItem } from '@/lib/api';
 type ProfileLink = {
   href: string;
   label: string;
-  icon: 'contacts' | 'tags' | 'data' | 'backup' | 'settings' | 'grants' | 'users';
+  icon: 'contacts' | 'tags' | 'recurring' | 'data' | 'backup' | 'settings' | 'grants' | 'users';
 };
 
 function ledgerLabel(
@@ -176,6 +176,13 @@ function MenuIcon({ name }: { name: ProfileLink['icon'] }) {
           <circle cx="8.5" cy="8.5" r="1.25" fill="currentColor" stroke="none" />
         </svg>
       );
+    case 'recurring':
+      return (
+        <svg {...common}>
+          <path d="M4 12a8 8 0 0 1 13.5-5.7M20 5v5h-5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 12a8 8 0 0 1-13.5 5.7M4 19v-5h5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
     case 'data':
       return (
         <svg {...common}>
@@ -229,6 +236,7 @@ function ProfileContent() {
     const rows: ProfileLink[] = [
       { href: '/profile/contacts/', label: t('profile.contacts'), icon: 'contacts' },
       { href: '/profile/tags/', label: t('profile.tags'), icon: 'tags' },
+      { href: '/profile/recurring/', label: t('profile.recurring'), icon: 'recurring' },
     ];
     if (!isOwner) return rows;
     rows.push({ href: '/profile/data/', label: t('profile.data'), icon: 'data' });

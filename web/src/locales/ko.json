@@ -80,7 +80,8 @@
     "usernameLength": "사용자 이름은 3~32자여야 합니다",
     "usernameChars": "사용자 이름은 영문, 숫자, 밑줄(_)만 사용할 수 있습니다",
     "passwordLength": "비밀번호는 6자 이상이어야 합니다",
-    "forgotPasswordHint": "비밀번호를 잊으셨나요? 서버 관리자에게 재설정을 요청하세요."
+    "forgotPasswordHint": "비밀번호를 잊으셨나요? 서버 관리자에게 재설정을 요청하세요.",
+    "fnosSameUserHint": "비밀번호 없는 NAS 로그인은 같은 사용자명의 MiniBill 계정이 필요합니다."
   },
   "home": {
     "pullRefresh": "당겨서 새로고침",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "장부 전환",
     "permissionEdit": "편집 가능",
-    "permissionRead": "읽기 전용"
+    "permissionRead": "읽기 전용",
+    "recurring": "반복"
   },
   "grants": {
     "description": "다른 사용자와 이 장부를 공유하여 조회하거나 편집합니다",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "태그 조건",
     "matchAnd": "그리고",
     "matchOr": "또는"
+  },
+  "recurring": {
+    "title": "반복 규칙",
+    "createTitle": "규칙 추가",
+    "editTitle": "규칙 편집",
+    "dayOfMonth": "매월 일자",
+    "dayOfMonthShort": "매월 {{day}}일",
+    "enable": "켜기",
+    "disable": "끄기",
+    "empty": "반복 규칙이 없습니다",
+    "deleteTitle": "규칙 삭제",
+    "deleteConfirm": "이 반복 규칙을 삭제할까요? 이미 생성된 거래는 유지됩니다.",
+    "invalidAmount": "유효한 금액을 입력하세요",
+    "invalidDay": "일자는 1–28 사이여야 합니다",
+    "create": "추가",
+    "enabledShort": "자동 기록",
+    "enabledHint": "켜면 매월 해당일에 거래를 자동 생성합니다.",
+    "descriptionShort": "월별 수지, 기한에 자동 생성.",
+    "emptyHint": "첫 반복 규칙 추가"
   }
 }

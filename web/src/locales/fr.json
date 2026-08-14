@@ -80,7 +80,8 @@
     "usernameLength": "Le nom d'utilisateur doit comporter 3–32 caractères",
     "usernameChars": "Le nom d'utilisateur ne peut contenir que des lettres, chiffres et underscores",
     "passwordLength": "Le mot de passe doit comporter au moins 6 caractères",
-    "forgotPasswordHint": "Mot de passe oublié ? Demandez à l'administrateur du serveur de le réinitialiser."
+    "forgotPasswordHint": "Mot de passe oublié ? Demandez à l'administrateur du serveur de le réinitialiser.",
+    "fnosSameUserHint": "La connexion NAS sans mot de passe nécessite un compte MiniBill existant avec le même nom d’utilisateur."
   },
   "home": {
     "pullRefresh": "Tirez pour actualiser",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Changer de livre",
     "permissionEdit": "Peut modifier",
-    "permissionRead": "Lecture seule"
+    "permissionRead": "Lecture seule",
+    "recurring": "Récurrent"
   },
   "grants": {
     "description": "Partagez ce livre pour que d’autres le consultent ou le modifient",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Correspondance des tags",
     "matchAnd": "ET",
     "matchOr": "OU"
+  },
+  "recurring": {
+    "title": "Récurrent",
+    "createTitle": "Ajouter une règle",
+    "editTitle": "Modifier la règle",
+    "dayOfMonth": "Jour du mois",
+    "dayOfMonthShort": "Chaque mois le {{day}}",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "empty": "Aucune règle récurrente",
+    "deleteTitle": "Supprimer la règle",
+    "deleteConfirm": "Supprimer cette règle ? Les écritures déjà créées sont conservées.",
+    "invalidAmount": "Saisissez un montant valide",
+    "invalidDay": "Le jour doit être entre 1 et 28",
+    "create": "Ajouter",
+    "enabledShort": "Création auto",
+    "enabledHint": "Crée une écriture le jour d’échéance chaque mois.",
+    "descriptionShort": "Flux mensuel, créé automatiquement à l’échéance.",
+    "emptyHint": "Ajouter votre première règle"
   }
 }

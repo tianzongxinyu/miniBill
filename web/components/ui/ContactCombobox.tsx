@@ -13,10 +13,19 @@ type ContactComboboxProps = {
   value: number | '';
   onChange: (id: number | '') => void;
   onContactsChange: (contacts: Contact[]) => void;
+  /** Override empty-state placeholder (default: contacts.inputPlaceholder) */
+  placeholder?: string;
 };
 
-export function ContactCombobox({ contacts, value, onChange, onContactsChange }: ContactComboboxProps) {
+export function ContactCombobox({
+  contacts,
+  value,
+  onChange,
+  onContactsChange,
+  placeholder,
+}: ContactComboboxProps) {
   const { t } = useTranslation();
+  const emptyPlaceholder = placeholder ?? t('contacts.inputPlaceholder');
   const selected = useMemo(
     () => (value ? contacts.find((c) => c.id === value) : undefined),
     [value, contacts]
@@ -133,7 +142,7 @@ export function ContactCombobox({ contacts, value, onChange, onContactsChange }:
             ref={inputRef}
             type="text"
             className="combobox-input-inline"
-            placeholder={selected ? t('contacts.searchOrReplace') : t('contacts.inputPlaceholder')}
+            placeholder={selected ? t('contacts.searchOrReplace') : emptyPlaceholder}
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
             onFocus={handleFocus}

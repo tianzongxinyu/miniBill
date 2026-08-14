@@ -80,7 +80,8 @@
     "usernameLength": "Il nome utente deve contenere da 3 a 32 caratteri",
     "usernameChars": "Il nome utente può contenere solo lettere, numeri e trattini bassi",
     "passwordLength": "La password deve contenere almeno 6 caratteri",
-    "forgotPasswordHint": "Password dimenticata? Chiedi all'amministratore del server di reimpostarla."
+    "forgotPasswordHint": "Password dimenticata? Chiedi all'amministratore del server di reimpostarla.",
+    "fnosSameUserHint": "L’accesso NAS senza password richiede un account MiniBill esistente con lo stesso nome utente."
   },
   "home": {
     "pullRefresh": "Trascina per aggiornare",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Cambia libro",
     "permissionEdit": "Può modificare",
-    "permissionRead": "Sola lettura"
+    "permissionRead": "Sola lettura",
+    "recurring": "Ricorrente"
   },
   "grants": {
     "description": "Condividi questo libro affinché altri possano vederlo o modificarlo",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Corrispondenza tag",
     "matchAnd": "E",
     "matchOr": "O"
+  },
+  "recurring": {
+    "title": "Ricorrente",
+    "createTitle": "Aggiungi regola",
+    "editTitle": "Modifica regola",
+    "dayOfMonth": "Giorno del mese",
+    "dayOfMonthShort": "Ogni mese il giorno {{day}}",
+    "enable": "Attiva",
+    "disable": "Disattiva",
+    "empty": "Nessuna regola ricorrente",
+    "deleteTitle": "Elimina regola",
+    "deleteConfirm": "Eliminare questa regola? Le transazioni già create restano.",
+    "invalidAmount": "Inserisci un importo valido",
+    "invalidDay": "Il giorno deve essere tra 1 e 28",
+    "create": "Aggiungi",
+    "enabledShort": "Crea auto",
+    "enabledHint": "Se attivo, crea una transazione il giorno di scadenza ogni mese.",
+    "descriptionShort": "Flusso mensile, creato automaticamente alla scadenza.",
+    "emptyHint": "Aggiungi la prima regola ricorrente"
   }
 }

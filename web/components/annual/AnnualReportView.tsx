@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Amount } from '@/components/ui/Amount';
 import { SignedAmount } from '@/components/ui/SignedAmount';
 import { TagChip } from '@/components/ui/TagChip';
-import { formatPlainMoney } from '@/lib/formatMoney';
+import { formatPlainMoney, formatSignedMoney, formatTypedMoney } from '@/lib/formatMoney';
 import { useSettings } from '@/components/SettingsProvider';
 import { chartStrokeForType } from '@/lib/amountColors';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -484,9 +484,13 @@ function CompareBlock({ report }: { report: AnnualReport }) {
                   <Amount cents={row.curr} type={row.kind} className="annual-report-compare-value" />
                 )}
               </div>
-              <span className="annual-report-compare-prev">
-                {c.prev_year} {formatPlainMoney(row.prev, locale)}
-              </span>
+              <div className="annual-report-compare-prev">
+                <span className="annual-report-compare-prev-value">
+                  {row.kind === 'net'
+                    ? formatSignedMoney(row.prev, locale)
+                    : formatTypedMoney(row.prev, row.kind, locale)}
+                </span>
+              </div>
             </div>
             <div className="annual-report-compare-delta">
               <span className={`annual-report-compare-delta-amt ${deltaClass(row.delta, row.kind)}`}>

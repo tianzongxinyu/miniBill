@@ -33,8 +33,8 @@ docker build -t yourname/minibill:latest .
 docker login
 docker push yourname/minibill:latest
 # 建议同时推送版本号 tag，便于回滚
-# docker tag yourname/minibill:latest yourname/minibill:1.0.9
-# docker push yourname/minibill:1.0.9
+# docker tag yourname/minibill:latest yourname/minibill:1.0.10
+# docker push yourname/minibill:1.0.10
 ```
 
 **多架构**（NAS / ARM 等）：
@@ -146,21 +146,21 @@ sqlite3 /volX/@appdata/minibill/data/system.db 'SELECT id, username FROM users;'
 
 ```bash
 # x86 NAS（默认）
-./scripts/build-fpk.sh 1.0.9
+./scripts/build-fpk.sh 1.0.10
 
 # ARM NAS
-./scripts/build-fpk.sh 1.0.9 arm
+./scripts/build-fpk.sh 1.0.10 arm
 
 # 同时构建 x86 与 ARM
-./scripts/build-fpk.sh 1.0.9 all
+./scripts/build-fpk.sh 1.0.10 all
 ```
 
 **Windows：**
 
 ```bat
-scripts\build-fpk.cmd 1.0.9 x86
-scripts\build-fpk.cmd 1.0.9 arm
-scripts\build-fpk.cmd 1.0.9 all
+scripts\build-fpk.cmd 1.0.10 x86
+scripts\build-fpk.cmd 1.0.10 arm
+scripts\build-fpk.cmd 1.0.10 all
 ```
 
 产物位于 `dist/minibill_<version>_<platform>.fpk`（由官方 `fnpack` 打包；Windows 首次构建会自动下载 `fnpack-*-windows-amd64`）。
@@ -169,12 +169,11 @@ scripts\build-fpk.cmd 1.0.9 all
 
 1. 登录 fnOS → **应用中心** → **手动安装**
 2. 上传对应架构的 `.fpk` 文件
-3. 安装向导中设置 **服务端口**（默认 `18080`）与备份目录（可选）
+3. 安装向导中可设置 **服务端口**（默认 `18080`，供健康检查/直连备用）与备份目录（可选）
 4. 数据目录选择数据盘（非系统盘）
-5. 安装完成后从桌面图标或 `http://<NAS-IP>:<端口>` 访问（首次启动自动生成 JWT 密钥）
+5. 安装完成后从桌面图标打开；访问路径为系统域名下的 **`/app/minibill`**（统一网关）。若 NAS 用户名与轻账单账号同名，可免密进入；否则仍用账密登录（不自动建号）
 
-修改端口 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。桌面入口端口与安装/运行向导中的 `wizard_port` 绑定，保存后应从新端口打开；若仍打开旧端口，请升级到含该修复的 fpk。
-
+修改端口 / 备份目录：应用中心 → 轻账单 → **应用设置** → **运行设置** → **编辑** → 保存（保存后会自动重启应用）。桌面入口走统一网关，不再依赖 `wizard_port` 拼直连 URL。
 **备份目录：**
 
 - **飞牛**：在安装向导或运行设置中填写绝对路径（如 `/vol1/1000/backups`）；留空则不启用备份。

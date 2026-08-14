@@ -10,6 +10,7 @@ Base URL: `/api`
 | GET | `/auth/registration` | 注册是否开放 `{ open: boolean }`（`ALLOW_REGISTRATION` 为 true，或系统尚无用户时为 true） |
 | POST | `/auth/register` | 注册（同时 Set-Cookie；`open` 为 false 时 403） |
 | POST | `/auth/login` | 登录（可选 `remember`，见下） |
+| POST | `/auth/fnos` | 飞牛统一网关免密登录（仅 Unix 网关可信请求；同名已有账号才成功，否则 `NO_MATCHING_USER`） |
 | GET | `/auth/session` | 当前会话（需登录，返回 `{ token, user }`） |
 | POST | `/auth/logout` | 清除 Cookie（204） |
 | PUT | `/auth/password` | 修改密码（需登录；成功后吊销旧 JWT 并清除 Cookie，需重新登录） |
@@ -20,7 +21,7 @@ Base URL: `/api`
 
 首个注册用户自动成为管理员。`ALLOW_REGISTRATION=false` 时，系统已有用户则禁止自助注册；零用户时仍允许注册首位管理员。管理员创建用户不受该开关限制。
 
-前端请求需 `credentials: same-origin` 以携带 Cookie。WebView（如飞牛 App）在 localStorage 被清空时，可通过 Cookie 调用 `GET /auth/session` 恢复登录态。
+前端请求需 `credentials: same-origin` 以携带 Cookie。WebView（如飞牛 App）在 localStorage 被清空时，可通过 Cookie 调用 `GET /auth/session` 恢复登录态；经统一网关访问时还可调用 `POST /auth/fnos`（依赖 `X-Trim-Username`）尝试同名免密。
 
 账本数据接口可通过请求头 `X-Ledger-Owner-Id` 指定目标账本主人（缺省为当前登录用户）。需对该账本拥有 `owner` / `edit` / `read` 权限；主人被作废后授权失效。
 
@@ -58,6 +59,8 @@ Base URL: `/api`
 | GET/POST/PUT/DELETE | `/tags` | 标签 CRUD |
 | GET/POST/PUT/DELETE | `/contacts` | 联系人 |
 | GET | `/contacts/:id` | 联系人详情+汇总 |
+| GET/POST/PUT/DELETE | `/recurring-rules` | 按月任务（开启后到期自动建流水） |
+| GET | `/recurring-rules/:id` | 单条周期规则 |
 | GET/POST/PUT/DELETE | `/transactions` | 流水（游标分页，见下） |
 | GET | `/transactions/:id` | 单条流水 |
 | GET | `/monthly-balances` | 全部月度余额列表 |

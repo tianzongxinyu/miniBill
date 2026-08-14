@@ -80,7 +80,8 @@
     "usernameLength": "Nama pengguna harus 3–32 karakter",
     "usernameChars": "Nama pengguna hanya boleh berisi huruf, angka, dan garis bawah",
     "passwordLength": "Kata sandi minimal 6 karakter",
-    "forgotPasswordHint": "Lupa kata sandi? Minta admin server untuk meresetnya."
+    "forgotPasswordHint": "Lupa kata sandi? Minta admin server untuk meresetnya.",
+    "fnosSameUserHint": "Masuk NAS tanpa kata sandi membutuhkan akun MiniBill yang sudah ada dengan nama pengguna yang sama."
   },
   "home": {
     "pullRefresh": "Tarik untuk segarkan",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Ganti buku",
     "permissionEdit": "Bisa edit",
-    "permissionRead": "Hanya baca"
+    "permissionRead": "Hanya baca",
+    "recurring": "Berulang"
   },
   "grants": {
     "description": "Bagikan buku ini agar orang lain dapat melihat atau mengedit",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Cocokkan tag",
     "matchAnd": "DAN",
     "matchOr": "ATAU"
+  },
+  "recurring": {
+    "title": "Berulang",
+    "createTitle": "Tambah aturan",
+    "editTitle": "Edit aturan",
+    "dayOfMonth": "Tanggal dalam bulan",
+    "dayOfMonthShort": "Setiap bulan tanggal {{day}}",
+    "enable": "Aktifkan",
+    "disable": "Nonaktifkan",
+    "empty": "Belum ada aturan berulang",
+    "deleteTitle": "Hapus aturan",
+    "deleteConfirm": "Hapus aturan ini? Transaksi yang sudah dibuat tetap ada.",
+    "invalidAmount": "Masukkan jumlah yang valid",
+    "invalidDay": "Tanggal harus antara 1 dan 28",
+    "create": "Tambah",
+    "enabledShort": "Buat otomatis",
+    "enabledHint": "Jika aktif, transaksi dibuat pada hari jatuh tempo setiap bulan.",
+    "descriptionShort": "Arus bulanan, dibuat otomatis saat jatuh tempo.",
+    "emptyHint": "Tambah aturan berulang pertama"
   }
 }

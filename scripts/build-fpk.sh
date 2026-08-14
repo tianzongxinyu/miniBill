@@ -94,8 +94,14 @@ ensure_web_out() {
         info "Removing existing web/out ..."
         rm -rf "$ROOT/web/out"
     fi
-    info "Building frontend (web/out) ..."
-    (cd "$ROOT/web" && npm install && npm run build)
+    info "Building frontend (web/out) with fnOS basePath /app/minibill ..."
+    (
+        cd "$ROOT/web"
+        export NEXT_PUBLIC_BASE_PATH="/app/minibill"
+        export NEXT_PUBLIC_API_BASE="/app/minibill/api"
+        npm install
+        npm run build
+    )
 }
 
 MANIFEST_BACKUP=""

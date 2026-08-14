@@ -80,7 +80,8 @@
     "usernameLength": "O usuário deve ter de 3 a 32 caracteres",
     "usernameChars": "O usuário só pode conter letras, números e sublinhados",
     "passwordLength": "A senha deve ter pelo menos 6 caracteres",
-    "forgotPasswordHint": "Esqueceu a senha? Peça ao administrador do servidor para redefini-la."
+    "forgotPasswordHint": "Esqueceu a senha? Peça ao administrador do servidor para redefini-la.",
+    "fnosSameUserHint": "O login NAS sem senha exige uma conta MiniBill existente com o mesmo nome de usuário."
   },
   "home": {
     "pullRefresh": "Puxe para atualizar",
@@ -154,7 +155,8 @@
     "otherLedger": "{{name}} · {{permission}}",
     "switchLedger": "Trocar livro",
     "permissionEdit": "Pode editar",
-    "permissionRead": "Somente leitura"
+    "permissionRead": "Somente leitura",
+    "recurring": "Recorrente"
   },
   "grants": {
     "description": "Compartilhe este livro para outros verem ou editarem",
@@ -536,5 +538,24 @@
     "tagMatchLabel": "Correspondência de tags",
     "matchAnd": "E",
     "matchOr": "OU"
+  },
+  "recurring": {
+    "title": "Recorrente",
+    "createTitle": "Adicionar regra",
+    "editTitle": "Editar regra",
+    "dayOfMonth": "Dia do mês",
+    "dayOfMonthShort": "Todo mês no dia {{day}}",
+    "enable": "Ativar",
+    "disable": "Desativar",
+    "empty": "Nenhuma regra recorrente ainda",
+    "deleteTitle": "Excluir regra",
+    "deleteConfirm": "Excluir esta regra? Lançamentos já criados permanecem.",
+    "invalidAmount": "Informe um valor válido",
+    "invalidDay": "O dia deve estar entre 1 e 28",
+    "create": "Adicionar",
+    "enabledShort": "Criar auto",
+    "enabledHint": "Quando ativo, cria um lançamento no dia do vencimento.",
+    "descriptionShort": "Fluxo mensal, criado automaticamente no vencimento.",
+    "emptyHint": "Adicionar a primeira regra recorrente"
   }
 }
