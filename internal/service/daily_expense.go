@@ -93,9 +93,14 @@ func (s *StatsService) upsertSystemDailyTx(db *sql.DB, year, month int, amount i
 	return bumpTagUsage(db, tagID, 1)
 }
 
-// syncDailyExpenseForMonth 在余额登记或流水变更后重算 stat_monthly，并维护 is_system=1 的日常支出系统流水（不可编辑/删除）。
+// syncDailyExpenseForMonth 从流水全量重算该月收支与日常支出（用于导入、余额同步、RecalcStatMonth 等无 delta 场景）。
 func (s *StatsService) syncDailyExpenseForMonth(db *sql.DB, year, month int) error {
-	return s.syncDailyExpenseForMonthWithDelta(db, year, month, StatMonthDelta{})
+	start, end := monthRange(year, month)
+	totalIncome, totalExpense, err := s.sumRecordedRange(db, start, end)
+	if err != nil {
+		return err
+	}
+	return s.writeDailyExpenseForMonth(db, year, month, totalIncome, totalExpense)
 }
 
 // StatMonthDelta is the net change to apply to stat_monthly totals when a row already exists.

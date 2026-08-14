@@ -135,6 +135,46 @@ func TestGuessCSVMappingBalanceColumn(t *testing.T) {
 	}
 }
 
+// KeepHistory 导入时若该月已有账单页写入的 0 值占位，必须从流水全量重算，不能因空 delta 保留旧值。
+func TestImportKeepHistoryRefreshesExistingStatMonthly(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	svc := newLedgerCSVForTest(time.Date(2026, 6, 15, 0, 0, 0, 0, time.UTC))
+
+	_, err := db.Exec(`
+		INSERT INTO stat_monthly (year, month, total_income, total_expense, registered_balance, daily_expense)
+		VALUES (2026, 3, 0, 0, NULL, NULL)`)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	h := strings.Join(csvHeaders(i18n.DefaultLocale), ",")
+	exp := i18n.T(i18n.DefaultLocale, "csv.flow.expense")
+	inc := i18n.T(i18n.DefaultLocale, "csv.flow.income")
+	csvData := h + "\n" +
+		"2026-03-05," + exp + ",100.00,餐饮,,午饭\n" +
+		"2026-03-10," + inc + ",50.00,兼职,,工资\n"
+
+	result, err := svc.ImportCSV(db, testLedgerUserID, strings.NewReader(csvData), CSVImportOpts{
+		KeepHistory: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ImportedTransactions != 2 {
+		t.Fatalf("tx=%d want 2", result.ImportedTransactions)
+	}
+
+	var income, expense int64
+	err = db.QueryRow(`SELECT total_income, total_expense FROM stat_monthly WHERE year=2026 AND month=3`).Scan(&income, &expense)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if income != 5000 || expense != 10000 {
+		t.Fatalf("stat_monthly Mar income=%d expense=%d want 5000/10000", income, expense)
+	}
+}
+
 func assertBalance(t *testing.T, db *sql.DB, year, month int, want int64) {
 	t.Helper()
 	var got int64
