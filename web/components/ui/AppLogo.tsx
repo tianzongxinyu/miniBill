@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { APP_NAME } from '@/lib/appMeta';
+import { withBasePath } from '@/lib/basePath';
 
 const sizes = {
   sm: 36,
@@ -19,13 +19,17 @@ export function AppLogo({ size = 'sm', className = '', priority = false }: AppLo
   const px = typeof size === 'number' ? size : sizes[size];
 
   return (
-    <Image
-      src="/icon.png"
+    // Native img + withBasePath: correct under /app/minibill and local; avoids next/image double-prefix.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={withBasePath('/icon.png')}
       alt={APP_NAME}
       width={px}
       height={px}
-      className={`rounded-2xl shrink-0 ${className}`}
-      priority={priority}
+      style={{ width: px, height: px }}
+      className={`rounded-2xl shrink-0 object-cover ${className}`}
+      decoding="async"
+      {...(priority ? { fetchPriority: 'high' as const } : {})}
     />
   );
 }

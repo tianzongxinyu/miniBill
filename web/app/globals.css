@@ -156,10 +156,9 @@ body {
     font-size: 16px;
   }
 
-  /* 固定小字 +1 档 */
+  /* 固定小字 +1 档（form-label 已固定 13px，不在此列） */
   .bill-stat-label,
   .bill-list-footer-text,
-  .form-label,
   .date-picker-weekday {
     font-size: 13px;
   }
@@ -960,7 +959,11 @@ body {
   }
 
   .form-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-muted;
+    @apply font-medium normal-case tracking-normal text-muted;
+    font-size: 13px;
+    line-height: 1.25;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   .form-details .form-row > :not(.form-label) {
@@ -1036,7 +1039,7 @@ body {
   }
 
   .recurring-edit-form .form-label {
-    @apply whitespace-nowrap normal-case tracking-normal font-medium;
+    @apply whitespace-nowrap;
   }
 
   .recurring-edit-form .form-row > :not(.form-label) {
