@@ -387,14 +387,17 @@ func TestYearSeriesInitial(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(page.Items) != 9 {
-		t.Fatalf("items = %d, want 9", len(page.Items))
+	if len(page.Items) != 10 {
+		t.Fatalf("items = %d, want 10", len(page.Items))
 	}
-	if page.Items[0].Year != 2016 || page.Items[8].Year != 2024 {
-		t.Fatalf("years = %d..%d, want 2016..2024", page.Items[0].Year, page.Items[8].Year)
+	if page.Items[0].Year != 2017 || page.Items[9].Year != 2026 {
+		t.Fatalf("years = %d..%d, want 2017..2026", page.Items[0].Year, page.Items[9].Year)
 	}
-	if !page.HasMoreNewer {
-		t.Fatal("expected has_more_newer before current year")
+	if page.HasMoreNewer {
+		t.Fatal("should not have more newer at current year")
+	}
+	if !page.HasMoreOlder {
+		t.Fatal("expected has_more_older before earliest year")
 	}
 }
 
@@ -533,11 +536,14 @@ func TestMonthSeriesAnchorsAtLatestWithData(t *testing.T) {
 	if len(page.Items) != 1 {
 		t.Fatalf("items = %d, want 1", len(page.Items))
 	}
-	if page.Items[0].Year != 2026 || page.Items[0].Month != 3 {
-		t.Fatalf("newest = %d-%d, want 2026-3", page.Items[0].Year, page.Items[0].Month)
+	if page.Items[0].Year != 2026 || page.Items[0].Month != 6 {
+		t.Fatalf("newest = %d-%d, want 2026-6 (current, zero-filled)", page.Items[0].Year, page.Items[0].Month)
 	}
-	if !page.HasMoreNewer {
-		t.Fatal("expected has_more_newer before current month")
+	if page.Items[0].TotalIncome != 0 {
+		t.Fatalf("current month income = %d, want 0", page.Items[0].TotalIncome)
+	}
+	if page.HasMoreNewer {
+		t.Fatal("should not have more newer at current month")
 	}
 }
 
@@ -557,11 +563,14 @@ func TestYearSeriesAnchorsAtLatestWithData(t *testing.T) {
 	if len(page.Items) != 1 {
 		t.Fatalf("items = %d, want 1", len(page.Items))
 	}
-	if page.Items[0].Year != 2024 {
-		t.Fatalf("newest year = %d, want 2024", page.Items[0].Year)
+	if page.Items[0].Year != 2026 {
+		t.Fatalf("newest year = %d, want 2026 (current, zero-filled)", page.Items[0].Year)
 	}
-	if !page.HasMoreNewer {
-		t.Fatal("expected has_more_newer before current year")
+	if page.Items[0].TotalIncome != 0 {
+		t.Fatalf("current year income = %d, want 0", page.Items[0].TotalIncome)
+	}
+	if page.HasMoreNewer {
+		t.Fatal("should not have more newer at current year")
 	}
 }
 

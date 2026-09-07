@@ -48,6 +48,7 @@ func (r *rateLimiter) allow(key string) bool {
 }
 
 // AuthRateLimit limits login/register attempts per client IP.
+// Attach only to POST /auth/login and POST /auth/register — not registration/logout/fnos.
 func AuthRateLimit() gin.HandlerFunc {
 	limiter := newRateLimiter(20, time.Minute)
 	return func(c *gin.Context) {

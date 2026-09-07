@@ -5,6 +5,8 @@ import { appPathname, withBasePath } from '@/lib/basePath';
 export const TOKEN_KEY = 'token';
 export const USER_KEY = 'user';
 export const REMEMBER_KEY = 'remember_login';
+/** 登出后本会话跳过飞牛同名免密，便于账密登录；关窗后清除 */
+export const SKIP_FNOS_SSO_KEY = 'minibill_skip_fnos_sso';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api';
 
@@ -25,6 +27,17 @@ export function getRememberLogin(): boolean {
 
 export function setRememberLogin(remember: boolean) {
   localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0');
+}
+
+export function setSkipFnosSso(skip: boolean) {
+  if (typeof window === 'undefined') return;
+  if (skip) sessionStorage.setItem(SKIP_FNOS_SSO_KEY, '1');
+  else sessionStorage.removeItem(SKIP_FNOS_SSO_KEY);
+}
+
+export function shouldSkipFnosSso(): boolean {
+  if (typeof window === 'undefined') return false;
+  return sessionStorage.getItem(SKIP_FNOS_SSO_KEY) === '1';
 }
 
 /** 从 localStorage / sessionStorage 读取 JWT；Cookie 由浏览器自动携带 */
@@ -103,6 +116,7 @@ export function redirectToHome() {
 
 /** 清除登录态；不在登录页时整页跳转，避免先 notify 导致 RequireAuth 白屏 */
 export async function clearAuthAndGoLogin() {
+  setSkipFnosSso(true);
   await revokeAuthCookie();
   clearAuthStorage();
   if (typeof window === 'undefined') return;
@@ -116,6 +130,7 @@ export async function clearAuthAndGoLogin() {
 
 export function setAuthSession(token: string, user: User, remember: boolean) {
   clearAuthStorage();
+  setSkipFnosSso(false);
   setRememberLogin(remember);
   const store = authStore(remember);
   store.setItem(TOKEN_KEY, token);

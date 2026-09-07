@@ -3,6 +3,9 @@ export type ScrollAnchor = {
   atEnd: boolean;
 };
 
+/** 统计分析图 X 轴贴边：无 category 左右 padding */
+export const STATS_CATEGORY_PADDING = 0;
+
 export function maxScrollLeft(scrollWidth: number, clientWidth: number): number {
   return Math.max(0, scrollWidth - clientWidth);
 }
@@ -43,7 +46,7 @@ export function computeFullscreenSlotWidth(
   clientWidth: number,
   defaultLimit: number,
   minWidth = 16,
-  horizontalPadding = 32
+  horizontalPadding = 0
 ): number {
   const inner = Math.max(0, clientWidth - horizontalPadding);
   if (defaultLimit <= 0) return minWidth;
@@ -82,6 +85,19 @@ export function mapScrollFromAnchor(
   );
 }
 
-export function statsChartWidth(rowCount: number, pointWidth: number) {
-  return Math.max(rowCount * pointWidth, 320);
+/** 点数不足一屏时拉大点距填满容器；超过一屏则用最小点距可横滑 */
+export function fitStatsPointWidth(
+  rowCount: number,
+  minPointWidth: number,
+  containerWidth: number
+): number {
+  if (rowCount <= 0) return minPointWidth;
+  if (containerWidth <= 0) return minPointWidth;
+  return Math.max(minPointWidth, containerWidth / rowCount);
+}
+
+export function statsChartWidth(rowCount: number, pointWidth: number, containerWidth = 0) {
+  const content = Math.max(0, rowCount * pointWidth);
+  if (containerWidth > 0) return Math.max(content, containerWidth);
+  return content;
 }

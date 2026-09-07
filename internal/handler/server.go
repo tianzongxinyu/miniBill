@@ -98,10 +98,10 @@ func (s *Server) Router() *gin.Engine {
 	})
 
 	authGroup := api.Group("/auth")
-	authGroup.Use(middleware.AuthRateLimit())
 	authGroup.GET("/registration", s.registrationStatus)
-	authGroup.POST("/register", s.register)
-	authGroup.POST("/login", s.login)
+	authLimit := middleware.AuthRateLimit()
+	authGroup.POST("/register", authLimit, s.register)
+	authGroup.POST("/login", authLimit, s.login)
 	authGroup.POST("/fnos", s.fnosLogin)
 	authGroup.POST("/logout", s.logout)
 

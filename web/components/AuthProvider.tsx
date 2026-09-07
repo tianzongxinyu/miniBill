@@ -9,6 +9,7 @@ import {
   getStoredUser,
   logoutAndRedirect,
   setAuthSession,
+  shouldSkipFnosSso,
   User,
 } from '@/lib/api';
 import { isFnosHost } from '@/lib/fnos/sdk';
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           /* not logged in via cookie */
         }
       }
-      if (!current) {
+      if (!current && !shouldSkipFnosSso()) {
         try {
           if (await isFnosHost()) {
             const data = await api<AuthResponse>('/auth/fnos', {

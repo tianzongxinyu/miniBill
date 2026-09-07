@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '@/components/RequireAuth';
 import { StatsChartFullscreen } from '@/components/stats/StatsChartFullscreen';
 import { StatsChartLegend } from '@/components/stats/StatsChartLegend';
-import { StatsScrollChart, statsChartWidth } from '@/lib/dynamicStatsChart';
 import { StatsSeriesTable } from '@/components/stats/StatsSeriesTable';
 import { StatsToolbar } from '@/components/stats/StatsToolbar';
 import { useStatsPage, STATS_SERIES_CONFIG } from '@/hooks/useStatsPage';
@@ -19,9 +18,13 @@ import {
 } from '@/lib/statsChartFullscreen';
 import {
   captureScrollAnchor,
+  fitStatsPointWidth,
   mapScrollFromAnchor,
+  STATS_CATEGORY_PADDING,
+  statsChartWidth,
   type ScrollAnchor,
 } from '@/lib/statsChartScrollSync';
+import { StatsScrollChart } from '@/lib/dynamicStatsChart';
 
 const DEFAULT_SCROLL_ANCHOR: ScrollAnchor = { centerIndex: 0, atEnd: true };
 
@@ -38,6 +41,8 @@ function StatsContent() {
   const [scrollAnchor, setScrollAnchor] = useState<ScrollAnchor>(DEFAULT_SCROLL_ANCHOR);
   const pendingScrollLeftRef = useRef(0);
   const restoreInlineScrollRef = useRef(false);
+  const [inlineContainerWidth, setInlineContainerWidth] = useState(0);
+  const inlinePointWidthRef = useRef<number>(STATS_SERIES_CONFIG.month.pointWidth);
 
   fullscreenSlotWidthRef.current = fullscreenSlotWidth;
 
@@ -46,7 +51,7 @@ function StatsContent() {
 
   const getPointWidth = useCallback(() => {
     if (fullscreenOpen) return fullscreenSlotWidthRef.current;
-    return STATS_SERIES_CONFIG[modeRef.current].pointWidth;
+    return inlinePointWidthRef.current;
   }, [fullscreenOpen]);
 
   const {
@@ -89,9 +94,28 @@ function StatsContent() {
   );
 
   const seriesConfig = STATS_SERIES_CONFIG[mode];
-  const inlinePointWidth = seriesConfig.pointWidth;
-  const inlineScrollWidth = statsChartWidth(chartRows.length, inlinePointWidth);
+  const inlinePointWidth = fitStatsPointWidth(
+    chartRows.length,
+    seriesConfig.pointWidth,
+    inlineContainerWidth
+  );
+  inlinePointWidthRef.current = inlinePointWidth;
+  const inlineScrollWidth = statsChartWidth(
+    chartRows.length,
+    inlinePointWidth,
+    inlineContainerWidth
+  );
   const fullscreenScrollWidth = statsChartWidth(chartRows.length, fullscreenSlotWidth);
+
+  useEffect(() => {
+    const el = inlineScrollRef.current;
+    if (!el) return;
+    const update = () => setInlineContainerWidth(Math.floor(el.clientWidth));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(() => new Set());
 
@@ -237,7 +261,7 @@ function StatsContent() {
           onPointerCancel={fullscreenOpen ? undefined : onPointerCancel}
           className="stats-chart-scroll overflow-x-auto min-h-[252px]"
         >
-          <div style={{ minWidth: inlineScrollWidth }} className="stats-chart-scroll-inner px-4 pt-4">
+          <div style={{ minWidth: inlineScrollWidth }} className="stats-chart-scroll-inner pt-4">
             {active.error && active.items.length === 0 && !active.loading ? (
               <div
                 className="flex flex-col items-center justify-center gap-2 text-sm text-muted"
@@ -260,6 +284,7 @@ function StatsContent() {
                 searchActive={searchActive}
                 loading={active.loading}
                 pointWidth={inlinePointWidth}
+                categoryPadding={STATS_CATEGORY_PADDING}
                 rows={chartRows}
                 hiddenSeries={hiddenSeries}
               />

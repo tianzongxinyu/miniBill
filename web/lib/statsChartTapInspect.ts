@@ -25,15 +25,16 @@ export function categoryCenterX(
   dataLength: number,
   pointWidth: number,
   searchActive: boolean,
-  tapToInspect: boolean
+  tapToInspect: boolean,
+  categoryPadding?: number
 ): number {
   const margin = tapToInspect ? CHART_MARGIN_FULLSCREEN : CHART_MARGIN;
   const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
   const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
-  const halfPoint = pointWidth / 2;
-  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
+  const xPad = categoryPadding ?? pointWidth / 2;
+  const plotStart = margin.left + Y_AXIS_WIDTH + xPad;
   if (dataLength <= 1) return plotStart;
-  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
+  const step = (innerW - 2 * xPad) / (dataLength - 1);
   return plotStart + index * step;
 }
 
@@ -42,16 +43,17 @@ export function pickIndexFromPlotFormula(
   chartWidth: number,
   dataLength: number,
   pointWidth: number,
-  searchActive: boolean
+  searchActive: boolean,
+  categoryPadding?: number
 ): number {
   const margin = CHART_MARGIN_FULLSCREEN;
   const yAxisRight = searchActive ? 0 : Y_AXIS_WIDTH;
   const innerW = chartWidth - margin.left - margin.right - Y_AXIS_WIDTH - yAxisRight;
-  const halfPoint = pointWidth / 2;
-  const plotStart = margin.left + Y_AXIS_WIDTH + halfPoint;
+  const xPad = categoryPadding ?? pointWidth / 2;
+  const plotStart = margin.left + Y_AXIS_WIDTH + xPad;
 
   if (dataLength <= 1) return 0;
-  const step = (innerW - 2 * halfPoint) / (dataLength - 1);
+  const step = (innerW - 2 * xPad) / (dataLength - 1);
   const idx = Math.round((localX - plotStart) / step);
   return Math.max(0, Math.min(dataLength - 1, idx));
 }
@@ -116,14 +118,23 @@ export function pickNearestSlot(
   chartWidth: number,
   dataLength: number,
   pointWidth: number,
-  searchActive: boolean
+  searchActive: boolean,
+  categoryPadding?: number
 ): number {
   const shellRect = shellEl.getBoundingClientRect();
   let bestIndex = 0;
   let bestDist = Infinity;
 
   for (let i = 0; i < dataLength; i++) {
-    const slotX = categoryCenterX(i, chartWidth, dataLength, pointWidth, searchActive, true);
+    const slotX = categoryCenterX(
+      i,
+      chartWidth,
+      dataLength,
+      pointWidth,
+      searchActive,
+      true,
+      categoryPadding
+    );
     let dist: number;
     if (axis === 'x') {
       dist = Math.abs(clientX - (shellRect.left + slotX));
@@ -141,7 +152,14 @@ export function pickNearestSlot(
   if (bestDist === Infinity && axis === 'y') {
     const localX = localXFromSvgCtm(clientX, clientY, shellEl);
     if (localX != null) {
-      return pickIndexFromPlotFormula(localX, chartWidth, dataLength, pointWidth, searchActive);
+      return pickIndexFromPlotFormula(
+        localX,
+        chartWidth,
+        dataLength,
+        pointWidth,
+        searchActive,
+        categoryPadding
+      );
     }
   }
 
@@ -183,7 +201,8 @@ export function tooltipAnchorX(
   dataLength: number,
   pointWidth: number,
   searchActive: boolean,
-  isRotated: boolean
+  isRotated: boolean,
+  categoryPadding?: number
 ): number {
   const name = categoryNames[index];
 
@@ -191,7 +210,7 @@ export function tooltipAnchorX(
     const tickNode = queryCategoryTickNodes(shellEl).find((node) => readTickName(node) === name);
     return (
       (tickNode ? readTickSvgX(tickNode) : null) ??
-      categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true)
+      categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true, categoryPadding)
     );
   }
 
@@ -202,7 +221,7 @@ export function tooltipAnchorX(
     return rect.left + rect.width / 2 - shellRect.left;
   }
 
-  return categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true);
+  return categoryCenterX(index, chartWidth, dataLength, pointWidth, searchActive, true, categoryPadding);
 }
 
 export function pickCategoryAtPointer(
@@ -214,7 +233,8 @@ export function pickCategoryAtPointer(
   pointWidth: number,
   searchActive: boolean,
   tapToInspect: boolean,
-  isRotated: boolean
+  isRotated: boolean,
+  categoryPadding?: number
 ): CategoryPick | null {
   const dataLength = categoryNames.length;
   if (!tapToInspect || dataLength === 0) return null;
@@ -229,7 +249,8 @@ export function pickCategoryAtPointer(
         chartWidth,
         dataLength,
         pointWidth,
-        searchActive
+        searchActive,
+        categoryPadding
       ))
     : pickNearestSlot(
         clientX,
@@ -239,7 +260,8 @@ export function pickCategoryAtPointer(
         chartWidth,
         dataLength,
         pointWidth,
-        searchActive
+        searchActive,
+        categoryPadding
       );
 
   return {
@@ -252,7 +274,8 @@ export function pickCategoryAtPointer(
       dataLength,
       pointWidth,
       searchActive,
-      isRotated
+      isRotated,
+      categoryPadding
     ),
   };
 }

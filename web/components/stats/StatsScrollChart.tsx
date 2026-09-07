@@ -204,7 +204,7 @@ export function StatsScrollChart({
     return () => el.removeEventListener('scroll', onScroll);
   }, [tapToInspect]);
 
-  const chartWidth = Math.max(chartData.length * pointWidth, 320);
+  const chartWidth = chartData.length > 0 ? chartData.length * pointWidth : pointWidth;
   const halfPoint = pointWidth / 2;
   const xPad = categoryPadding ?? halfPoint;
   const { left: yDomain, right: rightDomain } = useMemo(
@@ -255,12 +255,13 @@ export function StatsScrollChart({
         pointWidth,
         searchActive,
         tapToInspect,
-        isFullscreenCssRotated(shell)
+        isFullscreenCssRotated(shell),
+        xPad
       );
       if (pick == null) return;
       commitPick(pick);
     },
-    [commitPick, categoryNames, chartWidth, pointWidth, searchActive, tapToInspect]
+    [commitPick, categoryNames, chartWidth, pointWidth, searchActive, tapToInspect, xPad]
   );
 
   const handleChartPointer = useCallback(
@@ -282,7 +283,8 @@ export function StatsScrollChart({
               chartData.length,
               pointWidth,
               searchActive,
-              isFullscreenCssRotated(shell)
+              isFullscreenCssRotated(shell),
+              xPad
             ),
           });
           return;
@@ -314,6 +316,7 @@ export function StatsScrollChart({
       pointWidth,
       searchActive,
       tryPickAt,
+      xPad,
     ]
   );
 

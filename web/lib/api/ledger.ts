@@ -1,7 +1,7 @@
 import { downloadBlob, parseExportFilename } from '@/lib/downloadFile';
 import { notifyLedgerMetaChanged } from '@/lib/ledgerEvents';
 import { getToken } from '@/lib/api/auth';
-import { api, apiList, apiRaw, ApiError, logoutOnUnauthorized } from '@/lib/api/http';
+import { api, apiList, apiRaw, parseApiJson, ApiError, logoutOnUnauthorized } from '@/lib/api/http';
 import type {
   BackupConfig,
   BackupFilesPage,
@@ -293,7 +293,7 @@ export async function importLedgerCSV(
   }
 
   const res = await apiRaw('/ledger/import', { method: 'POST', body: form });
-  return (await res.json()) as LedgerImportResult;
+  return parseApiJson<LedgerImportResult>(res);
 }
 
 export async function fetchRecurringRules(): Promise<RecurringRule[]> {

@@ -212,23 +212,11 @@ func (s *StatsService) LatestMonth(db *sql.DB) (*domain.YearMonth, error) {
 	return &domain.YearMonth{Year: v / 100, Month: v % 100}, nil
 }
 
-func seriesAnchorMonth(current domain.YearMonth, latest *domain.YearMonth) domain.YearMonth {
-	if latest == nil {
-		return current
-	}
-	if compareYM(*latest, current) < 0 {
-		return *latest
-	}
+func seriesAnchorMonth(current domain.YearMonth, _ *domain.YearMonth) domain.YearMonth {
 	return current
 }
 
-func seriesAnchorYear(currentYear int, latest *domain.YearMonth) int {
-	if latest == nil {
-		return currentYear
-	}
-	if latest.Year < currentYear {
-		return latest.Year
-	}
+func seriesAnchorYear(currentYear int, _ *domain.YearMonth) int {
 	return currentYear
 }
 

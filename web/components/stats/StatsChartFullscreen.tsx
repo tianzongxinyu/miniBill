@@ -14,7 +14,9 @@ import {
 } from '@/lib/statsChartFullscreen';
 import {
   computeFullscreenSlotWidth,
+  fitStatsPointWidth,
   mapScrollFromAnchor,
+  STATS_CATEGORY_PADDING,
   type ScrollAnchor,
 } from '@/lib/statsChartScrollSync';
 import type { StatsChartRow } from '@/lib/statsChartData';
@@ -175,7 +177,10 @@ export function StatsChartFullscreen({
     const measure = () => {
       const target = scrollRef.current;
       if (!target) return;
-      onSlotWidthChange(computeFullscreenSlotWidth(target.clientWidth, defaultLimit));
+      const pageSlot = computeFullscreenSlotWidth(target.clientWidth, defaultLimit);
+      onSlotWidthChange(
+        fitStatsPointWidth(Math.max(rows.length, 1), pageSlot, target.clientWidth)
+      );
     };
 
     const bind = () => {
@@ -196,7 +201,7 @@ export function StatsChartFullscreen({
       cancelAnimationFrame(raf);
       observer?.disconnect();
     };
-  }, [open, defaultLimit, onSlotWidthChange, scrollRef, portraitFallback]);
+  }, [open, defaultLimit, onSlotWidthChange, scrollRef, portraitFallback, rows.length]);
 
   useEffect(() => {
     if (!open || rows.length === 0 || pointWidth <= 0 || scrollWidth <= 0) return;
@@ -309,7 +314,7 @@ export function StatsChartFullscreen({
           onPointerCancel={onPointerCancel}
           className={`stats-chart-scroll stats-chart-scroll-fullscreen stats-chart-scroll-tap-inspect h-full w-full min-w-0 overflow-x-auto overflow-y-hidden${portraitFallback ? ' stats-chart-scroll-rotated' : ''}`}
         >
-          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner stats-chart-scroll-inner-fullscreen px-4 pt-2 pb-3">
+          <div style={{ minWidth: scrollWidth }} className="stats-chart-scroll-inner stats-chart-scroll-inner-fullscreen pt-2 pb-3">
             {error && rows.length === 0 && !loading ? (
               <div
                 className="flex flex-col items-center justify-center gap-2 text-sm text-muted"
@@ -330,6 +335,7 @@ export function StatsChartFullscreen({
                 searchActive={searchActive}
                 loading={loading}
                 pointWidth={pointWidth}
+                categoryPadding={STATS_CATEGORY_PADDING}
                 rows={rows}
                 hiddenSeries={hiddenSeries}
                 height={chartHeight}
