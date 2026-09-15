@@ -506,9 +506,7 @@
     "prevYear": "Năm trước",
     "nextYear": "Năm sau",
     "sectionSummary": "Tổng năm",
-    "sectionByTag": "Theo thẻ",
-    "sectionTopTx": "Số tiền lớn (Top 5)",
-    "sectionTopContacts": "Liên hệ (Top 5)",
+    "sectionTopTx": "Số tiền lớn nhất (Top 5)",
     "sectionCompare": "So với năm trước",
     "sectionInsights": "Tóm tắt",
     "dailyExpense": "Chi tiêu hàng ngày",
@@ -530,9 +528,12 @@
       "largest_tx": "Giao dịch lớn nhất: {{amount}} ngày {{date}}.",
       "expense_over_income": "Tổng chi vượt tổng thu trong năm."
     },
-    "expandTags": "Hiện tất cả ({{count}})",
-    "collapseTags": "Thu gọn",
-    "axisBroken": "Đã cắt trục"
+    "axisBroken": "Đã cắt trục",
+    "sectionTagByAmount": "Thẻ theo số tiền (Top 5)",
+    "sectionTagByCount": "Thẻ theo số lần (Top 5)",
+    "sectionContactByAmount": "Liên hệ theo số tiền (Top 5)",
+    "sectionContactByCount": "Liên hệ theo số lần (Top 5)",
+    "emptyRank": "Không có dữ liệu cho bảng xếp hạng này."
   },
   "filter": {
     "tagMatchLabel": "Khớp thẻ",

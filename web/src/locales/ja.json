@@ -506,9 +506,7 @@
     "prevYear": "前年",
     "nextYear": "翌年",
     "sectionSummary": "年間合計",
-    "sectionByTag": "タグ別",
     "sectionTopTx": "高額 Top 5",
-    "sectionTopContacts": "連絡先 Top 5",
     "sectionCompare": "前年比較",
     "sectionInsights": "まとめ",
     "dailyExpense": "日常支出",
@@ -530,9 +528,12 @@
       "largest_tx": "最大の一筆：{{amount}}（{{date}}）。",
       "expense_over_income": "総支出が総収入を上回りました。"
     },
-    "expandTags": "すべて表示（{{count}}）",
-    "collapseTags": "閉じる",
-    "axisBroken": "軸を省略表示"
+    "axisBroken": "軸を省略表示",
+    "sectionTagByAmount": "タグ・金額 Top 5",
+    "sectionTagByCount": "タグ・件数 Top 5",
+    "sectionContactByAmount": "連絡先・金額 Top 5",
+    "sectionContactByCount": "連絡先・件数 Top 5",
+    "emptyRank": "このランキングのデータはありません。"
   },
   "filter": {
     "tagMatchLabel": "タグ条件",

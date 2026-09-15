@@ -506,9 +506,7 @@
     "prevYear": "이전 해",
     "nextYear": "다음 해",
     "sectionSummary": "연간 합계",
-    "sectionByTag": "태그별",
     "sectionTopTx": "고액 Top 5",
-    "sectionTopContacts": "연락처 Top 5",
     "sectionCompare": "전년 대비",
     "sectionInsights": "요약",
     "dailyExpense": "일상 지출",
@@ -530,9 +528,12 @@
       "largest_tx": "최대 거래: {{amount}} ({{date}}).",
       "expense_over_income": "총지출이 총수입을 초과했습니다."
     },
-    "expandTags": "전체 보기 ({{count}})",
-    "collapseTags": "접기",
-    "axisBroken": "축 생략 표시"
+    "axisBroken": "축 생략 표시",
+    "sectionTagByAmount": "태그 · 금액 Top 5",
+    "sectionTagByCount": "태그 · 건수 Top 5",
+    "sectionContactByAmount": "연락처 · 금액 Top 5",
+    "sectionContactByCount": "연락처 · 건수 Top 5",
+    "emptyRank": "이 순위에 데이터가 없습니다."
   },
   "filter": {
     "tagMatchLabel": "태그 조건",

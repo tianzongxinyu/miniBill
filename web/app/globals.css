@@ -559,6 +559,19 @@ body {
     @apply border-b border-line/50;
   }
 
+  .annual-report-section-tabs {
+    @apply ml-auto;
+  }
+
+  .annual-report-type-tabs {
+    @apply inline-flex items-center gap-0.5;
+  }
+
+  .annual-report-type-tabs .btn-segment,
+  .annual-report-type-tabs .btn-segment-active {
+    @apply text-[11px] px-2 py-0.5 min-h-0;
+  }
+
   .annual-report-section-badge {
     @apply text-[10px] font-normal text-muted bg-line/70 px-1.5 py-0.5 rounded-md;
   }

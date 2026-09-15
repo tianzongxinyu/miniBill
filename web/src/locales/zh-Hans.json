@@ -150,9 +150,7 @@
     "prevYear": "上一年",
     "nextYear": "下一年",
     "sectionSummary": "年度汇总",
-    "sectionByTag": "按标签合计",
     "sectionTopTx": "大额 Top 5",
-    "sectionTopContacts": "联系人 Top 5",
     "sectionCompare": "对比往年",
     "sectionInsights": "总结分析",
     "dailyExpense": "日常支出",
@@ -174,9 +172,12 @@
       "largest_tx": "单笔最大金额：{{amount}}（{{date}}）。",
       "expense_over_income": "本年总支出超过总收入。"
     },
-    "expandTags": "展开全部（{{count}}）",
-    "collapseTags": "收起",
-    "axisBroken": "已断轴"
+    "axisBroken": "已断轴",
+    "sectionTagByAmount": "标签 · 按金额 Top 5",
+    "sectionTagByCount": "标签 · 按笔数 Top 5",
+    "sectionContactByAmount": "联系人 · 按金额 Top 5",
+    "sectionContactByCount": "联系人 · 按笔数 Top 5",
+    "emptyRank": "暂无该榜单数据。"
   },
   "profile": {
     "contacts": "联系人",

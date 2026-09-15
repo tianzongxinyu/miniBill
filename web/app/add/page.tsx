@@ -239,6 +239,7 @@ function AddContent() {
             tags={tags}
             selectedIds={selectedTags}
             selectedItems={selectedTagItems}
+            transactionType={type}
             onChange={setSelectedTags}
             onTagsChange={setTags}
           />

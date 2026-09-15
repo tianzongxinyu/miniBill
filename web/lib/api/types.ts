@@ -41,6 +41,8 @@ export type Tag = {
   color_bg: string;
   color_fg: string;
   usage_count?: number;
+  expense_usage_count?: number;
+  income_usage_count?: number;
 };
 
 export type Contact = {

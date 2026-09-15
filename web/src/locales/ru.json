@@ -506,9 +506,7 @@
     "prevYear": "Предыдущий год",
     "nextYear": "Следующий год",
     "sectionSummary": "Итоги года",
-    "sectionByTag": "По тегам",
-    "sectionTopTx": "Крупные суммы (Топ 5)",
-    "sectionTopContacts": "Контакты (Топ 5)",
+    "sectionTopTx": "Крупные суммы (Top 5)",
     "sectionCompare": "К прошлому году",
     "sectionInsights": "Выводы",
     "dailyExpense": "Повседневные расходы",
@@ -530,9 +528,12 @@
       "largest_tx": "Крупнейшая операция: {{amount}} от {{date}}.",
       "expense_over_income": "Сумма расходов превысила сумму доходов."
     },
-    "expandTags": "Показать все ({{count}})",
-    "collapseTags": "Свернуть",
-    "axisBroken": "Разрыв оси"
+    "axisBroken": "Разрыв оси",
+    "sectionTagByAmount": "Теги по сумме (Top 5)",
+    "sectionTagByCount": "Теги по числу (Top 5)",
+    "sectionContactByAmount": "Контакты по сумме (Top 5)",
+    "sectionContactByCount": "Контакты по числу (Top 5)",
+    "emptyRank": "Нет данных для этого рейтинга."
   },
   "filter": {
     "tagMatchLabel": "Совпадение тегов",

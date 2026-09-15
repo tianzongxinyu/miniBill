@@ -121,6 +121,53 @@ func TestTagRename(t *testing.T) {
 	_ = b
 }
 
+func TestTagListTypeUsageCounts(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+
+	svc := &TagService{}
+	tag, err := svc.Create(db, "分类型计数")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	insert := func(typ string) {
+		t.Helper()
+		r, err := db.Exec(
+			`INSERT INTO transactions (amount, type, transaction_date, note) VALUES (?,?,?,?)`,
+			1000, typ, "2026-06-01", "",
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		id, _ := r.LastInsertId()
+		if _, err := db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?,?)`, id, tag.ID); err != nil {
+			t.Fatal(err)
+		}
+	}
+	insert("expense")
+	insert("income")
+	insert("income")
+
+	list, err := svc.List(db, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var found *Tag
+	for i := range list {
+		if list[i].ID == tag.ID {
+			found = &list[i]
+			break
+		}
+	}
+	if found == nil {
+		t.Fatal("tag not in list")
+	}
+	if found.ExpenseUsageCount != 1 || found.IncomeUsageCount != 2 {
+		t.Fatalf("type counts = expense %d income %d", found.ExpenseUsageCount, found.IncomeUsageCount)
+	}
+}
+
 func TestTagGetSummary(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()

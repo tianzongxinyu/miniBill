@@ -150,9 +150,7 @@
     "prevYear": "Previous year",
     "nextYear": "Next year",
     "sectionSummary": "Year totals",
-    "sectionByTag": "By tag",
     "sectionTopTx": "Largest amounts (Top 5)",
-    "sectionTopContacts": "Contacts (Top 5)",
     "sectionCompare": "Vs last year",
     "sectionInsights": "Summary",
     "dailyExpense": "Daily expense",
@@ -174,9 +172,12 @@
       "largest_tx": "Largest single transaction: {{amount}} on {{date}}.",
       "expense_over_income": "Total expense exceeded total income this year."
     },
-    "expandTags": "Show all ({{count}})",
-    "collapseTags": "Show less",
-    "axisBroken": "Axis broken"
+    "axisBroken": "Axis broken",
+    "sectionTagByAmount": "Tags by amount (Top 5)",
+    "sectionTagByCount": "Tags by count (Top 5)",
+    "sectionContactByAmount": "Contacts by amount (Top 5)",
+    "sectionContactByCount": "Contacts by count (Top 5)",
+    "emptyRank": "No data for this ranking."
   },
   "profile": {
     "contacts": "Contacts",

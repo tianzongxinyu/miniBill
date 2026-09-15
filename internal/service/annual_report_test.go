@@ -54,49 +54,52 @@ func TestAnnualReportSummaryAndTop(t *testing.T) {
 	if report.Summary.NetIncome != 50000-148000 {
 		t.Fatalf("net = %d", report.Summary.NetIncome)
 	}
-	if len(report.TopTransactions) == 0 || report.TopTransactions[0].Amount != 90000 {
-		t.Fatalf("top txs = %+v", report.TopTransactions)
+	if len(report.TopTransactions.Expense) == 0 || report.TopTransactions.Expense[0].Amount != 90000 {
+		t.Fatalf("top expense txs = %+v", report.TopTransactions.Expense)
 	}
-	if report.TopTransactions[0].ContactName != "张三" {
-		t.Fatalf("top tx contact = %q", report.TopTransactions[0].ContactName)
+	if report.TopTransactions.Expense[0].ContactName != "张三" {
+		t.Fatalf("top tx contact = %q", report.TopTransactions.Expense[0].ContactName)
 	}
-	if report.TopTransactions[0].ContactID == nil || *report.TopTransactions[0].ContactID != cid {
-		t.Fatalf("top tx contact_id = %v, want %d", report.TopTransactions[0].ContactID, cid)
+	if report.TopTransactions.Expense[0].ContactID == nil || *report.TopTransactions.Expense[0].ContactID != cid {
+		t.Fatalf("top tx contact_id = %v, want %d", report.TopTransactions.Expense[0].ContactID, cid)
 	}
-	if len(report.TopTransactions[0].Tags) != 1 || report.TopTransactions[0].Tags[0] != "餐饮" {
-		t.Fatalf("top tx tags = %+v", report.TopTransactions[0].Tags)
+	if len(report.TopTransactions.Expense[0].Tags) != 1 || report.TopTransactions.Expense[0].Tags[0] != "餐饮" {
+		t.Fatalf("top tx tags = %+v", report.TopTransactions.Expense[0].Tags)
 	}
-	if len(report.TopTransactions[0].TagItems) != 1 || report.TopTransactions[0].TagItems[0].Name != "餐饮" {
-		t.Fatalf("top tx tag_items = %+v", report.TopTransactions[0].TagItems)
+	if len(report.TopTransactions.Expense[0].TagItems) != 1 || report.TopTransactions.Expense[0].TagItems[0].Name != "餐饮" {
+		t.Fatalf("top tx tag_items = %+v", report.TopTransactions.Expense[0].TagItems)
 	}
-	if report.TopTransactions[0].TagItems[0].ColorBg == "" {
-		t.Fatalf("top tx tag color_bg empty: %+v", report.TopTransactions[0].TagItems[0])
+	if report.TopTransactions.Expense[0].TagItems[0].ColorBg == "" {
+		t.Fatalf("top tx tag color_bg empty: %+v", report.TopTransactions.Expense[0].TagItems[0])
 	}
-	if len(report.TopContacts) != 1 || report.TopContacts[0].ContactName != "张三" {
-		t.Fatalf("top contacts = %+v", report.TopContacts)
+	if len(report.TopTransactions.Income) != 1 || report.TopTransactions.Income[0].Amount != 50000 {
+		t.Fatalf("top income txs = %+v", report.TopTransactions.Income)
 	}
-	if report.TopContacts[0].NetIncome != 0-140000 {
-		t.Fatalf("contact net = %d", report.TopContacts[0].NetIncome)
+	if len(report.TopContacts.ExpenseByAmount) != 1 || report.TopContacts.ExpenseByAmount[0].ContactName != "张三" {
+		t.Fatalf("top contacts by amount = %+v", report.TopContacts.ExpenseByAmount)
 	}
-	if report.TopContacts[0].TxCount != 3 {
-		t.Fatalf("contact tx_count = %d", report.TopContacts[0].TxCount)
+	if report.TopContacts.ExpenseByAmount[0].NetIncome != 0-140000 {
+		t.Fatalf("contact net = %d", report.TopContacts.ExpenseByAmount[0].NetIncome)
+	}
+	if report.TopContacts.ExpenseByAmount[0].TxCount != 3 {
+		t.Fatalf("contact expense tx_count = %d", report.TopContacts.ExpenseByAmount[0].TxCount)
 	}
 	if report.Compare != nil {
 		t.Fatal("expected no compare without prior year")
 	}
 
-	var foundFood bool
-	for _, tag := range report.ByTag {
-		if tag.TagName == "餐饮" && tag.TotalExpense == 120000 {
-			foundFood = true
-		}
+	if len(report.ByTag.ExpenseByAmount) == 0 || report.ByTag.ExpenseByAmount[0].TagName != "餐饮" {
+		t.Fatalf("by_tag expense_by_amount = %+v", report.ByTag.ExpenseByAmount)
 	}
-	if !foundFood {
-		t.Fatalf("by_tag = %+v", report.ByTag)
+	if report.ByTag.ExpenseByAmount[0].TotalExpense != 120000 {
+		t.Fatalf("food expense = %d", report.ByTag.ExpenseByAmount[0].TotalExpense)
+	}
+	if report.ByTag.ExpenseByAmount[0].TxCount != 2 {
+		t.Fatalf("food expense tx_count = %d", report.ByTag.ExpenseByAmount[0].TxCount)
 	}
 }
 
-func TestAnnualReportTopContactsOrderByTxCount(t *testing.T) {
+func TestAnnualReportTopContactsOrderByCountAndAmount(t *testing.T) {
 	db := testutil.OpenLedgerDB(t)
 	defer db.Close()
 	stats := NewStatsService().WithNow(func() time.Time {
@@ -108,7 +111,7 @@ func TestAnnualReportTopContactsOrderByTxCount(t *testing.T) {
 	resB, _ := db.Exec(`INSERT INTO contacts (name) VALUES ('大额')`)
 	cidB, _ := resB.LastInsertId()
 
-	// 多笔：3 笔小额；大额：1 笔超大金额 —— 应按笔数倒排，多笔在前
+	// 多笔：3 笔小额；大额：1 笔超大金额
 	for i, date := range []string{"2026-01-01", "2026-01-02", "2026-01-03"} {
 		_, err := db.Exec(
 			`INSERT INTO transactions (amount, type, transaction_date, contact_id) VALUES (?,?,?,?)`,
@@ -130,14 +133,77 @@ func TestAnnualReportTopContactsOrderByTxCount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(report.TopContacts) < 2 {
-		t.Fatalf("top contacts = %+v", report.TopContacts)
+	if len(report.TopContacts.ExpenseByCount) < 2 {
+		t.Fatalf("expense_by_count = %+v", report.TopContacts.ExpenseByCount)
 	}
-	if report.TopContacts[0].ContactName != "多笔" || report.TopContacts[0].TxCount != 3 {
-		t.Fatalf("expected 多笔 first by count, got %+v", report.TopContacts[0])
+	if report.TopContacts.ExpenseByCount[0].ContactName != "多笔" || report.TopContacts.ExpenseByCount[0].TxCount != 3 {
+		t.Fatalf("expected 多笔 first by count, got %+v", report.TopContacts.ExpenseByCount[0])
 	}
-	if report.TopContacts[1].ContactName != "大额" || report.TopContacts[1].TxCount != 1 {
-		t.Fatalf("expected 大额 second, got %+v", report.TopContacts[1])
+	if report.TopContacts.ExpenseByCount[1].ContactName != "大额" || report.TopContacts.ExpenseByCount[1].TxCount != 1 {
+		t.Fatalf("expected 大额 second by count, got %+v", report.TopContacts.ExpenseByCount[1])
+	}
+	if len(report.TopContacts.ExpenseByAmount) < 2 {
+		t.Fatalf("expense_by_amount = %+v", report.TopContacts.ExpenseByAmount)
+	}
+	if report.TopContacts.ExpenseByAmount[0].ContactName != "大额" || report.TopContacts.ExpenseByAmount[0].TotalExpense != 900000 {
+		t.Fatalf("expected 大额 first by amount, got %+v", report.TopContacts.ExpenseByAmount[0])
+	}
+	if report.TopContacts.ExpenseByAmount[1].ContactName != "多笔" {
+		t.Fatalf("expected 多笔 second by amount, got %+v", report.TopContacts.ExpenseByAmount[1])
+	}
+}
+
+func TestAnnualReportTagRankingsByCountAndAmount(t *testing.T) {
+	db := testutil.OpenLedgerDB(t)
+	defer db.Close()
+	stats := NewStatsService().WithNow(func() time.Time {
+		return time.Date(2026, 8, 15, 0, 0, 0, 0, time.UTC)
+	})
+
+	manyID := testutil.InsertTag(t, db, "多笔标签")
+	bigID := testutil.InsertTag(t, db, "大额标签")
+	incomeID := testutil.InsertTag(t, db, "收入标签")
+
+	for i, date := range []string{"2026-01-01", "2026-01-02", "2026-01-03"} {
+		r, err := db.Exec(
+			`INSERT INTO transactions (amount, type, transaction_date) VALUES (?,?,?)`,
+			int64(1000*(i+1)), "expense", date,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		id, _ := r.LastInsertId()
+		_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?,?)`, id, manyID)
+	}
+	r, err := db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (?,?,?)`, 900000, "expense", "2026-02-01")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bigTx, _ := r.LastInsertId()
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?,?)`, bigTx, bigID)
+
+	r, err = db.Exec(`INSERT INTO transactions (amount, type, transaction_date) VALUES (?,?,?)`, 40000, "income", "2026-03-01")
+	if err != nil {
+		t.Fatal(err)
+	}
+	incTx, _ := r.LastInsertId()
+	_, _ = db.Exec(`INSERT INTO transaction_tags (transaction_id, tag_id) VALUES (?,?)`, incTx, incomeID)
+
+	report, err := stats.AnnualReport(db, 2026)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(report.ByTag.ExpenseByCount) < 2 {
+		t.Fatalf("expense_by_count = %+v", report.ByTag.ExpenseByCount)
+	}
+	if report.ByTag.ExpenseByCount[0].TagName != "多笔标签" || report.ByTag.ExpenseByCount[0].TxCount != 3 {
+		t.Fatalf("expected 多笔标签 first by count, got %+v", report.ByTag.ExpenseByCount[0])
+	}
+	if report.ByTag.ExpenseByAmount[0].TagName != "大额标签" || report.ByTag.ExpenseByAmount[0].TotalExpense != 900000 {
+		t.Fatalf("expected 大额标签 first by amount, got %+v", report.ByTag.ExpenseByAmount[0])
+	}
+	if len(report.ByTag.IncomeByAmount) != 1 || report.ByTag.IncomeByAmount[0].TagName != "收入标签" {
+		t.Fatalf("income_by_amount = %+v", report.ByTag.IncomeByAmount)
 	}
 }
 

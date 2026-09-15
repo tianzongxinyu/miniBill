@@ -506,9 +506,7 @@
     "prevYear": "Vorig jaar",
     "nextYear": "Volgend jaar",
     "sectionSummary": "Jaartotalen",
-    "sectionByTag": "Per tag",
-    "sectionTopTx": "Grootste bedragen (Top 5)",
-    "sectionTopContacts": "Contacten (Top 5)",
+    "sectionTopTx": "Hoogste bedragen (Top 5)",
     "sectionCompare": "Vs vorig jaar",
     "sectionInsights": "Samenvatting",
     "dailyExpense": "Dagelijkse uitgaven",
@@ -530,9 +528,12 @@
       "largest_tx": "Grootste transactie: {{amount}} op {{date}}.",
       "expense_over_income": "Totale uitgaven overtroffen totale inkomsten."
     },
-    "expandTags": "Alles tonen ({{count}})",
-    "collapseTags": "Minder tonen",
-    "axisBroken": "As onderbroken"
+    "axisBroken": "As onderbroken",
+    "sectionTagByAmount": "Tags op bedrag (Top 5)",
+    "sectionTagByCount": "Tags op aantal (Top 5)",
+    "sectionContactByAmount": "Contacten op bedrag (Top 5)",
+    "sectionContactByCount": "Contacten op aantal (Top 5)",
+    "emptyRank": "Geen gegevens voor deze ranglijst."
   },
   "filter": {
     "tagMatchLabel": "Tagovereenkomst",

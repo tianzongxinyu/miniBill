@@ -56,7 +56,7 @@ Base URL: `/api`
 | GET | `/meta/earliest-month` | 账本最早有数据的年月 |
 | GET | `/meta/transaction-tags` | 流水中使用过的标签 |
 | GET | `/meta/transaction-contacts` | 流水中使用过的联系人 |
-| GET/POST/PUT/DELETE | `/tags` | 标签 CRUD |
+| GET/POST/PUT/DELETE | `/tags` | 标签 CRUD；列表项含 `usage_count`（合计）及 `expense_usage_count` / `income_usage_count`（按流水类型拆分的使用次数） |
 | GET/POST/PUT/DELETE | `/contacts` | 联系人 |
 | GET | `/contacts/:id` | 联系人详情+汇总 |
 | GET/POST/PUT/DELETE | `/recurring-rules` | 按月任务（开启后到期自动建流水） |
@@ -73,6 +73,8 @@ Base URL: `/api`
 | GET | `/stats/yearly` | 按年列表（可选 `tag_ids`、`tag_match`） |
 | GET | `/stats/year-series` | 按年序列（无游标且无筛选时右端锚定最后有数据年，不超过今年；默认 10 点；`cursor`/`after` 为 `YYYY`；可选 `tag_ids`、`tag_match`） |
 | GET | `/stats/yearly/:year` | 单年 |
+| GET | `/stats/annual-report?year=` | 年报（见下） |
+| GET | `/stats/annual-default-year` | 年报默认年份（当前日历年） |
 | GET/PUT | `/settings` | 设置 |
 | GET | `/ledger/export` | CSV 导出（`text/csv`，UTF-8 BOM，`Content-Disposition: attachment`） |
 | POST | `/ledger/import` | CSV 覆盖导入（`multipart/form-data`，字段 `file`） |
@@ -98,6 +100,25 @@ Base URL: `/api`
 `locale`：界面语言，支持 20 种 locale ID（如 `zh-Hans`、`en`、`ja`），默认 `zh-Hans`。
 
 `amount_color_scheme`：`red_up`（收入红 / 支出绿，默认）或 `green_up`（收入绿 / 支出红）。
+
+### GET `/stats/annual-report?year=`
+
+年报汇总。`year` 为 `YYYY`（2000–当前年）。响应字段：
+
+| 字段 | 说明 |
+|------|------|
+| `summary` | 年总收入/支出/净收入、日常支出、年初/年末余额（分） |
+| `by_tag` | 标签榜：`expense_by_amount` / `expense_by_count` / `income_by_amount` / `income_by_count`，各最多 5 条 |
+| `top_transactions` | 大额流水：`expense` / `income`，各最多 5 条 |
+| `top_contacts` | 联系人榜：同标签四分法，各最多 5 条 |
+| `compare` | 与上年对比（无上年活动则为 `null`） |
+| `insights` | 文案洞察键与参数 |
+
+标签/联系人行含 `total_income`、`total_expense`、`tx_count`（`tx_count` 为**当前榜对应收支类型**的笔数）。排除系统流水与日常支出预设标签。
+
+### GET `/stats/annual-default-year`
+
+`{ "year": <当前日历年> }`
 
 ### GET/PUT `/backup`
 

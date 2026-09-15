@@ -13,15 +13,17 @@ var ErrSystemTag = errors.New("system tag")
 var ErrTagInUse = errors.New("tag in use")
 
 type Tag struct {
-	ID         int64   `json:"id"`
-	Name       string  `json:"name"`
-	PresetKey  *string `json:"preset_key,omitempty"`
-	IsSystem   bool    `json:"is_system"`
-	Enabled    bool    `json:"enabled"`
-	Selectable bool    `json:"selectable"`
-	ColorBg    string  `json:"color_bg"`
-	ColorFg    string  `json:"color_fg"`
-	UsageCount int64   `json:"usage_count"`
+	ID                int64   `json:"id"`
+	Name              string  `json:"name"`
+	PresetKey         *string `json:"preset_key,omitempty"`
+	IsSystem          bool    `json:"is_system"`
+	Enabled           bool    `json:"enabled"`
+	Selectable        bool    `json:"selectable"`
+	ColorBg           string  `json:"color_bg"`
+	ColorFg           string  `json:"color_fg"`
+	UsageCount        int64   `json:"usage_count"`
+	ExpenseUsageCount int64   `json:"expense_usage_count"`
+	IncomeUsageCount  int64   `json:"income_usage_count"`
 }
 
 type TagSummary struct {
@@ -55,7 +57,14 @@ func scanTag(scanner interface {
 }
 
 func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
-	q := `SELECT ` + tagSelectCols + ` FROM tags`
+	q := `SELECT ` + tagSelectCols + `,
+		(SELECT COUNT(*) FROM transaction_tags tt
+			JOIN transactions t ON t.id = tt.transaction_id
+			WHERE tt.tag_id = tags.id AND t.type = 'expense') AS expense_usage_count,
+		(SELECT COUNT(*) FROM transaction_tags tt
+			JOIN transactions t ON t.id = tt.transaction_id
+			WHERE tt.tag_id = tags.id AND t.type = 'income') AS income_usage_count
+		FROM tags`
 	if enabledOnly {
 		q += ` WHERE enabled = 1`
 	}
@@ -67,11 +76,19 @@ func (s *TagService) List(db *sql.DB, enabledOnly bool) ([]Tag, error) {
 	defer rows.Close()
 	var list []Tag
 	for rows.Next() {
-		t, err := scanTag(rows)
-		if err != nil {
+		var t Tag
+		var sys, en int
+		var presetKey sql.NullString
+		if err := rows.Scan(
+			&t.ID, &t.Name, &presetKey, &sys, &en, &t.ColorBg, &t.ColorFg, &t.UsageCount,
+			&t.ExpenseUsageCount, &t.IncomeUsageCount,
+		); err != nil {
 			return nil, err
 		}
-		list = append(list, t)
+		out := tagFromRow(t.ID, t.Name, presetKey, sys, en, t.ColorBg, t.ColorFg, t.UsageCount)
+		out.ExpenseUsageCount = t.ExpenseUsageCount
+		out.IncomeUsageCount = t.IncomeUsageCount
+		list = append(list, out)
 	}
 	return list, nil
 }

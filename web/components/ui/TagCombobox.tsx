@@ -13,6 +13,7 @@ type TagComboboxProps = {
   selectedIds: number[];
   /** 编辑回显：流水上的 tag_items，弥补 tags 列表尚未包含的项 */
   selectedItems?: Pick<Tag, 'id' | 'name' | 'color_bg' | 'color_fg'>[];
+  transactionType: 'expense' | 'income';
   onChange: (ids: number[]) => void;
   onTagsChange: (tags: Tag[]) => void;
 };
@@ -21,6 +22,7 @@ export function TagCombobox({
   tags,
   selectedIds,
   selectedItems,
+  transactionType,
   onChange,
   onTagsChange,
 }: TagComboboxProps) {
@@ -119,12 +121,14 @@ export function TagCombobox({
     const filtered = !q
       ? unselected
       : unselected.filter((t) => t.name.toLowerCase().includes(q));
+    const usageOf = (t: Tag) =>
+      transactionType === 'expense'
+        ? (t.expense_usage_count ?? 0)
+        : (t.income_usage_count ?? 0);
     return [...filtered].sort(
-      (a, b) =>
-        (b.usage_count ?? 0) - (a.usage_count ?? 0) ||
-        a.name.localeCompare(b.name, 'zh-CN')
+      (a, b) => usageOf(b) - usageOf(a) || a.name.localeCompare(b.name, 'zh-CN')
     );
-  }, [tags, selectedIds, query]);
+  }, [tags, selectedIds, query, transactionType]);
 
   const canCreate =
     trimmed.length > 0 &&

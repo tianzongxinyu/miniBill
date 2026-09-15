@@ -506,9 +506,7 @@
     "prevYear": "Anno precedente",
     "nextYear": "Anno successivo",
     "sectionSummary": "Totali annuali",
-    "sectionByTag": "Per tag",
     "sectionTopTx": "Importi maggiori (Top 5)",
-    "sectionTopContacts": "Contatti (Top 5)",
     "sectionCompare": "Vs anno scorso",
     "sectionInsights": "Sintesi",
     "dailyExpense": "Spesa quotidiana",
@@ -530,9 +528,12 @@
       "largest_tx": "Movimento più grande: {{amount}} il {{date}}.",
       "expense_over_income": "La spesa totale ha superato l’entrata totale."
     },
-    "expandTags": "Mostra tutto ({{count}})",
-    "collapseTags": "Mostra meno",
-    "axisBroken": "Asse interrotto"
+    "axisBroken": "Asse interrotto",
+    "sectionTagByAmount": "Tag per importo (Top 5)",
+    "sectionTagByCount": "Tag per conteggio (Top 5)",
+    "sectionContactByAmount": "Contatti per importo (Top 5)",
+    "sectionContactByCount": "Contatti per conteggio (Top 5)",
+    "emptyRank": "Nessun dato per questa classifica."
   },
   "filter": {
     "tagMatchLabel": "Corrispondenza tag",

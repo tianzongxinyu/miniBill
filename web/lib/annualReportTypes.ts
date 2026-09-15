@@ -1,4 +1,4 @@
-/** Shapes aligned with planned GET /api/stats/annual-report */
+/** Shapes aligned with GET /api/stats/annual-report */
 
 export type AnnualReportSummary = {
   total_income: number;
@@ -15,6 +15,13 @@ export type AnnualReportTagStat = {
   total_income: number;
   total_expense: number;
   tx_count: number;
+};
+
+export type AnnualReportTagRankings = {
+  expense_by_amount: AnnualReportTagStat[];
+  expense_by_count: AnnualReportTagStat[];
+  income_by_amount: AnnualReportTagStat[];
+  income_by_count: AnnualReportTagStat[];
 };
 
 export type AnnualReportTopTx = {
@@ -34,6 +41,11 @@ export type AnnualReportTopTx = {
   }>;
 };
 
+export type AnnualReportTxRankings = {
+  expense: AnnualReportTopTx[];
+  income: AnnualReportTopTx[];
+};
+
 export type AnnualReportContactStat = {
   contact_id: number;
   contact_name: string;
@@ -41,6 +53,13 @@ export type AnnualReportContactStat = {
   total_expense: number;
   net_income: number;
   tx_count: number;
+};
+
+export type AnnualReportContactRankings = {
+  expense_by_amount: AnnualReportContactStat[];
+  expense_by_count: AnnualReportContactStat[];
+  income_by_amount: AnnualReportContactStat[];
+  income_by_count: AnnualReportContactStat[];
 };
 
 export type AnnualReportCompare = {
@@ -62,9 +81,9 @@ export type AnnualReportInsight = {
 export type AnnualReport = {
   year: number;
   summary: AnnualReportSummary;
-  by_tag: AnnualReportTagStat[];
-  top_transactions: AnnualReportTopTx[];
-  top_contacts: AnnualReportContactStat[];
+  by_tag: AnnualReportTagRankings;
+  top_transactions: AnnualReportTxRankings;
+  top_contacts: AnnualReportContactRankings;
   compare: AnnualReportCompare | null;
   insights: AnnualReportInsight[];
 };

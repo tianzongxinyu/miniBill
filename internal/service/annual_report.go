@@ -3,9 +3,12 @@ package service
 import (
 	"database/sql"
 	"math"
+	"sort"
 
 	"github.com/minibill/minibill/internal/domain"
 )
+
+const annualTopN = 5
 
 type AnnualReportSummary struct {
 	TotalIncome  int64  `json:"total_income"`
@@ -24,6 +27,13 @@ type AnnualReportTagStat struct {
 	TxCount      int64  `json:"tx_count"`
 }
 
+type AnnualReportTagRankings struct {
+	ExpenseByAmount []AnnualReportTagStat `json:"expense_by_amount"`
+	ExpenseByCount  []AnnualReportTagStat `json:"expense_by_count"`
+	IncomeByAmount  []AnnualReportTagStat `json:"income_by_amount"`
+	IncomeByCount   []AnnualReportTagStat `json:"income_by_count"`
+}
+
 type AnnualReportTopTx struct {
 	ID              int64                `json:"id"`
 	Amount          int64                `json:"amount"`
@@ -36,6 +46,11 @@ type AnnualReportTopTx struct {
 	TagItems        []TransactionTagItem `json:"tag_items"`
 }
 
+type AnnualReportTxRankings struct {
+	Expense []AnnualReportTopTx `json:"expense"`
+	Income  []AnnualReportTopTx `json:"income"`
+}
+
 type AnnualReportContactStat struct {
 	ContactID    int64  `json:"contact_id"`
 	ContactName  string `json:"contact_name"`
@@ -43,6 +58,13 @@ type AnnualReportContactStat struct {
 	TotalExpense int64  `json:"total_expense"`
 	NetIncome    int64  `json:"net_income"`
 	TxCount      int64  `json:"tx_count"`
+}
+
+type AnnualReportContactRankings struct {
+	ExpenseByAmount []AnnualReportContactStat `json:"expense_by_amount"`
+	ExpenseByCount  []AnnualReportContactStat `json:"expense_by_count"`
+	IncomeByAmount  []AnnualReportContactStat `json:"income_by_amount"`
+	IncomeByCount   []AnnualReportContactStat `json:"income_by_count"`
 }
 
 type AnnualReportCompare struct {
@@ -62,13 +84,31 @@ type AnnualReportInsight struct {
 }
 
 type AnnualReport struct {
-	Year            int                       `json:"year"`
-	Summary         AnnualReportSummary       `json:"summary"`
-	ByTag           []AnnualReportTagStat     `json:"by_tag"`
-	TopTransactions []AnnualReportTopTx       `json:"top_transactions"`
-	TopContacts     []AnnualReportContactStat `json:"top_contacts"`
-	Compare         *AnnualReportCompare      `json:"compare"`
-	Insights        []AnnualReportInsight     `json:"insights"`
+	Year            int                         `json:"year"`
+	Summary         AnnualReportSummary         `json:"summary"`
+	ByTag           AnnualReportTagRankings     `json:"by_tag"`
+	TopTransactions AnnualReportTxRankings      `json:"top_transactions"`
+	TopContacts     AnnualReportContactRankings `json:"top_contacts"`
+	Compare         *AnnualReportCompare        `json:"compare"`
+	Insights        []AnnualReportInsight       `json:"insights"`
+}
+
+type annualTagAgg struct {
+	TagID          int64
+	TagName        string
+	TotalIncome    int64
+	TotalExpense   int64
+	IncomeTxCount  int64
+	ExpenseTxCount int64
+}
+
+type annualContactAgg struct {
+	ContactID      int64
+	ContactName    string
+	TotalIncome    int64
+	TotalExpense   int64
+	IncomeTxCount  int64
+	ExpenseTxCount int64
 }
 
 // DefaultAnnualReportYear returns the current calendar year.
@@ -155,45 +195,119 @@ func (s *StatsService) annualSummary(db *sql.DB, year int) (AnnualReportSummary,
 	return sum, nil
 }
 
-func (s *StatsService) annualByTag(db *sql.DB, year int) ([]AnnualReportTagStat, error) {
+func (s *StatsService) annualByTag(db *sql.DB, year int) (AnnualReportTagRankings, error) {
 	start, end := yearRange(year)
 	rows, err := db.Query(`
 		SELECT g.id, g.name,
 		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0),
 		       COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0),
-		       COUNT(DISTINCT t.id)
+		       COUNT(DISTINCT CASE WHEN t.type='income' THEN t.id END),
+		       COUNT(DISTINCT CASE WHEN t.type='expense' THEN t.id END)
 		FROM transactions t
 		JOIN transaction_tags tt ON tt.transaction_id = t.id
 		JOIN tags g ON g.id = tt.tag_id
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
 		  AND (g.preset_key IS NULL OR g.preset_key != ?)
-		GROUP BY g.id
-		ORDER BY 5 DESC, g.name ASC`,
+		GROUP BY g.id`,
 		start, end, domain.DailyExpensePresetKey,
 	)
 	if err != nil {
-		return nil, err
+		return AnnualReportTagRankings{}, err
 	}
 	defer rows.Close()
 
-	out := make([]AnnualReportTagStat, 0)
+	aggs := make([]annualTagAgg, 0)
 	for rows.Next() {
-		var item AnnualReportTagStat
-		var id int64
-		if err := rows.Scan(&id, &item.TagName, &item.TotalIncome, &item.TotalExpense, &item.TxCount); err != nil {
-			return nil, err
+		var a annualTagAgg
+		if err := rows.Scan(
+			&a.TagID, &a.TagName, &a.TotalIncome, &a.TotalExpense,
+			&a.IncomeTxCount, &a.ExpenseTxCount,
+		); err != nil {
+			return AnnualReportTagRankings{}, err
 		}
-		item.TagID = &id
-		out = append(out, item)
+		aggs = append(aggs, a)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return AnnualReportTagRankings{}, err
 	}
-	return out, nil
+
+	return AnnualReportTagRankings{
+		ExpenseByAmount: topTagStats(aggs, true, true),
+		ExpenseByCount:  topTagStats(aggs, true, false),
+		IncomeByAmount:  topTagStats(aggs, false, true),
+		IncomeByCount:   topTagStats(aggs, false, false),
+	}, nil
 }
 
-func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualReportTopTx, error) {
+func topTagStats(aggs []annualTagAgg, expense bool, byAmount bool) []AnnualReportTagStat {
+	filtered := make([]annualTagAgg, 0, len(aggs))
+	for _, a := range aggs {
+		if expense {
+			if a.TotalExpense <= 0 && a.ExpenseTxCount <= 0 {
+				continue
+			}
+		} else if a.TotalIncome <= 0 && a.IncomeTxCount <= 0 {
+			continue
+		}
+		filtered = append(filtered, a)
+	}
+	sort.SliceStable(filtered, func(i, j int) bool {
+		ai, aj := filtered[i], filtered[j]
+		var vi, vj int64
+		if expense {
+			if byAmount {
+				vi, vj = ai.TotalExpense, aj.TotalExpense
+			} else {
+				vi, vj = ai.ExpenseTxCount, aj.ExpenseTxCount
+			}
+		} else {
+			if byAmount {
+				vi, vj = ai.TotalIncome, aj.TotalIncome
+			} else {
+				vi, vj = ai.IncomeTxCount, aj.IncomeTxCount
+			}
+		}
+		if vi != vj {
+			return vi > vj
+		}
+		return ai.TagName < aj.TagName
+	})
+	if len(filtered) > annualTopN {
+		filtered = filtered[:annualTopN]
+	}
+	out := make([]AnnualReportTagStat, 0, len(filtered))
+	for _, a := range filtered {
+		id := a.TagID
+		item := AnnualReportTagStat{
+			TagID:        &id,
+			TagName:      a.TagName,
+			TotalIncome:  a.TotalIncome,
+			TotalExpense: a.TotalExpense,
+		}
+		if expense {
+			item.TxCount = a.ExpenseTxCount
+		} else {
+			item.TxCount = a.IncomeTxCount
+		}
+		out = append(out, item)
+	}
+	return out
+}
+
+func (s *StatsService) annualTopTransactions(db *sql.DB, year int) (AnnualReportTxRankings, error) {
+	expense, err := s.annualTopTransactionsByType(db, year, "expense")
+	if err != nil {
+		return AnnualReportTxRankings{}, err
+	}
+	income, err := s.annualTopTransactionsByType(db, year, "income")
+	if err != nil {
+		return AnnualReportTxRankings{}, err
+	}
+	return AnnualReportTxRankings{Expense: expense, Income: income}, nil
+}
+
+func (s *StatsService) annualTopTransactionsByType(db *sql.DB, year int, typ string) ([]AnnualReportTopTx, error) {
 	start, end := yearRange(year)
 	rows, err := db.Query(`
 		SELECT t.id, t.amount, t.type, t.transaction_date, t.note, t.contact_id, COALESCE(c.name, '')
@@ -201,15 +315,16 @@ func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualRepo
 		LEFT JOIN contacts c ON c.id = t.contact_id
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
+		  AND t.type = ?
 		ORDER BY t.amount DESC, t.transaction_date DESC, t.id DESC
-		LIMIT 5`, start, end)
+		LIMIT ?`, start, end, typ, annualTopN)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	out := make([]AnnualReportTopTx, 0, 5)
-	ids := make([]int64, 0, 5)
+	out := make([]AnnualReportTopTx, 0, annualTopN)
+	ids := make([]int64, 0, annualTopN)
 	for rows.Next() {
 		var item AnnualReportTopTx
 		var contactID sql.NullInt64
@@ -242,35 +357,100 @@ func (s *StatsService) annualTopTransactions(db *sql.DB, year int) ([]AnnualRepo
 	return out, nil
 }
 
-func (s *StatsService) annualTopContacts(db *sql.DB, year int) ([]AnnualReportContactStat, error) {
+func (s *StatsService) annualTopContacts(db *sql.DB, year int) (AnnualReportContactRankings, error) {
 	start, end := yearRange(year)
 	rows, err := db.Query(`
 		SELECT c.id, c.name,
 		       COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END), 0),
 		       COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount ELSE 0 END), 0),
-		       COUNT(*)
+		       COALESCE(SUM(CASE WHEN t.type='income' THEN 1 ELSE 0 END), 0),
+		       COALESCE(SUM(CASE WHEN t.type='expense' THEN 1 ELSE 0 END), 0)
 		FROM transactions t
 		JOIN contacts c ON c.id = t.contact_id
 		WHERE t.transaction_date >= ? AND t.transaction_date < ?
 		  AND t.is_system = 0
-		GROUP BY c.id
-		ORDER BY COUNT(*) DESC, c.name ASC
-		LIMIT 5`, start, end)
+		GROUP BY c.id`, start, end)
 	if err != nil {
-		return nil, err
+		return AnnualReportContactRankings{}, err
 	}
 	defer rows.Close()
 
-	out := make([]AnnualReportContactStat, 0, 5)
+	aggs := make([]annualContactAgg, 0)
 	for rows.Next() {
-		var item AnnualReportContactStat
-		if err := rows.Scan(&item.ContactID, &item.ContactName, &item.TotalIncome, &item.TotalExpense, &item.TxCount); err != nil {
-			return nil, err
+		var a annualContactAgg
+		if err := rows.Scan(
+			&a.ContactID, &a.ContactName, &a.TotalIncome, &a.TotalExpense,
+			&a.IncomeTxCount, &a.ExpenseTxCount,
+		); err != nil {
+			return AnnualReportContactRankings{}, err
 		}
-		item.NetIncome = item.TotalIncome - item.TotalExpense
+		aggs = append(aggs, a)
+	}
+	if err := rows.Err(); err != nil {
+		return AnnualReportContactRankings{}, err
+	}
+
+	return AnnualReportContactRankings{
+		ExpenseByAmount: topContactStats(aggs, true, true),
+		ExpenseByCount:  topContactStats(aggs, true, false),
+		IncomeByAmount:  topContactStats(aggs, false, true),
+		IncomeByCount:   topContactStats(aggs, false, false),
+	}, nil
+}
+
+func topContactStats(aggs []annualContactAgg, expense bool, byAmount bool) []AnnualReportContactStat {
+	filtered := make([]annualContactAgg, 0, len(aggs))
+	for _, a := range aggs {
+		if expense {
+			if a.TotalExpense <= 0 && a.ExpenseTxCount <= 0 {
+				continue
+			}
+		} else if a.TotalIncome <= 0 && a.IncomeTxCount <= 0 {
+			continue
+		}
+		filtered = append(filtered, a)
+	}
+	sort.SliceStable(filtered, func(i, j int) bool {
+		ai, aj := filtered[i], filtered[j]
+		var vi, vj int64
+		if expense {
+			if byAmount {
+				vi, vj = ai.TotalExpense, aj.TotalExpense
+			} else {
+				vi, vj = ai.ExpenseTxCount, aj.ExpenseTxCount
+			}
+		} else {
+			if byAmount {
+				vi, vj = ai.TotalIncome, aj.TotalIncome
+			} else {
+				vi, vj = ai.IncomeTxCount, aj.IncomeTxCount
+			}
+		}
+		if vi != vj {
+			return vi > vj
+		}
+		return ai.ContactName < aj.ContactName
+	})
+	if len(filtered) > annualTopN {
+		filtered = filtered[:annualTopN]
+	}
+	out := make([]AnnualReportContactStat, 0, len(filtered))
+	for _, a := range filtered {
+		item := AnnualReportContactStat{
+			ContactID:    a.ContactID,
+			ContactName:  a.ContactName,
+			TotalIncome:  a.TotalIncome,
+			TotalExpense: a.TotalExpense,
+			NetIncome:    a.TotalIncome - a.TotalExpense,
+		}
+		if expense {
+			item.TxCount = a.ExpenseTxCount
+		} else {
+			item.TxCount = a.IncomeTxCount
+		}
 		out = append(out, item)
 	}
-	return out, rows.Err()
+	return out
 }
 
 func (s *StatsService) annualCompare(db *sql.DB, year int, curr AnnualReportSummary) (*AnnualReportCompare, error) {
@@ -359,31 +539,34 @@ func buildAnnualInsights(r *AnnualReport) []AnnualReportInsight {
 			},
 		})
 	}
-	var topTag *AnnualReportTagStat
-	for i := range r.ByTag {
-		if r.ByTag[i].TotalExpense <= 0 {
-			continue
-		}
-		if topTag == nil || r.ByTag[i].TotalExpense > topTag.TotalExpense {
-			topTag = &r.ByTag[i]
+	if len(r.ByTag.ExpenseByAmount) > 0 {
+		topTag := r.ByTag.ExpenseByAmount[0]
+		if topTag.TagName != "" {
+			out = append(out, AnnualReportInsight{
+				Key: "top_expense_tag",
+				Params: map[string]interface{}{
+					"tag":    topTag.TagName,
+					"amount": topTag.TotalExpense,
+				},
+			})
 		}
 	}
-	if topTag != nil && topTag.TagName != "" {
-		out = append(out, AnnualReportInsight{
-			Key: "top_expense_tag",
-			Params: map[string]interface{}{
-				"tag":    topTag.TagName,
-				"amount": topTag.TotalExpense,
-			},
-		})
+	var largest *AnnualReportTopTx
+	if len(r.TopTransactions.Expense) > 0 {
+		largest = &r.TopTransactions.Expense[0]
 	}
-	if len(r.TopTransactions) > 0 {
-		tx := r.TopTransactions[0]
+	if len(r.TopTransactions.Income) > 0 {
+		inc := &r.TopTransactions.Income[0]
+		if largest == nil || inc.Amount > largest.Amount {
+			largest = inc
+		}
+	}
+	if largest != nil {
 		out = append(out, AnnualReportInsight{
 			Key: "largest_tx",
 			Params: map[string]interface{}{
-				"amount": tx.Amount,
-				"date":   tx.TransactionDate,
+				"amount": largest.Amount,
+				"date":   largest.TransactionDate,
 			},
 		})
 	}

@@ -506,9 +506,7 @@
     "prevYear": "पिछला वर्ष",
     "nextYear": "अगला वर्ष",
     "sectionSummary": "वार्षिक योग",
-    "sectionByTag": "टैग के अनुसार",
-    "sectionTopTx": "सबसे बड़ी राशियाँ (शीर्ष 5)",
-    "sectionTopContacts": "संपर्क (शीर्ष 5)",
+    "sectionTopTx": "सबसे बड़ी राशियाँ (Top 5)",
     "sectionCompare": "पिछले वर्ष से तुलना",
     "sectionInsights": "सारांश",
     "dailyExpense": "दैनिक खर्च",
@@ -530,9 +528,12 @@
       "largest_tx": "सबसे बड़ा लेन-देन: {{amount}} ({{date}})।",
       "expense_over_income": "कुल खर्च कुल आय से अधिक रहा।"
     },
-    "expandTags": "सभी दिखाएँ ({{count}})",
-    "collapseTags": "कम दिखाएँ",
-    "axisBroken": "अक्ष खंडित"
+    "axisBroken": "अक्ष खंडित",
+    "sectionTagByAmount": "टैग राशि के अनुसार (Top 5)",
+    "sectionTagByCount": "टैग संख्या के अनुसार (Top 5)",
+    "sectionContactByAmount": "संपर्क राशि के अनुसार (Top 5)",
+    "sectionContactByCount": "संपर्क संख्या के अनुसार (Top 5)",
+    "emptyRank": "इस रैंकिंग के लिए कोई डेटा नहीं।"
   },
   "filter": {
     "tagMatchLabel": "टैग मिलान",
